@@ -35,6 +35,10 @@ interface HeaderSource {
  *  that is the only header api-rest's `trustProxy` reads — sent under its own
  *  name it would arrive and be ignored. */
 export function forwardedFor(incoming: HeaderSource): Record<string, string> {
-  const chain = incoming.get('x-forwarded-for')?.trim() || incoming.get('x-real-ip')?.trim();
+  // The first NON-BLANK of the two: a present-but-blank X-Forwarded-For falls
+  // through to X-Real-IP, which `??` would not do (it keeps the empty string).
+  const chain = [incoming.get('x-forwarded-for'), incoming.get('x-real-ip')]
+    .map((value) => value?.trim())
+    .find(Boolean);
   return chain ? { 'x-forwarded-for': chain } : {};
 }

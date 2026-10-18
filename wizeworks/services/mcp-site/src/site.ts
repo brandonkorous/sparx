@@ -32,7 +32,9 @@ export interface SiteRoute {
 export function callerChain(request: FastifyRequest): string | null {
   const raw = request.headers['x-forwarded-for'];
   const chain = (Array.isArray(raw) ? raw.join(', ') : raw)?.trim();
-  return chain ? chain : null;
+  // Blank is absent: an empty header must not reach api-rest as an empty chain.
+  if (!chain) return null;
+  return chain;
 }
 
 export async function resolveSite(
