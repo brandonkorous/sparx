@@ -9,7 +9,10 @@
 // search result, and a crawler that follows a link out of a forwarded email
 // should get nothing.
 
+import { notFound } from 'next/navigation';
+
 import { ManageBooking } from '@/components/booking/manage-booking';
+import { resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +26,9 @@ interface Props {
 }
 
 export default async function ManageBookingPage({ params }: Props) {
+  // ManageBooking calls useCustomer(), whose provider the root layout renders
+  // only for a resolved site: with no site this was a 500, not a 404.
+  if (!(await resolveSite())) notFound();
   const { token } = await params;
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-12">
