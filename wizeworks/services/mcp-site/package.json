@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
+    "@wizeworks/lens-node": "0.3.0-alpha.2",
     "@wizeworks/site-mcp": "workspace:*",
     "fastify": "^5.6.1",
     "pino": "^9.5.0",

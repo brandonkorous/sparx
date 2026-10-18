@@ -12,6 +12,7 @@ import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastif
 import { createAuthPlugin } from '@wizeworks/api-core/auth';
 import { createErrorsPlugin } from '@wizeworks/api-core/errors-plugin';
 import { env } from './env.js';
+import { wizelensPlugin } from './wizelens.js';
 import healthRoutes from './routes/health.js';
 import graphqlRoutes from './routes/graphql.js';
 
@@ -50,6 +51,9 @@ export async function createApp(): Promise<FastifyInstance> {
     // sane to discourage abuse.
     bodyLimit: 1 * 1024 * 1024,
   });
+
+  // WizeLens goes first, so its request span wraps every other plugin's hooks.
+  await app.register(wizelensPlugin);
 
   // Order matters: errors → auth → routes. Error handler must be registered
   // first so it catches anything that throws from the others. No CRM/REST-

@@ -122,12 +122,27 @@ const withDerivedFields = {
   },
 } as const;
 
-export const prisma: PrismaClient =
-  globalForPrisma.__sparxPrisma ??
-  (new PrismaClient({
+/**
+ * WizeLens query tracing. A service or app that traces itself (api-rest's
+ * lib/wizelens.ts, a Next.js app's instrumentation.ts) puts a Prisma extension
+ * here BEFORE this module loads. Unset everywhere else, so the client is
+ * exactly what it was.
+ */
+const wizelensExtension = (globalThis as { __wizelensPrisma?: { name: string } }).__wizelensPrisma;
+
+function createClient(): PrismaClient {
+  const client = new PrismaClient({
     log: logQueries ? ['query', 'warn', 'error'] : ['warn', 'error'],
     ...(datasourceUrl ? { datasourceUrl } : {}),
-  }).$extends(withDerivedFields) as unknown as PrismaClient);
+  }).$extends(withDerivedFields) as unknown as PrismaClient;
+  if (!wizelensExtension) return client;
+  // Typed through a one-method shape on purpose: Prisma's own $extends typing
+  // over an already-extended client is "excessively deep" (TS2589) for tsc.
+  type Extendable = { $extends(extension: unknown): unknown };
+  return (client as unknown as Extendable).$extends(wizelensExtension) as PrismaClient;
+}
+
+export const prisma: PrismaClient = globalForPrisma.__sparxPrisma ?? createClient();
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.__sparxPrisma = prisma;

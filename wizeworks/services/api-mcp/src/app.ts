@@ -24,6 +24,7 @@ import Fastify, {
 } from 'fastify';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { env } from './env.js';
+import { wizelensPlugin } from './wizelens.js';
 import authPlugin, { AuthError, authenticate } from './auth.js';
 import { buildServerForRequest } from './server.js';
 import { enforceRateLimit, RateLimitError } from './rate-limit.js';
@@ -53,6 +54,9 @@ export async function createApp(): Promise<FastifyInstance> {
     trustProxy: true,
     bodyLimit: 512 * 1024, // MCP payloads are JSON-RPC envelopes — 512 KiB ceiling.
   });
+
+  // WizeLens goes first, so its request span wraps every other plugin's hooks.
+  await app.register(wizelensPlugin);
 
   app.setErrorHandler((err, request, reply) => {
     if (err instanceof AuthError) {
