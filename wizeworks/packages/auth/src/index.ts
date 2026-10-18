@@ -24,7 +24,7 @@ export {
 } from './social-providers';
 // Publishes an `email.send` event from auth-side contexts (better-auth callbacks +
 // the workbench accept-invite server action). See email-events.ts.
-export { publishAuthEmail, type PublishAuthEmailInput } from './email-events';
+export { authEmailsCanLeave, publishAuthEmail, type PublishAuthEmailInput } from './email-events';
 export {
   signUpMerchant,
   SignUpError,

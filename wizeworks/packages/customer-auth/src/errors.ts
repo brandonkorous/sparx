@@ -4,7 +4,12 @@
 // these codes are for legitimate, non-leaky failures like a weak password).
 
 export type CustomerAuthErrorCode =
-  'EMAIL_TAKEN' | 'INVALID_CREDENTIALS' | 'INVALID_INPUT' | 'INVALID_TOKEN';
+  | 'EMAIL_TAKEN'
+  | 'INVALID_CREDENTIALS'
+  | 'INVALID_INPUT'
+  | 'INVALID_TOKEN'
+  // An email this process cannot send: its events go nowhere (sparx persona issue 337).
+  | 'EMAIL_UNAVAILABLE';
 
 export class CustomerAuthError extends Error {
   readonly code: CustomerAuthErrorCode;

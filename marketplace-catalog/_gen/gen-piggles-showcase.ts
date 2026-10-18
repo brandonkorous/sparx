@@ -45,6 +45,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
 import { upgradeFrameChrome } from '../../wizeworks/packages/silica-catalog/src/upgrade-frame';
+import { withCartButton } from '../../wizeworks/packages/silica-catalog/src/site-chrome';
 import { siteInsideMeasure } from '../../wizeworks/packages/silica-catalog/src/page-measure';
 
 /** The golden bundle's frame, run through the platform's own upgrade-on-read before it is
@@ -76,7 +77,10 @@ function healedSite(site: Record<string, unknown>): Record<string, unknown> {
     const frame = measured.frame as { root: unknown } | null | undefined;
     if (!frame?.root) return measured;
     const healed = upgradeFrameChrome(frame.root as Parameters<typeof upgradeFrameChrome>[0]);
-    return healed.changed ? { ...measured, frame: { ...frame, root: healed.root } } : measured;
+    // And the header cart, which the repair deliberately never invents on a tenant's own
+    // draft: this design sells, so it ships with one (sparx persona issue 325).
+    const root = withCartButton(healed.root);
+    return root !== frame.root ? { ...measured, frame: { ...frame, root } } : measured;
 }
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -337,7 +341,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(KEY)},
-  version: '1.3.4',
+  version: '1.3.6',
   name: ${JSON.stringify(name)},
   summary: ${JSON.stringify(summary)},
   vertical: 'retail',
@@ -374,7 +378,7 @@ export default blueprint;
             category: 'blueprint',
             slug: KEY,
             name,
-            version: '1.3.4',
+            version: '1.3.6',
             tagline: 'A complete multi-module starter. Shop, journal, bookings, and wholesale.',
             description: summary,
             payload: 'blueprint.ts',

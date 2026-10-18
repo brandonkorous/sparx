@@ -39,7 +39,7 @@ import {
   type EffectInput,
   type TenantCtx,
 } from '@wizeworks/automation';
-import { enqueueSend, type ScheduledSendBody } from '@wizeworks/email-sends';
+import { enqueueSend, type RecordLink, type ScheduledSendBody } from '@wizeworks/email-sends';
 import { z } from 'zod';
 
 import {
@@ -133,6 +133,28 @@ function campaignEmailType(cfg: CampaignStep): 'transactional' | 'marketing' {
 function campaignModuleFor(effect: EffectInput): string | null {
   const parsed = CampaignConfig.safeParse(effect.config);
   return parsed.success && campaignEmailType(parsed.data) === 'transactional' ? null : 'email';
+}
+
+/**
+ * The record a staff alert is about, so it can open it (sparx persona issue 331).
+ * A "High-value order" alert arrived as one line with nothing to click, and the
+ * owner had to open the console and search for the number. The most specific
+ * record the trigger carries wins: a return is about its order, but the return is
+ * what needs doing.
+ */
+export function recordLinkFor(fields: EffectInput['fields']): RecordLink | null {
+  const candidates: ReadonlyArray<readonly [string, string, string, string?]> = [
+    ['return.id', 'commerce.return.detail', 'Open the return'],
+    ['order.id', 'commerce.order.detail', 'Open the order'],
+    ['variant.id', 'inventory.stock.item', 'Open the stock item', 'variantId'],
+    ['deal.id', 'crm.deal.detail', 'Open the deal'],
+    ['customer.id', 'crm.customer.detail', 'Open the customer'],
+  ];
+  for (const [field, surface, label, param] of candidates) {
+    const id = optionalEntityId(fields, field);
+    if (id) return { surface, id, label, ...(param ? { param } : {}) };
+  }
+  return null;
 }
 
 const InternalConfig = z.object({
@@ -258,6 +280,7 @@ export const installEmailActions = installOnce((): void => {
       }
       // Internal mail is pre-rendered here, so its `{{token}}` merge fields resolve
       // now against the trigger's flat fields (docs/90 §3 internal alerts).
+      const link = recordLinkFor(effect.fields);
       const body: ScheduledSendBody = {
         raw: {
           subject: interpolateFields(cfg.subject, effect.fields),
@@ -265,6 +288,7 @@ export const installEmailActions = installOnce((): void => {
           // Default the text body to the subject so a subject-only alert still has
           // a body (an internal notification's subject is its content).
           text: interpolateFields(cfg.text ?? cfg.subject, effect.fields),
+          ...(link ? { link } : {}),
         },
       };
       const { enqueued, suppressed } = await enqueueSend(

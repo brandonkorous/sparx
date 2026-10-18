@@ -149,10 +149,29 @@ export interface CartHandoff {
  *  (docs/58 D6), which the UI surfaces as a one-time notice. `cart` is set
  *  when the client needs to adopt a new cart identity post-login. */
 export interface AuthResult {
-  customer: Customer;
+  /** Null while the record under this email waits for the confirm link. */
+  customer: Customer | null;
   recognized: boolean;
   cart: CartHandoff | null;
+  /** Set when the account exists and is signed in, but a record somebody left
+   *  under this email is not handed over until the email is confirmed (sparx
+   *  persona issue 329). The link has been sent to `email`. */
+  confirmEmail: { email: string; sent?: boolean } | null;
 }
+
+type AuthBody = {
+  customer: Customer | null;
+  recognized?: boolean;
+  cart?: CartHandoff | null;
+  confirmEmail?: { email: string; sent?: boolean } | null;
+};
+
+const authResult = (data: AuthBody): AuthResult => ({
+  customer: data.customer,
+  recognized: data.recognized ?? false,
+  cart: data.cart ?? null,
+  confirmEmail: data.confirmEmail ?? null,
+});
 
 export async function register(
   tenantSlug: string,
@@ -164,10 +183,7 @@ export async function register(
     headers: { 'content-type': 'application/json', ...cartTokenHeader() },
     body: JSON.stringify(input),
   });
-  const data = await parse<{ customer: Customer; recognized?: boolean; cart?: CartHandoff | null }>(
-    res
-  );
-  return { customer: data.customer, recognized: data.recognized ?? false, cart: data.cart ?? null };
+  return authResult(await parse<AuthBody>(res));
 }
 
 export async function login(
@@ -180,10 +196,25 @@ export async function login(
     headers: { 'content-type': 'application/json', ...cartTokenHeader() },
     body: JSON.stringify(input),
   });
-  const data = await parse<{ customer: Customer; recognized?: boolean; cart?: CartHandoff | null }>(
-    res
-  );
-  return { customer: data.customer, recognized: data.recognized ?? false, cart: data.cart ?? null };
+  return authResult(await parse<AuthBody>(res));
+}
+
+/** Send the signed-in login its confirm link again. */
+export async function resendEmailConfirmation(tenantSlug: string): Promise<void> {
+  const res = await fetch(url('/v1/public/commerce/account/email/resend', tenantSlug), {
+    method: 'POST',
+  });
+  await parse<{ email: string }>(res);
+}
+
+/** Open a confirm link. Throws an AccountError on an invalid or expired one. */
+export async function confirmEmail(tenantSlug: string, token: string): Promise<void> {
+  const res = await fetch(url('/v1/public/commerce/account/email/confirm', tenantSlug), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ token }),
+  });
+  await parse<{ ok: true }>(res);
 }
 
 export async function logout(tenantSlug: string): Promise<void> {
@@ -226,6 +257,8 @@ export async function resetPassword(
 export type SessionRead =
   | { kind: 'signed-in'; customer: Customer; offers: AccountOffers }
   | { kind: 'signed-out' }
+  /** Signed in, waiting on the confirm link (sparx persona issue 329). */
+  | { kind: 'confirm-email'; email: string }
   | { kind: 'unreachable' };
 
 export async function readSession(
@@ -250,7 +283,14 @@ export async function readSession(
   if (outcome === 'signed-out') return { kind: 'signed-out' };
   if (outcome === 'unknown') return { kind: 'unreachable' };
   try {
-    const body = await parse<{ customer: Customer | null; offers?: AccountOffers }>(res);
+    const body = await parse<{
+      customer: Customer | null;
+      offers?: AccountOffers;
+      confirmEmail?: { email: string };
+    }>(res);
+    if (!body.customer && body.confirmEmail) {
+      return { kind: 'confirm-email', email: body.confirmEmail.email };
+    }
     if (!body.customer) return { kind: 'signed-out' };
     return { kind: 'signed-in', customer: body.customer, offers: body.offers ?? NO_OFFERS };
   } catch {
@@ -267,7 +307,9 @@ export async function getMe(
   propertySlug?: string
 ): Promise<{ customer: Customer; offers: AccountOffers } | null> {
   const read = await readSession(tenantSlug, propertySlug);
-  if (read.kind === 'signed-out') return null;
+  // Waiting on the confirm link is not signed in here: nothing of the account is
+  // theirs on this site yet (sparx persona issue 329).
+  if (read.kind === 'signed-out' || read.kind === 'confirm-email') return null;
   if (read.kind === 'unreachable') throw new AccountError(SHOP_UNREACHABLE_MESSAGE, 503);
   return { customer: read.customer, offers: read.offers };
 }

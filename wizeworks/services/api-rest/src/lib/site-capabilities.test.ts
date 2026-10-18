@@ -33,14 +33,26 @@ beforeEach(() => {
 describe('siteCapabilities', () => {
   it('says a shop has customer accounts', async () => {
     moduleStates.set('commerce', true);
-    expect(await siteCapabilities(CTX)).toEqual({ customerAccounts: true });
+    expect(await siteCapabilities(CTX)).toEqual({ customerAccounts: true, shop: true });
+  });
+
+  it('says a site that only takes bookings has accounts but no shop (issue 325)', async () => {
+    moduleStates.set('scheduling', true);
+    expect(await siteCapabilities(CTX)).toEqual({ customerAccounts: true, shop: false });
+  });
+
+  it('says a site that switched its shop off has none, whatever the account sells', async () => {
+    moduleStates.set('commerce', true);
+    moduleStates.set('scheduling', true);
+    siteOff = ['commerce'];
+    expect(await siteCapabilities(CTX)).toEqual({ customerAccounts: true, shop: false });
   });
 
   it('says a journal that switched the shop and bookings off has none', async () => {
     moduleStates.set('commerce', true);
     moduleStates.set('scheduling', true);
     siteOff = ['commerce', 'scheduling', 'b2b'];
-    expect(await siteCapabilities(CTX)).toEqual({ customerAccounts: false });
+    expect(await siteCapabilities(CTX)).toEqual({ customerAccounts: false, shop: false });
   });
 
   it('claims nothing when it could not read the site’s switches', async () => {

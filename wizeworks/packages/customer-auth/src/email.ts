@@ -1,4 +1,4 @@
-// Publishes `email.send` for the customer-auth flows (password reset). Same
+// Publishes `email.send` for the customer-auth flows (password reset, email confirm). Same
 // event path as staff auth (@wizeworks/auth email-events) — never a direct send.
 // The tenant comes from the ambient request scope (tenantStore); the actual
 // render + relay happens in email-worker.
@@ -18,10 +18,17 @@ const logger: PublisherLogger = {
 };
 
 export interface PublishCustomerAuthEmailInput {
-  /** Reuses the existing platform template; a link, never an OTP code. */
-  template: 'password-reset';
+  /** A link, never an OTP code. `password-reset` reuses the platform template;
+   *  `customer-email-confirm` is the shop's own (sparx persona issue 329). */
+  template: 'password-reset' | 'customer-email-confirm';
   to: string;
   props: Record<string, unknown>;
+}
+
+/** Whether an email can leave this process at all. Better Auth swallows what a
+ *  send callback throws, so a caller asks first (sparx persona issue 337). */
+export function customerAuthEmailsCanLeave(): boolean {
+  return !createPublisher({ logger }).discards;
 }
 
 export async function publishCustomerAuthEmail(
@@ -33,6 +40,9 @@ export async function publishCustomerAuthEmail(
     to: input.to,
     template: input.template,
     props: input.props,
+    // The confirm email is the SHOP's, to its own customer: from the business, with
+    // replies to it (sparx persona issue 329). The worker fills the From in.
+    ...(input.template === 'customer-email-confirm' ? { sendAs: 'tenant' as const } : {}),
   };
   await publishEvent(publisher, 'email.send', tenantId, null, payload, logger);
 }

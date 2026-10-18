@@ -489,7 +489,8 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
   // Keep the cookie-backed, SSR-integrated, policy-gated theme toggle rather than the
   // block's client-only behavior, and the live account link rather than a stamped one.
   // `ensureAccountLink` then covers the variant that has no `secondary` slot to swap.
-  return ensureAccountLink(withHostThemeToggle(withHostAccountLink(linked)));
+  const navbar = ensureAccountLink(withHostThemeToggle(withHostAccountLink(linked)));
+  return (opts.commerceEnabled ?? true) ? ensureCartButton(navbar) : navbar;
 }
 
 /** The two shapes the account link takes, which are the classes the block's own
@@ -533,6 +534,123 @@ function ensureAccountLink(navbar: Node): Node {
   return panel
     ? addAt(withBar, panel, hostCore(HOST_KEYS.siteAccountLink, ACCOUNT_PANEL_CLASS))
     : withBar;
+}
+
+/**
+ * Put the cart, with its live count, in the bar of a site that sells.
+ *
+ * No design carried one, and the site's `CartButton` was mounted by nothing, so a
+ * shopper who closed the drawer that opens on Add to cart had no way back to her basket
+ * but the footer's "Cart" link (sparx persona issue 325). In the bar rather than the
+ * phone panel, because a cart is the one control a phone header keeps on screen: it
+ * goes just before the menu toggle, where a shopper looks for it at every width.
+ *
+ * A no-op when the core is already placed. The core renders nothing on a site that has
+ * switched its shop off, so a header carrying it is still right if that changes later.
+ */
+function ensureCartButton(navbar: Node): Node {
+  if (typeof navbar === 'string' || navbar.kind !== 'element') return navbar;
+  if (containsHostCore(navbar, HOST_KEYS.siteCartButton)) return navbar;
+  const end = barEnd(navbar);
+  const children = end.children ?? [];
+  const menu = children.findIndex(isPhoneMenuToggle);
+  const cart = hostCore(HOST_KEYS.siteCartButton, CART_BAR_CLASS);
+  const placed: ElementNode = {
+    ...end,
+    children:
+      menu === -1
+        ? [...children, cart]
+        : [...children.slice(0, menu), cart, ...children.slice(menu)],
+  };
+  return replaceAt(navbar, end, placed);
+}
+
+const CART_BAR_CLASS = 'inline-flex items-center';
+
+/**
+ * Put the header cart into a WHOLE FRAME whose header was not built by `siteNavbar` —
+ * a captured design, which the generators that copy it run through this before they
+ * write their bundles (sparx persona issue 325).
+ *
+ * A captured header has its own shape: no `ml-auto` end zone, and a `<details>` menu
+ * rather than the starter's toggle button. What every one of them does have is the live
+ * account link in the bar, which is exactly where a shopper looks for the cart, so the
+ * cart goes right after it. The account link inside the phone menu is skipped: that is a
+ * panel a shopper has to open first. With no account link in the bar it falls back to the
+ * starter rule (`ensureCartButton`).
+ *
+ * For the generators of a SELLING design only, and never part of `upgradeFrameChrome`:
+ * that repair runs on tenants' own drafts and must not invent a control in a header its
+ * owner composed. A no-op when the frame already has the core.
+ */
+export function withCartButton(frameRoot: Node): Node {
+  if (typeof frameRoot === 'string' || frameRoot.kind !== 'element') return frameRoot;
+  if (containsHostCore(frameRoot, HOST_KEYS.siteCartButton)) return frameRoot;
+  const header = firstHeader(frameRoot);
+  if (!header) return frameRoot;
+  const holder = barAccountHolder(header);
+  if (!holder) return replaceAt(frameRoot, header, ensureCartButton(header) as ElementNode);
+  const children = holder.children ?? [];
+  const at = children.findIndex(isAccountCoreNode);
+  const placed: ElementNode = {
+    ...holder,
+    children: [
+      ...children.slice(0, at + 1),
+      hostCore(HOST_KEYS.siteCartButton, CART_BAR_CLASS),
+      ...children.slice(at + 1),
+    ],
+  };
+  return replaceAt(frameRoot, holder, placed);
+}
+
+/** The frame's header: its first `<header>` or `<nav>`, nearest the top. */
+function firstHeader(root: ElementNode): ElementNode | null {
+  const queue: ElementNode[] = [root];
+  while (queue.length > 0) {
+    const node = queue.shift()!;
+    if (node !== root && (node.tag === 'header' || node.tag === 'nav')) return node;
+    for (const child of node.children ?? []) {
+      if (typeof child !== 'string' && child.kind === 'element') queue.push(child);
+    }
+  }
+  return null;
+}
+
+const isAccountCoreNode = (node: Node | string): boolean =>
+  typeof node !== 'string' && node.kind === 'host' && node.component === HOST_KEYS.siteAccountLink;
+
+/** The element directly holding the account link in the BAR — not inside a `<details>`
+ *  menu or the starter's phone panel, which a shopper has to open first. */
+function barAccountHolder(header: ElementNode): ElementNode | null {
+  const panel = phonePanel(header);
+  const walk = (node: ElementNode): ElementNode | null => {
+    if ((node.children ?? []).some(isAccountCoreNode)) return node;
+    for (const child of node.children ?? []) {
+      if (typeof child === 'string' || child.kind !== 'element') continue;
+      if (child.tag === 'details' || child === panel) continue;
+      const hit = walk(child);
+      if (hit) return hit;
+    }
+    return null;
+  };
+  return walk(header);
+}
+
+/** The bar's phone-menu toggle: the square ghost button that only shows below `@md`. */
+function isPhoneMenuToggle(node: Node | string): boolean {
+  if (typeof node === 'string' || node.kind !== 'element' || node.tag !== 'button') return false;
+  return ` ${node.class ?? ''} `.includes(' @md:hidden ');
+}
+
+/** Swap `target` for `next`, wherever `target` sits in `root`. */
+function replaceAt(root: ElementNode, target: ElementNode, next: ElementNode): ElementNode {
+  if (root === target) return next;
+  return {
+    ...root,
+    children: (root.children ?? []).map((node) =>
+      typeof node === 'string' || node.kind !== 'element' ? node : replaceAt(node, target, next)
+    ),
+  };
 }
 
 /** The BAR itself — the navbar's first element child, which is the row holding the

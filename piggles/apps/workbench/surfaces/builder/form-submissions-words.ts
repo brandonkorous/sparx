@@ -6,6 +6,7 @@
 
 import { apiErrorMessage } from '../../lib/api-error';
 import type { FormSubmission, SubmissionFormRef } from './form-submissions-data';
+import { formatShopDateTime } from '../../lib/shop-clock';
 
 export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 
@@ -128,10 +129,8 @@ export function formatDate(value: string | null | undefined): string {
 
 /** Date and time together — for the moment a submission arrived. */
 export function formatDateTime(value: string | null | undefined): string {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-  return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  // On the shop's clock, not this computer's (sparx persona issue 333).
+  return formatShopDateTime(value);
 }
 
 /** A byte count in the units a person reads. */

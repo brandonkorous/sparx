@@ -263,6 +263,17 @@ async function resolveCommerceEnabled(tenantSlug: string, previewToken?: string)
   return (await resolveModuleFlags(tenantSlug, previewToken)).commerceEnabled;
 }
 
+/** Whether a visitor can shop on this site: the account's Commerce module is on AND this
+ *  site has not switched its shop off. The frame envelope already answers it, memoized
+ *  per request, so the header cart can hide on a site with nothing to buy (sparx persona
+ *  issue 325). Fails open to `true`, as `resolveModuleFlags` does for Commerce. */
+export async function resolveSiteSells(
+  tenantSlug: string,
+  previewToken?: string
+): Promise<boolean> {
+  return resolveCommerceEnabled(tenantSlug, previewToken);
+}
+
 /** Whether the tenant's Scheduling module is active — the /book route's module gate
  *  (404s when off). Reads the same `cache()`-memoized frame envelope the layout already
  *  fetched, so it's free on the request. */

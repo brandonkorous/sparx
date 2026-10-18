@@ -103,8 +103,9 @@ describe('every coded template renders', () => {
     // 41 since `account-statement`: a trade account's statement, with the
     // buyer's PO number on every open invoice. 42 since `order-approval-request`:
     // a trade account's own approver, asked to sign off a colleague's order
-    // (sparx persona issue 087).
-    expect(IDS.length).toBe(42);
+    // (sparx persona issue 087). 43 since `customer-email-confirm`: a shopper
+    // confirming the address their past orders are under (sparx persona issue 329).
+    expect(IDS.length).toBe(43);
   });
 });
 
@@ -166,6 +167,7 @@ const TENANT_TO_THEIR_CUSTOMER = new Set<TemplateId>([
   'order-approval-request',
   'gated-delivery',
   'form-submission-confirmation',
+  'customer-email-confirm',
   'document-signature-request',
 ]);
 

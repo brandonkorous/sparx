@@ -90,14 +90,20 @@ export function checkChrome(
   inventory: DocumentInventory,
   capabilities: SiteCapabilities | undefined
 ): RawFinding[] {
-  if (capabilities?.customerAccounts !== true) return [];
-
   const chrome = inventory.nodes.filter((visited) => visited.origin.scope === 'frame');
   // No frame was supplied at all. A site rendering its pages bare has no header to be
   // missing a link FROM, and "add an account link to your header" would name a thing
   // that does not exist.
   if (chrome.length === 0) return [];
 
+  return [...checkAccountLink(chrome, capabilities), ...checkCart(chrome, capabilities)];
+}
+
+function checkAccountLink(
+  chrome: VisitedNode[],
+  capabilities: SiteCapabilities | undefined
+): RawFinding[] {
+  if (capabilities?.customerAccounts !== true) return [];
   if (chrome.some(isAccountCore)) return [];
   if (findLinks(chrome).some((link) => reachesAccount(link.href))) return [];
 
@@ -115,6 +121,62 @@ export function checkChrome(
         'address you ship to: even though all of that is waiting for them. Open your header ' +
         'and footer and put the account link in the top bar: it says "Sign in" to a visitor and ' +
         'shows a customer their own name once they are signed in.',
+    },
+  ];
+}
+
+/** The live header cart, which shows a shopper's count and opens her basket. */
+function isCartCore(visited: VisitedNode): boolean {
+  const { node } = visited;
+  return node.kind === 'host' && node.component === HOST_KEYS.siteCartButton;
+}
+
+/** Does this href go to the cart page? Resolved against `/`, as `reachesAccount` is. */
+function reachesCart(href: string): boolean {
+  const target = classifyHref(href, '/');
+  return target.kind === 'internal' && target.value === '/cart';
+}
+
+/** Whether a node sits in the footer, by its trail of tags. */
+const inFooter = (nodePath: string): boolean => nodePath.split(' › ').includes('footer');
+
+/**
+ * A shop whose header has no way back to the basket.
+ *
+ * MEASURED 2026-10-17 on Gillett Diesel (sparx persona issue 325): the cart drawer opens
+ * once, on Add to cart, and once a shopper closed it the only route back to what she had
+ * chosen was a "Cart" link at the foot of the page. No design shipped a cart in its
+ * header, so every silica-framed shop on the platform was the same.
+ *
+ * THE FOOTER DOES NOT COUNT. Unlike the account link, where any route in is the whole
+ * question, a cart is the control a shopper reaches for at the top of every page, and a
+ * footer link is exactly what Gillett had. The live core counts anywhere it is placed; a
+ * hand-written link to `/cart` counts when it is outside the footer.
+ *
+ * Silent unless the caller confirmed this site shows its shop (`capabilities.shop`).
+ */
+function checkCart(
+  chrome: VisitedNode[],
+  capabilities: SiteCapabilities | undefined
+): RawFinding[] {
+  if (capabilities?.shop !== true) return [];
+  if (chrome.some(isCartCore)) return [];
+  if (findLinks(chrome).some((link) => reachesCart(link.href) && !inFooter(link.visited.nodePath)))
+    return [];
+
+  return [
+    {
+      origin: FRAME_ORIGIN,
+      nodeId: null,
+      nodePath: '',
+      rule: 'chrome-no-cart',
+      severity: 'warning',
+      title: 'Shoppers cannot get back to their cart',
+      detail:
+        'Your header has no cart. The cart opens once, when someone adds an item, and after ' +
+        'they close it the only way back to what they chose is a link at the bottom of the ' +
+        'page. Open your header and footer and put the cart button in the top bar: it shows ' +
+        'how many items are in the cart and opens it from any page.',
     },
   ];
 }

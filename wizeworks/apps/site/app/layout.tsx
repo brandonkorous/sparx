@@ -37,7 +37,7 @@ import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { SilicaBehaviors } from '@/components/silica-behaviors';
 import { SiteBuilderRuntime } from '@/components/site-builder-runtime';
 import type { PublishedSilicaFrameDto } from '@wizeworks/builder-schemas';
-import { getPublishedSilicaFrame } from '@/lib/silica';
+import { getPublishedSilicaFrame, resolveSiteSells } from '@/lib/silica';
 import { buildSilicaHost, silicaSiteIdentity } from '@/lib/silica-data';
 import {
   buildSilicaThemeCssFromTheme,
@@ -318,6 +318,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         )
       : '',
   ]);
+  // Read from the frame envelope fetched just above, memoized per request, so free.
+  const sells = site ? await resolveSiteSells(site.slug, sitePreviewToken) : false;
 
   // NOTE — `silicaActive` (`Boolean(frame) || frameless === true`) used to live here,
   // gating the theme stylesheet, the web fonts and the accent color. It existed to
@@ -633,6 +635,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                           // legal pages this tenant has actually published (and nothing
                           // when they have none) instead of hardcoded links that 404.
                           legalLinks,
+                          // So a `site.cart-button` in the header hides on a site with
+                          // nothing to buy (sparx persona issue 325).
+                          sells,
                         })}
                       >
                         {children}
@@ -667,7 +672,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     current={readerLocale}
                     ownLanguageLabel={ownLanguageLabel}
                   />
-                  <MiniCart paymentMode={site.commerce.paymentMode} />
+                  <MiniCart paymentMode={site.commerce.paymentMode} contact={site.contact} />
                   {/* The silica behavior runtime (docs/118 Stage 6b): hydrates the
                       data-sui-* markers a published silica page/frame renders, and
                       routes host actions (newsletter, cart) to the providers above.

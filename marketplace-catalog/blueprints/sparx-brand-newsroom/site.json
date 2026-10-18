@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "fe60e5a4-946b-41fb-b4d5-81469b6f5275",
+                  "id": "2115ef07-9c5e-412b-956a-87bc0c3dc252",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "41445649-c2b1-4d4c-a559-9f28e9969ced",
+                      "id": "71e279c7-b8f3-41df-afaf-35682090d93b",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "21badef2-941f-4048-93ae-5b6cb8948715",
+                      "id": "b2c3eaf3-bbd6-485e-a4a9-d543c2b299c2",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "0f6560ae-71a0-49f2-a287-1bf994a6b99b",
+                      "id": "51e4bf49-6382-4bdb-861f-39593ae60ba1",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "4e10026b-664e-48d0-b8fc-0b8c7b079493",
+                      "id": "31e554ba-9aeb-4aa5-9c34-df7600bf563c",
                       "ord": "a3"
                     }
                   ],
-                  "id": "ef1f91fb-8d46-414f-bf4a-c3c234f90484",
+                  "id": "05e20138-82fa-4309-98a2-ef076beb6357",
                   "ord": "a1"
                 },
                 {
@@ -107,14 +107,14 @@
                       "kind": "host",
                       "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "id": "8328043f-58d2-46ea-a7ee-e1a67c281cb7",
+                      "id": "eb7b3a4a-4bf3-462b-93b9-06651d87c926",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "b0aba0f6-027c-40ca-9f7e-c517b0f78f6a",
+                      "id": "685ecb1a-2b7e-4bf0-99cf-b789c434a713",
                       "ord": "a1"
                     },
                     {
@@ -130,8 +130,15 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "1670b222-7834-4ceb-a5ec-5bb32969bbab",
+                      "id": "68becb82-a4c6-4e98-8143-5959e4c9e8fe",
                       "ord": "a2"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.cart-button",
+                      "class": "inline-flex items-center",
+                      "id": "c10ea07a-10b6-4eff-b6b6-1e422dea9a8d",
+                      "ord": "a3"
                     },
                     {
                       "kind": "element",
@@ -148,20 +155,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "5cb5e228-d375-496b-bbe0-9d41ad4dc4a0",
+                          "id": "d4d30299-3e10-4182-b54c-0bb06ac0c308",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "c44530a1-142b-4306-85d8-99aeb166a644",
-                      "ord": "a3"
+                      "id": "53ff8003-25af-4465-a526-2467cbd957c8",
+                      "ord": "a4"
                     }
                   ],
-                  "id": "e2e4d9dd-8a49-43d9-a75f-4848b75e12ae",
+                  "id": "8e7b9d94-78fa-44ba-9f2c-4a4558c9e398",
                   "ord": "a2"
                 }
               ],
-              "id": "06763810-b2e3-4034-9940-fd1e8de58e38",
+              "id": "ed8e9e50-5e8f-40b5-a249-5814243c2a37",
               "ord": "a0"
             },
             {
@@ -185,7 +192,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "373e2ed8-a4a8-4f40-80a5-31282145639c",
+                  "id": "53580f66-5a30-4740-b3bb-d4a701816457",
                   "ord": "a0"
                 },
                 {
@@ -201,7 +208,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "b1f46b2e-e7fa-4d06-b12d-7adfa24d4625",
+                  "id": "95cc0986-5175-49c9-86c0-b1e45c08bf13",
                   "ord": "a1"
                 },
                 {
@@ -217,7 +224,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "7c3531a0-b505-4d5d-8209-54a02fd43f87",
+                  "id": "7cefd02d-ac76-48e2-a83f-c6c82cd04bd4",
                   "ord": "a2"
                 },
                 {
@@ -233,14 +240,14 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "4f9b8608-3ac6-4f35-b10d-8ecc4e724bc4",
+                  "id": "b752cb75-06b4-4a1b-8cf8-a2eb9e04afd3",
                   "ord": "a3"
                 },
                 {
                   "kind": "host",
                   "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "id": "63277bde-237c-41ef-a7f8-bf3657a6adbb",
+                  "id": "d8b23183-f1b6-40de-b3af-406395557aba",
                   "ord": "a4"
                 },
                 {
@@ -256,19 +263,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "e2746cbe-2de8-4bea-a70b-08f36135224d",
+                  "id": "01e4a6c2-8a93-4b1c-bee2-84152f1833fe",
                   "ord": "a5"
                 }
               ],
               "part": "panel",
-              "id": "779be6bf-2363-4dcc-b289-e776ee7da332",
+              "id": "d373f560-b611-4b1b-89b4-4096762667f3",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "41c75db4-ee85-4ec0-9a5c-75cfc845400c",
+          "id": "74a0cec1-2efb-4007-9b96-c59998118d2d",
           "ord": "a0"
         },
         {
@@ -284,7 +291,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "cc03d7d2-3f91-4310-aa50-1c4138e6744b",
+          "id": "ce995940-2238-405c-b65f-713944ba4ffb",
           "ord": "a1"
         },
         {
@@ -314,7 +321,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "e98e774c-4897-4d60-b04a-91cd750d2c70",
+                          "id": "23b173f5-179c-409e-b690-0a98e3d8369a",
                           "ord": "a0"
                         },
                         {
@@ -332,7 +339,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "1ce132d9-d225-46cd-a81e-888c0a5a04de",
+                          "id": "7775cae3-20e6-4821-aa49-ec03e9c82792",
                           "ord": "a1"
                         },
                         {
@@ -353,7 +360,7 @@
                                 "placeholder": "you@example.com",
                                 "required": true
                               },
-                              "id": "9dda473f-3256-4fe7-9d5f-f2d8200a909b",
+                              "id": "349fa34c-caa2-4030-a9d3-5a14aed4bdf3",
                               "ord": "a0"
                             },
                             {
@@ -369,11 +376,11 @@
                                 "type": "text",
                                 "label": "Button label"
                               },
-                              "id": "3bab2281-6b23-4db4-af2b-ebb50ce872a6",
+                              "id": "b3f93294-db5b-4721-ab73-12596da7cd4a",
                               "ord": "a1"
                             }
                           ],
-                          "id": "901a26d4-d1b6-4e1d-bfbb-830599c492c4",
+                          "id": "e267de82-c35f-4975-8bbf-199909eae4a1",
                           "ord": "a2"
                         },
                         {
@@ -386,11 +393,11 @@
                             "type": "text",
                             "label": "Reassurance line"
                           },
-                          "id": "784d163b-6b67-487b-8593-12e268bae358",
+                          "id": "d8e19567-21b1-4a09-bbe5-7fd38b072597",
                           "ord": "a3"
                         }
                       ],
-                      "id": "11f0397d-b05a-4010-9123-eed867106522",
+                      "id": "1c457ae0-34c8-4518-9520-454087272688",
                       "ord": "a0"
                     },
                     {
@@ -416,7 +423,7 @@
                               "attrs": {
                                 "href": "/"
                               },
-                              "id": "c6e267c7-b692-418a-acbf-d6c6aadd1643",
+                              "id": "da6ad5b9-ceb8-427c-aa40-93598ee89d96",
                               "ord": "a0"
                             },
                             {
@@ -441,11 +448,11 @@
                                         "type": "link",
                                         "label": "Features"
                                       },
-                                      "id": "b689a280-10a2-446f-9f9e-7f0cca02442f",
+                                      "id": "ec1fa127-e647-40e2-80c6-f4a2c2c9a3d6",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "02177e83-415b-4d68-979a-ac424b547103",
+                                  "id": "a3618c52-2d45-4a15-a1fe-f9c9e54f59c8",
                                   "ord": "a0"
                                 },
                                 {
@@ -465,11 +472,11 @@
                                         "type": "link",
                                         "label": "Pricing"
                                       },
-                                      "id": "669b01fd-a3ef-4a60-85a9-8c69c4d1dd08",
+                                      "id": "020f85aa-a840-4cc5-8bbd-d1faf8e18283",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "2090105d-3410-4b87-b08e-7aaeebd0a0d7",
+                                  "id": "298a11c2-85e9-4b05-ba11-ce535042ea92",
                                   "ord": "a1"
                                 },
                                 {
@@ -489,11 +496,11 @@
                                         "type": "link",
                                         "label": "Changelog"
                                       },
-                                      "id": "3b10df3e-9157-4290-a3e1-e697aa8e40da",
+                                      "id": "25c6bd3c-120c-44c5-83b5-008d24592c57",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "e1ce3cb2-d465-452d-9a31-8258d014c5ab",
+                                  "id": "d89a0feb-cb1b-4ef1-9a82-1c9b569f2724",
                                   "ord": "a2"
                                 },
                                 {
@@ -513,12 +520,31 @@
                                         "type": "link",
                                         "label": "Roadmap"
                                       },
-                                      "id": "cef7254f-04d7-4680-ab30-dedcc7a746aa",
+                                      "id": "a1909206-de5f-4670-8801-d090704aa18c",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "9e5e0ef1-a6bc-459d-aed2-47a7ba2fc505",
+                                  "id": "6a3f9e2e-fcb2-4d25-942c-e64eb7670eb3",
                                   "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/collections"
+                                      },
+                                      "children": ["Collections"],
+                                      "id": "7a51a840-1d3f-4071-8dab-26a56d776a5c",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "93b5679b-0390-45f5-b6ab-d5332aff83e7",
+                                  "ord": "a4"
                                 },
                                 {
                                   "kind": "element",
@@ -532,19 +558,19 @@
                                         "href": "/search"
                                       },
                                       "children": ["Search"],
-                                      "id": "ab393603-ed0c-4ee4-b2cb-74c27c5d07a5",
+                                      "id": "d19f7ba1-98de-4bfd-aac9-8d2b370bac22",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "9b01cc34-a32e-4d3f-a25f-b1421df3b070",
-                                  "ord": "a4"
+                                  "id": "174664bb-1f7e-4e9d-b590-5b2c07287ae4",
+                                  "ord": "a5"
                                 }
                               ],
-                              "id": "d79c00e8-8a95-4d10-8721-984fb61d6fd2",
+                              "id": "3dfa8920-38ef-421d-80f9-d84d813df23d",
                               "ord": "a1"
                             }
                           ],
-                          "id": "82cb832a-4ac1-482d-beee-3d38f6f27e4f",
+                          "id": "411b6ffa-01ec-4e97-b772-f90faadbaa47",
                           "ord": "a0"
                         },
                         {
@@ -565,7 +591,7 @@
                               "attrs": {
                                 "href": "/account"
                               },
-                              "id": "332a1da2-03b0-4197-bcd8-ec3da8f317e9",
+                              "id": "3c92ad6c-f08e-4c20-b9b1-c90dd2f72b22",
                               "ord": "a0"
                             },
                             {
@@ -590,11 +616,11 @@
                                         "type": "link",
                                         "label": "About"
                                       },
-                                      "id": "3dc14c79-8b8e-41e6-af31-060a75e9907b",
+                                      "id": "71555f26-b70c-4c98-b555-cf1443d00df8",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "c3111be5-8b2b-4131-8ef2-4d3300681ddd",
+                                  "id": "8bb2e954-93d4-4d15-a1a6-800f8abdf18e",
                                   "ord": "a0"
                                 },
                                 {
@@ -614,11 +640,11 @@
                                         "type": "link",
                                         "label": "Careers"
                                       },
-                                      "id": "35700b25-244f-4ed4-b96b-6d0566850569",
+                                      "id": "0ab9b27a-1994-4765-8dcc-3ab524b5ded6",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "3e6ee283-9b9a-432b-80a9-0114bd8f65d7",
+                                  "id": "45270b1a-de41-49ba-845a-a0f986171321",
                                   "ord": "a1"
                                 },
                                 {
@@ -638,11 +664,11 @@
                                         "type": "link",
                                         "label": "Press"
                                       },
-                                      "id": "c9b6a982-8dea-4cab-80ed-ac357451dd79",
+                                      "id": "6fddf0f6-be82-431c-af01-1431aea0d616",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "f7fdd55b-e6a3-49ba-b9c8-2d787395233f",
+                                  "id": "0b66f144-8440-4c8c-be00-7996ba4b4a84",
                                   "ord": "a2"
                                 },
                                 {
@@ -662,19 +688,19 @@
                                         "type": "link",
                                         "label": "Contact"
                                       },
-                                      "id": "0356c535-000b-49e1-ab3e-84b90a3962c0",
+                                      "id": "ca428abd-3887-4521-a51e-1cc4f12c7696",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "b9466227-638c-4d0d-96fa-120ed111b38e",
+                                  "id": "1a2bb20c-6948-4186-b841-4087c3803661",
                                   "ord": "a3"
                                 }
                               ],
-                              "id": "fcfcc8cf-6dcb-4f2a-b3d0-95efc3e76536",
+                              "id": "87f4dfaf-d2b0-4a90-87ea-b56de92f4be3",
                               "ord": "a1"
                             }
                           ],
-                          "id": "cfd41420-d50c-4292-b307-a728ed5c9b64",
+                          "id": "9bbdc5b5-557c-4d7b-9bec-5331c3e4a104",
                           "ord": "a1"
                         },
                         {
@@ -684,15 +710,15 @@
                           "props": {
                             "heading": "Legal"
                           },
-                          "id": "64f4a057-8afe-4245-a4e7-b3096ab12ee2",
+                          "id": "52f2c621-09fe-45dd-b0fc-ecf2aeb9c5aa",
                           "ord": "a2"
                         }
                       ],
-                      "id": "7b53ce3b-6ec9-421b-9b93-01607985e9d2",
+                      "id": "4efc4269-34ba-403b-8bb8-5d68d3714b91",
                       "ord": "a1"
                     }
                   ],
-                  "id": "b1e21d6e-7764-4fe8-89f5-3c714caecd10",
+                  "id": "84215950-986e-4eef-93e5-9d437aae579e",
                   "ord": "a0"
                 },
                 {
@@ -715,35 +741,51 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "5db3c502-f200-4f6d-bbbf-a7e0b4742084",
+                          "id": "7da968a1-c8a6-4574-b494-03a5588c0814",
                           "ord": "a0"
                         }
                       ],
-                      "id": "e8decf83-f07e-4bc4-aa66-dbccca9cf175",
+                      "id": "d179a4ae-c587-48dc-8277-f92ac6540aa7",
                       "ord": "a0"
                     },
                     {
                       "kind": "element",
                       "tag": "ul",
                       "class": "flex items-center gap-5",
-                      "children": [],
-                      "id": "6b2cfc00-899f-47e3-bd60-4d91cb3a243a",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "li",
+                          "children": [
+                            {
+                              "kind": "host",
+                              "component": "site.social-links",
+                              "class": "mt-2",
+                              "id": "df2e6f45-0b21-4702-b0d7-087d3b01c6ea",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "dfabaaf3-90fc-4c6e-a34b-5c2ae264cdb1",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "608a6f81-1fb5-410a-b932-c24eafa7038c",
                       "ord": "a1"
                     }
                   ],
-                  "id": "064266e5-9f5a-4e9c-a7ae-466068f0fc7b",
+                  "id": "b6284c60-e4f3-471b-81fe-207a420d8b70",
                   "ord": "a1"
                 }
               ],
-              "id": "6fe18418-f2d3-4ed9-ae0b-573100239326",
+              "id": "e0c854b1-87ac-406b-b778-4da65deb4d4a",
               "ord": "a0"
             }
           ],
-          "id": "57e06928-bc5b-43b6-a39b-3b1e19e5558b",
+          "id": "83bf063c-d2e9-4a09-91aa-58710c173738",
           "ord": "a2"
         }
       ],
-      "id": "bbecc36c-73de-4f29-8e4b-e95374c61b40"
+      "id": "5cc8ecc9-7420-4e42-8644-1ee90d5a6762"
     }
   },
   "pages": [
@@ -757,7 +799,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "ec1f84cb-a383-480e-82ae-ac132d244b86",
+        "id": "b2dc1e00-a1e9-4630-93be-cac7caeb16c6",
         "children": [
           {
             "kind": "element",
@@ -778,7 +820,7 @@
                       "alt": "A studio monitor lit in the dark",
                       "loading": "lazy"
                     },
-                    "id": "922e7dcd-6275-41df-83ee-b8c55075d9b7",
+                    "id": "3f56d4fb-0554-463f-bf14-4d4cff7965f0",
                     "ord": "a0"
                   },
                   {
@@ -791,7 +833,7 @@
                         "tag": "span",
                         "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                         "children": ["Now shipping"],
-                        "id": "e4fff8e1-4172-4087-9308-9074775d234b",
+                        "id": "8188056a-5c1d-45b6-8b78-2cb7458b58c8",
                         "ord": "a0"
                       },
                       {
@@ -799,7 +841,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Launch Notes 3.0 is live today"],
-                        "id": "5672a193-a69f-4b92-9271-2a2cf0ed5ffb",
+                        "id": "a7ebe417-c139-4978-b4d3-9f9c26c9cd2f",
                         "ord": "a1"
                       },
                       {
@@ -809,7 +851,7 @@
                         "children": [
                           "The biggest release we have ever shipped: a rebuilt workspace, real-time sync across every device, and the first look at what the studio has been quietly building all year."
                         ],
-                        "id": "a33f7750-f2ea-42ba-947d-85071b041ab8",
+                        "id": "95546823-ad42-4429-9204-7f1ab921d735",
                         "ord": "a2"
                       },
                       {
@@ -817,7 +859,7 @@
                         "tag": "p",
                         "class": "text-sm text-base-content",
                         "children": ["By Mara Reyes, Founder · 6 August"],
-                        "id": "d8758390-2f5a-4023-b57c-eb7ffad43762",
+                        "id": "b70469a9-3c70-4055-8b86-620051d231a3",
                         "ord": "a3"
                       },
                       {
@@ -828,19 +870,19 @@
                           "href": "/journal"
                         },
                         "children": ["Read the release"],
-                        "id": "1c0f3905-7606-41d0-960e-34a168aee5cc",
+                        "id": "44446ca4-cf9e-4080-ab98-0c3c34edb9a8",
                         "ord": "a4"
                       }
                     ],
-                    "id": "92f6e200-c969-4460-9aee-f69bf4ac9e38",
+                    "id": "bd3adb37-ed89-44b7-bb5c-c26e74b4be35",
                     "ord": "a1"
                   }
                 ],
-                "id": "9601e124-2b67-4880-89eb-f3ff11c7a590",
+                "id": "8f5f1b1e-8e73-48cf-b46d-c0af748f9b59",
                 "ord": "a0"
               }
             ],
-            "id": "19b9f143-6e75-490f-a494-79497f6af751",
+            "id": "29f7b1a4-2d01-463d-9eac-838466310cae",
             "ord": "a0"
           },
           {
@@ -858,7 +900,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["The latest drops"],
-                    "id": "2bc1d3cd-b8c9-4fe4-82b9-03dd7905ad0e",
+                    "id": "dd67b2da-48c3-454f-9fde-ed45c35e8f9c",
                     "ord": "a0"
                   },
                   {
@@ -866,15 +908,15 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg text-base-content",
                     "children": ["Everything new from the studio, newest first."],
-                    "id": "067989f1-9da3-45b3-9163-9fb11679fc27",
+                    "id": "517d4a91-e9b2-471e-af5b-eae4799e561c",
                     "ord": "a1"
                   }
                 ],
-                "id": "07583651-95db-4826-ac1a-f9e3249a8f83",
+                "id": "50cb51e0-de0c-40d5-bb67-032d88848b3f",
                 "ord": "a0"
               }
             ],
-            "id": "15ade459-f4e7-458f-a007-208058def9dc",
+            "id": "c0840003-c332-400a-b6ef-2eef1ba66e2b",
             "ord": "a1"
           },
           {
@@ -912,7 +954,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "e31145c4-bc53-4476-a96e-052bf48e4acd",
+                            "id": "61cc54ee-1812-4493-ba42-b94c164930ec",
                             "ord": "a0"
                           },
                           {
@@ -924,7 +966,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "15ef0af0-975e-49c0-9a7d-64732906115c",
+                            "id": "65ef0da8-bf77-48b5-a53e-590952a229df",
                             "ord": "a1"
                           },
                           {
@@ -936,7 +978,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "d28ec4ff-d728-4123-9e42-23b7e3d27c41",
+                            "id": "b36b1eb4-245d-449d-b14e-267332b61f14",
                             "ord": "a2"
                           },
                           {
@@ -948,7 +990,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "d1ac8100-003a-4a46-8aa3-f1eac966503c",
+                            "id": "7ed13cc3-7454-4af2-acf0-135f0462d710",
                             "ord": "a3"
                           }
                         ],
@@ -957,7 +999,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "884a5f26-5b9f-41de-98de-d12173731f84",
+                        "id": "6ecea3f6-44c8-4b21-88f8-307669259e06",
                         "ord": "a0"
                       }
                     ],
@@ -966,7 +1008,7 @@
                       "ref": "cms.blog_post",
                       "omitWhenEmpty": true
                     },
-                    "id": "954d2ac3-0f99-44c3-a523-a56157db7b31",
+                    "id": "2329a872-85c9-431d-9b35-4d0246cb8e04",
                     "ord": "a0"
                   },
                   {
@@ -979,15 +1021,15 @@
                       "ref": "cms.blog_post",
                       "negate": true
                     },
-                    "id": "33f0bf41-b88b-4c35-a9bc-bfe308366a71",
+                    "id": "72bdc70f-88ff-4d2c-9a82-3ebbf9c88792",
                     "ord": "a1"
                   }
                 ],
-                "id": "02fa575b-dd79-4136-bd74-771b5b77fa52",
+                "id": "1b9ac653-1eea-4b50-ae78-d9a09d0551b6",
                 "ord": "a0"
               }
             ],
-            "id": "4b4336b4-2d58-4f21-bc44-c0d6a64d980f",
+            "id": "776c3b2c-a3f8-47ea-b4fc-9b95fb491246",
             "ord": "a2"
           },
           {
@@ -1010,7 +1052,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Release notes"],
-                        "id": "6ed8dcac-eb8e-44f8-b8a9-adaaa2ec2e26",
+                        "id": "b4c66b76-35d3-4f8c-a05c-ebecf7a8164f",
                         "ord": "a0"
                       },
                       {
@@ -1020,11 +1062,11 @@
                         "children": [
                           "Everything we have shipped lately, smallest fix to biggest launch. Follow along and you always know what changed."
                         ],
-                        "id": "02195cf2-ac73-4d47-9a54-849bb680b732",
+                        "id": "03344090-6198-426b-bad1-89d378a52123",
                         "ord": "a1"
                       }
                     ],
-                    "id": "26727a1a-a8a5-42a4-9b36-1eec9b517ec3",
+                    "id": "eadecd5d-7485-47fb-a750-a40ae5bb5873",
                     "ord": "a0"
                   },
                   {
@@ -1047,7 +1089,7 @@
                                 "tag": "span",
                                 "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                                 "children": ["Launch Notes 3.0"],
-                                "id": "0c0110b1-f9a7-4eb3-bfef-2cc042d9b1ba",
+                                "id": "a311fcfd-ee6d-4db9-838e-8475857b109d",
                                 "ord": "a0"
                               },
                               {
@@ -1055,11 +1097,11 @@
                                 "tag": "span",
                                 "class": "text-sm text-base-content",
                                 "children": ["6 August"],
-                                "id": "62acb38b-46be-4c6e-b2d2-b1b2ec7867ce",
+                                "id": "d548b5f2-4cda-40ca-a083-99d307dbd09e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f8c98b7b-0172-432a-ab23-1623d11941ec",
+                            "id": "007c41fc-e509-46d0-a061-b680a0511809",
                             "ord": "a0"
                           },
                           {
@@ -1072,7 +1114,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold leading-snug text-base-content",
                                 "children": ["A rebuilt workspace and real-time sync"],
-                                "id": "1efe12a7-64dc-4523-91b5-4bcd462a8ba3",
+                                "id": "039e0e40-a079-4b33-b635-95e8a5c79a05",
                                 "ord": "a0"
                               },
                               {
@@ -1082,15 +1124,15 @@
                                 "children": [
                                   "The core app is faster, quieter, and now syncs your work across every device the instant you make a change. The old sync engine is retired."
                                 ],
-                                "id": "100e7d13-4c10-4a36-9539-69ed8a0b66e5",
+                                "id": "a7abc784-2669-4fb8-870b-9a1aa8ff4295",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "551af938-94e5-41fa-abaf-e304b16d5b8c",
+                            "id": "5f4dbabb-92e6-4813-a3c9-eb74e8b883a2",
                             "ord": "a1"
                           }
                         ],
-                        "id": "935fe74e-e5a6-434c-bd57-fad5a1ae43dc",
+                        "id": "2961f217-83f9-493b-8963-46c5ae349c7f",
                         "ord": "a0"
                       },
                       {
@@ -1108,7 +1150,7 @@
                                 "tag": "span",
                                 "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                                 "children": ["Nimbus 1.2"],
-                                "id": "050c78e2-4872-4cec-8a2e-e97853b8750e",
+                                "id": "a2443930-bae5-4dd3-9c3b-a8aa970ad0c4",
                                 "ord": "a0"
                               },
                               {
@@ -1116,11 +1158,11 @@
                                 "tag": "span",
                                 "class": "text-sm text-base-content",
                                 "children": ["22 July"],
-                                "id": "4b1e8df8-0bf9-46ad-a571-879c64035ea2",
+                                "id": "c074139e-4e7f-4b9c-9097-e1e065511514",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "12824a25-5477-43e0-98aa-c0a628c139a4",
+                            "id": "0b67ee33-0b3a-4aa3-8cb1-63d4aad50d3c",
                             "ord": "a0"
                           },
                           {
@@ -1133,7 +1175,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold leading-snug text-base-content",
                                 "children": ["Focus timer arrives on the desktop app"],
-                                "id": "cce69ab4-62d9-49c8-a677-5294222d54d5",
+                                "id": "fc44a80e-dd8f-4c7c-869a-c02ce9f2e4f2",
                                 "ord": "a0"
                               },
                               {
@@ -1143,15 +1185,15 @@
                                 "children": [
                                   "Nimbus, our focus timer, is now built into the desktop app instead of a separate download. Your sessions carry over automatically."
                                 ],
-                                "id": "2a015069-809f-4ae7-8cb8-c5a2079c4a8a",
+                                "id": "ca9f34f3-8431-4485-937c-ae9272225dcc",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "7ca376d0-d4d3-4e18-ac76-7fb66cef2918",
+                            "id": "96fd2321-4b5c-4664-8238-b226f03c92a6",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4de1a942-85e1-4806-b5f0-9836df92d311",
+                        "id": "83cb6950-176e-4f05-a4a8-fe2abf43b440",
                         "ord": "a1"
                       },
                       {
@@ -1169,7 +1211,7 @@
                                 "tag": "span",
                                 "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                                 "children": ["Deck firmware 2.4"],
-                                "id": "63f83f12-331b-4743-9e88-f54db0c7faae",
+                                "id": "fdd1e7ff-ee25-4c66-a932-62d8cf61e192",
                                 "ord": "a0"
                               },
                               {
@@ -1177,11 +1219,11 @@
                                 "tag": "span",
                                 "class": "text-sm text-base-content",
                                 "children": ["9 July"],
-                                "id": "bcad9ff3-544c-4b9f-81f6-469905944edc",
+                                "id": "db08d0b7-2bde-4887-993c-388f2108edf4",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "669667ca-5378-46f0-adf1-13cc0dede072",
+                            "id": "51210dd8-2739-4542-8d6e-2c690d9d2752",
                             "ord": "a0"
                           },
                           {
@@ -1194,7 +1236,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold leading-snug text-base-content",
                                 "children": ["Faster wake and a fix for the sleep-charge bug"],
-                                "id": "7ec4c289-e88e-4adf-ab59-fcbfb30a4a69",
+                                "id": "0bb3ed5a-cc4e-49d1-bba7-478338959d40",
                                 "ord": "a0"
                               },
                               {
@@ -1204,15 +1246,15 @@
                                 "children": [
                                   "The Deck now wakes in under a second, and the battery no longer drains while docked overnight. Update from Settings → Device."
                                 ],
-                                "id": "048d402c-8d15-4c92-97c4-772611e49804",
+                                "id": "b842a58b-a1ea-457e-bfc2-36c9e0d87413",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b36c099d-b205-43c7-aac6-07a5ae1861e1",
+                            "id": "32f7aec4-1f01-4ab0-86d1-307e052e1349",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5e729e20-f833-425e-be67-802cf1056d17",
+                        "id": "fc8b932e-2749-41d2-96c3-03785592ab86",
                         "ord": "a2"
                       },
                       {
@@ -1230,7 +1272,7 @@
                                 "tag": "span",
                                 "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                                 "children": ["Aurora 1.0"],
-                                "id": "b46025d2-b6e0-4406-971c-02dd53284270",
+                                "id": "548498f0-734c-4b7c-91b0-6702061db18a",
                                 "ord": "a0"
                               },
                               {
@@ -1238,11 +1280,11 @@
                                 "tag": "span",
                                 "class": "text-sm text-base-content",
                                 "children": ["18 June"],
-                                "id": "62298bbc-971f-48c5-84ce-f143e041cd18",
+                                "id": "27e4968c-1f57-479b-86b3-08afcb000599",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9f378ba1-c62d-4623-8cf6-eee2a4dd317b",
+                            "id": "882f2a20-a982-47a8-be2b-1dd9158cb906",
                             "ord": "a0"
                           },
                           {
@@ -1255,7 +1297,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold leading-snug text-base-content",
                                 "children": ["Our design tool leaves beta"],
-                                "id": "15d2c9f3-a124-42f4-87a5-3439c647ed85",
+                                "id": "e7a74777-e51e-4da5-9e2c-e4d0d7dfa885",
                                 "ord": "a0"
                               },
                               {
@@ -1265,27 +1307,27 @@
                                 "children": [
                                   "Aurora is out of beta and ready for real work: stable file format, shared libraries, and a version history you can trust."
                                 ],
-                                "id": "d8d05b6d-37c5-411a-a575-d4bb2984b508",
+                                "id": "5e5bfb68-70ee-4785-9fc8-a3b9a9dfcc8b",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "c60cd2c0-3999-4fb9-b10a-20d3e145cd0e",
+                            "id": "b6a5fe7a-c6b7-4312-ae2b-b0d08740f238",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b802a349-1ca5-4924-8c62-0bf095f8cdf4",
+                        "id": "0a5bad31-7af8-414a-94d6-bcc2c593754d",
                         "ord": "a3"
                       }
                     ],
-                    "id": "e64ebbf1-bc7f-4df0-ba85-e6cb6056f0eb",
+                    "id": "11f58de6-3ed1-4eed-b626-517cd0b2be1d",
                     "ord": "a1"
                   }
                 ],
-                "id": "0eecfd96-b3c8-40fd-8f28-2628bb4891f2",
+                "id": "0a35475e-d150-4c22-9794-85299c73e7c5",
                 "ord": "a0"
               }
             ],
-            "id": "11f5ab19-1381-4043-b635-12206da690df",
+            "id": "a9c89de9-3cb2-45b6-a1fd-c6bef4ed1208",
             "ord": "a3"
           },
           {
@@ -1308,7 +1350,7 @@
                         "tag": "span",
                         "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                         "children": ["Spotlight"],
-                        "id": "7fb1a576-b971-431a-bd9f-905635bb6a29",
+                        "id": "a7a8ea3d-665c-4c88-b332-59a04cba5faa",
                         "ord": "a0"
                       },
                       {
@@ -1316,7 +1358,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold leading-tight tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Meet the Field Kit: the studio, in a bag"],
-                        "id": "195473fc-16bd-49b1-bca9-eb7dcef42204",
+                        "id": "52613f78-56a5-4da5-8e29-9643bb0ea07f",
                         "ord": "a1"
                       },
                       {
@@ -1326,7 +1368,7 @@
                         "children": [
                           "Everything a maker on the move needs: the Deck, the Dock, and a set of tools tuned to work together out of the box. Built by the people who use it every day."
                         ],
-                        "id": "dd57898d-a16a-49d0-b798-4c7282a4f639",
+                        "id": "7a467401-84d8-4ea5-974b-d2ba663ebfa2",
                         "ord": "a2"
                       },
                       {
@@ -1337,11 +1379,11 @@
                           "href": "/journal"
                         },
                         "children": ["See the reveal"],
-                        "id": "44df5d5c-7152-4ebb-9ac3-83e373e41aaa",
+                        "id": "2b9a0741-f763-4339-b2d5-42e15527e917",
                         "ord": "a3"
                       }
                     ],
-                    "id": "a97f74cd-5841-47ec-a7d7-ce7686dfc49c",
+                    "id": "ccf60ac9-16aa-4c61-af4e-ba6c40c8312a",
                     "ord": "a0"
                   },
                   {
@@ -1353,15 +1395,15 @@
                       "alt": "A darkened room before a launch event",
                       "loading": "lazy"
                     },
-                    "id": "8d5037c0-4104-40cf-a528-c35562eda966",
+                    "id": "f3789e72-491d-4d86-857c-0f994a2acc2a",
                     "ord": "a1"
                   }
                 ],
-                "id": "0c94410f-67a4-4b9f-b503-6f7070465cff",
+                "id": "0d846e30-0b1c-481b-a91f-cc3dd75a2b0d",
                 "ord": "a0"
               }
             ],
-            "id": "eafb537d-0fbd-4d55-ab9c-ef0cf1349876",
+            "id": "1b38029b-3f78-4a8b-a287-d2f56ef1655a",
             "ord": "a4"
           },
           {
@@ -1384,7 +1426,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-semibold text-base-content",
                         "children": ["The Studio Store"],
-                        "id": "9955365f-2fae-4050-a05a-c22874234ff3",
+                        "id": "7dc7d57c-cfad-4e80-9eec-e0e6a5f69fdf",
                         "ord": "a0"
                       },
                       {
@@ -1408,12 +1450,12 @@
                                 "props": {
                                   "name": "arrow-left"
                                 },
-                                "id": "1661a4f4-e0c0-4b5e-a254-3c5ef267b7dd",
+                                "id": "ce1587b4-1027-405d-ae7d-3905456e0b92",
                                 "ord": "a0"
                               }
                             ],
                             "part": "prev",
-                            "id": "ebaad778-0372-4211-af4e-85742cc401d2",
+                            "id": "f9859e13-75b0-44a5-bd9a-e53482c7559e",
                             "ord": "a0"
                           },
                           {
@@ -1432,16 +1474,16 @@
                                 "props": {
                                   "name": "arrow-right"
                                 },
-                                "id": "03a58f99-ef7b-4ae1-a606-395cc6a326c6",
+                                "id": "9e8a6626-bbe7-4b41-a2d5-6b9b7d694327",
                                 "ord": "a0"
                               }
                             ],
                             "part": "next",
-                            "id": "e92a69f7-9271-41f4-a1a7-35b39eecaad6",
+                            "id": "61f482dd-ceab-494b-8e28-6aa2155b3388",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0bcc78c8-a8b1-4696-b4c2-f4d14d56984a",
+                        "id": "9f059793-877c-417f-9153-4093f1a02a72",
                         "ord": "a1"
                       }
                     ],
@@ -1449,7 +1491,7 @@
                       "kind": "visible",
                       "ref": "commerce.featured"
                     },
-                    "id": "79a752aa-304f-474f-a3d5-ba69a7eb8ba2",
+                    "id": "ffd71307-a68e-4761-bc2a-fe852ead0e42",
                     "ord": "a0"
                   },
                   {
@@ -1484,7 +1526,7 @@
                                       "kind": "value",
                                       "ref": "image"
                                     },
-                                    "id": "796c29c7-d80e-461e-aeea-93e41026159a",
+                                    "id": "28f4075c-5351-4b68-9f46-91b21c206dd1",
                                     "ord": "a0"
                                   },
                                   {
@@ -1501,7 +1543,7 @@
                                           "kind": "value",
                                           "ref": "title"
                                         },
-                                        "id": "e3becac4-4050-4bc6-8b69-bd3562e8e394",
+                                        "id": "2618a1e8-c921-43f8-a840-128f79b3bfd5",
                                         "ord": "a0"
                                       },
                                       {
@@ -1513,7 +1555,7 @@
                                           "kind": "value",
                                           "ref": "price"
                                         },
-                                        "id": "cceb1063-9de7-45ae-95d3-5174270f0f16",
+                                        "id": "333e9aa4-510c-4214-9073-bf14aa86bdec",
                                         "ord": "a1"
                                       },
                                       {
@@ -1525,11 +1567,11 @@
                                           "kind": "visible",
                                           "ref": "soldOut"
                                         },
-                                        "id": "86aaf1d6-ecf7-4798-b593-40dec1e5ab2e",
+                                        "id": "184762f0-e838-4f17-aa8c-110dec3d7c90",
                                         "ord": "a2"
                                       }
                                     ],
-                                    "id": "c50f8630-5b90-4a91-b063-74504eeb9b27",
+                                    "id": "01e3cf8a-3cd8-47e7-9b69-28432d19a497",
                                     "ord": "a1"
                                   }
                                 ],
@@ -1538,7 +1580,7 @@
                                   "ref": "url",
                                   "attr": "href"
                                 },
-                                "id": "ee512c3c-9128-4f0a-9c81-9c4774a2ce3d",
+                                "id": "2f7678f3-c1ff-4701-93b1-6dcfe919f3ee",
                                 "ord": "a0"
                               }
                             ],
@@ -1547,27 +1589,27 @@
                               "ref": "commerce.featured",
                               "omitWhenEmpty": true
                             },
-                            "id": "c9d17c75-213f-438e-9257-afc8bef63b00",
+                            "id": "5999291e-cac0-41d4-8b65-ca3b9c664a2b",
                             "ord": "a0"
                           }
                         ],
                         "part": "track",
-                        "id": "7e379f62-f1a3-4069-93b3-9dbc3ae72f8e",
+                        "id": "ff94c3bf-6c02-4054-8e29-313b6e4e2360",
                         "ord": "a0"
                       }
                     ],
-                    "id": "387fbd16-0802-48ea-a375-3e2297b0350d",
+                    "id": "8ecd6738-d05e-431f-88df-d2f9e6e8e3a8",
                     "ord": "a1"
                   }
                 ],
-                "id": "31b55bba-da94-4b34-b8da-061cbb366303",
+                "id": "0f4e9275-478a-4a06-89c1-2867e5bf7225",
                 "ord": "a0"
               }
             ],
             "behavior": {
               "type": "scroll-strip"
             },
-            "id": "97b7a4b1-fcbe-4e5e-ada2-6d488f3b600f",
+            "id": "849482e1-f6c5-4e44-97c8-3b84bf75526e",
             "ord": "a5"
           },
           {
@@ -1590,7 +1632,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Stay connected"],
-                        "id": "31a5d78b-8ad9-4a29-aa51-735dbe5d53df",
+                        "id": "ed8882f1-3a70-4f85-9929-6bafc7af7941",
                         "ord": "a0"
                       },
                       {
@@ -1600,11 +1642,11 @@
                         "children": [
                           "The studio ships in the open. Follow along, ask us anything, and help decide what we build next."
                         ],
-                        "id": "c1a9d4d6-4ac2-4b60-a535-7347ec9ddd43",
+                        "id": "182d4812-d645-4b81-8356-c96740a62028",
                         "ord": "a1"
                       }
                     ],
-                    "id": "a728e21f-855d-43f5-8a9b-3353b484fa1e",
+                    "id": "d8ee4385-9797-484a-ba21-fd40a535ff14",
                     "ord": "a0"
                   },
                   {
@@ -1620,7 +1662,7 @@
                           "href": "/contact"
                         },
                         "children": ["Join the community"],
-                        "id": "147ff85b-1be9-44ad-83db-987715aae8ee",
+                        "id": "6ce34c27-8cfe-4a21-9e09-c82ede39563e",
                         "ord": "a0"
                       },
                       {
@@ -1631,7 +1673,7 @@
                           "href": "/contact"
                         },
                         "children": ["Follow the studio"],
-                        "id": "781e710b-0f9c-474a-8036-fadbda438959",
+                        "id": "d459d2e3-3b04-494f-b64b-16420c9cabba",
                         "ord": "a1"
                       },
                       {
@@ -1642,19 +1684,19 @@
                           "href": "/contact"
                         },
                         "children": ["Developer updates"],
-                        "id": "a36a2a98-f006-44fa-9fa2-98674266f0f8",
+                        "id": "38ca8da5-8160-4b6d-a420-3f716f22e4b0",
                         "ord": "a2"
                       }
                     ],
-                    "id": "31937855-aaa0-40a3-a9c6-cdfa2e06cf4d",
+                    "id": "800e710c-ecd1-4df0-8c72-91675972b013",
                     "ord": "a1"
                   }
                 ],
-                "id": "5a4fe4a2-8559-45ac-86fd-99845bbc96d3",
+                "id": "a1cd97af-61d4-4a09-8fdf-01b00b7c3089",
                 "ord": "a0"
               }
             ],
-            "id": "375a7097-777b-4009-98ab-caaba32e4ccb",
+            "id": "fb5202e9-5678-4f79-90c5-7587f85ee31e",
             "ord": "a6"
           }
         ]
@@ -1671,7 +1713,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3083964a-bdb8-4bba-a376-331df77133da",
+        "id": "8774c8a4-17c0-44ba-9634-4bb5e415602e",
         "children": [
           {
             "kind": "element",
@@ -1688,7 +1730,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["Shop"],
-                    "id": "fbcce46a-4f5c-4cb0-b210-fc4d6712dded",
+                    "id": "ea08d837-ff88-4b7c-bb1f-002d458353d0",
                     "ord": "a0"
                   },
                   {
@@ -1696,15 +1738,15 @@
                     "tag": "p",
                     "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": ["Everything we currently have available."],
-                    "id": "516e1bdf-3cfc-4038-87f2-cba4ff7e18f8",
+                    "id": "dadd6d05-a214-4a53-9512-1cb249ad4348",
                     "ord": "a1"
                   }
                 ],
-                "id": "4b170251-86c2-4ec1-aa4f-fd63230faedc",
+                "id": "66be57de-1547-4398-80e1-87f27d8157f2",
                 "ord": "a0"
               }
             ],
-            "id": "df40884e-e861-4320-808b-cfb9bd2d2fea",
+            "id": "9a212f62-ee5f-4634-a1d8-f7a5abe6ba1e",
             "ord": "a0"
           },
           {
@@ -1712,7 +1754,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "e8c4c363-0f3c-45f0-953e-12ab4201adbe",
+            "id": "3897bfdc-8855-4f9f-a4c8-881457739521",
             "ord": "a1"
           }
         ]
@@ -1729,7 +1771,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "beb708c0-8828-4f89-94c3-8eefeedd856e",
+        "id": "5340496c-5bdb-4299-aefc-318d2cbc8131",
         "children": [
           {
             "kind": "element",
@@ -1741,7 +1783,7 @@
                 "tag": "h1",
                 "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
                 "children": ["Collections"],
-                "id": "adb2424c-6980-4acf-b927-2806aec9479c",
+                "id": "1104605b-10b0-47ac-89f3-9f72c252af9f",
                 "ord": "a0"
               },
               {
@@ -1749,11 +1791,11 @@
                 "component": "commerce.collections",
                 "class": "mx-auto w-full max-w-6xl px-6 py-6",
                 "locked": "host",
-                "id": "3df4ac76-988c-4723-92c4-0668a341259f",
+                "id": "e2969a5d-2692-499a-b798-c32251a2cf87",
                 "ord": "a1"
               }
             ],
-            "id": "7643272f-cd49-4f37-8616-5095c3c0236a",
+            "id": "3004164d-c03a-4b3e-b267-5efc6ec7e581",
             "ord": "a0"
           }
         ]
@@ -1770,7 +1812,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "200c324d-778c-419b-92fc-df2ca9259656",
+        "id": "11411a77-1715-4744-90f1-6c9844c0aaf2",
         "children": [
           {
             "kind": "element",
@@ -1782,7 +1824,7 @@
                 "tag": "h1",
                 "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
                 "children": ["Your cart"],
-                "id": "6ca5cfc0-5058-4eb1-8768-566f17b36ed2",
+                "id": "67abf779-f43e-4aa4-8c0f-36c86a048fe6",
                 "ord": "a0"
               },
               {
@@ -1790,11 +1832,11 @@
                 "component": "commerce.cart",
                 "class": "mx-auto w-full max-w-4xl px-6 py-10",
                 "locked": "host",
-                "id": "b27034f0-b6d1-4e2a-a946-4b1784a75602",
+                "id": "c1813699-a567-442f-bce2-581a3e373be1",
                 "ord": "a1"
               }
             ],
-            "id": "3450b7c8-7e67-41c9-afd8-bc5e45d119d8",
+            "id": "5353dfd1-3202-4d9e-b337-a63c64d3f424",
             "ord": "a0"
           }
         ]
@@ -1811,7 +1853,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "d7685f9f-3cda-46fb-8c17-f4f08e941f0e",
+        "id": "e5ae51d2-1ac8-4a87-a88b-43ca39803b1f",
         "children": [
           {
             "kind": "element",
@@ -1823,7 +1865,7 @@
                 "tag": "h1",
                 "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
                 "children": ["Search"],
-                "id": "be0a2b1c-50c8-4fc4-9c37-91325e991440",
+                "id": "1ac3272a-9a77-416c-87b8-e94241c7b21b",
                 "ord": "a0"
               },
               {
@@ -1831,11 +1873,11 @@
                 "component": "commerce.search",
                 "class": "mx-auto w-full max-w-6xl px-6 py-6",
                 "locked": "host",
-                "id": "ff36265e-c5fb-4643-98df-029ae9c5baa8",
+                "id": "47ba9e79-c355-470e-8202-e15666a4dc65",
                 "ord": "a1"
               }
             ],
-            "id": "9d386ee8-0269-444a-bb21-9b6076c695b9",
+            "id": "adfc72cd-ea20-4501-a925-8256a8fed5ea",
             "ord": "a0"
           }
         ]
@@ -1852,7 +1894,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "971730de-aa7e-47d4-9489-bdf38cb6db6c",
+        "id": "505eee52-f554-45d4-adfb-b6a5d7b769b2",
         "children": [
           {
             "kind": "element",
@@ -1869,7 +1911,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The Launch Notes journal"],
-                    "id": "25cd6aa7-5a1d-43a6-a18a-6836bb832d15",
+                    "id": "5e5c381a-37c4-480f-9931-ba06bc7a6c02",
                     "ord": "a0"
                   },
                   {
@@ -1879,15 +1921,15 @@
                     "children": [
                       "Every drop, straight from the makers: announcements, dev diaries, and the story behind what we ship."
                     ],
-                    "id": "2ea942e6-113b-4a62-bfd2-a8abccd53840",
+                    "id": "627de69d-1c7d-4f66-8c1f-4cc457a36ff9",
                     "ord": "a1"
                   }
                 ],
-                "id": "3fd0e370-3e10-41de-81ea-46da225ef030",
+                "id": "44161a7e-f040-4f24-b047-dedb8c5976cb",
                 "ord": "a0"
               }
             ],
-            "id": "a246e135-e0bb-4845-b429-5ffecc6719d5",
+            "id": "7c0662ff-94f7-4273-833f-c14ed3354d5a",
             "ord": "a0"
           },
           {
@@ -1925,7 +1967,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "b9406814-b616-4c95-9577-6f570074f372",
+                            "id": "1db0c10d-7814-4308-9b37-faab9a8f9869",
                             "ord": "a0"
                           },
                           {
@@ -1937,7 +1979,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "d856595b-c732-4444-b95a-d0bb929311e1",
+                            "id": "35c6cc28-c364-4a41-a2ce-2393763692e5",
                             "ord": "a1"
                           },
                           {
@@ -1949,7 +1991,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "f3c7329f-0d1d-4ac8-92cd-1fab7d42bf2c",
+                            "id": "aaa6f647-b096-4ff3-acd9-253a1233a7b2",
                             "ord": "a2"
                           },
                           {
@@ -1961,7 +2003,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "25b272e0-5f39-4901-b7e8-1c4ae7d11f09",
+                            "id": "cebfbd3e-611c-4790-87c7-5106ad788290",
                             "ord": "a3"
                           }
                         ],
@@ -1970,7 +2012,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "68345245-5b65-4cf7-abe5-fe78dcaf0acc",
+                        "id": "6dcb8fca-81d2-4347-8673-abc68b6f3243",
                         "ord": "a0"
                       }
                     ],
@@ -1979,7 +2021,7 @@
                       "ref": "cms.blog_post",
                       "omitWhenEmpty": true
                     },
-                    "id": "2b39f384-51f0-4445-a26b-629c083221e5",
+                    "id": "054851c8-2351-483a-af40-459c2b8e3473",
                     "ord": "a0"
                   },
                   {
@@ -1992,15 +2034,15 @@
                       "ref": "cms.blog_post",
                       "negate": true
                     },
-                    "id": "9cf3d7d1-c1d2-4d80-b750-bd0d0f00041b",
+                    "id": "6bf4772e-92e2-44dc-8a1b-94274791e098",
                     "ord": "a1"
                   }
                 ],
-                "id": "a0627f21-4cdf-4616-9992-8392cf215a67",
+                "id": "71ced447-57b5-495c-b68a-95184fc6e082",
                 "ord": "a0"
               }
             ],
-            "id": "425f1bb2-1d79-4162-9979-929c6b82c0c9",
+            "id": "76ef5fc4-46a1-4b26-a513-3dbf19a50b43",
             "ord": "a1"
           }
         ]
@@ -2017,7 +2059,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "250002e6-2ab1-430a-ba1e-051cfad283dd",
+        "id": "c7439e07-9fd4-4837-aa0e-8baea6e25412",
         "children": [
           {
             "kind": "element",
@@ -2034,7 +2076,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["About Launch Notes"],
-                    "id": "26ccaf77-785c-40bc-9fb4-d7b0fdb2e280",
+                    "id": "77a709b0-277f-406c-ab6c-848f3a38215f",
                     "ord": "a0"
                   },
                   {
@@ -2044,7 +2086,7 @@
                     "children": [
                       "Launch Notes is a small product studio that builds tools for people who make things: software, hardware, and the guides that tie them together. This is our newsroom: the front door to everything we ship and everyone who ships it."
                     ],
-                    "id": "69c623a4-f255-48a9-965a-6a75054ed4cd",
+                    "id": "8a0417f1-28f3-41a5-ab78-d18b4f102d4f",
                     "ord": "a1"
                   },
                   {
@@ -2054,15 +2096,15 @@
                     "children": [
                       "We build in the open. Every release gets a post, every post has a name on it, and the community that uses our work helps decide what comes next. No press releases, no launch theatre. Just the makers telling you what changed and why."
                     ],
-                    "id": "47960b10-065c-4d88-89aa-a01b06f0ef09",
+                    "id": "95716530-b0fb-477e-987a-fca6f4e6e71b",
                     "ord": "a2"
                   }
                 ],
-                "id": "181acc3b-05b1-4b06-895d-b63dec2374e7",
+                "id": "aa7c0681-f6fe-4ee5-8faf-5d1721ec608c",
                 "ord": "a0"
               }
             ],
-            "id": "cdd9237d-5dc0-4cb6-98a5-2eb1037a86ad",
+            "id": "882a5079-96db-40ee-a3df-7a6526857e89",
             "ord": "a0"
           }
         ]
@@ -2079,7 +2121,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "dad33063-1e9d-4e64-a94f-c3194925959f",
+        "id": "7aaf4a27-ddd9-4f72-bcc3-5ffacb64a559",
         "children": [
           {
             "kind": "element",
@@ -2101,7 +2143,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Talk to the studio"],
-                        "id": "7c31e56e-8d8b-4abd-84d4-7e4f27883c4a",
+                        "id": "faa0de8d-0ca2-42dc-bbdb-c88e598f7892",
                         "ord": "a0"
                       },
                       {
@@ -2111,11 +2153,11 @@
                         "children": [
                           "A bug, a feature request, or a question about something we shipped? The team reads every message, and we would genuinely rather hear from you before you give up on a workaround."
                         ],
-                        "id": "1b385da1-d52e-4606-8eb9-1c11f8216d4e",
+                        "id": "bbf75e22-f75a-4463-8630-e16de728aec8",
                         "ord": "a1"
                       }
                     ],
-                    "id": "a987f70b-fc5e-423f-9bc5-05faa0caa12a",
+                    "id": "d42537e7-b193-48e3-920c-2b16d84768a0",
                     "ord": "a0"
                   },
                   {
@@ -2128,7 +2170,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "703e149b-3031-4e29-b5ea-8d4aa8cf4444",
+                        "id": "15be0d9d-0c4c-41b3-9143-267b0c25f785",
                         "ord": "a0"
                       },
                       {
@@ -2144,7 +2186,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "e8630cc6-a827-43d3-b713-a39dcef686b0",
+                            "id": "26dcb559-6def-47fd-bcf3-9c8a49e99840",
                             "ord": "a0"
                           }
                         ],
@@ -2153,7 +2195,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "8e76b457-27be-4b3b-af31-031a95535e57",
+                        "id": "417dd7e5-0fa9-44c0-8210-fcce82be184a",
                         "ord": "a1"
                       }
                     ],
@@ -2161,7 +2203,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "d0c3e9b5-c68b-458e-add5-a23b2d952742",
+                    "id": "e4e96e76-9033-4f5a-bc0e-7d98c4364b3d",
                     "ord": "a1"
                   },
                   {
@@ -2174,7 +2216,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "676a6369-f75a-4507-a0fc-aa7a81bef6cd",
+                        "id": "a58677cf-4bca-4dd6-994a-74c68cfa961b",
                         "ord": "a0"
                       },
                       {
@@ -2190,7 +2232,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "cc6fbb52-3848-42e0-a6c9-cb74a8e7bfb2",
+                            "id": "9df321f0-54e4-49e8-8e3e-9c9b187b7029",
                             "ord": "a0"
                           }
                         ],
@@ -2199,7 +2241,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "6200f3a7-e787-40de-a5e5-1f3b0fa511e6",
+                        "id": "2e129feb-6aec-4f21-8e7c-8affc4bdd08b",
                         "ord": "a1"
                       }
                     ],
@@ -2207,7 +2249,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "40f646b5-742b-4512-a14d-5964b12b6a37",
+                    "id": "b5d48e29-343e-4182-b366-c35f1c80305f",
                     "ord": "a2"
                   },
                   {
@@ -2220,7 +2262,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Visit us"],
-                        "id": "df90b514-9e9c-45d7-ad4b-ec363130149b",
+                        "id": "34227c76-c94b-4659-b3d8-52bd4b8a2dcf",
                         "ord": "a0"
                       },
                       {
@@ -2232,7 +2274,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "7f8a6998-a7a1-4a00-a3e6-463fe6ba6d84",
+                        "id": "c93af4a2-2daf-47d5-94b2-7af56dec1c70",
                         "ord": "a1"
                       }
                     ],
@@ -2240,7 +2282,7 @@
                       "kind": "visible",
                       "ref": "site.identity.address"
                     },
-                    "id": "99223bef-a6d6-4942-b167-c398f859a41e",
+                    "id": "5deeb9fb-a9d8-454a-9744-bccba218dac4",
                     "ord": "a3"
                   },
                   {
@@ -2258,7 +2300,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "48ea047f-7515-4444-bf7e-2eeb1bd13bd0",
+                            "id": "76336a4d-c7d5-48c5-99ef-bafe0339b3d3",
                             "ord": "a0"
                           },
                           {
@@ -2270,11 +2312,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "2c6562f5-08fb-4a08-a4b8-567887d982ef",
+                            "id": "caf878f3-9ef8-4a34-a1a5-d4ad457fbe68",
                             "ord": "a1"
                           }
                         ],
-                        "id": "614fc042-b8d0-4cb6-9c1c-5fa553ccf196",
+                        "id": "cc199f06-62c2-4590-a752-4a1f44835852",
                         "ord": "a0"
                       },
                       {
@@ -2287,7 +2329,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "0c4766ba-be9a-4d97-8d89-f0a3aadb0b4e",
+                            "id": "69e72f04-7d72-4b30-baba-e0116512ab4b",
                             "ord": "a0"
                           },
                           {
@@ -2299,11 +2341,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "21da00b7-0557-44a1-8cff-8f73d19c9891",
+                            "id": "ca8b9d26-0b99-40d7-bb14-41b64f0a1065",
                             "ord": "a1"
                           }
                         ],
-                        "id": "52296a08-72a3-40ec-a105-5b7d1c1081e6",
+                        "id": "b221430b-a288-488b-b174-772da596083f",
                         "ord": "a1"
                       },
                       {
@@ -2316,7 +2358,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "9bf66944-a3b1-488d-b78b-4b7a36f3ccdf",
+                            "id": "75b51377-d2fb-4d4f-a12c-f5489dc91963",
                             "ord": "a0"
                           },
                           {
@@ -2326,11 +2368,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "9e5d6757-e8fc-4e14-9af9-ff62ce4b8598",
+                            "id": "fe81c9a3-4055-417b-bcb6-52b6e4ac9317",
                             "ord": "a1"
                           }
                         ],
-                        "id": "437a0c26-9dff-4a10-9a54-90d8f535b905",
+                        "id": "820457a6-2ad9-444b-a542-787a5ba29ac0",
                         "ord": "a2"
                       },
                       {
@@ -2346,11 +2388,11 @@
                               "type": "submit"
                             },
                             "children": ["Email the team"],
-                            "id": "c4bb0ebc-4d7b-46ce-bf3b-4e1b1a5752f9",
+                            "id": "2478ea65-dec2-4997-bf34-8316150146ea",
                             "ord": "a0"
                           }
                         ],
-                        "id": "5ab2b8e6-1bab-4f18-b845-4617552312d4",
+                        "id": "0c9350e9-6dc0-462a-a1e2-43d8dd1cb017",
                         "ord": "a3"
                       }
                     ],
@@ -2361,15 +2403,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "8cf0d23d-079b-4a69-aefc-ebebbf33f02a",
+                    "id": "f78c4068-59bf-4749-a99b-7fe634b40562",
                     "ord": "a4"
                   }
                 ],
-                "id": "bdf4b23f-f83f-416d-a369-2462d27df765",
+                "id": "23bfe878-d69f-45cf-a402-4bccdac5d8a4",
                 "ord": "a0"
               }
             ],
-            "id": "88789474-042a-4414-8f06-a388579af015",
+            "id": "d44e0753-38be-4ed4-b3de-74bbd97292e1",
             "ord": "a0"
           }
         ]
@@ -2414,18 +2456,18 @@
                             "kind": "element",
                             "tag": "span",
                             "children": ["←"],
-                            "id": "1be06f18-43a9-4f15-bfa7-6224c594f019",
+                            "id": "fb391342-5181-40a6-aa8b-c91157cafb80",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
                             "children": ["All updates"],
-                            "id": "563294ac-10a2-4749-ae8a-91b57d5f8d10",
+                            "id": "9022ba52-22f6-4b07-89b0-77fd580c549d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "dae6be1b-63e5-46ac-8882-b34d7556f0c8",
+                        "id": "d518c78e-e1db-47b3-b3be-302d40ccb055",
                         "ord": "a0"
                       },
                       {
@@ -2437,7 +2479,7 @@
                           "kind": "visible",
                           "ref": "category"
                         },
-                        "id": "2252cf49-625e-4c85-89ba-595c72bb74ff",
+                        "id": "25d68716-3ff6-476a-89dc-e6dc9a66e593",
                         "ord": "a1"
                       },
                       {
@@ -2449,7 +2491,7 @@
                           "kind": "value",
                           "ref": "title"
                         },
-                        "id": "6039031f-f71b-4fc7-abab-0c22edb7de49",
+                        "id": "3584e183-826a-4853-95bd-d671bdb930e3",
                         "ord": "a2"
                       },
                       {
@@ -2461,7 +2503,7 @@
                           "kind": "value",
                           "ref": "excerpt"
                         },
-                        "id": "33471541-937f-48fd-b72b-f7e17dc1026f",
+                        "id": "d6822345-4824-4e2c-9f0f-86bc71f4b427",
                         "ord": "a3"
                       },
                       {
@@ -2481,7 +2523,7 @@
                               "kind": "visible",
                               "ref": "authorAvatar"
                             },
-                            "id": "4452625c-34ff-4e65-ac4d-7830d569a83c",
+                            "id": "73629796-2b27-4234-a7ec-39fc5e9b2925",
                             "ord": "a0"
                           },
                           {
@@ -2498,7 +2540,7 @@
                                   "kind": "visible",
                                   "ref": "authorName"
                                 },
-                                "id": "61332957-0bdc-4dad-8395-77ba613757ed",
+                                "id": "47b4d2d8-e78e-4a8d-88df-0c28387f6066",
                                 "ord": "a0"
                               },
                               {
@@ -2510,23 +2552,23 @@
                                   "kind": "value",
                                   "ref": "date"
                                 },
-                                "id": "77913a67-1372-4d71-a1ec-8f4174800397",
+                                "id": "b3b904b4-166e-4e34-86bb-f776aa2bd613",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "1a23ba19-f424-4da5-9f1c-a920ff750657",
+                            "id": "28977e14-801f-4f02-9633-c44960f909df",
                             "ord": "a1"
                           }
                         ],
-                        "id": "73192a64-2a2f-4741-a7ac-3d3daf151b79",
+                        "id": "7a32a1dc-0f68-4840-b47f-b667f3645d8a",
                         "ord": "a4"
                       }
                     ],
-                    "id": "fadc1c79-042d-4ca6-9de6-b57323849d6e",
+                    "id": "c5f41708-0220-4b16-977e-e26a897c06bc",
                     "ord": "a0"
                   }
                 ],
-                "id": "f11ca6e1-389f-4ef0-9cc6-e1bc596cdd1e",
+                "id": "f80b7e87-77be-4fe8-95b1-d9fbd62cdbff",
                 "ord": "a0"
               },
               {
@@ -2551,19 +2593,19 @@
                           "kind": "value",
                           "ref": "featuredImage"
                         },
-                        "id": "3a0e8a21-12c4-4134-9d9c-6f38c1f103c4",
+                        "id": "cf4c4ec0-3f17-4a1c-b0ac-10f9ee7e0d97",
                         "ord": "a0"
                       }
                     ],
-                    "id": "dcb78dd6-d6af-4374-83ef-82558a97031b",
+                    "id": "c0fae514-b4e5-4f9d-82d3-571cf294a20a",
                     "ord": "a0"
                   }
                 ],
-                "id": "38c56f52-6e27-4c47-853f-e71e75c5390d",
+                "id": "1150c76d-496e-492b-b5ae-a1d951a7043a",
                 "ord": "a1"
               }
             ],
-            "id": "b5a0798b-077f-4cac-a74c-539af855d5a3",
+            "id": "c0594974-6f31-4e37-9826-a856076b7158",
             "ord": "a0"
           },
           {
@@ -2581,15 +2623,15 @@
                     "component": "cms.article-body",
                     "class": "w-full",
                     "locked": "host",
-                    "id": "a23576b3-c526-4b67-94cf-6608cf4cbd48",
+                    "id": "1f94998c-a8c6-4c38-aa5e-6c23afe76280",
                     "ord": "a0"
                   }
                 ],
-                "id": "9e878e6c-fca3-4d81-90c3-58dab2437a7e",
+                "id": "a54c99ac-6023-4aea-9f18-b5f8ac8af942",
                 "ord": "a0"
               }
             ],
-            "id": "b4842602-835c-4664-9e2c-b3af65eb023b",
+            "id": "b6fab8ec-fa35-4249-a5fe-db31b9136e84",
             "ord": "a1"
           },
           {
@@ -2619,7 +2661,7 @@
                           "kind": "visible",
                           "ref": "authorAvatar"
                         },
-                        "id": "eb229b42-83b4-4889-b740-6ba9a547672d",
+                        "id": "4be6f62a-53b6-4603-a955-af455a042cff",
                         "ord": "a0"
                       },
                       {
@@ -2636,7 +2678,7 @@
                               "kind": "value",
                               "ref": "authorName"
                             },
-                            "id": "da30913a-2664-4d0d-bdf5-f98628aede14",
+                            "id": "a6ebe1a4-45a4-480c-8f98-904da5deb4d7",
                             "ord": "a0"
                           },
                           {
@@ -2648,11 +2690,11 @@
                               "kind": "value",
                               "ref": "authorBio"
                             },
-                            "id": "56f9500e-5fe9-493f-b7cc-ca99ddef07bc",
+                            "id": "2d0b745b-a61d-478f-9eee-d94d03ba40d5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "101df53b-f400-4188-ab68-4fd512147428",
+                        "id": "953b8d23-4720-4cce-8ed5-3c533f21ff24",
                         "ord": "a1"
                       }
                     ],
@@ -2660,15 +2702,15 @@
                       "kind": "visible",
                       "ref": "authorBio"
                     },
-                    "id": "0963eeb0-2be9-41d3-9e5a-1627512435dc",
+                    "id": "9c9d2884-2cff-4d22-a17b-f0873f70a940",
                     "ord": "a0"
                   }
                 ],
-                "id": "9128c5f9-d438-4bb9-ac19-1e9561228ac1",
+                "id": "16744261-c73d-4289-a4b8-48718c81aa51",
                 "ord": "a0"
               }
             ],
-            "id": "f6ede1db-b722-41ae-b582-dc924135e86b",
+            "id": "77cf1974-3862-4cd2-bde2-db1ba7c9cda9",
             "ord": "a2"
           },
           {
@@ -2691,7 +2733,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
                         "children": ["Keep reading"],
-                        "id": "39aa1374-fb05-45c2-914a-5a02050fa2d6",
+                        "id": "e350a9dd-6f67-4ea9-b7e4-b7d2a1a31882",
                         "ord": "a0"
                       },
                       {
@@ -2706,23 +2748,23 @@
                               "href": "/journal"
                             },
                             "children": ["More stories"],
-                            "id": "c1f88c37-a096-4ece-8bb5-5b281035a398",
+                            "id": "2d9d4322-82c9-4d0a-ba44-d04bf25dad2f",
                             "ord": "a0"
                           }
                         ],
-                        "id": "f099cbbc-4cb5-4fc5-b2c8-358ee3427984",
+                        "id": "28e8bb72-b78a-4f85-9438-050cc1347078",
                         "ord": "a1"
                       }
                     ],
-                    "id": "688a1c96-ac5d-4b1b-8b21-eab8ef0e0f7f",
+                    "id": "3a120ded-4b52-465d-83a3-ce2b5cdbe4ff",
                     "ord": "a0"
                   }
                 ],
-                "id": "5478a71a-da43-408c-aca2-63d37961e51e",
+                "id": "9dd64224-0e93-4404-be13-7950fddb15d8",
                 "ord": "a0"
               }
             ],
-            "id": "e4f5c7e2-4255-49eb-a51c-0204655a0c32",
+            "id": "3274e629-711a-415c-85f9-c1ac7fdbcb2c",
             "ord": "a3"
           }
         ],
@@ -2730,7 +2772,7 @@
           "kind": "collection",
           "ref": "blog_post"
         },
-        "id": "9e861aaf-5020-4c9f-ae79-f4367d510e79"
+        "id": "971ba6b3-ed9a-4b01-8b92-a18bf6cf2ae9"
       }
     }
   ],

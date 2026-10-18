@@ -12,6 +12,7 @@
 
 import { useQuery } from '@wizeworks/query';
 import { api } from './api/client';
+import { setShopClock } from './shop-clock';
 
 /** The zone this computer is set to — the overwhelmingly likely answer for
  *  somebody setting up their own shop, and never wrong by seven hours. */
@@ -69,4 +70,19 @@ export function useBusinessTimezone(): string | undefined {
  */
 export function useReaderClock(): { zone: string | null | undefined; device: string } {
   return { zone: useBusinessZone(), device: thisComputersTimezone() };
+}
+
+/**
+ * Keep the shop clock (lib/shop-clock.ts) set from the business's time zone, so
+ * every "when did this happen" stamp reads the shop's clock (sparx persona issue
+ * 333). Called once, at the top of the signed-in console shell, so the sign-in
+ * page never asks for the business. Set while rendering, and TRUE once the
+ * answer is in: the shell holds its panes until then, so no pane draws a stamp
+ * on this computer's clock and keeps it. A failed read answers too (`null`, this
+ * computer's clock), so a hiccup never holds the console.
+ */
+export function useShopClock(): boolean {
+  const zone = useBusinessZone();
+  if (zone !== undefined) setShopClock(zone);
+  return zone !== undefined;
 }

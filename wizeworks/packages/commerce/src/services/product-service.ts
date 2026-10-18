@@ -53,6 +53,9 @@ export interface ListProductsFilter {
   // i.e. products with NO site scope (visible on all) OR scoped to this site.
   // Omit (storefront default for the primary / single-site) → no restriction.
   propertyId?: string;
+  /** Only these products. Read by a caller that chose them by another rule (the
+   *  related-products rail) and wants them in the list's own shape. */
+  ids?: readonly string[];
   take?: number;
   skip?: number;
   sortBy?: 'updatedAt' | 'createdAt' | 'title' | 'priceMinCents';
@@ -84,7 +87,8 @@ export async function list(
   return withTenant(ctx, async (tx) => {
     // The one narrowing rule, shared with every "all that match" bulk write so
     // the count on screen is the count that acts.
-    const where = productListWhere(filter);
+    const narrowed = productListWhere(filter);
+    const where = filter.ids ? { ...narrowed, id: { in: [...filter.ids] } } : narrowed;
 
     const sortField = filter.sortBy ?? 'updatedAt';
     const sortDirection = filter.order ?? 'desc';

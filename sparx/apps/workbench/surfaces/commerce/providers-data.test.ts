@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkoutSummary, gatewayState } from './providers-data';
+import { checkoutSummary, gatewayState, sparxPayNeed } from './providers-data';
 import type { GatewayDescriptor, PaymentConfig } from './providers-data';
 
 function gateway(patch: Partial<GatewayDescriptor>): GatewayDescriptor {
@@ -114,5 +114,63 @@ describe('checkoutSummary', () => {
   it('agrees with the row it summarises', () => {
     expect(checkoutSummary(gateway({}), true)?.label).toBe('Taking payments');
     expect(checkoutSummary(MANUAL, true)?.label).toBe('No card payments');
+  });
+});
+
+// Issue 327: Stripe sends what it still needs. The pane said only "not
+// finished" once the form was sent, while Stripe waited on a photo of an ID.
+describe('sparxPayNeed', () => {
+  const started = { accountId: 'acct_1', chargesEnabled: false, payoutsEnabled: false };
+
+  it('names what Stripe is waiting on, in plain words, once each', () => {
+    const need = sparxPayNeed({
+      ...started,
+      detailsSubmitted: true,
+      due: ['individual.verification.document', 'external_account', 'individual.dob.day'],
+    });
+    expect(need?.title).toBe(
+      'Stripe needs a photo of your ID, your bank account for payouts and your date of birth'
+    );
+    expect(need?.tone).toBe('warning');
+  });
+
+  it('says there is nothing to do while Stripe checks', () => {
+    const need = sparxPayNeed({ ...started, detailsSubmitted: true, due: [], checking: true });
+    expect(need?.title).toBe('Stripe is checking your details');
+    expect(need?.tone).toBe('info');
+  });
+
+  it('says nothing once the account can charge, or before setup starts', () => {
+    expect(
+      sparxPayNeed({ ...started, chargesEnabled: true, detailsSubmitted: true, due: ['x'] })
+    ).toBeNull();
+    expect(sparxPayNeed({ ...started, accountId: null, detailsSubmitted: false })).toBeNull();
+  });
+
+  it('names every requirement a new Stripe account starts with', () => {
+    // Quiet Bench Repair's account the moment sparx Pay was started, 2026-10-18.
+    const need = sparxPayNeed({
+      ...started,
+      detailsSubmitted: false,
+      due: [
+        'business_profile.mcc',
+        'business_profile.url',
+        'business_type',
+        'external_account',
+        'representative.dob.day',
+        'representative.email',
+        'representative.first_name',
+        'settings.payments.statement_descriptor',
+        'tos_acceptance.date',
+      ],
+    });
+    expect(need?.title).not.toContain('a few more details');
+    expect(need?.title).toContain('what kind of business it is');
+    expect(need?.title).toContain('the name buyers see on their card statement');
+  });
+
+  it('falls back to plain words for a requirement it has no name for', () => {
+    const need = sparxPayNeed({ ...started, detailsSubmitted: true, due: ['something.new'] });
+    expect(need?.title).toBe('Stripe needs a few more details');
   });
 });

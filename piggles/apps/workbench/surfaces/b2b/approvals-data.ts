@@ -11,6 +11,7 @@ import type { QueueHoldReason } from './approval-hold-notice';
 import type { AccountApprover, ApprovedStock, SignOff, SignOffSide } from './sign-off-words';
 import { accountKeys, type AccountContact } from './accounts-data';
 import { formatCentsAmount } from '../../lib/money-format';
+import { formatShopDateTime } from '../../lib/shop-clock';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -65,8 +66,8 @@ export function formatCents(cents: number, currency = 'USD'): string {
 }
 
 export function formatDateTime(value: string | null | undefined): string {
-  if (!value) return '—';
-  return new Date(value).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  // On the shop's clock, not this computer's (sparx persona issue 333).
+  return formatShopDateTime(value);
 }
 
 /** A signature's day, short ("Oct 3"): the queue says when, not to the minute. */

@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-summit',
-  version: '1.5.4',
+  version: '1.5.6',
   name: 'Summit',
   summary:
     'A complete starter in the Summit look, tuned for consulting and B2B agencies: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.',

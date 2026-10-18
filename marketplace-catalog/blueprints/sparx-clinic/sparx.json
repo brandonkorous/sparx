@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-clinic",
   "name": "Clinic",
-  "version": "1.5.4",
+  "version": "1.5.6",
   "tagline": "A complete multi-module starter in the Clinic look, for medical, dental, and wellness practices.",
   "description": "A complete starter in the Clinic look, tuned for medical, dental, and wellness practices: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",

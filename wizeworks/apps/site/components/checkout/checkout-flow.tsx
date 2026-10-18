@@ -52,6 +52,13 @@ import { RepeatNeedsDelivery, RepeatNeedsSignIn, RepeatTerms } from './repeat-ch
 import type { StorefrontPaymentMode } from '@/lib/made-to-order-copy';
 import { isBoughtCartError } from '@/lib/bought-cart';
 import {
+  contactDone,
+  loadAddressDraft,
+  resumedAddress,
+  resumedContact,
+  saveAddressDraft,
+} from '@/lib/checkout-resume';
+import {
   CART_UNREACHABLE_MESSAGE,
   CHECKOUT_UNREACHABLE_MESSAGE,
   retryDelayMs,
@@ -89,11 +96,15 @@ export function CheckoutFlow({
   /** Where a collected order is picked up: the business's own contact address
    *  (sparx persona issue 191). Null when it has none. */
   collectAt = null,
+  /** The shop's phone and email, so a shop that cannot be paid here says how
+   *  to order instead (sparx persona issue 324). */
+  shopContact = null,
 }: {
   tenantSlug: string;
   paymentMode?: StorefrontPaymentMode;
   shopName?: string | null;
   collectAt?: string | null;
+  shopContact?: { phone: string | null; email: string | null } | null;
 }) {
   const cart = useCart();
   const { customer, status } = useCustomer();
@@ -188,6 +199,22 @@ export function CheckoutFlow({
         .then((opened) => {
           setOpenMisses(0);
           setSession(opened);
+          // A reload hands back the same session with what she already typed:
+          // put it back, into empty fields only (sparx persona issue 334).
+          const kept = resumedContact(opened);
+          setContact((current) => ({
+            ...current,
+            name: current.name || kept.name,
+            email: current.email || kept.email,
+            phone: current.phone || kept.phone,
+          }));
+          const keptAddress = resumedAddress(opened) ?? loadAddressDraft(opened.sessionId);
+          if (keptAddress) {
+            setAddress((current) => (current.line1 === '' ? keptAddress : current));
+          }
+          // Back where she was: past a contact step she had finished.
+          if (contactDone(opened))
+            setStep((current) => (current === 'contact' ? 'shipping' : current));
         })
         .catch((err: unknown) => {
           opening.current = false;
@@ -238,6 +265,13 @@ export function CheckoutFlow({
       live = false;
     };
   }, [session, offer, tenantSlug]);
+
+  // Keep what she is typing in this tab, so a reload before "Continue to payment"
+  // gives it back (sparx persona issue 334).
+  const draftSession = session?.sessionId;
+  useEffect(() => {
+    if (draftSession) saveAddressDraft(draftSession, address);
+  }, [draftSession, address]);
 
   function chooseAddress(next: Address) {
     // A different address is a different question — drop the answer to the old
@@ -398,7 +432,7 @@ export function CheckoutFlow({
   // A shop that cannot be paid here yet: said before anything is asked, not on
   // the payment step after an address has been typed (sparx persona issue 131).
   if (ordersClosed(shopPaymentMode, cart.accountRules?.paymentTerms) && step === 'contact') {
-    return <OrdersClosed />;
+    return <OrdersClosed contact={shopContact} />;
   }
   if (repeatNeedsSignIn && step !== 'done') return <RepeatNeedsSignIn lines={repeating} />;
 

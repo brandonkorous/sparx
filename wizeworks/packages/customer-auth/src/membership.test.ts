@@ -75,14 +75,14 @@ describe('ensureMembership', () => {
 
   it('returns the membership already linked on this site', async () => {
     rows = [guest({ id: 'mine', authUserId: USER })];
-    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {});
+    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {}, true);
     expect(result).toEqual({ customerId: 'mine', created: false, adopted: false });
     expect(created).toBeNull();
   });
 
   it('adopts a guest row on this site rather than making a second one', async () => {
     rows = [guest()];
-    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {});
+    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {}, true);
     expect(result).toEqual({ customerId: 'guest-row', created: false, adopted: true });
     expect(rows[0]?.authUserId).toBe(USER);
     expect(created).toBeNull();
@@ -94,7 +94,7 @@ describe('ensureMembership', () => {
   // one holding her login (issue 152).
   it('adopts a guest row that belongs to no site, and writes the site onto it', async () => {
     rows = [guest({ propertyId: null })];
-    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {});
+    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {}, true);
     expect(result).toEqual({ customerId: 'guest-row', created: false, adopted: true });
     expect(rows[0]?.authUserId).toBe(USER);
     expect(rows[0]?.propertyId).toBe(SITE);
@@ -105,16 +105,23 @@ describe('ensureMembership', () => {
   // claimed, so a first sign-in there gets a fresh membership and fresh consent.
   it('never takes a row belonging to a DIFFERENT site', async () => {
     rows = [guest({ propertyId: 'site-b' })];
-    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {});
+    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {}, true);
     expect(result).toEqual({ customerId: 'new-row', created: true, adopted: false });
     expect(created).toMatchObject({ propertyId: SITE, authUserId: USER, email: EMAIL });
   });
 
   it('creates a fresh membership when nothing matches', async () => {
-    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {
-      firstName: 'Imani',
-      lastName: 'Reyes',
-    });
+    const result = await ensureMembership(
+      CTX,
+      SITE,
+      USER,
+      EMAIL,
+      {
+        firstName: 'Imani',
+        lastName: 'Reyes',
+      },
+      true
+    );
     expect(result).toEqual({ customerId: 'new-row', created: true, adopted: false });
     expect(created).toMatchObject({ firstName: 'Imani', lastName: 'Reyes' });
   });
@@ -123,7 +130,7 @@ describe('ensureMembership', () => {
   // new person who arrives through the site, and a buyer who made an account was
   // the one kind it never showed (sparx persona issue 086).
   it('writes down that somebody new arrived through the site', async () => {
-    await ensureMembership(CTX, SITE, USER, EMAIL, { firstName: 'Imani' });
+    await ensureMembership(CTX, SITE, USER, EMAIL, { firstName: 'Imani' }, true);
     expect(audited).toEqual([
       expect.objectContaining({
         tenantId: 't1',
@@ -137,14 +144,69 @@ describe('ensureMembership', () => {
 
   it('writes nothing down for somebody it already knew', async () => {
     rows = [guest()];
-    await ensureMembership(CTX, SITE, USER, EMAIL, {});
+    await ensureMembership(CTX, SITE, USER, EMAIL, {}, true);
     expect(audited).toEqual([]);
   });
 
   it('fills in a name the guest row was missing, and leaves one it has', async () => {
     rows = [guest({ firstName: null, lastName: 'Reyes' })];
-    await ensureMembership(CTX, SITE, USER, EMAIL, { firstName: 'Imani', lastName: 'Okafor' });
+    await ensureMembership(
+      CTX,
+      SITE,
+      USER,
+      EMAIL,
+      { firstName: 'Imani', lastName: 'Okafor' },
+      true
+    );
     expect(rows[0]?.firstName).toBe('Imani');
     expect(rows[0]?.lastName).toBe('Reyes');
+  });
+});
+
+// Sparx persona issue 329. A stranger typed a guest buyer's email and a password
+// on the sign-up form, and her order and home address opened in his account.
+describe('ensureMembership, before the email is confirmed', () => {
+  beforeEach(() => {
+    rows = [];
+    created = null;
+    audited = [];
+  });
+
+  it('does not hand a guest record to a login that has not confirmed the email', async () => {
+    rows = [guest()];
+    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {}, false);
+    expect(result).toEqual({
+      customerId: null,
+      created: false,
+      adopted: false,
+      awaitingConfirmation: true,
+    });
+    expect(rows[0]?.authUserId).toBeNull();
+    expect(created).toBeNull();
+  });
+
+  it('does not hand over a record that belongs to no site either', async () => {
+    rows = [guest({ propertyId: null })];
+    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {}, false);
+    expect(result.awaitingConfirmation).toBe(true);
+    expect(rows[0]?.authUserId).toBeNull();
+  });
+
+  it('makes a fresh membership at once when nobody left a record under the email', async () => {
+    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {}, false);
+    expect(result).toEqual({ customerId: 'new-row', created: true, adopted: false });
+  });
+
+  it('keeps an account already linked, confirmed or not', async () => {
+    rows = [guest({ id: 'mine', authUserId: USER })];
+    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {}, false);
+    expect(result.customerId).toBe('mine');
+  });
+
+  it('hands the record over once the email is confirmed', async () => {
+    rows = [guest()];
+    const result = await ensureMembership(CTX, SITE, USER, EMAIL, {}, true);
+    expect(result).toEqual({ customerId: 'guest-row', created: false, adopted: true });
+    expect(rows[0]?.authUserId).toBe(USER);
   });
 });

@@ -9,7 +9,13 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { NAVBAR_VARIANTS, siteFooter, siteNavbar, type NavbarVariant } from './site-chrome';
+import {
+  NAVBAR_VARIANTS,
+  siteFooter,
+  siteNavbar,
+  withCartButton,
+  type NavbarVariant,
+} from './site-chrome';
 import { HOST_COMPONENTS, HOST_KEYS, hostCore } from './host-nodes';
 
 /** The brand core, found by SEARCHING rather than by index.
@@ -126,6 +132,10 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
         // it. A tenant who leads with a full-width "Sign in" button in their own header
         // instead has to be able to remove ours.
         HOST_KEYS.siteAccountLink,
+        // The header cart is chrome for the same reason: the cart PAGE (`commerce.cart`)
+        // is the pinned transaction, and this only opens it (issue 325). A tenant who
+        // draws her own cart link has to be able to remove ours.
+        HOST_KEYS.siteCartButton,
         // Social links are the tenant's own accounts, listed by them in Site identity.
         // Deleting the row costs a convenience they chose to place — nothing on the site
         // stops working — and pinning it would leave an undeletable empty strip in the
@@ -430,6 +440,108 @@ describe('siteNavbar — every variant can reach an account', () => {
     // be a no-op. Two cores, not four.
     expect(accountCores('brandLeft')).toHaveLength(2);
     expect(accountCores('centerLinks')).toHaveLength(2);
+  });
+});
+
+describe('siteNavbar — a shop has a cart in its header (issue 325)', () => {
+  const VARIANTS: NavbarVariant[] = ['brandLeft', 'centerLinks', 'centerLogo'];
+
+  /** The children of the element directly holding the cart core. */
+  const cartRow = (node: unknown): unknown[] | null => {
+    if (!node || typeof node !== 'object') return null;
+    const n = node as { children?: unknown[] };
+    const kids = n.children ?? [];
+    if (
+      kids.some(
+        (k) =>
+          (k as Record<string, unknown>)?.kind === 'host' &&
+          (k as Record<string, unknown>).component === HOST_KEYS.siteCartButton
+      )
+    )
+      return kids;
+    for (const child of kids) {
+      const hit = cartRow(child);
+      if (hit) return hit;
+    }
+    return null;
+  };
+
+  it.each(VARIANTS)('%s: one cart, in the bar, just before the phone menu', (variant) => {
+    // Gillett's header had none, and a shopper who closed the drawer had only the
+    // footer's "Cart" link to get back to her basket. In the bar, not the phone panel:
+    // the cart is the control a phone header keeps on screen.
+    const navbar = siteNavbar({ navbar: variant });
+    expect(findHosts(navbar, HOST_KEYS.siteCartButton)).toHaveLength(1);
+    const row = cartRow(navbar) ?? [];
+    const at = row.findIndex(
+      (k) => (k as Record<string, unknown>).component === HOST_KEYS.siteCartButton
+    );
+    const next = row[at + 1] as { tag?: string; class?: string } | undefined;
+    expect(next?.tag).toBe('button');
+    expect(next?.class).toContain('@md:hidden');
+  });
+
+  it('leaves it out of a site that does not sell', () => {
+    // Content and/or commerce: a journal's header never offers an empty basket.
+    for (const variant of VARIANTS) {
+      expect(
+        findHosts(siteNavbar({ navbar: variant, commerceEnabled: false }), HOST_KEYS.siteCartButton)
+      ).toHaveLength(0);
+    }
+  });
+
+  it('puts it after the bar’s account link in a captured header, not in its menu', () => {
+    // The shape of the captured `sparx` design and its 20 themed copies: no `ml-auto` end
+    // zone, a `<details>` phone menu holding its own account link, then the bar's.
+    const account = (cls: string) => hostCore(HOST_KEYS.siteAccountLink, cls);
+    const frame = {
+      kind: 'element',
+      tag: 'div',
+      class: 'min-h-screen',
+      children: [
+        {
+          kind: 'element',
+          tag: 'nav',
+          class: 'border-b',
+          children: [
+            {
+              kind: 'element',
+              tag: 'div',
+              class: 'flex items-center gap-3',
+              children: [
+                {
+                  kind: 'element',
+                  tag: 'details',
+                  class: 'relative',
+                  children: [account('menu-link')],
+                },
+                account('btn btn-ghost btn-sm'),
+                { kind: 'element', tag: 'a', class: 'btn btn-primary', children: ['Shop'] },
+              ],
+            },
+          ],
+        },
+        { kind: 'outlet' },
+      ],
+    } as unknown as Parameters<typeof withCartButton>[0];
+
+    const out = withCartButton(frame);
+    expect(findHosts(out, HOST_KEYS.siteCartButton)).toHaveLength(1);
+    const row = (out as any).children[0].children[0].children as Record<string, unknown>[];
+    expect(row.map((n) => (n.kind === 'host' ? n.component : n.tag))).toEqual([
+      'details',
+      HOST_KEYS.siteAccountLink,
+      HOST_KEYS.siteCartButton,
+      'a',
+    ]);
+    // Already there: unchanged, never a second copy.
+    expect(findHosts(withCartButton(out), HOST_KEYS.siteCartButton)).toHaveLength(1);
+  });
+
+  it('is offered in the palette, unpinned, so an owner can place it in her own header', () => {
+    const meta = HOST_COMPONENTS.find((c) => c.key === HOST_KEYS.siteCartButton);
+    expect(meta?.pinned).toBe(false);
+    expect(meta?.category).toBe('Your site');
   });
 });
 

@@ -37,6 +37,7 @@ export const TEMPLATE_IDS = [
   'team-invitation',
   'form-submission-notification',
   'form-submission-confirmation',
+  'customer-email-confirm',
   'gated-delivery',
   'tool-result',
   'billing-receipt',

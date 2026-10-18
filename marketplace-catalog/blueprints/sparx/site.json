@@ -207,10 +207,15 @@
                       "attrs": {
                         "href": "/contact"
                       },
-                      "class": "btn btn-primary btn-sm hidden @5xl:inline-flex",
+                      "class": "btn btn-primary btn-sm hidden @5xl:inline-block",
                       "children": ["Get in touch"]
                     }
                   ]
+                },
+                {
+                  "kind": "host",
+                  "component": "site.cart-button",
+                  "class": "inline-flex items-center"
                 }
               ]
             }

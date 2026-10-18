@@ -37,6 +37,7 @@ import type { HeaderNoticeData } from '@piggles/ui';
 import { CompactShell } from './compact-shell';
 import { DesktopShell } from './desktop-shell';
 import type { NavTab } from './mobile/nav-bar';
+import { useShopClock } from '../lib/business-timezone';
 
 export function ConsoleShell({
   notice,
@@ -73,6 +74,9 @@ export function ConsoleShell({
 }) {
   // First, before anything below reads browser storage.
   setStorageOwner(userId);
+  // Every "when did this happen" stamp reads the shop's clock, not this
+  // computer's (sparx persona issue 333).
+  const shopClockKnown = useShopClock();
 
   const windowIdRef = useRef<string | null>(null);
   windowIdRef.current ??= mintWindowId();
@@ -175,6 +179,13 @@ export function ConsoleShell({
 
   // Note: ⌘K/Ctrl+K is bound by the Launcher itself. Binding it here too would
   // toggle twice per press and the palette would never open.
+
+  // Held until the shop's clock is known, so no pane draws a time on this
+  // computer's clock and keeps it (sparx persona issue 333). A failed read
+  // answers too, so this never holds the console for long.
+  if (!shopClockKnown) {
+    return <div className="bg-base-300 flex h-dvh w-full" aria-busy />;
+  }
 
   // Below 64rem the dock is not cramped, it is pointless — so the whole
   // presentation swaps rather than the layout shrinking.

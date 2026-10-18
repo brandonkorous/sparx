@@ -79,6 +79,20 @@ export interface CheckoutSession {
    */
   paymentMode?: 'card' | 'in_person' | 'unavailable';
   customerEmail?: string;
+  /** What the buyer gave on the contact and delivery steps, kept on the session so
+   *  a reload puts it back (sparx persona issue 334). */
+  customerName?: string;
+  customerPhone?: string;
+  shippingAddress?: {
+    recipientName?: string;
+    line1?: string;
+    line2?: string;
+    city?: string;
+    region?: string;
+    postalCode?: string;
+    country?: string;
+    phone?: string;
+  };
   // Present only when the signed-in customer is an active B2B contact — the
   // frontend's ONLY signal for showing the "bill to account" payment choice.
   companyId?: string;

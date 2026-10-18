@@ -33,6 +33,12 @@ const MONEY_WORDS: Record<string, string> = {
   credit_card: 'Card',
   stripe: 'Card',
   sparx_pay: 'Card',
+  // Every card gateway a business can choose writes its own id here (sparx
+  // persona issue 332): without these, the fallback printed "stripe direct".
+  stripe_direct: 'Card',
+  authorize_net: 'Card',
+  first_pay: 'Card',
+  custom: 'Card',
   square: 'Card (Square)',
   paypal: 'PayPal',
   net_terms: 'On account',

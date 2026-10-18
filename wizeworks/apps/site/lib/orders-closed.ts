@@ -9,11 +9,37 @@
 // the drawer and the first step of checkout now say it first.
 
 import { canBillToAccount } from './account-terms-words';
+import { telHref } from './tel-href';
 import type { StorefrontPaymentMode } from './made-to-order-copy';
 
 export const ORDERS_CLOSED_MESSAGE =
   'This shop is not taking payments on its website just yet, so an order cannot be placed here. ' +
-  'Nothing will be charged. Get in touch with the shop to order: their details are on this site.';
+  'Nothing will be charged.';
+
+/** How a shopper reaches the shop to order instead, from its contact details in
+ *  Site settings.
+ *
+ *  MEASURED 2026-10-17 on Gillett Diesel: the closed cart said "Get in touch with
+ *  the shop to order: their details are on this site" and gave neither the phone
+ *  number nor the email the site already held, so a stranger ready to buy had to
+ *  go and find them (sparx persona issue 324). A shop with neither filled in gets
+ *  the plain sentence, without the promise that its details are somewhere here. */
+export interface ShopReach {
+  phone: { label: string; href: string } | null;
+  email: { label: string; href: string } | null;
+}
+
+export function shopReach(
+  contact: { phone?: string | null; email?: string | null } | null | undefined
+): ShopReach {
+  const phoneLabel = contact?.phone?.trim() || null;
+  const phoneLink = telHref(phoneLabel);
+  const emailLabel = contact?.email?.trim() || null;
+  return {
+    phone: phoneLabel && phoneLink ? { label: phoneLabel, href: phoneLink } : null,
+    email: emailLabel ? { label: emailLabel, href: `mailto:${emailLabel}` } : null,
+  };
+}
 
 /** The sentence that closes checkout, or null when this shop can be paid here
  *  (by card, or in person when the order is handed over), or when this buyer is

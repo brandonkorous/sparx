@@ -87,6 +87,11 @@ import {
   type FormSubmissionConfirmationEmailProps,
 } from './templates/form-submission-confirmation';
 import {
+  CustomerEmailConfirmEmail,
+  customerEmailConfirmSubject,
+  type CustomerEmailConfirmEmailProps,
+} from './templates/customer-email-confirm';
+import {
   GatedDeliveryEmail,
   gatedDeliverySubject,
   type GatedDeliveryEmailProps,
@@ -247,6 +252,8 @@ export type TemplateId =
   | 'team-invitation'
   | 'form-submission-notification'
   | 'form-submission-confirmation'
+  // A shopper confirming the email they made an account with (sparx persona issue 329).
+  | 'customer-email-confirm'
   | 'gated-delivery'
   // The free-tool result a visitor asked us to send them (docs/152 A3).
   | 'tool-result'
@@ -406,6 +413,13 @@ export type TemplateSend =
       template: 'form-submission-confirmation';
       to: string;
       props: FormSubmissionConfirmationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'customer-email-confirm';
+      to: string;
+      props: CustomerEmailConfirmEmailProps;
       from?: string;
       replyTo?: string;
     }
@@ -870,6 +884,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'form-submission-confirmation',
+      };
+    }
+    case 'customer-email-confirm': {
+      const element = wrap(<CustomerEmailConfirmEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(opts.from),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: customerEmailConfirmSubject(input.props.siteName),
+        html,
+        text,
+        templateId: 'customer-email-confirm',
       };
     }
     case 'gated-delivery': {

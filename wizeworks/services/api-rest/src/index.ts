@@ -40,6 +40,7 @@ import { startSocialSlotFillLoop } from './lib/social-slot-fill.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
 import { selfRegisterFirstPartyCatalog } from './lib/marketplace/self-register.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
+import { startReservationReaperLoop } from './lib/reservation-reaper-loop.js';
 import { startBookingNotificationLoop } from './lib/scheduling-notifications.js';
 import { startCalendarSyncLoop } from './lib/scheduling-calendar-sync.js';
 import { startSeriesMaterializationLoop } from './lib/scheduling-series.js';
@@ -151,6 +152,10 @@ async function main(): Promise<void> {
   // via its own advisory lock — see lib/email-dispatch.ts.
   const stopEmailDispatch = startEmailDispatchLoop(app.log);
 
+  // Releases cart holds past their time, off the cluster only: there the CronJob
+  // does it (sparx persona issue 335). See lib/reservation-reaper-loop.ts.
+  const stopReservationReaper = startReservationReaperLoop(app.log, env.NODE_ENV === 'production');
+
   // Background tick that sends due booking notifications (confirmations,
   // reminders, change/cancellation notices) over email + SMS from the
   // scheduling_booking_notifications ledger. Singleton across pods via its own
@@ -221,6 +226,7 @@ async function main(): Promise<void> {
     stopSitebuilderPublish();
     stopWebhookDelivery();
     stopEmailDispatch();
+    stopReservationReaper();
     stopBookingNotifications();
     stopCalendarSync();
     stopSeriesMaterialization();

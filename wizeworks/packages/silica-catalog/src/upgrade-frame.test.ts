@@ -867,6 +867,52 @@ const menuItems = (root: Node): Loose[] => {
   return ((list?.children ?? []) as Loose[]).filter((c) => typeof c === 'object');
 };
 
+// Sparx persona issue 328. Every header this file repaired before showed its button
+// again as `@5xl:inline-flex`, so "Get in touch" sat at the top of its own fill on
+// every wide screen. The phone repair no longer matches those headers, so they need
+// their own step.
+describe('upgradeFrameChrome — a bar button shown as a flex box', () => {
+  const repairedTheOldWay = (): Node =>
+    JSON.parse(
+      JSON.stringify(upgradeFrameChrome(capturedHeader()).root).replace(
+        'hidden @5xl:inline-block',
+        'hidden @5xl:inline-flex'
+      )
+    ) as Node;
+
+  it('shows the button as a block box again', () => {
+    const before = repairedTheOldWay();
+    expect(words(groupChild(before, (n) => n.tag === 'a'))).toContain('@5xl:inline-flex');
+    const { root, changed } = upgradeFrameChrome(before);
+    expect(changed).toBe(true);
+    const bar = words(groupChild(root, (n) => n.tag === 'a'));
+    expect(bar).toEqual(
+      expect.arrayContaining(['btn', 'btn-primary', 'hidden', '@5xl:inline-block'])
+    );
+    expect(bar).not.toContain('@5xl:inline-flex');
+  });
+
+  it('leaves the light/dark switch a flex box, and runs once', () => {
+    const { root } = upgradeFrameChrome(repairedTheOldWay());
+    const toggle = groupChild(root, (n) => n.component === HOST_KEYS.siteThemeToggle);
+    expect(words(toggle)).toContain('@5xl:inline-flex');
+    expect(upgradeFrameChrome(root).changed).toBe(false);
+  });
+
+  it('leaves a button with an icon alone: silicaui centers that one as a flex box', () => {
+    const iconCta = el('a', 'btn btn-primary btn-sm hidden @5xl:inline-flex', {
+      attrs: { href: '/cart' },
+      children: [el('svg', 'size-4'), 'Cart'],
+    });
+    const header = el('div', 'flex flex-col', {
+      children: [el('nav', 'navbar', { children: [iconCta] })],
+    });
+    const { root } = upgradeFrameChrome(header);
+    const kept = nodesOf(root).find((n) => n.tag === 'a');
+    expect(words(kept)).toContain('@5xl:inline-flex');
+  });
+});
+
 describe('upgradeFrameChrome — the header on a phone', () => {
   it('keeps the logo at its own size, and keeps its own classes', () => {
     const { root, changed } = upgradeFrameChrome(capturedHeader());
@@ -880,8 +926,11 @@ describe('upgradeFrameChrome — the header on a phone', () => {
     const { root } = upgradeFrameChrome(capturedHeader());
     const bar = groupChild(root, (n) => n.tag === 'a');
     expect(words(bar)).toEqual(
-      expect.arrayContaining(['btn', 'btn-primary', 'hidden', '@5xl:inline-flex'])
+      expect.arrayContaining(['btn', 'btn-primary', 'hidden', '@5xl:inline-block'])
     );
+    // Shown again as a flex box, silicaui's button drew its words at the top of its
+    // fill: it centers them with align-content, which a flex box ignores (issue 328).
+    expect(words(bar)).not.toContain('@5xl:inline-flex');
 
     const last = menuItems(root).at(-1);
     expect(last?.tag).toBe('a');

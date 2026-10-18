@@ -80,7 +80,6 @@ import {
   useCreateInvoiceForOrder,
   useOrderInvoices,
   useUpdateTracking,
-  PAYMENT_PROCESSOR_LABELS,
   paymentNote,
   PAYMENT_STATUS_LABELS,
   useTakePaymentOff,
@@ -93,7 +92,12 @@ import {
   collectedWords,
   nothingHandedOverWords,
 } from './data';
+// The words for every way money arrives, gateways included. The pane looked a
+// processor up in a short list that left out `sparx_pay`, so a card payment read
+// "$640.96 · sparx_pay" (sparx persona issue 332).
+import { paymentMethodLabel } from '../../lib/payment-methods';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { ResendConfirmation } from './resend-confirmation';
 import { canManageBusiness } from '../../lib/manage-rights';
 
 /** The one column everything sits in. */
@@ -942,6 +946,9 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     {order.customer.email}
                   </a>
                 ) : null}
+                {order.customer?.email ? (
+                  <ResendConfirmation orderId={order.id} orderNumber={order.orderNumber} />
+                ) : null}
                 {order.customer?.b2bAccount ? (
                   <Text className="text-base">
                     Trade account: {order.customer.b2bAccount.companyName}
@@ -1088,7 +1095,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <span className="text-base font-medium">
                       {formatMoney(payment.amount, payment.currency)} ·{' '}
-                      {PAYMENT_PROCESSOR_LABELS[payment.processor] ?? payment.processor}
+                      {paymentMethodLabel(payment.processor)}
                     </span>
                     <span className="text-sm">
                       {formatDateTime(payment.capturedAt ?? payment.createdAt)}

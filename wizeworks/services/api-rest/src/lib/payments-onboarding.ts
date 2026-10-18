@@ -43,6 +43,14 @@ export interface SparxPayStatus {
   chargesEnabled: boolean;
   payoutsEnabled: boolean;
   detailsSubmitted: boolean;
+  /** What Stripe still needs before it lets the account charge, as Stripe's own
+   *  requirement keys (`individual.verification.document`, `external_account`, …):
+   *  currently due and past due together. Empty once nothing is owed. The console
+   *  turns these into words; without them it could only say "not finished" while
+   *  Stripe knew it was waiting on a photo of an ID (sparx persona issue 327). */
+  due: string[];
+  /** Stripe has everything and is checking it. Nothing for the owner to do. */
+  checking: boolean;
 }
 
 export interface PaymentConfigState {
@@ -153,11 +161,45 @@ async function fetchAccountStatus(
   const stripe = getPlatformStripe();
   if (!stripe) return null;
   const account = await stripe.accounts.retrieve(accountId);
+  const requirements = account.requirements;
   return {
     chargesEnabled: account.charges_enabled ?? false,
     payoutsEnabled: account.payouts_enabled ?? false,
     detailsSubmitted: account.details_submitted ?? false,
+    due: [...new Set([...(requirements?.past_due ?? []), ...(requirements?.currently_due ?? [])])],
+    checking: (requirements?.pending_verification ?? []).length > 0,
   };
+}
+
+/**
+ * Save what Stripe says about charging onto the stored switch the site reads.
+ *
+ * Only when sparx Pay IS the chosen provider: the switch is the active
+ * provider's, so a shop on its own Stripe keys or on manual payments keeps its
+ * state whatever an old sparx Pay account is doing. It used to be written
+ * whatever the provider, so an `account.updated` for a dormant account could
+ * switch off a shop that takes cards some other way. A no-op when nothing moved,
+ * so a read that calls it writes nothing and purges no site.
+ */
+async function syncSparxPaySwitch(
+  tenantId: string,
+  before: { gatewayId: string; isActive: boolean },
+  chargesEnabled: boolean
+): Promise<void> {
+  if (before.gatewayId !== 'sparx_pay' || before.isActive === chargesEnabled) return;
+  await withTenant({ tenantId }, (tx) =>
+    tx.tenantPaymentConfig.update({
+      where: { tenantId },
+      data: {
+        isActive: chargesEnabled,
+        ...(chargesEnabled ? { onboardedAt: new Date() } : {}),
+      },
+    })
+  );
+  await announcePaymentSwitch(tenantId, before, {
+    gatewayId: before.gatewayId,
+    isActive: chargesEnabled,
+  });
 }
 
 /** The path segment each merchant-registered gateway's webhook lives under. The
@@ -205,6 +247,8 @@ export async function getPaymentConfig(tenantId: string): Promise<PaymentConfigS
     chargesEnabled: config.gatewayId === 'sparx_pay' ? config.isActive : false,
     payoutsEnabled: false,
     detailsSubmitted: false,
+    due: [],
+    checking: false,
   };
   // For sparx Pay, the DISPLAYED "collecting" state tracks Stripe's LIVE
   // charges_enabled, not just the stored flag — so Settings never mis-reads a
@@ -218,21 +262,35 @@ export async function getPaymentConfig(tenantId: string): Promise<PaymentConfigS
   // a healthy, onboarded account then looks "unfinished", so the Payment
   // providers pane offers "Continue setup" instead of "Make this my active
   // provider" and the merchant can never switch back (BUG-013).
+  //
+  // What this shows is also SAVED (sparx persona issue 326). The site and
+  // checkout read only the stored switch, and only the account.updated webhook
+  // or the setup wizard's refresh wrote it, so an owner who finished on Stripe
+  // and came back to Payment providers read "Active, taking payments" while her
+  // checkout still said it could not take an order. Whatever reads the live
+  // status now leaves the switch matching it.
   let isActive = config.isActive;
+  let onboardedAt = config.onboardedAt?.toISOString() ?? null;
   if (accountId) {
     const live = await fetchAccountStatus(accountId);
     if (live) {
       sparxPay = { accountId, ...live };
       // `isActive` reflects the ACTIVE gateway's collecting state, so only let
       // sparx Pay's charge-readiness drive it when sparx Pay is actually active.
-      if (config.gatewayId === 'sparx_pay') isActive = live.chargesEnabled;
+      if (config.gatewayId === 'sparx_pay') {
+        if (live.chargesEnabled !== config.isActive) {
+          await syncSparxPaySwitch(tenantId, config, live.chargesEnabled);
+          if (live.chargesEnabled && !onboardedAt) onboardedAt = new Date().toISOString();
+        }
+        isActive = live.chargesEnabled;
+      }
     }
   }
 
   return {
     gatewayId: config.gatewayId,
     isActive,
-    onboardedAt: config.onboardedAt?.toISOString() ?? null,
+    onboardedAt,
     sparxPay,
     webhookUrls: webhookUrlsFor(tenantId),
   };
@@ -342,28 +400,9 @@ export async function startSparxPayOnboarding(args: {
 }
 
 /** Live status from Stripe, synced onto the config (pull model — called when the
- *  merchant returns from onboarding or opens Settings → Payments). */
+ *  merchant returns from onboarding). Reading the config syncs it, so this is that
+ *  read under the name its callers ask for. */
 export async function refreshSparxPayStatus(tenantId: string): Promise<PaymentConfigState> {
-  const accountId = await tenantAccountId(tenantId);
-  if (accountId) {
-    const live = await fetchAccountStatus(accountId);
-    if (live) {
-      const before = await ensureConfig(tenantId);
-      await withTenant({ tenantId }, (tx) =>
-        tx.tenantPaymentConfig.update({
-          where: { tenantId },
-          data: {
-            isActive: live.chargesEnabled,
-            ...(live.chargesEnabled ? { onboardedAt: new Date() } : {}),
-          },
-        })
-      );
-      await announcePaymentSwitch(tenantId, before, {
-        gatewayId: before.gatewayId,
-        isActive: live.chargesEnabled,
-      });
-    }
-  }
   return getPaymentConfig(tenantId);
 }
 
@@ -421,19 +460,6 @@ export async function reconcileSparxPayAccount(account: {
   });
   if (!tenant) return;
 
-  const chargesEnabled = account.charges_enabled ?? false;
   const before = await ensureConfig(tenant.id);
-  await withTenant({ tenantId: tenant.id }, (tx) =>
-    tx.tenantPaymentConfig.update({
-      where: { tenantId: tenant.id },
-      data: {
-        isActive: chargesEnabled,
-        ...(chargesEnabled ? { onboardedAt: new Date() } : {}),
-      },
-    })
-  );
-  await announcePaymentSwitch(tenant.id, before, {
-    gatewayId: before.gatewayId,
-    isActive: chargesEnabled,
-  });
+  await syncSparxPaySwitch(tenant.id, before, account.charges_enabled ?? false);
 }

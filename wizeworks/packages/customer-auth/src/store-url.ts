@@ -18,6 +18,15 @@
 import { tenantStore, withTenant } from '@wizeworks/db';
 import { resolveSiteOrigin } from '@wizeworks/db/site-origin';
 
+/** The name the shop goes by on its primary site, for an email sent in its name. */
+export async function resolveStoreName(): Promise<string | null> {
+  const tenantId = tenantStore.getTenantIdOrThrow();
+  const site = await withTenant({ tenantId }, (tx) =>
+    tx.property.findFirst({ where: { isPrimary: true }, select: { name: true } })
+  );
+  return site?.name ?? null;
+}
+
 export async function resolveStoreBaseUrl(): Promise<string> {
   const tenantId = tenantStore.getTenantIdOrThrow();
   return withTenant({ tenantId }, (tx) => resolveSiteOrigin(tx, tenantId, null));

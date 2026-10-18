@@ -12,8 +12,8 @@
 //
 //   1. the brand never shrinks (`shrink-0`, or no class, which wears the component's
 //      default that already has it);
-//   2. below the bar's switch the only things IN the bar beside the brand are the Menu
-//      and the account link: everything else in the group carries `hidden`;
+//   2. below the bar's switch the only things IN the bar beside the brand are the Menu,
+//      the account link and the cart: everything else in the group carries `hidden`;
 //   3. a filled button hidden from the bar has a copy in the Menu, so a phone visitor
 //      can still reach it;
 //   4. the group switches at ONE width: a group whose links come back at `@sm` while its
@@ -102,6 +102,13 @@ function phoneHeaderProblems(slug: string, header: Header): string[] {
   for (const child of childrenOf(group)) {
     if (child === menu) continue;
     if (isAccountLink(child)) continue;
+    // The header cart stays on the bar too: it is the one control a shopper expects on a
+    // phone, and hiding it behind the Menu is the defect it was added for (sparx persona
+    // issue 325). MEASURED 2026-10-17 on Gillett Diesel's live header, which is this
+    // shape, signed out (a signed-in name is capped at 72px, the room "Sign in" takes):
+    // with the small (32px) cart there is no sideways scroll at 320, 360 or 390px and the
+    // logo keeps its full 70px. At 320px the cart reaches 9px into the 24px gutter.
+    if (child.kind === 'host' && child.component === HOST_KEYS.siteCartButton) continue;
     if (!words(child).includes('hidden')) {
       const what = child.component ?? `${child.tag ?? 'node'}.${words(child).join('.')}`;
       problems.push(`${slug} · ${what} still takes room in the phone bar`);
@@ -145,7 +152,7 @@ describe('every shipped header fits a phone', () => {
     expect(headers.length).toBeGreaterThanOrEqual(22);
   });
 
-  it('keeps the logo, and keeps everything but the Menu and the account off the phone bar', () => {
+  it('keeps the logo, and keeps everything but the Menu, the account and the cart off the phone bar', () => {
     const problems = headers.flatMap(([slug, header]) => phoneHeaderProblems(slug, header));
     expect(problems).toEqual([]);
   });

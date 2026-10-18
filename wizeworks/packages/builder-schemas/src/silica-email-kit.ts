@@ -490,9 +490,12 @@ export function link(hrefRef: string, children: ContentNode[]): LinkNode {
  * (non-repeating) sections and only the middle card section repeats. The card is an
  * image column beside a title/price column, both wrapped in the per-item `link`.
  *
- * Only ever placed in emails a selling tenant sends (order confirmation, delivered, review)
- * — where an order guarantees the catalog is non-empty — so it needs no module gate and
- * never renders the empty-collection placeholder.
+ * Only ever placed in emails a selling tenant sends (order confirmation, delivered,
+ * review, a saved cart), so it needs no module gate. It CAN be empty: the send fills it
+ * with what goes with the order, and for a shop that sets what its parts fit, that can be
+ * nothing (sparx persona issue 330). So it is gated like `contentRail`: the heading and
+ * the button value-bind the same collection and drop on an empty one, and the cards drop
+ * instead of printing one empty placeholder card.
  */
 export function productRail(opts: {
   heading: string;
@@ -507,7 +510,11 @@ export function productRail(opts: {
   // thumbnail (a cart-line rhythm, not a full-bleed hero) keeps a rail of several
   // products scannable rather than a screen-height stack.
   const COL = { image: 16, text: 80 } as const;
-  const headingSection = section([text(opts.heading, { size: 20, weight: 'bold' })], 16);
+  const railGate = { kind: 'value' as const, ref };
+  const headingSection: SectionNode = {
+    ...section([text(opts.heading, { size: 20, weight: 'bold' })], 16),
+    data: railGate,
+  };
   // The row AND a trailing spacer are BOTH children of the collection section, so the
   // repeat emits `[row, gap]` per product — giving each card breathing room. Without the
   // spacer the square thumbnails stack edge-to-edge and read as one continuous strip.
@@ -529,9 +536,12 @@ export function productRail(opts: {
       10
     ),
     align: 'left',
-    data: { kind: 'collection', ref },
+    data: { kind: 'collection', ref, omitWhenEmpty: true },
   };
-  const cta = section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8);
+  const cta: SectionNode = {
+    ...section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8),
+    data: railGate,
+  };
   return [headingSection, cardRow, cta];
 }
 

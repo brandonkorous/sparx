@@ -50,6 +50,7 @@ import {
   productTypeService,
   projectProductAttributes,
   readyOnDate,
+  relatedProductService,
   remainingToday,
 } from '@wizeworks/commerce';
 import type { ProductTypeSchema as ProductTypeSchemaT } from '@wizeworks/commerce-schemas';
@@ -1150,6 +1151,51 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       });
     }
     return ok(list);
+  });
+
+  // What goes with this product, for its page's "You might also like" (sparx
+  // persona issue 330). The rail was the shop's newest products, so a 6.7L
+  // Cummins injector's page offered exhaust brakes for a 5.9L and a Duramax.
+  // Same picker as the order emails: parts that fit what this one fits, or the
+  // same category for a shop without fitment. Empty is an honest answer, and the
+  // rail drops on it. Site-visible only.
+  app.get('/v1/public/commerce/products/:handle/related', async (request) => {
+    const { handle } = HandleParams.parse(request.params);
+    const q = TenantQuery.extend({
+      limit: z.coerce.number().int().min(1).max(24).default(8),
+    }).parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const product = await withTenant({ tenantId }, (tx) =>
+      tx.product.findFirst({
+        where: {
+          handle,
+          deletedAt: null,
+          status: 'active',
+          ...productSiteVisibilityWhere(propertyId),
+        },
+        select: { id: true },
+      })
+    );
+    if (!product) throw notFound('Product', handle);
+    const ids = await relatedProductService.relatedProductIds({ tenantId }, [product.id], {
+      take: q.limit,
+      propertyId,
+    });
+    if (ids.length === 0) return ok([]);
+    const rows = await withTenant({ tenantId }, (tx) =>
+      tx.product.findMany({
+        where: { id: { in: ids }, status: 'active', deletedAt: null },
+        select: productSelect(undefined, q.locale),
+      })
+    );
+    const byId = new Map(rows.map((r) => [r.id, r]));
+    const ordered = ids.flatMap((id) => {
+      const row = byId.get(id);
+      return row ? [publicProduct(applyTranslation(row, q.locale))] : [];
+    });
+    const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
+    return ok(await withFleetFit(tenantId, ordered, viewerB2bAccountId, request.log));
   });
 
   app.get('/v1/public/commerce/products/:handle', async (request) => {

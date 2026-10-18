@@ -51,6 +51,7 @@ import {
   useGatewayCredentials,
   usePaymentConfig,
   useSelectGateway,
+  sparxPayNeed,
   useStartSparxPayOnboarding,
   type GatewayDescriptor,
   type MaskedGatewayCredential,
@@ -261,6 +262,7 @@ function SparxPayBody({
   const toast = useToast();
   const sparxPay = config?.sparxPay;
   const started = Boolean(sparxPay?.accountId);
+  const need = sparxPayNeed(sparxPay);
 
   const start = () => {
     const returnUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -303,13 +305,11 @@ function SparxPayBody({
               ? 'You started setting up sparx Pay but it is not finished. Continue where you left off. It opens on a secure page and brings you back here when it is done.'
               : 'Setup takes a few minutes on a secure page (bank details and identity checks). You will be brought back here when it is finished.'}
           </Text>
-          {sparxPay && started && !sparxPay.detailsSubmitted ? (
-            <Alert color="info">
+          {need ? (
+            <Alert color={need.tone}>
               <AlertContent>
-                <AlertTitle>Details still needed</AlertTitle>
-                <AlertDescription>
-                  sparx Pay is waiting on the rest of your details before it can take payments.
-                </AlertDescription>
+                <AlertTitle>{need.title}</AlertTitle>
+                <AlertDescription>{need.description}</AlertDescription>
               </AlertContent>
             </Alert>
           ) : null}

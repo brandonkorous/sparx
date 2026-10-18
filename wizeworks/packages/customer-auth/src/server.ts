@@ -14,7 +14,7 @@ import { APIError, createAuthMiddleware, getSessionFromCtx } from 'better-auth/a
 
 import { hashPassword, verifyPassword } from './hash';
 import { publishCustomerAuthEmail } from './email';
-import { resolveStoreBaseUrl } from './store-url';
+import { resolveStoreBaseUrl, resolveStoreName } from './store-url';
 import { CUSTOMER_COOKIE_PREFIX, SESSION_COOKIE_NAME } from './session';
 import { tenantScopedClient } from './tenant-adapter';
 import { CUSTOMER_MCP_SCOPES, verifyCustomerConsentGrant } from './mcp-scopes';
@@ -25,6 +25,8 @@ declare global {
 
 /** Reset-token lifetime surfaced in the email copy (Better Auth default is 1h). */
 const RESET_EXPIRES_MINUTES = 60;
+/** How long a "confirm it's you" link works (sparx persona issue 329). */
+const CONFIRM_EXPIRES_MINUTES = 60;
 
 /** The secret the customer Better Auth instance is constructed with — the SINGLE
  *  source so the consent-grant minter (api-rest) and the /mcp/authorize guard
@@ -185,6 +187,28 @@ function createCustomerAuth() {
           template: 'password-reset',
           to: user.email,
           props: { resetUrl, expiresInMinutes: RESET_EXPIRES_MINUTES },
+        });
+      },
+    },
+
+    // Confirming the address (sparx persona issue 329). Sign-up stays instant
+    // (`requireEmailVerification: false`); what waits for the link is the
+    // history a guest left under the same email, which `ensureMembership` will
+    // not hand to a login until it is confirmed. The link lands on the shopper's
+    // own site, built here for the same reason the reset link is.
+    emailVerification: {
+      expiresIn: CONFIRM_EXPIRES_MINUTES * 60,
+      sendVerificationEmail: async ({ user, token }) => {
+        const [base, siteName] = await Promise.all([resolveStoreBaseUrl(), resolveStoreName()]);
+        await publishCustomerAuthEmail({
+          template: 'customer-email-confirm',
+          to: user.email,
+          props: {
+            siteName,
+            name: user.name && user.name !== user.email ? user.name.split(' ')[0] : null,
+            confirmUrl: `${base}/account/verify?token=${encodeURIComponent(token)}`,
+            expiresInMinutes: CONFIRM_EXPIRES_MINUTES,
+          },
         });
       },
     },

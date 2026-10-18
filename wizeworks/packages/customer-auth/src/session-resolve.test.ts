@@ -30,6 +30,8 @@ describe('getCustomerSession', () => {
       userId: 'u1',
       email: 'rowan@example.com',
       name: 'Rowan',
+      // No `emailVerified` on the user reads as not confirmed (issue 329).
+      emailVerified: false,
     });
   });
 

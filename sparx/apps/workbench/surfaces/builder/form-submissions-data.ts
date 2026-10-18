@@ -31,6 +31,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
+import { formatShopDateTime } from '../../lib/shop-clock';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -336,10 +337,8 @@ export function formatDate(value: string | null | undefined): string {
 
 /** Date and time together — for the moment a submission arrived. */
 export function formatDateTime(value: string | null | undefined): string {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-  return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  // On the shop's clock, not this computer's (sparx persona issue 333).
+  return formatShopDateTime(value);
 }
 
 /** A byte count in the units a person reads. */

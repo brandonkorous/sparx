@@ -135,6 +135,12 @@ export const TEMPLATE_PROPS: { [K in TemplateId]: PropsFor<K> } = {
     subject: 'Thanks for getting in touch',
     message: 'Do you deliver on Saturdays?',
   },
+  'customer-email-confirm': {
+    siteName: 'Rosa Flowers',
+    name: 'Dev',
+    confirmUrl: 'https://rosaflowers.example/account/verify?token=t',
+    expiresInMinutes: 60,
+  },
   'gated-delivery': {
     siteName: 'Rosa Flowers',
     name: 'Dev Patel',

@@ -7,6 +7,7 @@ import { HELD_FOR_SIGN_OFF_STATUS } from '@wizeworks/crm-schemas';
 import type { Order, OrderAddress, OrderCustomer } from './order-types';
 import { formatAmount } from '../../lib/money-format';
 import { localityLine } from '../../lib/address-format';
+import { formatShopDateTime } from '../../lib/shop-clock';
 
 /** The buyer in one line: a company if they trade as one, otherwise their name,
  *  otherwise their email. Never an empty cell — an order always has a buyer. */
@@ -82,8 +83,8 @@ export function formatDate(value: string | null | undefined): string {
 }
 
 export function formatDateTime(value: string | null | undefined): string {
-  if (!value) return '—';
-  return new Date(value).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  // On the shop's clock, not this computer's (sparx persona issue 333).
+  return formatShopDateTime(value);
 }
 
 /** A frozen address as a list of lines, blanks dropped. Rendering the fields

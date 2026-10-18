@@ -11,6 +11,10 @@ import { RecordPayment } from './record-payment';
 import { paymentNote } from './payment-note';
 import { canTakeOff } from './payment-undo';
 import type { useOrderPayments, useOrderRefunds } from './data';
+// The words for every way money arrives, gateways included. The pane looked a
+// processor up in a short list that left out `sparx_pay`, so a card payment read
+// "$640.96 · sparx_pay" (sparx persona issue 332).
+import { paymentMethodLabel } from '../../lib/payment-methods';
 import type { useOrderRisk } from './order-detail-actions';
 import {
   amountDue,
@@ -19,7 +23,6 @@ import {
   paidByHand,
   paymentRecordTone,
   refundTone,
-  PAYMENT_PROCESSOR_LABELS,
   PAYMENT_STATUS_LABELS,
   REFUND_STATUS_LABELS,
   type Order,
@@ -47,8 +50,7 @@ function PaymentRow({
     <li className={ROW}>
       <div className="flex min-w-0 flex-col gap-0.5">
         <span className="text-base font-medium">
-          {formatMoney(payment.amount, payment.currency)} ·{' '}
-          {PAYMENT_PROCESSOR_LABELS[payment.processor] ?? payment.processor}
+          {formatMoney(payment.amount, payment.currency)} · {paymentMethodLabel(payment.processor)}
         </span>
         <span className="text-sm">{formatDateTime(payment.capturedAt ?? payment.createdAt)}</span>
         {/* What she wrote down when the money came in (issue 223). */}

@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-harbor',
-  version: '1.5.4',
+  version: '1.5.6',
   name: 'Harbor',
   summary:
     'A complete starter in the Harbor look, tuned for freight, haulage, and plant hire: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.',

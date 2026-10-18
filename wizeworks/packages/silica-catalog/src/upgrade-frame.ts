@@ -548,9 +548,50 @@ const MENU_TOGGLE_CLASS = 'inline-flex items-center';
 const SWITCH_FROM = '@sm:';
 const SWITCH_TO = '@5xl:';
 
-/** How the bar's CTA (and its light/dark switch) hide on a phone and come back at the
- *  bar's switch, so they and the Menu trade places at exactly the same width. */
+/** How the bar's light/dark switch hides on a phone and comes back at the bar's switch,
+ *  so it and the Menu trade places at exactly the same width. */
 const BAR_PHONE_HIDDEN_CLASSES = ['hidden', '@5xl:inline-flex'];
+
+/** The same for the bar's CTA, which comes back as the box silicaui's `.btn` is drawn
+ *  as. The button centers its words with `align-content`, which works in a block box
+ *  and does nothing in a single-line flex box, so a CTA shown again as `inline-flex`
+ *  drew "Get in touch" against the top of its own fill on every wide screen (sparx
+ *  persona issue 328). A button that holds an icon is centered by silicaui's own
+ *  `.btn:has(svg)` flex rule, and the CTA here holds words. */
+const BAR_CTA_SHOWN = '@5xl:inline-block';
+const BAR_CTA_HIDDEN_CLASSES = ['hidden', BAR_CTA_SHOWN];
+
+/** A bar button this file once showed again as `inline-flex`, with words and no icon:
+ *  the shape issue 328 is about. */
+const isFlexShownCta = (node: Element): boolean =>
+  hasClass(node, 'btn') &&
+  hasClass(node, 'hidden') &&
+  hasClass(node, '@5xl:inline-flex') &&
+  (node.children ?? []).every((c) => typeof c === 'string');
+
+/** Show every such button again as a block box, so silicaui centers its words. Runs on
+ *  headers the phone repair already rewrote, which that repair no longer matches. */
+export function centerBarButtons(node: Node): Node | null {
+  if (!isElement(node)) return null;
+  if (isFlexShownCta(node)) {
+    return {
+      ...node,
+      class: classWords(node)
+        .map((w) => (w === '@5xl:inline-flex' ? BAR_CTA_SHOWN : w))
+        .join(' '),
+    };
+  }
+  const children = node.children ?? [];
+  let changed = false;
+  const rebuilt = children.map((child) => {
+    if (typeof child === 'string') return child;
+    const next = centerBarButtons(child);
+    if (!next) return child;
+    changed = true;
+    return next;
+  });
+  return changed ? { ...node, children: rebuilt } : null;
+}
 
 /** Move every `@sm:` word in the bar's group to the switch width, so the links, the
  *  Menu, the group's spacing and the moved controls all change at the same place. */
@@ -650,7 +691,7 @@ function findPhoneMenu(node: Node): { menu: Element; group: Element } | null {
  *  THE REPAIR, in one place:
  *   1. the brand core gets `shrink-0`, so the logo is drawn at its own size whatever
  *      else is in the bar;
- *   2. the bar's primary button is hidden below the switch (`hidden @5xl:inline-flex`),
+ *   2. the bar's primary button is hidden below the switch (`hidden @5xl:inline-block`),
  *      the width at which the bar's links hide and the Menu appears;
  *   3. a copy of that button becomes the menu's last item, a full-width primary button,
  *      so the call to action is one tap away on a phone and nothing is lost;
@@ -709,10 +750,12 @@ export function fitHeaderOnPhone(nav: Node): Node | null {
           if (typeof c === 'string' || !moving.includes(c)) return c;
           // The toggle's own display word goes: `hidden` and `inline-flex` side by side
           // would leave which one wins to stylesheet order.
-          const kept = toggles.includes(c)
+          const isToggle = toggles.includes(c);
+          const kept = isToggle
             ? classWords(c).filter((w) => !DISPLAY_WORDS.has(w))
             : classWords(c);
-          return { ...c, class: [...kept, ...BAR_PHONE_HIDDEN_CLASSES].join(' ') } as Node;
+          const hiding = isToggle ? BAR_PHONE_HIDDEN_CLASSES : BAR_CTA_HIDDEN_CLASSES;
+          return { ...c, class: [...kept, ...hiding].join(' ') } as Node;
         }),
       };
     }
@@ -788,7 +831,10 @@ export function fitHeaderOnPhone(nav: Node): Node | null {
  *      size, its button and light/dark switch move into the Menu, and the bar keeps the
  *      Menu up to 1024px, so it fits from 320px up with no sideways scroll. See
  *      `fitHeaderOnPhone`. It finds its nodes at any depth, so it does not care whether
- *      the measure repair has boxed the bar yet. */
+ *      the measure repair has boxed the bar yet.
+ *   8. **Bar button centering** (sparx persona issue 328): a CTA step 7 once showed
+ *      again as `@5xl:inline-flex` is shown as `@5xl:inline-block`, the box silicaui's
+ *      button centers its words in. See `centerBarButtons`. */
 export function upgradeFrameChrome(root: Node): { root: Node; changed: boolean } {
   if (!isElement(root)) return { root, changed: false };
 
@@ -850,6 +896,7 @@ export function upgradeFrameChrome(root: Node): { root: Node; changed: boolean }
   );
   healRegion('footer', upgradeFooterBlurb);
   healRegion('nav', fitHeaderOnPhone);
+  healRegion('nav', centerBarButtons);
 
   // The header first: the captured bar is the frame's first `<nav>`. Any band in the
   // frame drawn the outside way follows, the footer among them, through the same rule

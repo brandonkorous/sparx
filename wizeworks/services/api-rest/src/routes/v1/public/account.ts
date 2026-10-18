@@ -11,6 +11,8 @@
 //   PATCH  /v1/public/commerce/account/me        ?tenant=  { firstName?, lastName?, phone? }
 //   POST   /v1/public/commerce/account/password/forgot ?tenant=  { email }
 //   POST   /v1/public/commerce/account/password/reset  ?tenant=  { token, password }
+//   POST   /v1/public/commerce/account/email/confirm   ?tenant=  { token }
+//   POST   /v1/public/commerce/account/email/resend    ?tenant=  (the signed-in login)
 //   GET    /v1/public/commerce/account/orders    ?tenant=  (paged, customer-scoped)
 //   GET    /v1/public/commerce/account/orders/:orderId   (ownership-checked)
 //   GET/POST/PATCH/DELETE /v1/public/commerce/account/addresses[/:addressId]
@@ -29,6 +31,9 @@ import { NET_TERMS_AR_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
 import { withTenant } from '@wizeworks/db';
 import {
   CustomerAuthError,
+  confirmCustomerEmail,
+  getCustomerSession,
+  sendCustomerEmailConfirmation,
   sendCustomerPasswordReset,
   resetCustomerPassword,
   signInCustomer,
@@ -63,6 +68,7 @@ const RegisterBody = z.object({
   firstName: z.string().max(255).optional(),
   lastName: z.string().max(255).optional(),
 });
+const ConfirmEmailBody = z.object({ token: z.string().min(1).max(2048) });
 const LoginBody = z.object({
   email: z.string().min(3).max(255),
   password: z.string().min(1).max(200),
@@ -301,6 +307,24 @@ async function claimGuestCart(
   }
 }
 
+/**
+ * The answer to a sign-up or sign-in whose email a guest record already sits
+ * under, before the email is confirmed (sparx persona issue 329). The login
+ * exists and stays signed in; the record waits for the link, which goes out
+ * now. Best-effort: a send that fails leaves "Send the link again" to try.
+ */
+async function askToConfirm(ctx: CustomerAuthContext, email: string) {
+  // `sent` is whether the link went. The page says "check your email" only when
+  // it did, and otherwise that it could not send one (sparx persona issue 337).
+  let sent = true;
+  try {
+    await sendCustomerEmailConfirmation(ctx, email);
+  } catch {
+    sent = false;
+  }
+  return { customer: null, confirmEmail: { email, sent }, recognized: false, cart: null };
+}
+
 const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/commerce/account/register', AUTH_RATE_LIMIT, async (request, reply) => {
     const body = RegisterBody.parse(request.body);
@@ -319,14 +343,17 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     // Per-site membership (docs/58 D2). `recognized` (D6): true when a fresh
     // membership was created for a user who already had a login (on this or a
     // sister site) — the storefront surfaces a "separate account on this site" notice.
-    const { customerId, created } = await ensureAnnouncedMembership(
+    const membership = await ensureAnnouncedMembership(
       ctx,
       propertyId,
       outcome.userId,
       outcome.email,
-      { firstName: body.firstName, lastName: body.lastName }
+      { firstName: body.firstName, lastName: body.lastName },
+      outcome.emailVerified
     );
     relaySetCookies(reply, outcome.setCookies);
+    if (membership.awaitingConfirmation) return ok(await askToConfirm(ctx, outcome.email));
+    const { customerId, created } = membership;
     const cart = await claimGuestCart(ctx, request, customerId);
     return ok({
       customer: await loadProfile(ctx, customerId),
@@ -343,14 +370,17 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     if (!outcome) throw unauthorized('Invalid email or password.');
     // Recognition (docs/58 D6): a first sign-in on this site creates a fresh
     // membership (created) because the account lived on a sister site until now.
-    const { customerId, created } = await ensureAnnouncedMembership(
+    const membership = await ensureAnnouncedMembership(
       ctx,
       propertyId,
       outcome.userId,
       outcome.email,
-      {}
+      {},
+      outcome.emailVerified
     );
     relaySetCookies(reply, outcome.setCookies);
+    if (membership.awaitingConfirmation) return ok(await askToConfirm(ctx, outcome.email));
+    const { customerId, created } = membership;
     const cart = await claimGuestCart(ctx, request, customerId);
     return ok({ customer: await loadProfile(ctx, customerId), recognized: created, cart });
   });
@@ -370,7 +400,16 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   // reader gets exactly what `/me` gives.
   app.get('/v1/public/commerce/account/session', async (request) => {
     const ctx = await accountContext(request);
-    if (!(await optionalCustomer(request, ctx))) return ok({ customer: null });
+    if (!(await optionalCustomer(request, ctx))) {
+      // Signed in, but the record under this email waits for the confirm link
+      // (sparx persona issue 329): say so, so the site can say "check your email".
+      const session = await getCustomerSession(ctx, request.headers.cookie);
+      return ok(
+        session && !session.emailVerified
+          ? { customer: null, confirmEmail: { email: session.email } }
+          : { customer: null }
+      );
+    }
     return ok(await signedInProfile(request, ctx));
   });
 
@@ -431,6 +470,34 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     const okReset = await resetCustomerPassword(ctx, body);
     if (!okReset) throw validationError('This reset link is invalid or has expired.');
     return ok({ ok: true });
+  });
+
+  // ── Confirming the email (sparx persona issue 329) ───────────────────────
+  // The link's token proves the inbox. The next request from the signed-in
+  // login then adopts the record under that email, as sign-up used to at once.
+  app.post('/v1/public/commerce/account/email/confirm', AUTH_RATE_LIMIT, async (request) => {
+    const body = ConfirmEmailBody.parse(request.body);
+    const ctx = await accountContext(request);
+    const confirmed = await confirmCustomerEmail(ctx, body);
+    if (!confirmed) throw validationError('This link is invalid or has expired.');
+    return ok({ ok: true });
+  });
+
+  app.post('/v1/public/commerce/account/email/resend', AUTH_RATE_LIMIT, async (request) => {
+    const ctx = await accountContext(request);
+    const session = await getCustomerSession(ctx, request.headers.cookie);
+    if (!session) throw unauthorized('Sign in, and we will send the link again.');
+    if (!session.emailVerified) {
+      try {
+        await sendCustomerEmailConfirmation(ctx, session.email);
+      } catch (err) {
+        if (err instanceof CustomerAuthError && err.code === 'EMAIL_UNAVAILABLE') {
+          throw validationError('The link could not be sent just now. Try again in a minute.');
+        }
+        throw err;
+      }
+    }
+    return ok({ email: session.email });
   });
 
   // ── Orders ────────────────────────────────────────────────────────────

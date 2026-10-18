@@ -14,13 +14,14 @@ import {
   ensureMembership,
   getCustomerSession,
   verifyCustomerMcpToken,
+  type AwaitingConfirmation,
   type CustomerAuthContext,
   type EnsureMembershipNames,
   type EnsureMembershipResult,
 } from '@wizeworks/customer-auth';
 import { customerService } from '@wizeworks/crm';
 import { withTenant } from '@wizeworks/db';
-import { forbidden, unauthorized } from '@wizeworks/api-core/errors';
+import { ApiError, forbidden, unauthorized } from '@wizeworks/api-core/errors';
 
 import { resolvePublicPropertyId } from './property.js';
 
@@ -85,9 +86,11 @@ export async function ensureAnnouncedMembership(
   propertyId: string | null,
   userId: string,
   email: string,
-  names: EnsureMembershipNames
-): Promise<EnsureMembershipResult> {
-  const result = await ensureMembership(ctx, propertyId, userId, email, names);
+  names: EnsureMembershipNames,
+  emailVerified: boolean
+): Promise<EnsureMembershipResult | AwaitingConfirmation> {
+  const result = await ensureMembership(ctx, propertyId, userId, email, names, emailVerified);
+  if (result.awaitingConfirmation) return result;
   if (result.created) {
     await customerService.announceCustomer(ctx.tenantId, 'crm.customer.created', {
       id: result.customerId,
@@ -102,17 +105,34 @@ export async function ensureAnnouncedMembership(
   return result;
 }
 
+/** What a request's login resolves to on this site: the membership, nobody, or a
+ *  login that must confirm its email before the record under it is theirs. */
+type Resolution = ResolvedCustomer | 'awaiting-confirmation' | null;
+
+/** The answer a route gets for a login that has not confirmed the email a guest
+ *  record sits under (sparx persona issue 329). `details.reason` lets the site
+ *  say "check your email" rather than "sign in again". */
+export function emailUnconfirmed(): ApiError {
+  return new ApiError(
+    'FORBIDDEN',
+    'Confirm your email to open your account here. We sent you a link.',
+    { reason: 'email_unconfirmed' }
+  );
+}
+
 /** Adopt a resolved (userId, email) into the per-site membership + return it. */
 async function toMembership(
   ctx: CustomerAuthContext,
   request: FastifyRequest,
   userId: string,
   email: string,
-  scopes: ReadonlySet<string> | null
-): Promise<ResolvedCustomer> {
+  scopes: ReadonlySet<string> | null,
+  emailVerified: boolean
+): Promise<Resolution> {
   const propertyId = await activeProperty(request, ctx.tenantId);
-  const { customerId } = await ensureAnnouncedMembership(ctx, propertyId, userId, email, {});
-  return { customerId, userId, scopes };
+  const result = await ensureAnnouncedMembership(ctx, propertyId, userId, email, {}, emailVerified);
+  if (result.awaitingConfirmation) return 'awaiting-confirmation';
+  return { customerId: result.customerId, userId, scopes };
 }
 
 /**
@@ -125,8 +145,18 @@ export async function optionalCustomer(
   request: FastifyRequest,
   ctx: CustomerAuthContext
 ): Promise<ResolvedCustomer | null> {
+  const resolved = await resolveCustomer(request, ctx);
+  return resolved === 'awaiting-confirmation' ? null : resolved;
+}
+
+async function resolveCustomer(
+  request: FastifyRequest,
+  ctx: CustomerAuthContext
+): Promise<Resolution> {
   const session = await getCustomerSession(ctx, cookieHeader(request));
-  if (session) return toMembership(ctx, request, session.userId, session.email, null);
+  if (session) {
+    return toMembership(ctx, request, session.userId, session.email, null, session.emailVerified);
+  }
 
   const token = bearerToken(request);
   if (token) {
@@ -136,8 +166,19 @@ export async function optionalCustomer(
       // authUserId) — ensureMembership adopts/creates by userId, so a null email
       // only matters for a brand-new membership (rare: a shopper who authorized an
       // MCP client before ever visiting this site). Load it from the user row.
-      const email = await customerUserEmail(ctx, verified.userId);
-      return toMembership(ctx, request, verified.userId, email, new Set(verified.scopes));
+      // A connected assistant was authorized from a signed-in account on this
+      // site, so its membership already exists and resolves by login. A login
+      // with no membership yet is not handed a guest record through a token
+      // either: the same confirmation rule holds.
+      const { email, emailVerified } = await customerUserEmail(ctx, verified.userId);
+      return toMembership(
+        ctx,
+        request,
+        verified.userId,
+        email,
+        new Set(verified.scopes),
+        emailVerified
+      );
     }
   }
   return null;
@@ -145,11 +186,17 @@ export async function optionalCustomer(
 
 /** The Better Auth user's email (for a fresh membership on a bearer-first visit).
  *  RLS-scoped read of the tenant-scoped customer_users table. */
-async function customerUserEmail(ctx: CustomerAuthContext, userId: string): Promise<string> {
+async function customerUserEmail(
+  ctx: CustomerAuthContext,
+  userId: string
+): Promise<{ email: string; emailVerified: boolean }> {
   const row = await withTenant(ctx, (tx) =>
-    tx.customerUser.findUnique({ where: { id: userId }, select: { email: true } })
+    tx.customerUser.findUnique({
+      where: { id: userId },
+      select: { email: true, emailVerified: true },
+    })
   );
-  return row?.email ?? '';
+  return { email: row?.email ?? '', emailVerified: row?.emailVerified === true };
 }
 
 /**
@@ -164,7 +211,8 @@ export async function requireCustomer(
   ctx: CustomerAuthContext,
   requiredScope?: string
 ): Promise<ResolvedCustomer> {
-  const resolved = await optionalCustomer(request, ctx);
+  const resolved = await resolveCustomer(request, ctx);
+  if (resolved === 'awaiting-confirmation') throw emailUnconfirmed();
   if (!resolved) throw unauthorized('Session expired. Please sign in again.');
   if (resolved.scopes !== null) {
     if (!requiredScope) {

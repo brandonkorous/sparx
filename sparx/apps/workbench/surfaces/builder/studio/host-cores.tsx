@@ -134,6 +134,32 @@ function ThemeToggleMark({ hint }: { hint: string }) {
   );
 }
 
+/** The header cart at its real size: the square ghost button the live site draws, so
+ *  the bar around it lays out in the studio as it will for a shopper. No count, because
+ *  there is no basket in the studio; the live button shows one once something is in it
+ *  (sparx persona issue 325). */
+function CartButtonMark({ hint }: { hint: string }) {
+  return (
+    <span className="btn btn-ghost btn-sm btn-square" title={hint}>
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="9" cy="21" r="1" />
+        <circle cx="20" cy="21" r="1" />
+        <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
+      </svg>
+    </span>
+  );
+}
+
 /** The legal-links column at its real size — a heading plus the links themselves.
  *
  *  The labels are REPRESENTATIVE, not the tenant's own: unlike `site.brand`, whose data
@@ -359,6 +385,9 @@ export function makeRenderHostNode(root: unknown): RenderHostNode {
     }
     if (node.component === HOST_KEYS.siteAccountLink) {
       return <AccountLinkMark hint={meta?.hint ?? label} />;
+    }
+    if (node.component === HOST_KEYS.siteCartButton) {
+      return <CartButtonMark hint={meta?.hint ?? label} />;
     }
     if (node.component === HOST_KEYS.siteSocialLinks) {
       return <SocialLinksMark root={root} hint={meta?.hint ?? label} />;

@@ -12,6 +12,8 @@ export {
   signOutCustomer,
   sendCustomerPasswordReset,
   resetCustomerPassword,
+  sendCustomerEmailConfirmation,
+  confirmCustomerEmail,
   type CustomerAuthContext,
   type SessionMeta,
   type AuthOutcome,
@@ -23,6 +25,7 @@ export {
   type EnsureMembershipContext,
   type EnsureMembershipNames,
   type EnsureMembershipResult,
+  type AwaitingConfirmation,
 } from './membership';
 
 export { verifyCustomerMcpToken, type VerifiedCustomerMcp } from './mcp-verify';

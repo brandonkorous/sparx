@@ -39,10 +39,31 @@ export interface DeferBody {
   emailType?: 'transactional' | 'marketing';
 }
 
+/** The console record a staff alert is about, for the dispatcher to link to. The
+ *  dispatcher, which knows the business's console address, turns it into a link;
+ *  the code that writes the alert does not (sparx persona issue 331). */
+export interface RecordLink {
+  /** A surface key from `@wizeworks/links` ROUTES, e.g. `commerce.order.detail`. */
+  surface: string;
+  id: string;
+  /** The route's parameter name. Absent means `id`. */
+  param?: string;
+  /** The button's words, e.g. "Open the order". */
+  label: string;
+}
+
 /** One of the three body sources the email-dispatch tick understands. */
 export type ScheduledSendBody =
   | { template: string; props?: Record<string, unknown> }
-  | { raw: { subject: string; html: string; text: string; templateId?: string } }
+  | {
+      raw: {
+        subject: string;
+        html: string;
+        text: string;
+        templateId?: string;
+        link?: RecordLink;
+      };
+    }
   | { defer: DeferBody };
 
 export interface EnqueueSendSpec {

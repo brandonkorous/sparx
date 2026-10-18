@@ -15,6 +15,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import type { WebhookEventKey } from './webhook-events';
+import { formatShopDateTime } from '../../lib/shop-clock';
 
 export * from './webhook-events';
 
@@ -189,8 +190,6 @@ export function webhookErrorMessage(error: unknown, fallback: string): string {
 
 /** Medium date and time — a notification's moment is a fact people scan. */
 export function formatDateTime(value: string | null | undefined): string {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-  return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  // On the shop's clock, not this computer's (sparx persona issue 333).
+  return formatShopDateTime(value);
 }

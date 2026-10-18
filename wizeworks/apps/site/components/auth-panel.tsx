@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { ConfirmEmailNotice } from '@/components/confirm-email-notice';
 import { useCustomer } from '@/components/customer-provider';
 import { signedInDestination } from '@/lib/auth-redirect';
 import { AccountError } from '@/lib/customer-client';
@@ -16,7 +17,7 @@ import { Alert, Button, Input, Tabs, TabsList, TabsTab } from '@wizeworks/silica
 type Mode = 'signin' | 'register';
 
 export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
-  const { login, register, status } = useCustomer();
+  const { login, register, status, awaitingEmail, awaitingLinkSent } = useCustomer();
   const router = useRouter();
   const params = useSearchParams();
   // A path on this site only, the same rule as below.
@@ -28,6 +29,11 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
   useEffect(() => {
     if (alreadyIn) router.replace(alreadyIn);
   }, [alreadyIn, router]);
+
+  // Sent here by an order email's "Track your order". Most of the people who
+  // follow it bought as a guest and have no password, and "Sign in" alone was a
+  // dead end for them (sparx persona issue 329).
+  const fromOrders = redirectTo.startsWith('/account/orders');
 
   const [mode, setMode] = useState<Mode>(initial);
   const [email, setEmail] = useState('');
@@ -42,15 +48,20 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
     setBusy(true);
     setError(null);
     try {
-      if (mode === 'signin') {
-        await login(email, password);
-      } else {
-        await register({
-          email,
-          password,
-          firstName: firstName || undefined,
-          lastName: lastName || undefined,
-        });
+      const outcome =
+        mode === 'signin'
+          ? await login(email, password)
+          : await register({
+              email,
+              password,
+              firstName: firstName || undefined,
+              lastName: lastName || undefined,
+            });
+      // The account is made, and what is already kept under this email waits for
+      // the confirm link (sparx persona issue 329): the notice below says so.
+      if (outcome === 'confirm-email') {
+        setBusy(false);
+        return;
       }
       router.push(redirectTo);
       router.refresh();
@@ -67,8 +78,22 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
     setError(null);
   }
 
+  if (awaitingEmail) {
+    return (
+      <div className="mx-auto w-full max-w-[68ch] py-10 sm:px-6">
+        <h1 className="text-base-content mb-6 text-3xl font-semibold tracking-tight">
+          Confirm your email
+        </h1>
+        <ConfirmEmailNotice email={awaitingEmail} sent={awaitingLinkSent} />
+      </div>
+    );
+  }
+
   return (
-    <div className="mx-auto w-full max-w-[68ch] px-6 py-10">
+    // No side padding of its own on a phone: the page and the shell around it
+    // already pad it, and a third 24px left 216px for two tabs that need 220,
+    // so "Create account" was cut off on every phone (sparx persona issue 329).
+    <div className="mx-auto w-full max-w-[68ch] py-10 sm:px-6">
       <Tabs
         variant="boxed"
         color="primary"
@@ -96,6 +121,22 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
           ? 'Sign in to see everything you have with us and keep your details up to date.'
           : 'An account keeps your details to hand, so you never type them twice.'}
       </p>
+
+      {fromOrders && mode === 'signin' ? (
+        <Alert color="info" className="mb-6 max-w-[560px]">
+          <span>
+            Ordered without an account?{' '}
+            <button
+              type="button"
+              className="link font-semibold"
+              onClick={() => switchMode('register')}
+            >
+              Create one
+            </button>{' '}
+            with the email you ordered with. We email you a link, and your orders join your account.
+          </span>
+        </Alert>
+      ) : null}
 
       <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
         {mode === 'register' ? (

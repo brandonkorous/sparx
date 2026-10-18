@@ -71,6 +71,12 @@ export {
 } from './form-submission-confirmation';
 
 export {
+  CustomerEmailConfirmEmail,
+  customerEmailConfirmSubject,
+  type CustomerEmailConfirmEmailProps,
+} from './customer-email-confirm';
+
+export {
   GatedDeliveryEmail,
   gatedDeliverySubject,
   type GatedDeliveryEmailProps,
