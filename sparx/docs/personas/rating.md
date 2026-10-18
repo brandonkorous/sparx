@@ -1,14 +1,14 @@
 # sparx workbench — pane ratings
 
-**Version:** 1.3
+**Version:** 1.4
 **Author:** Brandon Korous
-**Last Updated:** 2026-10-17
+**Last Updated:** 2026-10-18
 
 Every pane in the sparx workbench, scored on **Design** and **Ease** as the
 personas open them. How and when to score is RULE #6 in [CLAUDE.md](CLAUDE.md);
 this file is where the numbers live.
 
-**Scored so far: 340 of 340 panes.** Plus the non-console list at the foot. Update
+**Scored so far: 340 of 340 panes,** and all 22 screens on the non-console list at the foot. Update
 that line as rows fill in. It is the denominator, and a rating file that does not
 show what it has not looked at is the same lie as an empty issue list.
 
@@ -525,30 +525,30 @@ The doors in and the customer's side. Not generated, because they are not
 registered surfaces; listed by hand from the spine and the persona's deliverable
 inventory.
 
-| Screen                                               | Where                             | Design | Ease | Gap to 10 | Persona |
-| ---------------------------------------------------- | --------------------------------- | ------ | ---- | --------- | ------- |
-| sparx.works home                                     | web :3003 `/`                     | —      | —    | —         | —       |
-| sparx.works pricing                                  | web :3003 `/pricing`              | —      | —    | —         | —       |
-| sparx.works wholesale (B2B) module page              | web :3003                         | —      | —    | —         | —       |
-| Create your account                                  | workbench :3011 `/sign-up`        | —      | —    | —         | —       |
-| Sign in                                              | workbench :3011 `/sign-in`        | —      | —    | —         | —       |
-| Reset password                                       | workbench :3011 `/reset-password` | —      | —    | —         | —       |
-| Accept an invite                                     | workbench :3011 `/accept-invite`  | —      | —    | —         | —       |
-| First-run setup                                      | workbench :3011 (first-run gate)  | —      | —    | —         | —       |
-| Gillett site — home                                  | published site                    | —      | —    | —         | —       |
-| Gillett site — parts catalog                         | published site                    | —      | —    | —         | —       |
-| Gillett site — product page                          | published site                    | —      | —    | —         | —       |
-| Gillett site — cart and checkout                     | published site                    | —      | —    | —         | —       |
-| Gillett site — shopper account and orders            | published site                    | —      | —    | —         | —       |
-| Gillett site — trade (wholesale) sign-in and reorder | published site                    | —      | —    | —         | —       |
-| Gillett site — book a service                        | published site                    | —      | —    | —         | —       |
-| Gillett site — contact, about, locations             | published site                    | —      | —    | —         | —       |
-| Gillett site — blog / articles                       | published site                    | —      | —    | —         | —       |
-| Gillett site — legal pages                           | published site                    | —      | —    | —         | —       |
-| Gillett site — 404                                   | published site                    | —      | —    | —         | —       |
-| Order confirmation email                             | event-worker log                  | —      | —    | —         | —       |
-| Invoice email                                        | event-worker log                  | —      | —    | —         | —       |
-| MCP connection (AI client to Gillett's data)         | api-mcp                           | —      | —    | —         | —       |
+| Screen                                               | Where                             | Design | Ease  | Gap to 10                                                                                                                                                                                               | Persona |
+| ---------------------------------------------------- | --------------------------------- | ------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| sparx.works home                                     | web :3003 `/`                     | 8      | 8     | says what it does in one sentence with one way in (Start your story); the headline is set in capitals                                                                                                   | P01     |
+| sparx.works pricing                                  | web :3003 `/pricing`              | 6 → 8  | 8     | two page titles, and the stack card and footer painted module chips with inline hex and white icons (fixed: one title, theme fill classes with paired ink, #322); price your stack works live           | P01     |
+| sparx.works wholesale (B2B) module page              | web :3003                         | 8      | 8     | "Wholesale, done right." with the account-pricing picture beside it; holds at 360px                                                                                                                     | P01     |
+| Create your account                                  | workbench :3011 `/sign-up`        | 8      | 8     | one form with the three policies linked; it had no page title (fixed: one h1, #321); the web address follows the business name ([295])                                                                  | P01     |
+| Sign in                                              | workbench :3011 `/sign-in`        | 8      | 9     | password, a code, a link, a passkey or Google, all on one card; it had no page title (fixed, #321)                                                                                                      | P01     |
+| Reset password                                       | workbench :3011 `/reset-password` | 6 → 8  | 5 → 8 | opened with no reset code it asked for the new password twice and only then said the link was bad (fixed: it says so first and points to Forgot password?, #321)                                        | P01     |
+| Accept an invite                                     | workbench :3011 `/accept-invite`  | 8      | 8     | a link with no code says so and points to sign in; the invite card names the business, not sparx                                                                                                        | P01     |
+| First-run setup                                      | workbench :3011 (first-run gate)  | 8      | 7     | a running business is stopped from setting up again, with each screen named instead; a new one picks a starting point ([294]) and its address follows its name ([295])                                  | P01     |
+| Gillett site — home                                  | published site                    | 8      | 8     | clear way in (Shop parts, Book, Apply for an account); the shop's own copy carries two typos ("Gillet", "warhouse") that are theirs, not the platform's                                                 | P01     |
+| Gillett site — parts catalog                         | published site                    | 9      | 8     | fitment filter first, the buyer's own price and "Fits your fleet" on each card, holds at 360px; 653 products with no way to save a filter                                                               | P01     |
+| Gillett site — product page                          | published site                    | 9      | 9     | trade price beside the list price, which of the fleet it fits ("Fits Unit 12, 2019 RAM 3500"), and a quote request offered for quantity                                                                 | P01     |
+| Gillett site — cart and checkout                     | published site                    | 9      | 9     | details filled in, the marketing box unticked, delivery to her usual address, and a plain credit-limit answer at payment; card payment not seen (act 9)                                                 | P01     |
+| Gillett site — shopper account and orders            | published site                    | 7      | 8     | every order with Order again, credit and unpaid invoices on the overview; at 360px the 13-link account menu wraps to six lines above the orders, and Order again sits outside its order card            | P01     |
+| Gillett site — trade (wholesale) sign-in and reorder | published site                    | 8      | 9     | the wholesale page says what an account gets; Order again during an API outage now says the shop could not be reached ([086] 24, fixed)                                                                 | P01     |
+| Gillett site — book a service                        | published site                    | 6 → 8  | 8     | two page titles, the shop's "Book your truck in" and the block's "Book with us" (fixed: the block is the title only when the page has none, #321); every service says what it is before the time picker | P01     |
+| Gillett site — contact, about, locations             | published site                    | 8      | 8     | phone, email and address up front; two buildings explained (counter and service at the office, cores and returns to the warehouse)                                                                      | P01     |
+| Gillett site — blog / articles                       | published site                    | 8      | 8     | dated, signed by Doty, a back link to all posts; no related posts at the end                                                                                                                            | P01     |
+| Gillett site — legal pages                           | published site                    | 8      | 8     | five policies linked from every footer, each with its own last-updated date                                                                                                                             | P01     |
+| Gillett site — 404                                   | published site                    | 7 → 8  | 9     | the tab read only the shop name over "We couldn't find that page" (fixed: "Page not found", #321); search and the front page offered                                                                    | P01     |
+| Order confirmation email                             | event-worker log                  | 6 → 8  | 7 → 8 | each line showed its amount WITH tax (3.41) above "Subtotal $12.50" and "Tax $0.91" (fixed: before tax, as the printed invoice, #323); a track link and related parts                                   | P01     |
+| Invoice email                                        | event-worker log                  | 6 → 8  | 8     | "1 × $12.50 … $13.41", the same tax-inside line (fixed, #323); PO number, due date and a reply that reaches Gillett                                                                                     | P01     |
+| MCP connection (AI client to Gillett's data)         | api-mcp                           | 8      | 8     | a key scoped to what Doty chose; "which fleets are past due?" answered from his data; search failed at first on a local setting ([176], fixed)                                                          | P01     |
 
 ---
 

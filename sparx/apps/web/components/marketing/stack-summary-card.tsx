@@ -19,7 +19,11 @@ export interface StackLineItem {
   id: string;
   label: string;
   icon: LucideIcon;
-  color: string;
+  /** The module's solid fill AND its paired ink, as classes from
+   *  modules-catalog (MODULE_BACKGROUND_COLOR + MODULE_CONTENT_COLOR). It was a
+   *  hex painted inline with a white icon, so the chip ignored the theme and
+   *  every token change (RULE #1; sparx persona issue 322). */
+  fill: string;
   price: number;
   included: boolean;
 }
@@ -64,10 +68,9 @@ export function StackSummaryCard({
               return (
                 <div key={m.id} className="flex items-center gap-3 py-3">
                   <span
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md"
-                    style={{ backgroundColor: m.color }}
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${m.fill}`}
                   >
-                    <Icon size={14} color="#FFFFFF" strokeWidth={2} aria-hidden />
+                    <Icon size={14} strokeWidth={2} aria-hidden />
                   </span>
                   <Text as="span" className="flex-1 text-sm">
                     {m.label}

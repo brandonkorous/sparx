@@ -24,7 +24,7 @@ import { AuthShell } from '../../components/auth-shell';
 
 const MIN_PASSWORD = 8;
 
-export function ResetPasswordForm() {
+export function ResetPasswordForm({ hasToken }: { hasToken: boolean }) {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -68,10 +68,23 @@ export function ResetPasswordForm() {
       tabs={[{ id: 'reset', label: 'Set a new password', icon: KeyRound }]}
       activeTab="reset"
     >
-      {done ? (
+      {!hasToken && !done ? (
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-semibold">Password updated</h2>
+            <h1 className="text-xl font-semibold">This reset link is incomplete</h1>
+            <Text className="text-sm">
+              It is missing its reset code, so it cannot set a password. Go to sign in, choose
+              “Forgot password?” and we will email you a new link.
+            </Text>
+          </div>
+          <Button color="primary" render={<Link href="/sign-in" />}>
+            Go to sign in
+          </Button>
+        </div>
+      ) : done ? (
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-xl font-semibold">Password updated</h1>
             <Text className="text-sm">You can now sign in with your new password.</Text>
           </div>
           <Button color="primary" render={<Link href="/sign-in" />}>
@@ -81,7 +94,7 @@ export function ResetPasswordForm() {
       ) : (
         <form onSubmit={onSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-semibold">Set a new password</h2>
+            <h1 className="text-xl font-semibold">Set a new password</h1>
             <Text className="text-sm">
               Choose something strong: at least {MIN_PASSWORD} characters.
             </Text>

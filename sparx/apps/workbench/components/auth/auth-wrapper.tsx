@@ -388,7 +388,7 @@ export function AuthWrapper({
       <AuthShell tabs={[{ id: 'otp', label: 'Enter your code', icon: Mail }]} activeTab="otp">
         <form onSubmit={onVerifyCode} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-semibold">Check your email</h2>
+            <h1 className="text-xl font-semibold">Check your email</h1>
             <Text className="text-sm">
               We sent a {OTP_LENGTH}-digit code to <span className="font-medium">{email}</span>.
               Enter it below to continue.
@@ -468,9 +468,9 @@ export function AuthWrapper({
       >
         <form onSubmit={onVerifyTwoFactor} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-semibold">
+            <h1 className="text-xl font-semibold">
               {useBackupCode ? 'Use a backup code' : 'Enter the code from your app'}
-            </h2>
+            </h1>
             <Text className="text-sm">
               {useBackupCode
                 ? 'Enter one of the backup codes you saved when you turned on two-step verification. Each code works once.'
@@ -561,7 +561,7 @@ export function AuthWrapper({
       <AuthShell tabs={[{ id: 'link', label: 'Check your email', icon: Mail }]} activeTab="link">
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-semibold">Your sign-in link is on its way</h2>
+            <h1 className="text-xl font-semibold">Your sign-in link is on its way</h1>
             <Text className="text-sm">
               We emailed a sign-in link to <span className="font-medium">{email}</span>. Open it on
               this device and you&rsquo;ll be signed straight in: the link works once and expires in
@@ -591,7 +591,7 @@ export function AuthWrapper({
       >
         <form onSubmit={onSendReset} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-semibold">Reset your password</h2>
+            <h1 className="text-xl font-semibold">Reset your password</h1>
             <Text className="text-sm">
               Enter the email tied to your account and we&rsquo;ll send a link to set a new one.
             </Text>
@@ -645,7 +645,7 @@ export function AuthWrapper({
       >
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-semibold">Check your email</h2>
+            <h1 className="text-xl font-semibold">Check your email</h1>
             <Text className="text-sm">
               If an account exists for <span className="font-medium">{email}</span>, a
               password-reset link is on its way. It expires in an hour. Check your spam folder if
@@ -684,13 +684,13 @@ export function AuthWrapper({
 
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold">
+          <h1 className="text-xl font-semibold">
             {joining
               ? `${isSignUp ? 'Create your account' : 'Sign in'} to join ${joining.orgName}`
               : isSignUp
                 ? 'Start your story'
                 : 'Welcome back'}
-          </h2>
+          </h1>
           <Text className="text-sm">
             {joining
               ? `Use ${joining.email}, the address your invitation went to. ${isSignUp ? 'New here? Create your account below.' : 'No account yet? Choose Create account above.'}`

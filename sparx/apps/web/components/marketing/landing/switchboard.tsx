@@ -3,7 +3,13 @@
 import { useState } from 'react';
 import { Heading, Text } from '@wizeworks/silicaui-react';
 import type { MarketingModule } from '../primitives';
-import { MODULES, PAID_MODULES, MODULE_ICON, MODULE_HEX } from '../modules-catalog';
+import {
+  MODULES,
+  PAID_MODULES,
+  MODULE_BACKGROUND_COLOR,
+  MODULE_CONTENT_COLOR,
+  MODULE_ICON,
+} from '../modules-catalog';
 import { ModuleToggleCard } from '../module-toggle-card';
 import { StackSummaryCard, type StackLineItem } from '../stack-summary-card';
 
@@ -62,7 +68,7 @@ export function LandingSwitchboard() {
       id: m.id,
       label: m.label,
       icon: MODULE_ICON[m.id],
-      color: MODULE_HEX[m.id],
+      fill: `${MODULE_BACKGROUND_COLOR[m.id]} ${MODULE_CONTENT_COLOR[m.id]}`,
       price: included ? 0 : m.price,
       included,
     };

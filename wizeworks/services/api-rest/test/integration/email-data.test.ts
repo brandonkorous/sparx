@@ -83,7 +83,11 @@ describe('resolveSilicaEmailData — invoice template', () => {
                 description: 'Diagnostic labor',
                 quantity: 2,
                 unitPrice: 300,
-                lineTotal: 600,
+                // Taxed, so the email must show the amount BEFORE tax, as the
+                // printed invoice does (sparx persona issue 323).
+                lineSubtotal: 600,
+                taxAmount: 48,
+                lineTotal: 648,
                 sortOrder: 0,
               },
               {
@@ -91,6 +95,7 @@ describe('resolveSilicaEmailData — invoice template', () => {
                 description: 'Replacement injector',
                 quantity: 1,
                 unitPrice: 600,
+                lineSubtotal: 600,
                 lineTotal: 600,
                 sortOrder: 1,
               },

@@ -8,7 +8,7 @@ import {
   Heading,
   Text,
 } from '@wizeworks/silicaui-react';
-import { MODULE_HEX } from '../modules-catalog';
+import { MODULE_BACKGROUND_COLOR } from '../modules-catalog';
 import type { MarketingModule } from '../primitives';
 import { FEATURES } from './data';
 
@@ -17,7 +17,7 @@ import { FEATURES } from './data';
  * accordion (the same sticky-left / detail-right split landing uses for its
  * story and FAQ). Each row carries a module-hued dot, its price, and what it
  * replaces; opening it reveals a two-column feature grid keyed to that module's
- * own hue. The only inline style is the dynamic `MODULE_HEX` dot color.
+ * own hue. The dots take the module fill class; nothing here is an inline style.
  */
 export function PricingFeatures() {
   const firstOpen = FEATURES[0]?.key;
@@ -45,16 +45,15 @@ export function PricingFeatures() {
           <Card className="bg-base-100 shadow-none">
             <Accordion defaultValue={firstOpen ? [firstOpen] : []}>
               {FEATURES.map((m) => {
-                const hex = MODULE_HEX[m.key as MarketingModule];
+                // A fill class, not a hex painted inline, so the dot follows the theme
+                // (RULE #1; sparx persona issue 322).
+                const fill = MODULE_BACKGROUND_COLOR[m.key as MarketingModule];
                 return (
                   <AccordionItem key={m.key} value={m.key}>
                     <AccordionTrigger>
                       <span className="flex flex-1 flex-wrap items-center gap-x-4 gap-y-2 pr-3">
                         <span className="text-md flex w-[150px] items-center gap-2.5 font-medium">
-                          <span
-                            className="h-2.5 w-2.5 shrink-0 rounded-full"
-                            style={{ backgroundColor: hex }}
-                          />
+                          <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${fill}`} />
                           {m.name}
                         </span>
                         <Badge color="primary" variant="soft">
@@ -68,10 +67,7 @@ export function PricingFeatures() {
                       <div className="grid grid-cols-1 gap-x-8 gap-y-2.5 pt-1 pl-[22px] sm:grid-cols-2">
                         {m.feats.map((f) => (
                           <span key={f} className="text-md flex items-center gap-2.5">
-                            <span
-                              className="h-1.5 w-1.5 shrink-0 rounded-full"
-                              style={{ backgroundColor: hex }}
-                            />
+                            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${fill}`} />
                             {f}
                           </span>
                         ))}

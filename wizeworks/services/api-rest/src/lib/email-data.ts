@@ -556,7 +556,7 @@ async function resolveOrder(
             description: true,
             quantity: true,
             unitPrice: true,
-            lineTotal: true,
+            lineSubtotal: true,
             coreCharge: true,
             coreFirst: true,
             product: { select: { handle: true } },
@@ -647,7 +647,10 @@ async function resolveOrder(
         name: firstText(i.name, i.description),
         quantity: qty(i.quantity),
         unitPrice: money(i.unitPrice),
-        lineTotal: money(i.lineTotal),
+        // Before tax, as the printed invoice shows it (sparx persona issue 227):
+        // `lineTotal` carries the line's tax, so the email read "$13.41" on a line
+        // above "Subtotal $12.50" and "Tax $0.91" (sparx persona issue 323).
+        lineTotal: money(i.lineSubtotal),
       };
       // Bought by sending the old part first (issue 057): no money row, but the
       // promise and the address, under the part it is about.
@@ -1076,7 +1079,7 @@ async function resolveQuote(
         companyId: true,
         lines: {
           orderBy: { sortOrder: 'asc' },
-          select: { description: true, quantity: true, unitPrice: true, lineTotal: true },
+          select: { description: true, quantity: true, unitPrice: true, lineSubtotal: true },
         },
       },
     })
@@ -1094,7 +1097,7 @@ async function resolveQuote(
       name: l.description,
       quantity: qty(l.quantity),
       unitPrice: money(l.unitPrice),
-      lineTotal: money(l.lineTotal),
+      lineTotal: money(l.lineSubtotal), // before tax: see the order items above
     })),
   };
 }
@@ -1119,7 +1122,7 @@ async function resolveInvoice(
           companyId: true,
           lines: {
             orderBy: { sortOrder: 'asc' },
-            select: { description: true, quantity: true, unitPrice: true, lineTotal: true },
+            select: { description: true, quantity: true, unitPrice: true, lineSubtotal: true },
           },
         },
       }),
@@ -1157,7 +1160,7 @@ async function resolveInvoice(
       description: l.description,
       quantity: qty(l.quantity),
       unitPrice: money(l.unitPrice),
-      lineTotal: money(l.lineTotal),
+      lineTotal: money(l.lineSubtotal), // before tax: see the order items above
     })),
   };
 }

@@ -15,6 +15,7 @@ import type { SearchParams } from '@/components/products/product-listing';
 import { getPublishedSilicaPage } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 import { requireSiteModule } from '@/lib/site-modules';
+import { shellHasPageTitle } from '@/lib/shell-page-title';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
 // forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
@@ -49,7 +50,8 @@ export default async function ProductsPage({
     site,
     propertySlug: propertySlug ?? undefined,
     searchParams: sp,
-    listingHeadingIsPageTitle: true,
+    // Unless the tenant's own page already has one (issue 321).
+    listingHeadingIsPageTitle: !shellHasPageTitle(published?.root),
   });
 
   return (
