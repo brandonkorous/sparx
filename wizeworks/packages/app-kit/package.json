@@ -12,6 +12,10 @@
     "./chunk-error": {
       "types": "./src/chunk-error.ts",
       "default": "./src/chunk-error.ts"
+    },
+    "./forwarded-for": {
+      "types": "./src/forwarded-for.ts",
+      "default": "./src/forwarded-for.ts"
     }
   },
   "files": [

@@ -26,10 +26,17 @@ const AI_CRAWLERS = [
 // exponential space of near-identical results — which is exactly how api-rest was
 // flooded into a heap-death crashloop on 2026-07-16. The catalog's real content is
 // fully reachable without filters: the category pages and every listing detail are
-// in the sitemap. So crawl `/market/…`, but never its query strings. The facet
-// links carry rel="nofollow" and filtered views send `noindex` too — this is the
-// outermost of those three fences.
-const FACETED_BROWSE = '/market/*?*';
+// in the sitemap. So crawl `/market/…`, but never its query strings. Filtered
+// views send `noindex` too. The partner directory's filters are the same shape
+// and get the same rule.
+//
+// This is a REQUEST, and on 2026-10-18 a scraper ignored it (and nofollow, and
+// noindex) and walked the market's facets at ~30 pages a second. The fences that
+// hold are structural: the market's facets are form controls with no links to
+// follow, and both browse pages refuse a selection past MAX_FACET_SELECTIONS
+// (lib/browse-params) before any catalog read. This stays for the crawlers that
+// do listen.
+const FACETED_BROWSE = ['/market/*?*', '/partners/directory?*'];
 
 export default function robots(): MetadataRoute.Robots {
   return {

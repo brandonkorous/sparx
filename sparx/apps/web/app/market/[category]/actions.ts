@@ -6,6 +6,7 @@
 // unauthenticated (no session to forward), so this is a thin pass-through to the
 // data layer.
 
+import { MAX_FACET_SELECTIONS, countFacetSelections } from '@/lib/browse-params';
 import { fetchCategory, type MarketplaceListing } from '@/lib/marketplace';
 
 export async function loadMoreListings(
@@ -13,6 +14,11 @@ export async function loadMoreListings(
   query: Record<string, string>,
   cursor: string
 ): Promise<{ items: MarketplaceListing[]; next_cursor: string | null }> {
+  // A server action is a public POST endpoint, so it holds the same facet cap
+  // the browse page does — otherwise it is the uncapped way to the same reads.
+  if (countFacetSelections(category, query) > MAX_FACET_SELECTIONS) {
+    return { items: [], next_cursor: null };
+  }
   const page = await fetchCategory(category, { ...query, cursor, limit: '24' });
   return { items: page.items, next_cursor: page.next_cursor };
 }

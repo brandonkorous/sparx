@@ -58,3 +58,29 @@ export function canonicalizeParams(categoryId: string, params: BrowseParams): Br
 export function canonicalQueryString(categoryId: string, params: BrowseParams): string {
   return new URLSearchParams(canonicalizeParams(categoryId, params)).toString();
 }
+
+/**
+ * How many facet values one browse view may select, across every facet key.
+ *
+ * Canonical URLs turn permutations into combinations, but combinations are still
+ * 2^n — themes alone carry dozens of facet values. On 2026-10-18 a distributed
+ * scraper (real Chrome user agents, residential IPs in several countries, robots
+ * and nofollow ignored) walked that space at ~30 pages a second, selecting six to
+ * thirteen industries at once. Every page was a cold catalog read, so the
+ * marketing site's one shared api-rest budget ran dry: 60,000+ 429s in an hour,
+ * real visitors got an empty marketplace, and the `web` pod failed its liveness
+ * probe. A cap is what makes the space FINITE: the facet bar stops offering more
+ * than this, and the browse page answers anything beyond it with a 404 before it
+ * fetches. Four covers a person's real narrowing (two industries, a style, a
+ * color); nobody browses thirteen industries at once.
+ */
+export const MAX_FACET_SELECTIONS = 4;
+
+/** Total facet values selected in `params` for `categoryId` (non-facet keys ignored). */
+export function countFacetSelections(categoryId: string, params: BrowseParams): number {
+  let total = 0;
+  for (const facet of getCategory(categoryId)?.facets ?? []) {
+    total += parseFacetList(params[facet.key]).length;
+  }
+  return total;
+}

@@ -26,6 +26,7 @@ COPY wizeworks/packages/api-client/package.json wizeworks/packages/api-client/
 COPY wizeworks/packages/auth/package.json wizeworks/packages/auth/
 COPY wizeworks/packages/brand-core/package.json wizeworks/packages/brand-core/
 COPY sparx/packages/brand/package.json sparx/packages/brand/
+COPY wizeworks/packages/client-ip/package.json wizeworks/packages/client-ip/
 # The address table. Pure data, no dependencies of its own — but the catch-all
 # route resolves paths through it during the SERVER render, so a missing copy is
 # a boot-time failure, not a lazily-discovered one.
@@ -97,6 +98,7 @@ COPY wizeworks/packages/api-client wizeworks/packages/api-client
 COPY wizeworks/packages/auth wizeworks/packages/auth
 COPY wizeworks/packages/brand-core wizeworks/packages/brand-core
 COPY sparx/packages/brand sparx/packages/brand
+COPY wizeworks/packages/client-ip wizeworks/packages/client-ip
 COPY wizeworks/packages/links wizeworks/packages/links
 COPY wizeworks/packages/migration wizeworks/packages/migration
 COPY wizeworks/packages/query wizeworks/packages/query

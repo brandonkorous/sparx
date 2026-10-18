@@ -89,12 +89,18 @@ importers:
       '@piggles/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@wizeworks/app-kit':
+        specifier: workspace:*
+        version: link:../../../wizeworks/packages/app-kit
       '@wizeworks/attribution':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/attribution
       '@wizeworks/auth':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/auth
+      '@wizeworks/client-ip':
+        specifier: workspace:*
+        version: link:../../../wizeworks/packages/client-ip
       '@wizeworks/db':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/db
@@ -174,6 +180,9 @@ importers:
       '@piggles/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@wizeworks/app-kit':
+        specifier: workspace:*
+        version: link:../../../wizeworks/packages/app-kit
       '@wizeworks/attribution':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/attribution
@@ -714,6 +723,9 @@ importers:
       '@wizeworks/builder-schemas':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/builder-schemas
+      '@wizeworks/client-ip':
+        specifier: workspace:*
+        version: link:../../../wizeworks/packages/client-ip
       '@wizeworks/cms-editor':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/cms-editor
@@ -863,6 +875,9 @@ importers:
 
   wizeworks/apps/admin:
     dependencies:
+      '@wizeworks/app-kit':
+        specifier: workspace:*
+        version: link:../../packages/app-kit
       '@wizeworks/brand':
         specifier: workspace:*
         version: link:../../packages/brand
@@ -1673,6 +1688,25 @@ importers:
       vitest:
         specifier: ^4.1.7
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.5)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
+  wizeworks/packages/client-ip:
+    dependencies:
+      ipaddr.js:
+        specifier: ^2.4.0
+        version: 2.4.0
+    devDependencies:
+      '@types/node':
+        specifier: 25.9.1
+        version: 25.9.1
+      fastify:
+        specifier: 5.8.5
+        version: 5.8.5
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
   wizeworks/packages/cms:
     dependencies:
@@ -3717,6 +3751,9 @@ importers:
       '@wizeworks/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@wizeworks/client-ip':
+        specifier: workspace:*
+        version: link:../../packages/client-ip
       '@wizeworks/cms':
         specifier: workspace:*
         version: link:../../packages/cms
@@ -3802,6 +3839,9 @@ importers:
       '@wizeworks/builder':
         specifier: workspace:*
         version: link:../../packages/builder
+      '@wizeworks/client-ip':
+        specifier: workspace:*
+        version: link:../../packages/client-ip
       '@wizeworks/cms':
         specifier: workspace:*
         version: link:../../packages/cms
@@ -3962,6 +4002,9 @@ importers:
       '@wizeworks/channels':
         specifier: workspace:*
         version: link:../../packages/channels
+      '@wizeworks/client-ip':
+        specifier: workspace:*
+        version: link:../../packages/client-ip
       '@wizeworks/cms':
         specifier: workspace:*
         version: link:../../packages/cms
@@ -4320,6 +4363,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.0.4
         version: 1.29.0(zod@4.4.3)
+      '@wizeworks/client-ip':
+        specifier: workspace:*
+        version: link:../../packages/client-ip
       '@wizeworks/lens-node':
         specifier: 0.3.0-alpha.2
         version: 0.3.0-alpha.2

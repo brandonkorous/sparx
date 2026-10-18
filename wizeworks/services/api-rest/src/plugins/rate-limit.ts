@@ -50,10 +50,15 @@ const rateLimitPlugin: FastifyPluginAsync = async (app) => {
     // /health is liveness — never rate limit, would flap pods unhealthy.
     // /_wizelens is the local profiler's dashboard (development only).
     allowList: (request) => request.url === '/health' || isWizeLensPath(request.url),
+    // `context.after` is the time LEFT until the window resets, not the window.
+    // It used to sit after "per", so one limit read as "600 requests per 1
+    // second" and "600 requests per 29 seconds" — a different, wrong window on
+    // every request, and the only true part (how long to wait) read as the
+    // part that was not.
     errorResponseBuilder: (_request, context) =>
       new ApiError(
         'RATE_LIMITED',
-        `Rate limit of ${String(context.max)} requests per ${context.after} exceeded.`,
+        `Rate limit of ${String(context.max)} requests exceeded. Try again in ${context.after}.`,
         { retry_after_seconds: Math.ceil(context.ttl / 1000) }
       ),
   });

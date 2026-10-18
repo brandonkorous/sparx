@@ -2,7 +2,7 @@
   "mcpServers": {
     "wizelens": {
       "type": "http",
-      "url": "https://app.wizelens.com/_wizelens/mcp",
+      "url": "https://mcp.wizelens.com",
       "headers": {
         "Authorization": "Bearer ${WIZELENS_READ_KEY}"
       }

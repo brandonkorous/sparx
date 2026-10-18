@@ -1,0 +1,31 @@
+{
+  "name": "@wizeworks/client-ip",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Who a request is from: the proxies the platform trusts (private ranges + Cloudflare) and the right-to-left X-Forwarded-For resolution every service and app uses. One copy of the Cloudflare ranges, checked against the Caddyfile by its test.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "ipaddr.js": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "25.9.1",
+    "fastify": "5.8.5",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

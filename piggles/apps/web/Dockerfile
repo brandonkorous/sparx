@@ -30,6 +30,7 @@ FROM base AS builder
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json .npmrc ./
 COPY piggles/apps/web/package.json piggles/apps/web/
 # The whole closure, and it is three packages.
+COPY wizeworks/packages/app-kit/package.json wizeworks/packages/app-kit/
 COPY wizeworks/packages/attribution/package.json wizeworks/packages/attribution/
 COPY wizeworks/packages/legal/package.json wizeworks/packages/legal/
 COPY piggles/packages/brand/package.json piggles/packages/brand/
@@ -48,6 +49,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 # source rather than a build output (`exports` points at `./src/…`), so the app's
 # `transpilePackages` compiles them — which means the SOURCE has to be here, not
 # just the manifest.
+COPY wizeworks/packages/app-kit wizeworks/packages/app-kit
 COPY wizeworks/packages/attribution wizeworks/packages/attribution
 COPY wizeworks/packages/legal wizeworks/packages/legal
 COPY piggles/packages/brand piggles/packages/brand

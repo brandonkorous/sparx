@@ -35,6 +35,11 @@ export interface SiteCtx {
    *  on `customer`-tier calls (the site MCP, which holds a bearer). api-rest
    *  verifies it (expiry + client-enabled + tenant scope) and enforces its scopes. */
   customerBearer?: string | null;
+  /** The caller's X-Forwarded-For chain, relayed VERBATIM on every call so
+   *  api-rest rate-limits and records the agent rather than this server's pod.
+   *  api-rest reads it from the right, skipping only hops it trusts, so an
+   *  address the caller wrote at the left is ignored there. */
+  forwardedFor?: string | null;
 }
 
 /** What a tool returns to the caller. `meta` carries pagination/facets when the

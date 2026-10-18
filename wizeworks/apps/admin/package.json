@@ -13,6 +13,7 @@
     "clean": "rm -rf .turbo .next *.tsbuildinfo"
   },
   "dependencies": {
+    "@wizeworks/app-kit": "workspace:*",
     "@wizeworks/brand": "workspace:*",
     "@wizeworks/forms": "workspace:*",
     "@wizeworks/lens-node": "0.3.0-alpha.2",

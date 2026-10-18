@@ -3,6 +3,7 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { auth, signUpMerchant, SignUpError } from '@wizeworks/auth';
+import { clientIpFromChain } from '@wizeworks/client-ip';
 import { normalizeEmail, PRODUCT, safeInternalPath } from '@piggles/config';
 import { acquisitionFrom } from '@/lib/attribution';
 import { writeConsent } from '@/lib/consent';
@@ -101,7 +102,9 @@ export async function signUpAction(_prev: SignUpState, formData: FormData): Prom
       email,
       password,
       name,
-      ipAddress: h.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null,
+      // The legal-acceptance record's address, read from the right past Caddy and
+      // Cloudflare. The first hop is the one the client writes.
+      ipAddress: clientIpFromChain(h.get('x-forwarded-for')),
       userAgent: h.get('user-agent'),
       acquisition: acquisitionFrom(from, attribution),
       platformBrand: 'piggles',

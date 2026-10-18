@@ -23,6 +23,7 @@
     "@wizeworks/automation-schemas": "workspace:*",
     "@sparx/brand": "workspace:*",
     "@wizeworks/builder-schemas": "workspace:*",
+    "@wizeworks/client-ip": "workspace:*",
     "@wizeworks/cms-editor": "workspace:*",
     "@wizeworks/commerce-schemas": "workspace:*",
     "@wizeworks/crm-schemas": "workspace:*",

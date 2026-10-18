@@ -55,8 +55,15 @@ function findPlanFiles() {
   return found;
 }
 
-/** The `BILLING_PLANS` value out of the ConfigMap env file. Single-quoted, one line
- *  — the form dotenv and kustomize's env parser both accept. */
+/** The `BILLING_PLANS` value out of the ConfigMap env file: one line, UNQUOTED.
+ *
+ *  Kustomize's env parser keeps quotes as part of the value — dotenv strips them,
+ *  kustomize does not (`A='[1]'` becomes the ConfigMap value `'[1]'`, checked with
+ *  Kustomize v5.5.0). This line used to be single-quoted and this function stripped
+ *  the quotes before checking, so the check compared a value production never
+ *  received: api-rest got `'[…]'`, threw `BILLING_PLANS is invalid: not valid JSON`
+ *  on every billing read, and the push stayed green. So a quoted value is refused
+ *  here, never repaired — what this reads must be byte-for-byte what deploys. */
 function readConfigMapValue() {
   if (!existsSync(CONFIGMAP)) {
     console.error(`\nx Cannot find ${CONFIGMAP}.`);
@@ -68,7 +75,13 @@ function readConfigMapValue() {
     .find((l) => l.startsWith('BILLING_PLANS='));
   if (!line) return null;
   const raw = line.slice('BILLING_PLANS='.length).trim();
-  return raw.startsWith("'") && raw.endsWith("'") ? raw.slice(1, -1) : raw;
+  if (/^['"]/.test(raw) || /['"]$/.test(raw)) {
+    console.error('\nx BILLING_PLANS in the ConfigMap is wrapped in quotes.');
+    console.error('  Kustomize keeps them, so api-rest would receive a value that is not JSON.');
+    console.error('  Regenerate the line: node scripts/check-billing-plans.mjs --print\n');
+    process.exit(1);
+  }
+  return raw;
 }
 
 /** Drop the authoring comment and sort keys, so the comparison is about VALUES
@@ -249,7 +262,7 @@ if (secretsFlag !== -1) {
     void $comment;
     return rest;
   });
-  console.log(`BILLING_PLANS='${JSON.stringify(plans)}'`);
+  console.log(`BILLING_PLANS=${JSON.stringify(plans)}`);
 } else {
   main();
 }

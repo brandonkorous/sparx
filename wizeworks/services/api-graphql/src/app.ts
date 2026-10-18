@@ -11,6 +11,7 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify';
 import { createAuthPlugin } from '@wizeworks/api-core/auth';
 import { createErrorsPlugin } from '@wizeworks/api-core/errors-plugin';
+import { TRUSTED_PROXIES } from '@wizeworks/client-ip';
 import { env } from './env.js';
 import { wizelensPlugin } from './wizelens.js';
 import healthRoutes from './routes/health.js';
@@ -43,8 +44,10 @@ export async function createApp(): Promise<FastifyInstance> {
     genReqId: () => `req_${randomUUID().replace(/-/g, '')}`,
     requestIdHeader: 'x-request-id',
     requestIdLogLabel: 'request_id',
-    // X-Forwarded-* — sparx-prod sits behind Caddy.
-    trustProxy: true,
+    // X-Forwarded-* — sparx-prod sits behind Cloudflare and Caddy. A list, not
+    // `true`, so a caller cannot choose its own `request.ip`; see
+    // @wizeworks/client-ip.
+    trustProxy: TRUSTED_PROXIES,
     disableRequestLogging: false,
     // GraphQL bodies can be larger than REST ones (variables + queries
     // packed together). 1 MiB is plenty for hand-written queries; cap kept
