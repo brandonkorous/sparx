@@ -8,9 +8,10 @@
 // the route resolves per-row. This module is the thin transport the data layer
 // (listProducts, getMerchant, …) will build on; it intentionally ships only the
 // base client + the `marketApi` helper, not the typed endpoint wrappers.
-
-import { headers } from 'next/headers';
-import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
+//
+// It must NOT import `next/headers`: client components reach this module through
+// `market.ts`, and that import fails the build there. A caller that forwards the
+// visitor's chain reads it in its own Server Component and passes it in `headers`.
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
@@ -36,18 +37,6 @@ export class MarketApiError extends Error {
 type ApiEnvelope<T> =
   { success: true; data: T } | { success: false; error?: { code?: string; message?: string } };
 
-/** A fetch init plus the one choice this client adds. */
-export interface ApiFetchInit extends RequestInit {
-  /**
-   * Send the visitor's client chain (`x-forwarded-for` / `x-real-ip`) so api-rest
-   * rate-limits the person who asked rather than this pod, whose one address every
-   * shopper would otherwise share. ONLY on an uncached (`no-store`) read made
-   * inside a request: Next.js puts request headers into the data-cache key, so a
-   * cached read that carried it would get a cache entry per visitor.
-   */
-  forwardClient?: boolean;
-}
-
 /**
  * Low-level JSON fetch against an ABSOLUTE api-rest path. Prefer `marketApi`,
  * which scopes to the `/v1/public/market` namespace; this is the shared base it
@@ -55,18 +44,15 @@ export interface ApiFetchInit extends RequestInit {
  * `{ success, data }` envelope and throws `MarketApiError` on a transport or
  * API-level failure.
  */
-export async function apiFetch<T>(path: string, init?: ApiFetchInit): Promise<T> {
-  const { forwardClient, ...requestInit } = init ?? {};
-  const client = forwardClient ? forwardedFor(await headers()) : {};
+export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
   try {
     res = await fetch(`${BASE_URL}${path}`, {
-      ...requestInit,
+      ...init,
       headers: {
         accept: 'application/json',
-        ...(requestInit.body ? { 'content-type': 'application/json' } : {}),
-        ...client,
-        ...requestInit.headers,
+        ...(init?.body ? { 'content-type': 'application/json' } : {}),
+        ...init?.headers,
       },
     });
   } catch (cause) {
@@ -102,6 +88,6 @@ export async function apiFetch<T>(path: string, init?: ApiFetchInit): Promise<T>
  *   listProducts() → marketApi<MarketProductPage>('/products?...')
  *   getMerchant(slug) → marketApi<MarketMerchant>(`/merchants/${slug}`)
  */
-export function marketApi<T>(path: string, init?: ApiFetchInit): Promise<T> {
+export function marketApi<T>(path: string, init?: RequestInit): Promise<T> {
   return apiFetch<T>(`${MARKET_PREFIX}${path}`, init);
 }

@@ -4,10 +4,12 @@
 // per-order transactional page.
 
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle2, MapPin } from 'lucide-react';
 import { Badge, Button } from '@wizeworks/silicaui-react';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
 
 import { statusLabel, statusTone } from '@/lib/status';
 import { getOrder } from '@/lib/market';
@@ -46,7 +48,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
   const merchantSlug = one(sp.merchant);
   if (!merchantSlug) notFound();
 
-  const order = await getOrder(id, merchantSlug);
+  const order = await getOrder(id, merchantSlug, forwardedFor(await headers()));
   if (!order) notFound();
 
   const shippingParts = [order.shippingCity, order.shippingRegion, order.shippingCountry].filter(
