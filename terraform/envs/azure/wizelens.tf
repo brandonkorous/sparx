@@ -179,9 +179,18 @@ resource "random_password" "wizelens_auth_secret" {
 locals {
   wizelens_server = var.wizelens_enabled ? azurerm_postgresql_flexible_server.wizelens[0].fqdn : ""
 
+  # TWO SSL MODES, on purpose. The app's driver (node-postgres 8) treats
+  # `require` as `verify-full` today and warns that pg 9 will weaken it to plain
+  # libpq `require` (encrypted, server certificate unchecked). Asking for
+  # verify-full by name keeps the check through that upgrade; Azure's server
+  # certificate chains to a public root Node already trusts, verified with a
+  # live `select 1` from the cloud pod on 2026-10-18.
+  #
+  # The ADMIN URL stays `require`: only psql in the db-role Job reads it, and
+  # libpq's verify-full needs a root certificate file that image does not carry.
   wizelens_secrets = var.wizelens_enabled ? {
     "DATABASE-URL" = {
-      value = "postgresql://wizelens_app:${urlencode(random_password.wizelens_app[0].result)}@${local.wizelens_server}:5432/wizelens?sslmode=require"
+      value = "postgresql://wizelens_app:${urlencode(random_password.wizelens_app[0].result)}@${local.wizelens_server}:5432/wizelens?sslmode=verify-full"
       type  = "connection-string; the APPLICATION role. Rotate by tainting random_password.wizelens_app"
     }
     "DATABASE-ADMIN-URL" = {
