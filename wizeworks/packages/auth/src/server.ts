@@ -516,6 +516,19 @@ function createAuth() {
       // that is a thing to do deliberately to one brand rather than by accident
       // to both.
       cookiePrefix: process.env.BETTER_AUTH_COOKIE_PREFIX ?? 'better-auth',
+      // Where the client address comes from — for the per-IP rate limit (the
+      // brute-force guard on sign-in, and the MCP OAuth rules below) and for the
+      // address each session records. Better Auth takes the FIRST value of the
+      // first header it finds, and by default that header is X-Forwarded-For,
+      // whose first value the client writes: an attacker could send a new
+      // address with every password guess and never be limited.
+      //
+      // X-Client-IP is set by Caddy on every request to the visitor's address
+      // as it resolves it (k8s/ingress/Caddyfile, `security_headers`), overwriting
+      // anything the client sent. X-Forwarded-For stays as the fallback for the
+      // one place that header is absent — a workstation without Caddy, where
+      // nobody but the developer can reach the server.
+      ipAddress: { ipAddressHeaders: ['x-client-ip', 'x-forwarded-for'] },
     },
 
     // Throttle the public MCP OAuth surface (docs/07 §5). DCR is unauthenticated

@@ -20,6 +20,7 @@
     "@prisma/client": "^6.19.3",
     "@wizeworks/api-core": "workspace:*",
     "@wizeworks/auth": "workspace:*",
+    "@wizeworks/client-ip": "workspace:*",
     "@wizeworks/cms": "workspace:*",
     "@wizeworks/cms-schemas": "workspace:*",
     "@wizeworks/crm": "workspace:*",

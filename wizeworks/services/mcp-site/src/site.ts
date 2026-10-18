@@ -24,6 +24,17 @@ export interface SiteRoute {
   propertySlug: string | null;
 }
 
+/** The caller's X-Forwarded-For chain, verbatim, for every api-rest call made on
+ *  its behalf. This server calls api-rest from its pod, so without it every agent
+ *  on every site shared one address — and one rate-limit budget — there. api-rest
+ *  reads the chain from the right and skips only hops it trusts (this pod, Caddy,
+ *  Cloudflare), so an address the caller wrote at the left is ignored there. */
+export function callerChain(request: FastifyRequest): string | null {
+  const raw = request.headers['x-forwarded-for'];
+  const chain = (Array.isArray(raw) ? raw.join(', ') : raw)?.trim();
+  return chain ? chain : null;
+}
+
 export async function resolveSite(
   request: FastifyRequest,
   subpath?: { tenant?: string; property?: string }
@@ -42,7 +53,10 @@ export async function resolveSite(
 
   let res: Response;
   try {
-    res = await fetch(url, { headers: { accept: 'application/json' } });
+    const chain = callerChain(request);
+    res = await fetch(url, {
+      headers: { accept: 'application/json', ...(chain ? { 'x-forwarded-for': chain } : {}) },
+    });
   } catch {
     throw new UnknownSiteError('site resolver unreachable');
   }
@@ -54,11 +68,16 @@ export async function resolveSite(
   return { tenantSlug: body.data.tenantSlug, propertySlug: body.data.propertySlug ?? null };
 }
 
-export function makeClient(site: SiteRoute, customerBearer?: string | null): SiteApiClient {
+export function makeClient(
+  site: SiteRoute,
+  forwardedFor: string | null,
+  customerBearer?: string | null
+): SiteApiClient {
   const ctx: SiteCtx = {
     tenantSlug: site.tenantSlug,
     propertySlug: site.propertySlug,
     customerBearer: customerBearer ?? null,
+    forwardedFor,
   };
   return new SiteApiClient(env.SPARX_API_REST_URL, ctx);
 }

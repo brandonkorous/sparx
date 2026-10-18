@@ -3,7 +3,8 @@
 // the rendering layer can treat both content + commerce reads the same
 // way.
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
 import type { FleetFit, RepeatCadence } from '@wizeworks/commerce-schemas';
 
 import type { AccountOrdering, BuyingRule } from './account-buying-rules';
@@ -95,13 +96,22 @@ async function publicGet<T>(
   // commerce reads (revalidateTag is exact-match, not prefix). See app/api/revalidate.
   const coarse = query.tenant ? [`commerce:${String(query.tenant)}`] : [];
   const sessionCookie = previewToken ? undefined : await forwardedSessionCookie();
-  const res = await fetch(`${BASE_URL}${path}?${params.toString()}`, {
-    ...(previewToken
-      ? { cache: 'no-store', headers: { Authorization: `Preview ${previewToken}` } }
-      : sessionCookie
-        ? { cache: 'no-store', headers: { Cookie: sessionCookie } }
-        : { next: { revalidate: 60, tags: ['sparx-storefront', ...coarse, ...tags] } }),
-  });
+  // A preview or a signed-in shopper reads live, for one person — so that read
+  // also carries the visitor's client chain, and api-rest rate-limits that
+  // person rather than this pod. The shared cached read stays anonymous: request
+  // headers are part of the data-cache key, and forwarding them there would give
+  // every visitor a cache entry of their own.
+  const viewerAuth: Record<string, string> | null = previewToken
+    ? { Authorization: `Preview ${previewToken}` }
+    : sessionCookie
+      ? { Cookie: sessionCookie }
+      : null;
+  const res = await fetch(
+    `${BASE_URL}${path}?${params.toString()}`,
+    viewerAuth
+      ? { cache: 'no-store', headers: { ...forwardedFor(await headers()), ...viewerAuth } }
+      : { next: { revalidate: 60, tags: ['sparx-storefront', ...coarse, ...tags] } }
+  );
   const json = (await res.json()) as SuccessEnvelope<T> | ErrorEnvelope;
   if (!res.ok || 'error' in json) {
     const code = 'error' in json ? json.error.code : 'UNKNOWN';

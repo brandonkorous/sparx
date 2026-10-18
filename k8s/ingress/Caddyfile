@@ -37,13 +37,29 @@
 	email ops@sparx.works
 	admin off
 
-	# Honour the forwarded client IP when a proxy sits in front (the tunnel, in
-	# the workstation case). With a LoadBalancer + `externalTrafficPolicy: Local`
-	# the client IP arrives directly and is public, so this never matches and
-	# Caddy uses the peer address — correct in both topologies, which is why it
-	# is unconditional.
+	# Honour the forwarded client IP when a proxy sits in front: the tunnel in the
+	# workstation case, and CLOUDFLARE in the cloud one.
+	#
+	# Cloudflare was missing, and that is not a detail. The platform's records are
+	# proxied, so the peer this LoadBalancer sees is a Cloudflare edge, not the
+	# visitor. With only private ranges trusted, Caddy discarded the X-Forwarded-For
+	# Cloudflare sent and forwarded the EDGE's address instead, so every service
+	# behind it — api-rest's per-IP rate limit first among them — saw a few dozen
+	# Cloudflare addresses where there were thousands of visitors. Trusting the
+	# ranges keeps the visitor's address in the chain, and Caddy appends the edge.
+	#
+	# `trusted_proxies_strict` reads that chain RIGHT to left, skipping only trusted
+	# hops, so `{client_ip}` is the first address nobody we trust vouched for. Read
+	# left to right, the first entry is whatever the client typed into the header.
+	# The services and apps resolve the chain the same way, from one copy of these
+	# ranges in code (wizeworks/packages/client-ip), whose test fails if it drifts
+	# from this list.
+	#
+	# Ranges from https://www.cloudflare.com/ips (read 2026-10-17); refresh them
+	# here and in api-rest together if Cloudflare adds any.
 	servers {
-		trusted_proxies static private_ranges
+		trusted_proxies static private_ranges 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 104.24.0.0/14 172.64.0.0/13 131.0.72.0/22 2400:cb00::/32 2606:4700::/32 2803:f800::/32 2405:b500::/32 2405:8100::/32 2a06:98c0::/29 2c0f:f248::/32
+		trusted_proxies_strict
 	}
 
 	# On-demand TLS — issues a certificate for a tenant subdomain
@@ -80,6 +96,15 @@ import mode.caddy
 # nosniff, clickjacking protection, and a tight referrer policy. Deliberately
 # NO Content-Security-Policy or Permissions-Policy here — those need per-app
 # tuning (Stripe/checkout, PostHog, Satori) and land as a Report-Only pass.
+#
+# Also one REQUEST header: X-Client-IP, the visitor's address exactly as the
+# global `trusted_proxies` resolves it, SET (never appended) so whatever a client
+# sends under that name is overwritten. It is here because every block that
+# serves one of our apps imports this snippet. It exists for code that reads ONE
+# header and takes its first value — Better Auth does that with X-Forwarded-For,
+# whose first value the client writes, so its sign-in brute-force limit and its
+# session records were keyed on an address an attacker could change per guess.
+# The staff auth instance reads this header instead (packages/auth server.ts).
 (security_headers) {
 	header {
 		Strict-Transport-Security "max-age=31536000"
@@ -87,6 +112,7 @@ import mode.caddy
 		X-Frame-Options "SAMEORIGIN"
 		Referrer-Policy "strict-origin-when-cross-origin"
 	}
+	request_header X-Client-IP {client_ip}
 }
 
 # ----- Platform hostnames -----
@@ -869,28 +895,18 @@ import mode.caddy
 # Cloudflare edge, so every visitor would share a few rate-limit buckets and one
 # attacker could lock everyone out.
 #
-# So the header is REPLACED, never appended: with CF-Connecting-IP when the peer
-# really is Cloudflare (ranges from https://www.cloudflare.com/ips, read
-# 2026-10-17; refresh them if Cloudflare adds any), and with the peer itself
-# otherwise. A request sent straight to the origin IP therefore cannot pick its
-# own address by sending the header.
+# So the header is REPLACED, never appended, with `{client_ip}`: the visitor's
+# address as the global `trusted_proxies` resolves it — through a Cloudflare edge
+# when the peer is one, and the peer itself when it is anything untrusted. A
+# request sent straight to the origin IP therefore cannot pick its own address by
+# sending the header. (This block used to carry its own copy of the Cloudflare
+# ranges and read CF-Connecting-IP; the global list now does that for every host,
+# so there is one copy of the ranges in this file instead of two.)
 #
-# `remote_ip`, not `client_ip`: it matches the immediate peer and ignores the
-# global trusted_proxies, which is exactly the question being asked.
-#
-# A snippet because two hosts reach Cloud (app. and mcp. below), and a second
-# copy of the Cloudflare ranges is one that stops being refreshed.
+# A snippet because two hosts reach Cloud (app. and mcp. below).
 (wizelens_cloud) {
-	@cloudflare remote_ip 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 104.24.0.0/14 172.64.0.0/13 131.0.72.0/22 2400:cb00::/32 2606:4700::/32 2803:f800::/32 2405:b500::/32 2405:8100::/32 2a06:98c0::/29 2c0f:f248::/32
-	handle @cloudflare {
-		reverse_proxy cloud.wizelens.svc.cluster.local:80 {
-			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
-		}
-	}
-	handle {
-		reverse_proxy cloud.wizelens.svc.cluster.local:80 {
-			header_up X-Forwarded-For {http.request.remote.host}
-		}
+	reverse_proxy cloud.wizelens.svc.cluster.local:80 {
+		header_up X-Forwarded-For {client_ip}
 	}
 }
 

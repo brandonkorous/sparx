@@ -25,6 +25,7 @@
     "@wizeworks/automation-schemas": "workspace:*",
     "@wizeworks/b2b": "workspace:*",
     "@wizeworks/builder": "workspace:*",
+    "@wizeworks/client-ip": "workspace:*",
     "@wizeworks/cms": "workspace:*",
     "@wizeworks/commerce": "workspace:*",
     "@wizeworks/crm": "workspace:*",

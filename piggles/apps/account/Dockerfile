@@ -42,9 +42,11 @@ COPY piggles/packages/ui/package.json piggles/packages/ui/
 # The platform account spine and everything it drags in. `@wizeworks/auth` re-exports
 # server.ts → tenant-events.ts, which pulls legal seeding; `@wizeworks/email` pulls
 # the template packages; onboarding's blueprint step pulls the schema family.
+COPY wizeworks/packages/app-kit/package.json wizeworks/packages/app-kit/
 COPY wizeworks/packages/attribution/package.json wizeworks/packages/attribution/
 COPY wizeworks/packages/auth/package.json wizeworks/packages/auth/
 COPY wizeworks/packages/brand-core/package.json wizeworks/packages/brand-core/
+COPY wizeworks/packages/client-ip/package.json wizeworks/packages/client-ip/
 # The address table. The invite + consent pages build absolute links
 # through it (accountOrigin/appOrigin), during the SERVER render.
 COPY wizeworks/packages/links/package.json wizeworks/packages/links/
@@ -93,9 +95,11 @@ COPY piggles/packages/brand piggles/packages/brand
 COPY piggles/packages/config piggles/packages/config
 COPY piggles/packages/mascot piggles/packages/mascot
 COPY piggles/packages/ui piggles/packages/ui
+COPY wizeworks/packages/app-kit wizeworks/packages/app-kit
 COPY wizeworks/packages/attribution wizeworks/packages/attribution
 COPY wizeworks/packages/auth wizeworks/packages/auth
 COPY wizeworks/packages/brand-core wizeworks/packages/brand-core
+COPY wizeworks/packages/client-ip wizeworks/packages/client-ip
 COPY wizeworks/packages/links wizeworks/packages/links
 COPY wizeworks/packages/usage wizeworks/packages/usage
 COPY wizeworks/packages/silica-corrections wizeworks/packages/silica-corrections

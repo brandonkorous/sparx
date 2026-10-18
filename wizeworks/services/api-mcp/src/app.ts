@@ -23,6 +23,7 @@ import Fastify, {
   type FastifyServerOptions,
 } from 'fastify';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { TRUSTED_PROXIES } from '@wizeworks/client-ip';
 import { env } from './env.js';
 import { wizelensPlugin } from './wizelens.js';
 import authPlugin, { AuthError, authenticate } from './auth.js';
@@ -51,7 +52,9 @@ export async function createApp(): Promise<FastifyInstance> {
     genReqId: () => `mcp_${randomUUID().replace(/-/g, '')}`,
     requestIdHeader: 'x-request-id',
     requestIdLogLabel: 'request_id',
-    trustProxy: true,
+    // A list, not `true`: with `true` the client's own X-Forwarded-For entry was
+    // `request.ip`. See @wizeworks/client-ip.
+    trustProxy: TRUSTED_PROXIES,
     bodyLimit: 512 * 1024, // MCP payloads are JSON-RPC envelopes — 512 KiB ceiling.
   });
 

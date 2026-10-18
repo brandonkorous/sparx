@@ -11,6 +11,7 @@
 
 import { cache } from 'react';
 import { headers } from 'next/headers';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
 import type {
   PublishedSilicaFrameDto,
   PublishedSilicaPageDto,
@@ -149,9 +150,15 @@ interface ErrorEnvelope {
  * A PREVIEW read is never cached — it serves the DRAFT tree, which changes on every
  * autosave and belongs to one author's in-flight work.
  */
-function silicaFetchInit(tenantSlug: string, previewToken?: string): RequestInit {
+async function silicaFetchInit(tenantSlug: string, previewToken?: string): Promise<RequestInit> {
   if (previewToken) {
-    return { cache: 'no-store', headers: { Authorization: `Preview ${previewToken}` } };
+    // Being one author's live read, a preview also carries their client chain, so
+    // api-rest rate-limits the author rather than this pod. The published read
+    // below must NOT: request headers are part of the data-cache key.
+    return {
+      cache: 'no-store',
+      headers: { ...forwardedFor(await headers()), Authorization: `Preview ${previewToken}` },
+    };
   }
   return {
     next: {
@@ -211,7 +218,7 @@ async function readFrameEnvelope(url: string, init: RequestInit): Promise<FrameR
 const fetchFrameEnvelope = cache(
   async (tenantSlug: string, previewToken?: string): Promise<PublishedSilicaFrameDto | null> => {
     const url = `${BASE_URL}/v1/public/builder/silica/frame?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}${await pathParam()}`;
-    const init = silicaFetchInit(tenantSlug, previewToken);
+    const init = await silicaFetchInit(tenantSlug, previewToken);
     let read = await readFrameEnvelope(url, init);
     if (read.kind === 'failed') read = await readFrameEnvelope(url, init);
     if (read.kind === 'failed') {
@@ -300,7 +307,7 @@ async function readPublishedSilicaHome(
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/silica/home?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
-      silicaFetchInit(tenantSlug, opts.previewToken)
+      await silicaFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) {
@@ -325,7 +332,7 @@ async function readPublishedSilicaPage(
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/silica/page?tenant=${encodeURIComponent(tenantSlug)}&slug=${encodeURIComponent(slug)}${await propertyParam()}`,
-      silicaFetchInit(tenantSlug, opts.previewToken)
+      await silicaFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) {
@@ -359,7 +366,7 @@ async function readPublishedSilicaCollection(
       : '';
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/silica/collection?tenant=${encodeURIComponent(tenantSlug)}&recordType=${encodeURIComponent(recordType)}${recordParam}${subtypeParam}${await propertyParam()}`,
-      silicaFetchInit(tenantSlug, opts.previewToken)
+      await silicaFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return starterCollectionDto(recordType);

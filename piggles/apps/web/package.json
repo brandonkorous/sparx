@@ -18,6 +18,7 @@
     "@piggles/config": "workspace:*",
     "@piggles/mascot": "workspace:*",
     "@piggles/ui": "workspace:*",
+    "@wizeworks/app-kit": "workspace:*",
     "@wizeworks/attribution": "workspace:*",
     "@wizeworks/legal": "workspace:*",
     "@wizeworks/lens-node": "0.3.0-alpha.2",

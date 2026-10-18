@@ -100,6 +100,15 @@ export interface OperatorApiClientConfig {
   baseUrl: string;
   /** The shared secret (env `SPARX_INTERNAL_OPERATOR_TOKEN`). */
   token: string;
+  /**
+   * Extra headers resolved per request — the caller's hook for passing who the
+   * call is FOR (the operator's client chain), which this package cannot read
+   * itself because it knows nothing of the framework it runs under. Resolved
+   * lazily, inside `request`, so building a client never touches request scope.
+   * The token and operator-id headers are applied after, so nothing here can
+   * replace them.
+   */
+  requestHeaders?: () => Promise<Record<string, string>>;
 }
 
 export interface OperatorApiRequestOptions {
@@ -457,6 +466,7 @@ export function createOperatorApiClient(config: OperatorApiClientConfig): Operat
   async function request<T>(path: string, options: OperatorApiRequestOptions): Promise<T> {
     const url = `${base}${path.startsWith('/') ? path : `/${path}`}`;
     const headers: Record<string, string> = {
+      ...(config.requestHeaders ? await config.requestHeaders() : {}),
       [INTERNAL_OPERATOR_TOKEN_HEADER]: config.token,
       [OPERATOR_ID_HEADER]: options.operatorId,
     };

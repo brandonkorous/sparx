@@ -365,12 +365,13 @@ export interface PublicOrder {
 
 /** The public order view (confirmation page). Scoped to the seller, so it needs
  *  the merchant slug. Order reads are NEVER cached — an order's status changes
- *  after placement. Null on a 404. */
+ *  after placement — so this one also forwards the shopper's client chain and
+ *  api-rest limits that shopper, not this pod. Null on a 404. */
 export async function getOrder(orderId: string, merchantSlug: string): Promise<PublicOrder | null> {
   try {
     return await marketApi<PublicOrder>(
       `/orders/${encodeURIComponent(orderId)}?merchant=${encodeURIComponent(merchantSlug)}`,
-      { cache: 'no-store' }
+      { cache: 'no-store', forwardClient: true }
     );
   } catch (err) {
     if (err instanceof MarketApiError && err.status === 404) return null;

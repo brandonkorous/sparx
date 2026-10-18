@@ -5,6 +5,8 @@
 // falls through to the legacy paths. With a site-preview token they serve the
 // DRAFT instead — the editor's "Preview" tab (docs/45 §2.6).
 
+import { headers } from 'next/headers';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
 import type { PublishedLayoutDto, PublishedPageDto } from '@wizeworks/builder-schemas';
 
 import { resolveActivePropertySlug } from './site-context';
@@ -36,9 +38,14 @@ interface PublishedStylesheet {
 
 /** Forward a site-preview token to api-rest as `Authorization: Preview <jwt>`
  *  (the same convention the CMS preview path uses) so the public read serves the
- *  DRAFT instead of the published snapshot. No token → no header → published. */
-function previewHeaders(previewToken?: string): HeadersInit | undefined {
-  return previewToken ? { Authorization: `Preview ${previewToken}` } : undefined;
+ *  DRAFT instead of the published snapshot.
+ *
+ *  A preview is one author's live, uncached read, so it also carries their client
+ *  chain and api-rest rate-limits the author rather than this pod. Only ever on
+ *  the preview path: request headers are part of the data-cache key, so the
+ *  published (cached) read stays anonymous. */
+async function previewHeaders(previewToken: string): Promise<Record<string, string>> {
+  return { ...forwardedFor(await headers()), Authorization: `Preview ${previewToken}` };
 }
 
 /**
@@ -62,9 +69,9 @@ function previewHeaders(previewToken?: string): HeadersInit | undefined {
  * every autosave and is scoped to one author's in-flight work — caching it would both
  * serve stale drafts and risk leaking one preview's response to another request.
  */
-function builderFetchInit(tenantSlug: string, previewToken?: string): RequestInit {
+async function builderFetchInit(tenantSlug: string, previewToken?: string): Promise<RequestInit> {
   if (previewToken) {
-    return { cache: 'no-store', headers: previewHeaders(previewToken) };
+    return { cache: 'no-store', headers: await previewHeaders(previewToken) };
   }
   return {
     next: {
@@ -82,7 +89,7 @@ export async function getPublishedBuilderPage(
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/page?tenant=${encodeURIComponent(tenantSlug)}&slug=${encodeURIComponent(slug)}${await propertyParam()}`,
-      builderFetchInit(tenantSlug, opts.previewToken)
+      await builderFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return null;
@@ -104,7 +111,7 @@ export async function getPublishedBuilderHome(
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/home?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
-      builderFetchInit(tenantSlug, opts.previewToken)
+      await builderFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return null;
@@ -135,7 +142,7 @@ export async function getPublishedBuilderCollection(
     const recordParam = recordId ? `&recordId=${encodeURIComponent(recordId)}` : '';
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/collection?tenant=${encodeURIComponent(tenantSlug)}&recordType=${encodeURIComponent(recordType)}${recordParam}${await propertyParam()}`,
-      builderFetchInit(tenantSlug, opts.previewToken)
+      await builderFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return null;
@@ -154,7 +161,7 @@ export async function getPublishedBuilderLayout(
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/layout?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
-      builderFetchInit(tenantSlug)
+      await builderFetchInit(tenantSlug)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedLayoutDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return null;
@@ -176,7 +183,7 @@ export async function getPublishedBuilderStyles(
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/styles?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
       // With a preview token the DRAFT sheet (a superset) comes back instead.
-      builderFetchInit(tenantSlug, opts.previewToken)
+      await builderFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedStylesheet> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return '';

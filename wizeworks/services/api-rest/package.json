@@ -47,6 +47,7 @@
     "@wizeworks/builder": "workspace:*",
     "@wizeworks/builder-schemas": "workspace:*",
     "@wizeworks/channels": "workspace:*",
+    "@wizeworks/client-ip": "workspace:*",
     "@wizeworks/cms": "workspace:*",
     "@wizeworks/cms-editor": "workspace:*",
     "@wizeworks/cms-schemas": "workspace:*",
