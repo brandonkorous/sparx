@@ -634,6 +634,22 @@ jobs:
                   ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
               run: terraform apply -input=false -lock-timeout=5m -auto-approve tfplan
 
+            # -----------------------------------------------------------------------
+            # Log in AGAIN after the apply. The CLI session from the login at the top
+            # holds the GitHub OIDC assertion, which is valid for five minutes, and
+            # the CLI spends it each time it needs a token for a resource it has not
+            # used yet. The steps below reach Key Vault for the first time, so after
+            # a long apply they fail with AADSTS700024 ("Client assertion is not
+            # within its valid time range"). That stopped the release of PR #101 on
+            # 2026-10-18: its apply ran long, and the secret sync reached Key Vault
+            # fourteen minutes after the login. A fresh login costs a few seconds.
+            # -----------------------------------------------------------------------
+            - uses: azure/login@v2
+              with:
+                  client-id: ${{ vars.AZURE_CLIENT_ID }}
+                  tenant-id: ${{ vars.AZURE_TENANT_ID }}
+                  subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
             - name: Get cluster credentials
               run: |
                   az aks get-credentials --resource-group "$RESOURCE_GROUP" \
