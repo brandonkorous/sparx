@@ -90,7 +90,7 @@ function repoRoot(): string {
 
 describe('the Wholesale orders list', () => {
   const pane = () =>
-    readFileSync(join(repoRoot(), 'piggles/apps/workbench/surfaces/b2b/orders-list.tsx'), 'utf8');
+    readFileSync(join(repoRoot(), 'sparx/apps/workbench/surfaces/b2b/orders-list.tsx'), 'utf8');
 
   it('draws the business under a heading that promises one', () => {
     const body = pane();

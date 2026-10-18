@@ -44,7 +44,7 @@ picture instead of the part. Minor: the part was one row down.
 
 - `search.ts`: `UNIVERSAL_SORT` puts a photo below any record before comparing text
   match: `_eval([(entity_type:media):0,(entity_type:!=media):1]):desc,_text_match:desc,
-  updated_at:desc`. Tried on the dev index first: "4062328" gave product then photo;
+updated_at:desc`. Tried on the dev index first: "4062328" gave product then photo;
   "injector" gave the shelf, the service and the injectors with no photo on top;
   "4062328_1" still gave the photo.
 - Both consoles: a record row carries `supporting` (true for a photo,

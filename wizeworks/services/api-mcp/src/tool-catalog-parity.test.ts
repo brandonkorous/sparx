@@ -25,8 +25,8 @@ describe('the Permissions catalog and the published tools', () => {
 
   it('gives each tool the scope it is published with', () => {
     const scopes = new Map(ALL_MCP_TOOLS.map((t) => [t.name, t.scope]));
-    expect(
-      TOOL_CATALOG.filter((t) => scopes.get(t.name) !== t.scope).map((t) => t.name)
-    ).toEqual([]);
+    expect(TOOL_CATALOG.filter((t) => scopes.get(t.name) !== t.scope).map((t) => t.name)).toEqual(
+      []
+    );
   });
 });
