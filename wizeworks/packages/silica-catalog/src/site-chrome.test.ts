@@ -527,7 +527,8 @@ describe('siteNavbar — a shop has a cart in its header (issue 325)', () => {
 
     const out = withCartButton(frame);
     expect(findHosts(out, HOST_KEYS.siteCartButton)).toHaveLength(1);
-    const row = (out as any).children[0].children[0].children as Record<string, unknown>[];
+    type Tree = { children: Tree[] } & Record<string, unknown>;
+    const row = (out as unknown as Tree).children[0]!.children[0]!.children;
     expect(row.map((n) => (n.kind === 'host' ? n.component : n.tag))).toEqual([
       'details',
       HOST_KEYS.siteAccountLink,
