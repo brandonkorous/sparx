@@ -130,15 +130,20 @@ const withDerivedFields = {
  */
 const wizelensExtension = (globalThis as { __wizelensPrisma?: { name: string } }).__wizelensPrisma;
 
+/**
+ * A one-method view of the client, on purpose: Prisma's own `$extends` typing
+ * over an already-extended client is "excessively deep" (TS2589) for tsc.
+ */
+interface Extendable {
+  $extends(extension: unknown): unknown;
+}
+
 function createClient(): PrismaClient {
   const client = new PrismaClient({
     log: logQueries ? ['query', 'warn', 'error'] : ['warn', 'error'],
     ...(datasourceUrl ? { datasourceUrl } : {}),
   }).$extends(withDerivedFields) as unknown as PrismaClient;
   if (!wizelensExtension) return client;
-  // Typed through a one-method shape on purpose: Prisma's own $extends typing
-  // over an already-extended client is "excessively deep" (TS2589) for tsc.
-  type Extendable = { $extends(extension: unknown): unknown };
   return (client as unknown as Extendable).$extends(wizelensExtension) as PrismaClient;
 }
 
