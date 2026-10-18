@@ -124,6 +124,6 @@ module "dns" {
   # OFF until wizelens.com and wizelens.dev are Cloudflare zones. On 2026-10-17
   # both still used GoDaddy's nameservers, so the zone lookup would fail the
   # whole plan. The steps to take first are in the module variable's
-  # description. Flipping this is the cutover: it publishes all five names.
+  # description. Flipping this is the cutover: it publishes all six names.
   wizelens_dns_enabled = false
 }

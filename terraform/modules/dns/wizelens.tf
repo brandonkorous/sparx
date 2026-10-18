@@ -8,7 +8,8 @@
 #   wizelens.com        marketing site and docs  -> site   (wizelens namespace)
 #   www.wizelens.com    CNAME to the apex        -> (301 at Caddy)
 #   app.wizelens.com    WizeLens Cloud           -> cloud
-#   wizelens.dev        the same address         -> (301 to wizelens.com at Caddy)
+#   mcp.wizelens.com    Cloud's MCP endpoint     -> cloud  (only /_wizelens/mcp)
+#   wizelens.dev       the same address         -> (301 to wizelens.com at Caddy)
 #   www.wizelens.dev    CNAME to the .dev apex   -> (301 to wizelens.com at Caddy)
 #
 # .dev only redirects. Everything people read lives on .com, so search ranking
@@ -17,14 +18,14 @@
 # In its own file rather than appended to main.tf, because that file is already
 # past a thousand lines and nothing here shares a local with it.
 #
-# CERTIFICATES: all five names are allow-listed in api-rest's PLATFORM_HOSTNAMES,
+# CERTIFICATES: all six names are allow-listed in api-rest's PLATFORM_HOSTNAMES,
 # because their Caddy blocks use the ON-DEMAND policy. See the note above
 # rocketease_root for what a missing entry looks like (a 525 for that host alone).
 locals {
   wizelens_enabled = var.cloudflare_enabled && var.wizelens_dns_enabled
 
   # Each zone's apex takes an A record at the ingress and its `www` a CNAME to
-  # that apex. `app` exists only on .com.
+  # that apex. `app` and `mcp` exist only on .com.
   wizelens_zones = local.wizelens_enabled ? toset(["wizelens.com", "wizelens.dev"]) : toset([])
 }
 
@@ -69,4 +70,18 @@ resource "cloudflare_record" "wizelens_app" {
   proxied         = true
   allow_overwrite = true
   comment         = "WizeLens Cloud — shared Caddy, wizelens namespace"
+}
+
+# Cloud's MCP endpoint under its own name. Same Cloud pods as `app`; Caddy
+# rewrites `/` and `/mcp` to /_wizelens/mcp and 404s every other path.
+resource "cloudflare_record" "wizelens_mcp" {
+  count           = local.wizelens_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.wizelens["wizelens.com"].id
+  name            = "mcp"
+  type            = "A"
+  content         = var.ingress_ip
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "WizeLens MCP — shared Caddy, wizelens namespace"
 }
