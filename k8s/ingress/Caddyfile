@@ -846,8 +846,9 @@ import mode.caddy
 #   www.wizelens.com    301 to the apex                        -> (redir)
 #   wizelens.dev, www.  301 to wizelens.com; .dev only redirects
 #   app.wizelens.com    WizeLens Cloud                         -> cloud
+#   mcp.wizelens.com    Cloud's MCP endpoint, nothing else     -> cloud
 #
-# ON-DEMAND TLS like every other brand here, so ALL FIVE NAMES are also in
+# ON-DEMAND TLS like every other brand here, so ALL SIX NAMES are also in
 # PLATFORM_HOSTNAMES (wizeworks/services/api-rest/src/routes/internal/domain-check.ts).
 {$SX_SCHEME:https}://wizelens.com {
 	import tls_policy
@@ -876,9 +877,10 @@ import mode.caddy
 #
 # `remote_ip`, not `client_ip`: it matches the immediate peer and ignores the
 # global trusted_proxies, which is exactly the question being asked.
-{$SX_SCHEME:https}://app.wizelens.com {
-	import tls_policy
-	import security_headers
+#
+# A snippet because two hosts reach Cloud (app. and mcp. below), and a second
+# copy of the Cloudflare ranges is one that stops being refreshed.
+(wizelens_cloud) {
 	@cloudflare remote_ip 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 104.24.0.0/14 172.64.0.0/13 131.0.72.0/22 2400:cb00::/32 2606:4700::/32 2803:f800::/32 2405:b500::/32 2405:8100::/32 2a06:98c0::/29 2c0f:f248::/32
 	handle @cloudflare {
 		reverse_proxy cloud.wizelens.svc.cluster.local:80 {
@@ -889,5 +891,31 @@ import mode.caddy
 		reverse_proxy cloud.wizelens.svc.cluster.local:80 {
 			header_up X-Forwarded-For {http.request.remote.host}
 		}
+	}
+}
+
+{$SX_SCHEME:https}://app.wizelens.com {
+	import tls_policy
+	import security_headers
+	import wizelens_cloud
+}
+
+# mcp.wizelens.com — the AI-access endpoint under its own name, so the address
+# an agent is given reads as a product surface rather than a path inside the
+# web app. It is Cloud's /_wizelens/mcp and nothing else: `/` and `/mcp` both
+# land there (the bare host is what the docs hand out; `/mcp` is the path most
+# MCP clients try first), and every other path is a 404, so this name never
+# serves Cloud's sign-in or dashboard. Auth is the read key in the
+# Authorization header, checked by Cloud itself.
+{$SX_SCHEME:https}://mcp.wizelens.com {
+	import tls_policy
+	import security_headers
+	@mcp path / /mcp
+	handle @mcp {
+		rewrite * /_wizelens/mcp
+		import wizelens_cloud
+	}
+	handle {
+		respond 404
 	}
 }
