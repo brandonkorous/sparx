@@ -19,7 +19,7 @@ import { hydrate, type ActionPayload } from '@wizeworks/silicaui-behaviors';
 
 import { useCart } from './cart-provider';
 import { addToCartRequest, firstValue, type FormValue } from '@/lib/add-to-cart-values';
-import { AccountError, addToQuoteRequest } from '@/lib/customer-client';
+import { addToQuoteRequest, accountFailureWords } from '@/lib/customer-client';
 import {
   QUOTE_REQUEST_ACTION,
   QUOTE_REQUEST_BUTTON,
@@ -163,9 +163,7 @@ export function SilicaBehaviors({
         } catch (err) {
           payload.form.setAttribute(
             'data-error-message',
-            err instanceof AccountError && err.status < 500
-              ? err.message
-              : 'It was not added to your quote request. Please try again.'
+            accountFailureWords(err, 'It was not added to your quote request. Please try again.')
           );
           throw err;
         }

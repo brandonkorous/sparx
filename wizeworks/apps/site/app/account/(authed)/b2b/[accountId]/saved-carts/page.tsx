@@ -32,7 +32,6 @@ import { FillCartButton } from '@/components/account/order-again-button';
 import { useCustomer } from '@/components/customer-provider';
 import { savedCartSummary } from '@/lib/buying-again-words';
 import {
-  AccountError,
   addSavedCartToCart,
   deleteSavedCart,
   getB2bSummary,
@@ -40,6 +39,7 @@ import {
   ORDERING_ROLES,
   renameSavedCart,
   type SavedCart,
+  accountFailureWords,
 } from '@/lib/customer-client';
 
 function formatDate(iso: string): string {
@@ -85,7 +85,7 @@ export default function SavedCartsPage() {
   }, [tenantSlug, accountId]);
 
   function failure(err: unknown, fallback: string): string {
-    return err instanceof AccountError && err.status < 500 ? err.message : fallback;
+    return accountFailureWords(err, fallback);
   }
 
   async function handleRename(id: string) {

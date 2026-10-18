@@ -6,7 +6,7 @@
 **Surface:** sparx.works /b2b; site › product page, cart, account › Wholesale account (quotes, orders, fleet, service); workbench › Invoicing › quote editor; workbench › Wholesale › account; workbench › Sell › product trade pricing; workbench › Scheduling › booking; workbench › search box
 **Filed:** 2026-10-02
 **Fixed:** 2026-10-02 to 2026-10-03
-**Confirmed by:** sparx as Doty, Renée and Marcus, 2026-10-02 to 2026-10-16 (11, 20, 22 to 24 not checked: see below)
+**Confirmed by:** sparx as Doty, Renée and Marcus, 2026-10-02 to 2026-10-18 (11 and 20 not checked: see below)
 **Blocked on:** —
 
 ## What happened
@@ -521,8 +521,27 @@ In progress, on screen, 2026-10-02 evening, as Doty, Renée and Marcus:
     price: $20.23" beside $22.99 struck through: Fleet's 12% off $22.99 is $20.2312.
   - **17, 19:** shown by 33 above (Marcus found by name; a person already on the
     account is listed as such and cannot be picked twice).
-  - **11, 22, 23, 24:** not checked. 11 needs a card payment (Stripe is not set up);
-    22 to 24 need the API to restart under a signed-in buyer, which only Brandon does.
+  - **11:** not checked. It needs a card payment (Stripe is not set up).
+  - **22, 23, 24, 2026-10-18:** the API was restarted four times (a saved file under
+    `tsx watch`, about 15 seconds down each time) with Renée signed in on the site
+    and Doty in the console, both watched every 3 seconds.
+    - **23:** Renée's account page never went to sign-in. While the API was down it read
+      "We couldn’t reach your account just now. This page will try again.", and it
+      showed "Hi, Renée" again by itself once the API was back.
+    - **24 was not fixed.** "Order again" pressed during the outage still read
+      "Nothing was added to your cart. Please try again.": eight buttons kept the
+      server's words only under 500, so the proxy's 503 fell to the fallback, and the
+      cart's own `CartError` was not read at all. Fixed with `accountFailureWords` in
+      `wizeworks/apps/site/lib/customer-client.ts`, used by all eight (Order again, Save
+      this cart, add to quote request, sign-off, the quotes and saved-carts pages, the
+      silica quote button). Test `lib/account-failure-words.test.ts` (5; red without the
+      outage branch). Pressed again in the next outage it read "Nothing was
+      added to your cart. We couldn’t reach the shop just now. Please try again in a
+      moment." Save this cart was not pressed on screen (same helper, tests only).
+    - **22:** Q-000012 opened in the console while the API was down. The pane read
+      "Reconnecting. Your work is safe, and this page carries on by itself.", and
+      about 8 seconds after the API answered it showed Quote Q-000012, Submitted,
+      with no reload.
 
 ## Rating effect
 

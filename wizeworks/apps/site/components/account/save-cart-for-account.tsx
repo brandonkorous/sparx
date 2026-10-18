@@ -17,7 +17,7 @@ import { Alert, Button, Input, Label, NativeSelect } from '@wizeworks/silicaui-r
 
 import { useCart } from '@/components/cart-provider';
 import { useCustomer } from '@/components/customer-provider';
-import { AccountError, saveCartForAccount } from '@/lib/customer-client';
+import { saveCartForAccount, accountFailureWords } from '@/lib/customer-client';
 import { useOrderingAccounts } from './ordering-accounts';
 
 export function SaveCartForAccount() {
@@ -56,11 +56,7 @@ export function SaveCartForAccount() {
       setOpen(false);
       setName('');
     } catch (err) {
-      setError(
-        err instanceof AccountError && err.status < 500
-          ? err.message
-          : 'The cart was not saved. Please try again.'
-      );
+      setError(accountFailureWords(err, 'The cart was not saved. Please try again.'));
     } finally {
       setBusy(false);
     }

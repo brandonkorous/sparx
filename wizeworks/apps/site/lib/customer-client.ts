@@ -68,6 +68,27 @@ export class AccountError extends Error {
   }
 }
 
+/**
+ * What a failed account action says. A refusal the buyer can act on keeps the
+ * server's own words. A request that never got an answer says so, after what did
+ * not happen: "Nothing was added to your cart. We couldn't reach the shop just
+ * now. Please try again in a moment." Eight buttons kept the server's words only
+ * under 500, so the proxy's "could not reach the shop" (a 503) fell to "Please
+ * try again" with nothing about why (sparx persona issue 086, item 24).
+ */
+export function accountFailureWords(err: unknown, fallback: string): string {
+  // AccountError, or the cart's own CartError: "Order again" starts a cart
+  // first, so its failure can be either. Both carry a status and shopper words.
+  if (!(err instanceof Error) || typeof (err as { status?: unknown }).status !== 'number') {
+    return fallback;
+  }
+  const status = (err as Error & { status: number }).status;
+  if (status > 0 && status < 500 && !isTransientStatus(status)) return err.message;
+  if (!isTransientStatus(status)) return fallback;
+  const lead = fallback.replace(/\s*Please try again\.?$/, '').trim();
+  return lead ? `${lead} ${SHOP_UNREACHABLE_MESSAGE}` : SHOP_UNREACHABLE_MESSAGE;
+}
+
 /** True when the request got no answer (the shop could not be reached, or the
  *  server failed before answering), as opposed to a refusal. A caller that sees
  *  this should wait and try again, never conclude anything about the shopper. */

@@ -35,13 +35,13 @@ import {
 import { useCustomer } from '@/components/customer-provider';
 import { neededByWords } from '@/lib/buying-again-words';
 import {
-  AccountError,
   discardQuoteRequest,
   saveQuoteRequest,
   submitQuoteRequest,
   type QuoteProductResult,
   type QuoteRequest,
   type QuoteRequestInput,
+  accountFailureWords,
 } from '@/lib/customer-client';
 import { QuoteProductPicker } from './product-picker';
 
@@ -200,7 +200,7 @@ export function QuoteRequestBuilder({
   }
 
   function failure(err: unknown, fallback: string): string {
-    return err instanceof AccountError && err.status < 500 ? err.message : fallback;
+    return accountFailureWords(err, fallback);
   }
 
   async function save(): Promise<QuoteRequest | null> {
