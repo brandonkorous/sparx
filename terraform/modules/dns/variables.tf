@@ -191,3 +191,30 @@ variable "rocketease_dns_enabled" {
   type        = bool
   default     = false
 }
+
+variable "wizelens_dns_enabled" {
+  description = <<-EOT
+    Whether to manage the wizelens.com and wizelens.dev zones' records
+    (wizelens.tf in this module).
+
+    DEFAULTS **OFF**. On 2026-10-17 both domains were registered at GoDaddy and
+    still used GoDaddy's nameservers (ns43/ns44 and ns51/ns52.domaincontrol.com),
+    so neither zone existed in Cloudflare and the zone lookup would fail at plan
+    time with a zone-not-found. Before flipping this:
+
+      1. Add both zones to the SAME Cloudflare account sparx's token uses, and
+         scope that token to them (Zone:DNS:Edit).
+      2. Switch both domains' nameservers at GoDaddy to the ones Cloudflare
+         assigns, and wait for the zones to show Active.
+      3. Set SSL/TLS to Full (strict) on both zones. Flexible speaks plain HTTP
+         to an origin that only serves HTTPS.
+      4. Check `kubectl -n wizelens get pods` shows `site` and `cloud` Running,
+         and that cloud answers /healthz with 200.
+
+    A fresh zone may carry GoDaddy's parking records after the import scan.
+    `allow_overwrite` will not turn an A into a CNAME, so delete any `www` A
+    record or `@` CNAME the scan copied in before the first apply.
+  EOT
+  type        = bool
+  default     = false
+}

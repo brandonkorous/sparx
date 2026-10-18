@@ -147,6 +147,16 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   'rocketease.com',
   'www.rocketease.com',
   'app.rocketease.com',
+  // ── WizeLens ─────────────────────────────────────────────────────────────
+  // The profiler from brandonkorous/wizelens, in the `wizelens` namespace. The
+  // apex is the static marketing site, `app.` is WizeLens Cloud. Both `www.`
+  // names and the wizelens.dev pair only 301 to wizelens.com, but they
+  // terminate TLS to do it, so each needs a certificate like the others.
+  'wizelens.com',
+  'www.wizelens.com',
+  'app.wizelens.com',
+  'wizelens.dev',
+  'www.wizelens.dev',
   // ── Piggles ──────────────────────────────────────────────────────────────
   // The sister brand's three surfaces + its api-rest hostname. They are PLATFORM
   // hosts, not tenant sites, so `isHostAuthorized` below cannot vouch for them —

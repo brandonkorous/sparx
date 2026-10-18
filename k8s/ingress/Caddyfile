@@ -835,3 +835,59 @@ import mode.caddy
 		header_up X-Forwarded-Port {http.request.port}
 	}
 }
+
+# ----- WizeLens (co-tenant in the `wizelens` namespace) ------------------------
+# The profiler from the brandonkorous/wizelens repository, in its own namespace
+# with its own Postgres server and Key Vault (terraform/envs/azure/wizelens.tf
+# and terraform/bootstrap-azure/wizelens.tf). Reached cross-namespace by
+# ClusterIP, like RocketEase above.
+#
+#   wizelens.com        marketing site and docs, static files  -> site
+#   www.wizelens.com    301 to the apex                        -> (redir)
+#   wizelens.dev, www.  301 to wizelens.com; .dev only redirects
+#   app.wizelens.com    WizeLens Cloud                         -> cloud
+#
+# ON-DEMAND TLS like every other brand here, so ALL FIVE NAMES are also in
+# PLATFORM_HOSTNAMES (wizeworks/services/api-rest/src/routes/internal/domain-check.ts).
+{$SX_SCHEME:https}://wizelens.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy site.wizelens.svc.cluster.local:80
+}
+
+{$SX_SCHEME:https}://www.wizelens.com, {$SX_SCHEME:https}://wizelens.dev, {$SX_SCHEME:https}://www.wizelens.dev {
+	import tls_policy
+	import security_headers
+	redir https://wizelens.com{uri} permanent
+}
+
+# THE CLIENT ADDRESS IS REWRITTEN HERE, and it is load-bearing. WizeLens Cloud
+# rate-limits sign-in per client IP and reads it from the LAST X-Forwarded-For
+# entry (WIZELENS_CLOUD_TRUST_PROXY=1). Caddy appends its peer there, and with
+# `externalTrafficPolicy: Local` behind a proxied record that peer is a
+# Cloudflare edge, so every visitor would share a few rate-limit buckets and one
+# attacker could lock everyone out.
+#
+# So the header is REPLACED, never appended: with CF-Connecting-IP when the peer
+# really is Cloudflare (ranges from https://www.cloudflare.com/ips, read
+# 2026-10-17; refresh them if Cloudflare adds any), and with the peer itself
+# otherwise. A request sent straight to the origin IP therefore cannot pick its
+# own address by sending the header.
+#
+# `remote_ip`, not `client_ip`: it matches the immediate peer and ignores the
+# global trusted_proxies, which is exactly the question being asked.
+{$SX_SCHEME:https}://app.wizelens.com {
+	import tls_policy
+	import security_headers
+	@cloudflare remote_ip 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 104.24.0.0/14 172.64.0.0/13 131.0.72.0/22 2400:cb00::/32 2606:4700::/32 2803:f800::/32 2405:b500::/32 2405:8100::/32 2a06:98c0::/29 2c0f:f248::/32
+	handle @cloudflare {
+		reverse_proxy cloud.wizelens.svc.cluster.local:80 {
+			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+		}
+	}
+	handle {
+		reverse_proxy cloud.wizelens.svc.cluster.local:80 {
+			header_up X-Forwarded-For {http.request.remote.host}
+		}
+	}
+}
