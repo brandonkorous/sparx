@@ -63,6 +63,8 @@ const config = {
     '@wizeworks/social',
   ],
   typedRoutes: false,
+  // WizeLens patches node:http and reads its own files: load it from node_modules, not a bundle.
+  serverExternalPackages: ['@wizeworks/lens-node'],
   // Tenant media lives on a DIFFERENT origin from the workbench, so every
   // thumbnail is a remote image and `next/image` refuses one that is not
   // allow-listed here. Two hosts, because the media origin differs by

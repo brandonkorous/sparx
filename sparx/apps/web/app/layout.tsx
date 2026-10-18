@@ -6,6 +6,7 @@ import { Toaster } from '@wizeworks/ui';
 import { ChunkReloadGuard } from '@wizeworks/app-kit';
 import { PostHogProvider } from '../components/posthog-provider';
 import { TopProgressBar } from '../components/top-progress-bar';
+import { WizeLens } from '../components/wizelens';
 import { AttributionCapture } from '../components/attribution-capture';
 import { ConsentBanner } from '../components/consent-banner';
 import { Nav } from '../components/marketing/nav';
@@ -141,6 +142,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Page-top navigation/loading bar — full module spectrum on sparx's
             own brand surface. */}
         <TopProgressBar />
+        {/* Tracing (WizeLens): on only when this page's server traces it; no HUD outside development. */}
+        <WizeLens />
         <PostHogProvider>
           {/* Silently recover a tab whose chunks were purged by a deploy. No
               visible "refresh" prompt on marketing pages — that's dashboard-only. */}

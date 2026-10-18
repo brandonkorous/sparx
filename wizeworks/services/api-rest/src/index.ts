@@ -1,6 +1,8 @@
 // Production / dev entrypoint. Boots the Fastify factory and wires up
 // graceful shutdown. Tests import ./app.ts directly and skip listen().
 
+// FIRST: sets the WizeLens Prisma hook before @wizeworks/db builds its client.
+import './lib/wizelens.js';
 import { resolveTransport } from '@wizeworks/events';
 import { startWebhookDeliveryLoop } from '@wizeworks/api-core/webhook-delivery';
 import {

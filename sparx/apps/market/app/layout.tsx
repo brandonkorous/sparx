@@ -15,6 +15,7 @@ import { ChunkReloadGuard } from '@wizeworks/app-kit';
 
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import { WizeLens } from '@/components/wizelens';
 import { SITE_ORIGIN } from '@/lib/site';
 
 // MUST be first: declares the cascade-layer order so the marketplace `mx-*`
@@ -134,6 +135,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {/* Silently recover a shopper's tab whose chunks were purged by a deploy. */}
         <ChunkReloadGuard />
+        {/* Tracing (WizeLens): on only when this page's server traces it; no HUD outside development. */}
+        <WizeLens />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(SITE_SCHEMA) }}

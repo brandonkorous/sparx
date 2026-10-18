@@ -1,5 +1,7 @@
 // Entry point. Boots the Fastify app and listens.
 
+// FIRST: sets the WizeLens Prisma hook before @wizeworks/db builds its client.
+import './wizelens.js';
 import { resolveTransport } from '@wizeworks/events';
 import {
   installCrmWebhookFanout,

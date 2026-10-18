@@ -1,8 +1,8 @@
 # AKS deployment
 
-**Version:** 2.1
+**Version:** 2.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-07
+**Last Updated:** 2026-10-18
 
 The deployed platform, on `aks-sparx-prod-cus` in centralus. Infrastructure comes
 from [terraform/envs/azure](../../terraform/envs/azure); this is the workload on
@@ -94,6 +94,27 @@ on the next release. Key Vault also brings versioning, audit logs and rollback,
 and costs about **$0.06/month** at this read volume (Standard tier: no base fee,
 free storage, $0.03 per 10,000 operations — never Premium, which buys HSM keys
 this platform does not use).
+
+### WizeLens ingest keys
+
+The 12 Deployments in `k8s/apps` send traces to WizeLens Cloud (`app.wizelens.com`),
+send-only: with `NODE_ENV=production` the add-on serves no dashboard or read API.
+Each app has its own ingest key (`wl_ik_…`), so one can be revoked without the
+others and no key carries more than one pod set's traffic (the cloud caps each
+key at 1200 calls a minute, and every pod sends once a second). The vault name is
+`wizelens-key-<app>`, which the release turns into `WIZELENS_KEY_<APP>`; each
+Deployment maps its own key to `WIZELENS_HUB_TOKEN`:
+
+```bash
+az keyvault secret set --vault-name kv-sparx-prod-cus --name wizelens-key-api-rest --value <wl_ik_…>
+# … and likewise for api-graphql, api-mcp, mcp-site, admin, site, web, workbench,
+#    market, piggles-web, piggles-account, piggles-console
+```
+
+The key reference is `optional`: a missing key leaves the app running, and only
+its traces are refused by the cloud. Projects: `wizeworks` (api-rest,
+api-graphql, api-mcp, mcp-site, admin, site), `sparx` (web, workbench, market),
+`piggles` (piggles-web, piggles-account, piggles-console).
 
 ### Migrating, and rolling back
 

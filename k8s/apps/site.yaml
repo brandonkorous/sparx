@@ -46,6 +46,22 @@ spec:
           env:
             - name: NODE_ENV
               value: production
+            # WizeLens: send-only tracing to WizeLens Cloud. With NODE_ENV=production
+            # the add-on serves no dashboard or read API; it only sends. The ingest
+            # key is per app (vault `wizelens-key-site`); optional, so a missing key
+            # leaves the app running and untraced in the cloud rather than failing.
+            - name: WIZELENS_ENABLED
+              value: 'true'
+            - name: WIZELENS_HUB
+              value: https://app.wizelens.com
+            - name: WIZELENS_SAMPLE_RATE
+              value: '0.25'
+            - name: WIZELENS_HUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: sparx-app-secrets
+                  key: WIZELENS_KEY_SITE
+                  optional: true
             - name: SERVICE_NAME
               value: site
             - name: PORT

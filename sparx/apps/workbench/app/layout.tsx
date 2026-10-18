@@ -7,6 +7,7 @@ import { ClippedTextReveal } from '@wizeworks/app-kit';
 import { CrashListeners } from '../components/crash-listeners';
 import { RootBoundary } from '../components/root-boundary';
 import { WriteFailureReporter } from '../components/write-failure-reporter';
+import { WizeLens } from '../components/wizelens';
 import { THEME_INIT_SCRIPT } from '../lib/theme';
 // MUST load before globals.css: declares the cascade-layer order so silicaui's
 // base-layer output (tokens + .btn/.card/… classes) ranks correctly against
@@ -57,6 +58,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script id="sparx-theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}
         </Script>
+        {/* Tracing (WizeLens): on only when this page's server traces it; no HUD outside development.
+            api-rest calls carry a traceparent, so their server half joins the same trace. */}
+        <WizeLens apiUrl={process.env.NEXT_PUBLIC_API_URL} />
         {/* Wraps the PROVIDERS, which app/error.tsx cannot reach — it boundaries
             their children, not them. Without this, a throw in the query client,
             analytics, toasts or the confirm dialog fell all the way to

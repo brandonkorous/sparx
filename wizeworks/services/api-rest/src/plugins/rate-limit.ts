@@ -40,6 +40,7 @@ import fastifyRateLimit from '@fastify/rate-limit';
 import { ApiError } from '@wizeworks/api-core/errors';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
+import { isWizeLensPath } from '../lib/wizelens.js';
 
 const rateLimitPlugin: FastifyPluginAsync = async (app) => {
   await app.register(fastifyRateLimit, {
@@ -47,7 +48,8 @@ const rateLimitPlugin: FastifyPluginAsync = async (app) => {
     max: 600, // 10 per second, generous default
     timeWindow: '1 minute',
     // /health is liveness — never rate limit, would flap pods unhealthy.
-    allowList: (request) => request.url === '/health',
+    // /_wizelens is the local profiler's dashboard (development only).
+    allowList: (request) => request.url === '/health' || isWizeLensPath(request.url),
     errorResponseBuilder: (_request, context) =>
       new ApiError(
         'RATE_LIMITED',
