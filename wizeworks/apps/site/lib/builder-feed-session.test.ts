@@ -9,10 +9,15 @@
 //   2. A visitor who is not signed in keeps the shared, tagged cache entry.
 //   3. The builder record shows the buyer's price, with the list price struck
 //      through, on the card and on each version in the buy box.
+//   4. The signed-in read, being per request, carries the buyer's own address
+//      chain, so api-rest rate-limits that buyer and not this server's pod. The
+//      shared read carries none: a request header in a cached fetch would split
+//      the shared entry per visitor.
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const jar = vi.hoisted(() => ({ cookies: [] as { name: string; value: string }[] }));
+const VISITOR_CHAIN = '9.9.9.9, 104.16.0.5';
 
 vi.mock('next/headers', () => ({
   cookies: () =>
@@ -20,6 +25,7 @@ vi.mock('next/headers', () => ({
       getAll: () => jar.cookies,
       toString: () => jar.cookies.map((c) => `${c.name}=${c.value}`).join('; '),
     }),
+  headers: () => Promise.resolve(new Headers({ 'x-forwarded-for': VISITOR_CHAIN })),
 }));
 vi.mock('./site-context', () => ({ resolveActivePropertySlug: () => Promise.resolve(null) }));
 vi.mock('./locale', () => ({ resolveReaderLocale: () => Promise.resolve(null) }));
@@ -57,6 +63,7 @@ describe('the builder product feed and the shared cache', () => {
     expect((init.headers as Record<string, string>).Cookie).toContain(
       '__Secure-sparx_customer_session=abc'
     );
+    expect((init.headers as Record<string, string>)['x-forwarded-for']).toBe(VISITOR_CHAIN);
   });
 
   it('keeps the shared, tagged entry for a visitor who is not signed in', async () => {
