@@ -74,6 +74,8 @@ const config = {
     '@wizeworks/social',
   ],
   typedRoutes: false,
+  // WizeLens patches node:http and reads its own files: load it from node_modules, not a bundle.
+  serverExternalPackages: ['@wizeworks/lens-node'],
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'media.sparx.works', pathname: '/v1/public/media/**' },

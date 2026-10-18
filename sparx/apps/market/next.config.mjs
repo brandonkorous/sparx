@@ -8,6 +8,8 @@ const config = {
   reactStrictMode: true,
   transpilePackages: ['@wizeworks/silicaui-react', '@sparx/brand', '@wizeworks/app-kit'],
   typedRoutes: false,
+  // WizeLens patches node:http and reads its own files: load it from node_modules, not a bundle.
+  serverExternalPackages: ['@wizeworks/lens-node'],
   output: 'standalone',
   outputFileTracingRoot: join(__dirname, '../../../'),
   images: {

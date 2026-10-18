@@ -25,6 +25,7 @@ import { CustomerProvider } from '@/components/customer-provider';
 import { WishlistProvider } from '@/components/wishlist-provider';
 import { MiniCart } from '@/components/mini-cart';
 import { PreviewBridge } from '@/components/preview-bridge';
+import { WizeLens } from '@/components/wizelens';
 import { RevealController } from '@/components/reveal-controller';
 import { MotionController } from '@/components/motion-controller';
 import { SiteSuspended } from '@/components/site-suspended';
@@ -586,6 +587,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Silently recover a shopper's tab whose chunks were purged by a deploy.
             Deliberately no visible "refresh" toast on customer-facing pages. */}
         <ChunkReloadGuard />
+        {/* Tracing (WizeLens): on only when this page's server traces it; no HUD outside development.
+            api-rest calls carry a traceparent, so their server half joins the same trace. */}
+        <WizeLens apiUrl={process.env.NEXT_PUBLIC_API_URL} />
         <PreviewBridge />
         <RevealController />
         <MotionController />

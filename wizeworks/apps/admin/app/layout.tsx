@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { THEME_INIT_SCRIPT } from '@wizeworks/ui';
 import { Providers } from './providers';
+import { WizeLens } from './wizelens';
 import './globals.css';
 
 // Inter powers the sparx wordmark (weight 700), exposed as --font-wordmark for
@@ -36,6 +37,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script id="sparx-theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}
         </Script>
+        {/* Tracing (WizeLens): on only when this page's server traces it; no HUD outside development. */}
+        <WizeLens />
         <Providers>{children}</Providers>
       </body>
     </html>
