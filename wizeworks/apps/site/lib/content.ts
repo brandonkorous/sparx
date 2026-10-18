@@ -6,6 +6,9 @@
 // the token and, if it grants this entry, returns the draft body. Failing
 // validation just falls back to the published-only path.
 
+import { headers } from 'next/headers';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
+
 import { resolveActivePropertySlug } from './site-context';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
@@ -102,15 +105,21 @@ async function publicGetEnvelope<T>(
   // Null for the primary (api-rest defaults), so single-site is unchanged.
   const propertySlug = await resolveActivePropertySlug();
   if (propertySlug && !qs.has('property')) qs.set('property', propertySlug);
-  const headers: Record<string, string> = {};
+  // A preview reads live, for one person, so it also carries that person's
+  // client chain: api-rest then rate-limits the previewer rather than this pod.
+  // The published (cached) read stays anonymous, because request headers are
+  // part of the data-cache key and forwarding them would give every visitor a
+  // cache entry of their own.
+  const outgoing: Record<string, string> = {};
   if (options.previewToken) {
-    headers.Authorization = `Preview ${options.previewToken}`;
+    Object.assign(outgoing, forwardedFor(await headers()));
+    outgoing.Authorization = `Preview ${options.previewToken}`;
   }
   // Coarse per-tenant tag (`content:<slug>`) so revalidateTag('content:<slug>')
   // clears all of a tenant's content reads in one purge.
   const coarse = query.tenant ? [`content:${String(query.tenant)}`] : [];
   const res = await fetch(`${BASE_URL}${path}?${qs.toString()}`, {
-    headers,
+    headers: outgoing,
     next: options.previewToken
       ? { revalidate: 0 }
       : {

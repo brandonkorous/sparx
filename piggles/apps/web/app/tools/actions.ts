@@ -19,6 +19,7 @@
 // `wizeworks/`, which is where sharing belongs.
 
 import { headers } from 'next/headers';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
 
 /** Where api-rest is, from inside a Piggles pod. Same convention as
  *  `@piggles/config`'s notice fetcher: a laptop that configures nothing talks to
@@ -87,8 +88,8 @@ export async function sendToolResult(
     };
   }
 
-  const h = await headers();
-  const forwardedFor = h.get('x-forwarded-for') ?? h.get('x-real-ip') ?? '';
+  // The visitor's own client chain, verbatim (see @wizeworks/app-kit/forwarded-for).
+  const client = forwardedFor(await headers());
 
   try {
     const res = await fetch(
@@ -97,7 +98,7 @@ export async function sendToolResult(
         method: 'POST',
         headers: {
           'content-type': 'application/json',
-          ...(forwardedFor ? { 'x-forwarded-for': forwardedFor } : {}),
+          ...client,
         },
         // No brand field: the API resolves it from the tenant's own
         // `platformBrand`, so the sign-off and the link back cannot disagree

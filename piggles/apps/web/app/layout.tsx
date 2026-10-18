@@ -9,6 +9,7 @@ import { THEME_SCRIPT } from '@/lib/theme';
 import { ConsentBar } from '@/components/consent-bar';
 import { AttributionCapture } from '@/components/attribution-capture';
 import { PostHogProvider } from '@/components/posthog-provider';
+import { WizeLens } from '@/components/wizelens';
 import './globals.css';
 
 // Self-hosted by next/font: no third-party font host to consent to. globals.css
@@ -60,6 +61,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>
+        {/* Tracing (WizeLens): on only when this page's server traces it; no HUD outside development. */}
+        <WizeLens />
         {/* Above everything that might capture; initialises nothing until consent. */}
         <PostHogProvider>
           {/* Above the header, so switching a notice on never moves the site's chrome. */}

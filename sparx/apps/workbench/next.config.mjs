@@ -37,6 +37,9 @@ const config = {
   // is its first consumer — it had never been through a bundler before.
   transpilePackages: [
     '@wizeworks/app-kit',
+    // The sign-up action resolves the legal-acceptance record's address with it;
+    // ships source from ./src like app-kit.
+    '@wizeworks/client-ip',
     '@wizeworks/silicaui-react',
     '@wizeworks/silicaui-charts',
     // The rich-text editor (bootcamp description) ships a client TipTap surface.
@@ -63,6 +66,8 @@ const config = {
     '@wizeworks/social',
   ],
   typedRoutes: false,
+  // WizeLens patches node:http and reads its own files: load it from node_modules, not a bundle.
+  serverExternalPackages: ['@wizeworks/lens-node'],
   // Tenant media lives on a DIFFERENT origin from the workbench, so every
   // thumbnail is a remote image and `next/image` refuses one that is not
   // allow-listed here. Two hosts, because the media origin differs by

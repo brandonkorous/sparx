@@ -7,6 +7,9 @@
 // hook). Waitlists past capacity. Honeypot-guarded; the public API does the
 // authoritative Zod pass. The slug rides as a hidden form field.
 
+import { headers } from 'next/headers';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
+
 const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -41,12 +44,17 @@ export async function registerForBootcamp(
   if (!EMAIL_RE.test(email))
     return { status: 'error', message: 'Please enter a valid email address.' };
 
+  // Forward the visitor's client chain: this action runs server-side, so api-rest
+  // would otherwise rate-limit (and record) the sparx/apps/web pod — one bucket
+  // shared by everyone RSVPing — rather than the person registering.
+  const client = forwardedFor(await headers());
+
   try {
     const res = await fetch(
       `${API_BASE}/v1/public/bootcamps/${encodeURIComponent(slug)}/register`,
       {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: { 'content-type': 'application/json', ...client },
         body: JSON.stringify({ name, email, seats }),
         cache: 'no-store',
       }

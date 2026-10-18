@@ -7,6 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const config = {
   reactStrictMode: true,
   transpilePackages: [
+    '@wizeworks/app-kit',
     '@wizeworks/ui',
     '@wizeworks/brand',
     '@wizeworks/forms',
@@ -28,6 +29,8 @@ const config = {
     'gaxios',
     'https-proxy-agent',
     'agent-base',
+    // WizeLens patches node:http and reads its own files: load it from node_modules, not a bundle.
+    '@wizeworks/lens-node',
   ],
   typedRoutes: true,
   output: 'standalone',

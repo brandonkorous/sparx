@@ -1,7 +1,14 @@
 import 'server-only';
 
+import { headers } from 'next/headers';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
+
 // Paying for Piggles: the account app asks api-rest's internal billing routes,
 // which hold the Stripe key. This app checks the session and role first.
+//
+// Every call is one signed-in person's live request (an account page render or a
+// billing action), so it carries their client chain: api-rest then rate-limits
+// and records that person rather than this pod, whose address everyone shares.
 
 const TOKEN_HEADER = 'X-sparx-Internal-Furnish-Token';
 
@@ -44,7 +51,11 @@ async function call<T>(path: string, init: { method: 'GET' | 'POST'; body?: unkn
   if (!target) throw new Error('Billing is not wired: PIGGLES_API_REST_URL or its token is unset.');
   const response = await fetch(`${target.base}${path}`, {
     method: init.method,
-    headers: { 'content-type': 'application/json', [TOKEN_HEADER]: target.token },
+    headers: {
+      'content-type': 'application/json',
+      [TOKEN_HEADER]: target.token,
+      ...forwardedFor(await headers()),
+    },
     ...(init.body ? { body: JSON.stringify(init.body) } : {}),
     signal: AbortSignal.timeout(20_000),
     cache: 'no-store',

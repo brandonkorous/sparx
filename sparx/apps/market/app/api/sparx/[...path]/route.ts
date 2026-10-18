@@ -14,7 +14,25 @@ import { type NextRequest, NextResponse } from 'next/server';
 const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
 // Request headers we forward upstream (hop-by-hop + host headers are dropped).
-const FORWARD_REQUEST_HEADERS = ['content-type', 'x-cart-token', 'authorization', 'cookie'];
+//
+// x-forwarded-for / x-real-ip carry the shopper's client chain (set by Caddy) to
+// api-rest, which reads it from the right past the hops it trusts. Without them
+// api-rest sees only this pod, so every shopper on sparx.market shares one per-IP
+// rate-limit bucket and one busy client can empty the cart and checkout for all.
+//
+// user-agent rides along for the same reason wizeworks/apps/site's proxy sends
+// it: checkout recomputes the visitor hash (ip + UA, docs/128) to attribute the
+// order, and api-rest's bot filter judges the UA — both need the browser's, not
+// this proxy's fetch UA.
+const FORWARD_REQUEST_HEADERS = [
+  'content-type',
+  'x-cart-token',
+  'authorization',
+  'cookie',
+  'x-forwarded-for',
+  'x-real-ip',
+  'user-agent',
+];
 
 async function forward(request: NextRequest, path: string[]): Promise<NextResponse> {
   const search = request.nextUrl.search;

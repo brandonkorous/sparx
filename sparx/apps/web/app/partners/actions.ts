@@ -7,6 +7,9 @@
 // account represents the brand). Honeypot-guarded; the public API does the
 // authoritative Zod pass.
 
+import { headers } from 'next/headers';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
+
 import type { PartnerKind, PartnerTier } from '@/lib/partners';
 
 const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
@@ -53,10 +56,15 @@ export async function applyToPartnerProgram(
     return { status: 'error', message: 'Please enter a valid email address.' };
   }
 
+  // Forward the visitor's client chain: this action runs server-side, so api-rest
+  // would otherwise rate-limit (and record) the sparx/apps/web pod — one bucket
+  // shared by every applicant — rather than the person applying.
+  const client = forwardedFor(await headers());
+
   try {
     const res = await fetch(`${API_BASE}/v1/public/partners/apply`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...client },
       body: JSON.stringify({
         name,
         email,

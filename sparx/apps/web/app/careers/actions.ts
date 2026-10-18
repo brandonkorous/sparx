@@ -8,6 +8,7 @@
 // the /early waitlist action's constants + IP-forwarding idiom.
 
 import { headers } from 'next/headers';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
 
 // In-cluster api-rest URL (same env the marketplace data layer reads); the public
 // route needs no auth. Falls back to the local api-rest port for dev.
@@ -96,8 +97,7 @@ export async function submitApplication(
 
   // Forward the visitor IP: this action runs server-side, so request.ip at the API
   // would otherwise be the sparx/apps/web pod, not the applicant.
-  const h = await headers();
-  const forwardedFor = h.get('x-forwarded-for') ?? h.get('x-real-ip') ?? '';
+  const client = forwardedFor(await headers());
 
   try {
     const res = await fetch(
@@ -106,7 +106,7 @@ export async function submitApplication(
         method: 'POST',
         headers: {
           'content-type': 'application/json',
-          ...(forwardedFor ? { 'x-forwarded-for': forwardedFor } : {}),
+          ...client,
         },
         body: JSON.stringify({
           roleSlug,

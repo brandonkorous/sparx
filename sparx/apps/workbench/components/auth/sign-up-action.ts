@@ -13,6 +13,7 @@
 import { headers } from 'next/headers';
 import { signUpMerchant, SignUpError } from '@wizeworks/auth';
 import { auth } from '@wizeworks/auth/server';
+import { clientIpFromChain } from '@wizeworks/client-ip';
 
 export interface SignUpActionInput {
   name: string;
@@ -43,11 +44,11 @@ export async function signUpAction(input: SignUpActionInput): Promise<SignUpActi
     return { ok: false, error: 'Please accept the policies to create your account.' };
   }
 
-  // Captured for the legal-acceptance record. x-forwarded-for's first hop is the
-  // client behind Caddy/Cloudflare.
+  // Captured for the legal-acceptance record. NOT x-forwarded-for's first hop:
+  // that is the one the client writes, so the record held whatever address the
+  // signer typed. The chain is read from the right, past Caddy and Cloudflare.
   const hdrs = await headers();
-  const forwarded = hdrs.get('x-forwarded-for')?.split(',')[0]?.trim();
-  const ipAddress = forwarded && forwarded.length > 0 ? forwarded : null;
+  const ipAddress = clientIpFromChain(hdrs.get('x-forwarded-for'));
   const userAgent = hdrs.get('user-agent');
 
   let userId: string;

@@ -12,9 +12,11 @@
 // columns; two is the honest maximum until the list is long enough to need three.
 
 import type { Metadata } from 'next';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { Button, Heading, Input, Text } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { Band } from '@/components/marketing/band';
+import { MAX_FACET_SELECTIONS, parseFacetList } from '@/lib/browse-params';
 import { fetchPartners } from '@/lib/partners';
 import { PartnerDirectoryCard } from './_components/partner-card';
 import { PartnerFacetBar, type DirectoryParams } from './_components/facet-bar';
@@ -56,6 +58,21 @@ export default async function PartnerDirectoryPage({
   searchParams: Promise<SearchParams>;
 }) {
   const current = normalize(await searchParams);
+
+  // Specialty is the one multi-select, so it is the one that can multiply. Over
+  // the cap is a URL the facet bar never offers: answer it before fetching. Any
+  // other spelling of a selection (click order, repeats) redirects to the sorted
+  // one, so a selection is one URL, one cache entry and at most one api-rest read.
+  const specialties = parseFacetList(current.specialty);
+  if (specialties.length > MAX_FACET_SELECTIONS) notFound();
+  if (current.specialty && specialties.join(',') !== current.specialty) {
+    const next: DirectoryParams = { ...current };
+    if (specialties.length) next.specialty = specialties.join(',');
+    else delete next.specialty;
+    const qs = new URLSearchParams(next).toString();
+    permanentRedirect(`/partners/directory${qs ? `?${qs}` : ''}`);
+  }
+
   const page = await fetchPartners({ ...current, limit: '24' });
   const showing = page.items.length;
   const filtered = Object.keys(current).length > 0;

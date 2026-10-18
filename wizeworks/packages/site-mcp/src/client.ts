@@ -87,6 +87,9 @@ export class SiteApiClient {
     } else if (this.ctx.customerSession) {
       headers.cookie = `sparx_customer_session=${this.ctx.customerSession}`;
     }
+    // Who the call is for. Without it api-rest sees this server's pod, and every
+    // agent talking to every site shares that one address's rate limit.
+    if (this.ctx.forwardedFor) headers['x-forwarded-for'] = this.ctx.forwardedFor;
 
     let res: Response;
     try {

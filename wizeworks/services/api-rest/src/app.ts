@@ -16,6 +16,8 @@ import Fastify, {
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import { EXPOSED_RESPONSE_HEADERS } from './lib/exposed-headers.js';
+import { wizelensPlugin } from './lib/wizelens.js';
+import { TRUSTED_PROXIES } from '@wizeworks/client-ip';
 import { CrmConflictError, CrmNotFoundError, CrmValidationError } from '@wizeworks/crm';
 import {
   SitebuilderConflictError,
@@ -871,14 +873,20 @@ export async function createApp(): Promise<FastifyInstance> {
     genReqId: () => `req_${randomUUID().replace(/-/g, '')}`,
     requestIdHeader: 'x-request-id',
     requestIdLogLabel: 'request_id',
-    // X-Forwarded-* — sparx-prod sits behind Caddy.
-    trustProxy: true,
+    // X-Forwarded-* — sparx-prod sits behind Cloudflare and Caddy. A LIST, not
+    // `true`: see @wizeworks/client-ip for why `true` let any
+    // caller choose its own `request.ip`.
+    trustProxy: TRUSTED_PROXIES,
     disableRequestLogging: false,
     bodyLimit: 5 * 1024 * 1024, // 5 MiB — rich-text bodies, not media (those upload direct-to-GCS).
     // A product's address can be longer than the router takes by default
     // (sparx persona issue 213): see router-options.ts.
     routerOptions: ROUTER_OPTIONS,
   });
+
+  // WizeLens goes first, so its request span wraps every other plugin's hooks.
+  // Development, or production with WIZELENS_ENABLED; see lib/wizelens.ts.
+  await app.register(wizelensPlugin);
 
   // Raw-bytes parser for local-mode media uploads. In prod (GCS) the
   // browser PUTs directly to a signed Cloud Storage URL and the bytes

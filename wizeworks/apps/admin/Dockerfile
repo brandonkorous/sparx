@@ -23,6 +23,7 @@ FROM base AS builder
 # Workspace metadata first — maximises layer-cache reuse across source changes.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY wizeworks/apps/admin/package.json wizeworks/apps/admin/
+COPY wizeworks/packages/app-kit/package.json wizeworks/packages/app-kit/
 COPY wizeworks/packages/brand-core/package.json wizeworks/packages/brand-core/
 COPY wizeworks/packages/ui/package.json wizeworks/packages/ui/
 COPY wizeworks/packages/forms/package.json wizeworks/packages/forms/
@@ -37,6 +38,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile --filter @wizeworks/admin...
 
 # Source for every workspace dep + the app itself.
+COPY wizeworks/packages/app-kit wizeworks/packages/app-kit
 COPY wizeworks/packages/brand-core wizeworks/packages/brand-core
 COPY wizeworks/packages/ui wizeworks/packages/ui
 COPY wizeworks/packages/forms wizeworks/packages/forms

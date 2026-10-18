@@ -35,12 +35,12 @@ function clientMeta(request: FastifyRequest): {
   ipAddress: string | null;
   userAgent: string | null;
 } {
-  const fwd = request.headers['x-forwarded-for'];
-  const ip = Array.isArray(fwd) ? fwd[0] : (fwd ?? request.ip);
+  // `request.ip`, resolved by the trusted-proxy list (@wizeworks/client-ip).
+  // This read the FIRST X-Forwarded-For entry, which is the one the client
+  // writes — so the recorded address was whatever the applicant chose.
   const ua = request.headers['user-agent'];
-  const first = (ip ?? '').split(',')[0]?.trim();
   return {
-    ipAddress: first && first.length > 0 ? first : null,
+    ipAddress: request.ip ? request.ip : null,
     userAgent: typeof ua === 'string' ? ua : null,
   };
 }

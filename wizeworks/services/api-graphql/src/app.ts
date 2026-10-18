@@ -11,7 +11,9 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify';
 import { createAuthPlugin } from '@wizeworks/api-core/auth';
 import { createErrorsPlugin } from '@wizeworks/api-core/errors-plugin';
+import { TRUSTED_PROXIES } from '@wizeworks/client-ip';
 import { env } from './env.js';
+import { wizelensPlugin } from './wizelens.js';
 import healthRoutes from './routes/health.js';
 import graphqlRoutes from './routes/graphql.js';
 
@@ -42,14 +44,19 @@ export async function createApp(): Promise<FastifyInstance> {
     genReqId: () => `req_${randomUUID().replace(/-/g, '')}`,
     requestIdHeader: 'x-request-id',
     requestIdLogLabel: 'request_id',
-    // X-Forwarded-* — sparx-prod sits behind Caddy.
-    trustProxy: true,
+    // X-Forwarded-* — sparx-prod sits behind Cloudflare and Caddy. A list, not
+    // `true`, so a caller cannot choose its own `request.ip`; see
+    // @wizeworks/client-ip.
+    trustProxy: TRUSTED_PROXIES,
     disableRequestLogging: false,
     // GraphQL bodies can be larger than REST ones (variables + queries
     // packed together). 1 MiB is plenty for hand-written queries; cap kept
     // sane to discourage abuse.
     bodyLimit: 1 * 1024 * 1024,
   });
+
+  // WizeLens goes first, so its request span wraps every other plugin's hooks.
+  await app.register(wizelensPlugin);
 
   // Order matters: errors → auth → routes. Error handler must be registered
   // first so it catches anything that throws from the others. No CRM/REST-

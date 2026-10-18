@@ -45,16 +45,16 @@ async function tenantFromSlug(request: FastifyRequest): Promise<string> {
   return row.id;
 }
 
-/** The caller's address, for the signature record. Behind Caddy the socket is
- *  the ingress, so the forwarded header is the real one — first hop only, since
- *  everything after it is client-supplied and worth nothing. */
+/** The caller's address, for the signature record — `request.ip`, which the
+ *  app's trusted-proxy list resolves (@wizeworks/client-ip).
+ *
+ *  This used to parse X-Forwarded-For itself and keep the FIRST hop, on the
+ *  belief that everything after it was client-supplied. It is the other way
+ *  round: the first hop is the one the client writes, and the hops after it are
+ *  appended by Cloudflare and Caddy. A signer could put any address they liked
+ *  into the evidence record of their own signature. */
 function callerIp(request: FastifyRequest): string | undefined {
-  const forwarded = request.headers['x-forwarded-for'];
-  const first = Array.isArray(forwarded) ? forwarded[0] : forwarded;
-  // `??` would be wrong: a header present but blank must fall through to the
-  // socket address, and nullish-coalescing would keep the empty string.
-  const hop = first?.split(',')[0]?.trim();
-  return hop !== undefined && hop !== '' ? hop : request.ip;
+  return request.ip || undefined;
 }
 
 const publicDocumentRoutes: FastifyPluginAsync = (app) => {

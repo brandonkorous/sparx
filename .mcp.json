@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "wizelens": {
+      "type": "http",
+      "url": "https://mcp.wizelens.com",
+      "headers": {
+        "Authorization": "Bearer ${WIZELENS_READ_KEY}"
+      }
+    }
+  }
+}

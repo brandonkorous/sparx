@@ -15,6 +15,7 @@
 
 import { headers } from 'next/headers';
 import { cache } from 'react';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
 import { DEFAULT_PLATFORM_BRAND, platformBrandIdentity } from '@wizeworks/brand-core';
 import { isLocalDevHost, zoneSiteRoute, type SiteRoute } from './site-host';
 
@@ -207,10 +208,18 @@ const DEFAULT_CONSENT: SiteConsent = {
 // `cache: 'no-store'`: host→site routing is correctness-critical and cheap (one
 // indexed unique lookup), so read it live rather than risk the data cache serving
 // a stale negative that would 404 a live custom domain.
-async function fetchSiteByHost(host: string): Promise<SiteRoute | null> {
+//
+// Being uncached, it carries the visitor's client chain (`forwardedFor`):
+// otherwise every custom-domain page view on this pod would count against the
+// pod's one api-rest rate-limit bucket, and one busy visitor could 404 the rest.
+async function fetchSiteByHost(
+  host: string,
+  incoming: Awaited<ReturnType<typeof headers>>
+): Promise<SiteRoute | null> {
   try {
     const res = await fetch(`${BASE_URL}/v1/public/site-by-host?host=${encodeURIComponent(host)}`, {
       cache: 'no-store',
+      headers: forwardedFor(incoming),
     });
     const json = (await res.json()) as
       { success: true; data: { tenantSlug: string; propertySlug: string } } | { success: false };
@@ -271,7 +280,7 @@ export const resolveSiteRoute = cache(async (): Promise<SiteRoute | null> => {
   }
 
   // (3) Custom domain: the domains table is the only source of truth.
-  return fetchSiteByHost(primaryHost);
+  return fetchSiteByHost(primaryHost, hdrs);
 });
 
 /**

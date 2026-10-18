@@ -65,6 +65,19 @@ describe('a rate-limited request', () => {
     await app.close();
   });
 
+  it('states the wait as a wait, not as the window', async () => {
+    // The countdown used to follow "per", so a one-minute limit read as
+    // "1 requests per 59 seconds" and changed on every request.
+    const app = await server(1);
+    await app.inject({ method: 'GET', url: '/v1/thing' });
+    const limited = await app.inject({ method: 'GET', url: '/v1/thing' });
+
+    const { message } = limited.json<Envelope>().error;
+    expect(message).toMatch(/Try again in \d+ (second|minute)s?\.$/);
+    expect(message).not.toMatch(/requests per/);
+    await app.close();
+  });
+
   it('still carries the retry-after header it always did', async () => {
     const app = await server(1);
     await app.inject({ method: 'GET', url: '/v1/thing' });

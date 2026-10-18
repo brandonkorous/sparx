@@ -31,6 +31,13 @@ import 'server-only';
 // The blast radius of the secret is why it is its own: this call writes module
 // flags, config presets, a site template and hundreds of rows into ONE named
 // tenant.
+//
+// Both calls here run for one person mid-signup (the onboarding page and its
+// action), uncached, so each carries that person's client chain: api-rest then
+// rate-limits and audits the person, not this pod's one shared address.
+
+import { headers } from 'next/headers';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
 
 const FURNISH_PATH = '/internal/tenant/furnish';
 const BLUEPRINTS_PATH = '/internal/tenant/blueprints';
@@ -86,7 +93,7 @@ export async function listBlueprints(tenantId: string): Promise<BlueprintChoice[
   try {
     const url = `${base.replace(/\/$/, '')}${BLUEPRINTS_PATH}?tenantId=${encodeURIComponent(tenantId)}`;
     const response = await fetch(url, {
-      headers: { [FURNISH_TOKEN_HEADER]: token },
+      headers: { [FURNISH_TOKEN_HEADER]: token, ...forwardedFor(await headers()) },
       signal: AbortSignal.timeout(15_000),
       cache: 'no-store',
     });
@@ -136,6 +143,7 @@ export async function furnishTenant({
     headers: {
       'content-type': 'application/json',
       [FURNISH_TOKEN_HEADER]: token,
+      ...forwardedFor(await headers()),
     },
     body: JSON.stringify({
       tenantId,

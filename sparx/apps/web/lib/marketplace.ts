@@ -210,8 +210,15 @@ export async function fetchListing(
 /** Hard bound on sitemap enumeration per category. The catalog is curated (tens
  *  to low hundreds per category), so this is headroom rather than a real cap —
  *  but it IS a cap, so `fetchListingSlugs` reports when it truncates instead of
- *  silently under-reporting coverage. */
-const SITEMAP_PAGE_SIZE = 100;
+ *  silently under-reporting coverage.
+ *
+ *  The page size is the catalog's OWN cap on `limit` (MarketplaceBrowseQuery in
+ *  packages/marketplace-schemas/src/query.ts: max 60). It was 100: api-rest
+ *  answered every sitemap page with a 422, `getPublic` turned that into an empty
+ *  page, the walk stopped on its first iteration, and no marketplace listing has
+ *  been in the sitemap since. The same defect bootcamp.ts fixed on 2026-08-02,
+ *  found again from the 422s in WizeLens on 2026-10-18. */
+const SITEMAP_PAGE_SIZE = 60;
 const SITEMAP_MAX_PER_CATEGORY = 1_000;
 
 /** Every published+public listing slug in a category, for sitemap coverage.

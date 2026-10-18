@@ -10,10 +10,14 @@ const config = {
     '@piggles/brand',
     '@piggles/config',
     '@piggles/mascot',
+    '@wizeworks/app-kit',
     '@wizeworks/auth',
+    '@wizeworks/client-ip',
     '@wizeworks/silicaui-react',
   ],
   typedRoutes: true,
+  // WizeLens patches node:http and reads its own files: load it from node_modules, not a bundle.
+  serverExternalPackages: ['@wizeworks/lens-node'],
   output: 'standalone',
   // Monorepo: trace from the REPO root, not from `piggles/`. This app pulls
   // workspace deps from BOTH trees — `@piggles/*` alongside it and `@wizeworks/auth`

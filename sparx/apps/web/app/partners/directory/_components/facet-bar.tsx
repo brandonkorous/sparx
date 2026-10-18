@@ -20,6 +20,7 @@
 
 import { Text } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { MAX_FACET_SELECTIONS, parseFacetList } from '@/lib/browse-params';
 import type { FacetCount, PartnerTier } from '@/lib/partners';
 import { specialty } from './specialties';
 
@@ -35,9 +36,12 @@ const TIER_LABEL: Record<string, string> = {
 // Certified first, then registered, then informal — the directory's own order.
 const TIER_ORDER: PartnerTier[] = ['certified', 'registered', 'informal'];
 
-function parseList(value: string | undefined): string[] {
-  return value ? value.split(',').filter(Boolean) : [];
-}
+/** The specialty list is de-duped and SORTED (lib/browse-params), so every link
+ *  names a selection in one spelling. It was kept in click order, which made
+ *  each order of the same specialties its own URL — a factorial space for a
+ *  crawler to walk, each step a real api-rest read. The marketplace browse was
+ *  flooded that way on 2026-10-18; see MAX_FACET_SELECTIONS. */
+const parseList = parseFacetList;
 
 function href(current: DirectoryParams, mutate: (next: DirectoryParams) => void): string {
   const next: DirectoryParams = { ...current };
@@ -54,6 +58,7 @@ function Chip({
   color,
   target,
   dismissible = true,
+  blocked = false,
 }: {
   label: string;
   count?: number;
@@ -64,9 +69,27 @@ function Chip({
   /** False for a chip that CLEARS rather than adds — "All" is the absence of a
    *  tier filter, so an × on it offered to remove something that is not there. */
   dismissible?: boolean;
+  /** At the selection cap: shown, but not a link, so the view it would add is
+   *  never offered — to a person or to a crawler. */
+  blocked?: boolean;
 }) {
   // One string, so a count can never fuse to its label again.
   const text = typeof count === 'number' ? `${label} · ${count}` : label;
+  if (blocked) {
+    return (
+      <span
+        aria-disabled
+        title={`Up to ${MAX_FACET_SELECTIONS} specialties at once`}
+        className={buttonClasses({
+          size: 'sm',
+          variant: 'outline',
+          className: 'cursor-not-allowed rounded-full opacity-50',
+        })}
+      >
+        {text}
+      </span>
+    );
+  }
   return (
     <a
       href={target}
@@ -165,6 +188,7 @@ export function PartnerFacetBar({
                 count={f.count}
                 color={s.color}
                 on={on}
+                blocked={!on && selectedSpec.length >= MAX_FACET_SELECTIONS}
                 target={href(current, (n) => {
                   if (nextList.length) n.specialty = nextList.join(',');
                   else delete n.specialty;

@@ -18,9 +18,11 @@ import Fastify, {
 } from 'fastify';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { env } from './env.js';
+import { wizelensPlugin } from './wizelens.js';
 import { buildSiteServer, invokesCustomerTool } from './mcp.js';
-import { resolveSite, makeClient, fetchSiteInfo, UnknownSiteError } from './site.js';
+import { resolveSite, makeClient, fetchSiteInfo, callerChain, UnknownSiteError } from './site.js';
 import { enforceRateLimit, RateLimitError } from './rate-limit.js';
+import { TRUSTED_PROXIES } from '@wizeworks/client-ip';
 import { bearerToken, protectedResourceMetadata, wwwAuthenticate } from './oauth-resource.js';
 
 function loggerOptions(): FastifyServerOptions['logger'] {
@@ -78,12 +80,14 @@ async function handleMcp(
     return;
   }
 
+  const forwardedFor = callerChain(request);
   const ctx = {
     tenantSlug: site.tenantSlug,
     propertySlug: site.propertySlug,
     customerBearer: bearer,
+    forwardedFor,
   };
-  const client = makeClient(site, bearer);
+  const client = makeClient(site, forwardedFor, bearer);
   const { disabledModules } = await fetchSiteInfo(client);
   const server = buildSiteServer(client, ctx, disabledModules);
 
@@ -102,7 +106,7 @@ async function handleResourceMetadata(
   subpath: SubPath | undefined
 ): Promise<void> {
   const site = await resolveSite(request, subpath);
-  const { siteUrl } = await fetchSiteInfo(makeClient(site));
+  const { siteUrl } = await fetchSiteInfo(makeClient(site, callerChain(request)));
   reply
     .header('access-control-allow-origin', '*')
     .header('cache-control', 'public, max-age=3600')
@@ -116,9 +120,14 @@ export async function createApp(): Promise<FastifyInstance> {
     genReqId: () => `smcp_${randomUUID().replace(/-/g, '')}`,
     requestIdHeader: 'x-request-id',
     requestIdLogLabel: 'request_id',
-    trustProxy: true,
+    // A list, not `true`: the per-caller limit above keys on `request.ip`, and
+    // with `true` that was the X-Forwarded-For entry the caller wrote itself.
+    trustProxy: TRUSTED_PROXIES,
     bodyLimit: 512 * 1024,
   });
+
+  // WizeLens goes first, so its request span wraps every other plugin's hooks.
+  await app.register(wizelensPlugin);
 
   app.setErrorHandler((err, request, reply) => {
     if (err instanceof UnknownSiteError) {

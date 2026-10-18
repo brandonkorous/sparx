@@ -124,3 +124,6 @@ videos/
 
 # Dev email: every console-provider send, as files (scripts/dev-mail.mjs)
 .dev-outbox/
+
+# WizeLens local trace store (development only; each traced app keeps .wizelens/traces.db)
+.wizelens/

@@ -4,6 +4,9 @@
 // brand-checked form, so a zone host can never reach another brand's tenant); a tenant
 // without the scheduling module active returns null/[] so the /book route 404s.
 
+import { headers } from 'next/headers';
+import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
+
 import { resolveActivePropertySlug, verifiedSiteRoute } from './site-context';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
@@ -96,10 +99,15 @@ export async function listBookableServices(): Promise<PublicService[]> {
  * NOT revalidated. A link resolves once per visit because the answer includes
  * whether it is still taking bookings, and a cached "yes" outlives the moment
  * somebody retired it.
+ *
+ * Being a per-visit read, it carries the visitor's client chain so api-rest
+ * rate-limits that visitor rather than this pod (a cached read must not: request
+ * headers are part of the data-cache key).
  */
 export async function getMeetingLink(slug: string): Promise<PublicMeetingLink | null> {
   return publicGet<PublicMeetingLink>(`/v1/public/meet/${encodeURIComponent(slug)}`, {
     cache: 'no-store',
+    headers: forwardedFor(await headers()),
   });
 }
 
