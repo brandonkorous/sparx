@@ -78,6 +78,30 @@ export function isTrustedHop(address: string): boolean {
 }
 
 /**
+ * Whether the request came from one of our own pods, on its own behalf: a private
+ * peer and NO X-Forwarded-For at all.
+ *
+ * Every request from outside passes Caddy, and Caddy always writes the chain, so a
+ * request without one never came through the ingress. That is the shape of a
+ * server-rendered app filling its data cache: Next puts request headers in the
+ * cache key, so a cached read cannot carry the visitor's chain without giving
+ * every visitor a cache entry of their own. One such read serves many visitors,
+ * so a per-IP limit meant for one person cannot apply to it.
+ *
+ * A Cloudflare peer does not count: an edge always sends a chain, and a request
+ * from one without a chain is not ours.
+ */
+export function isInClusterCaller(
+  chain: string | string[] | null | undefined,
+  socket: string | null | undefined
+): boolean {
+  const hops = Array.isArray(chain) ? chain.join(',') : (chain ?? '');
+  if (hops.trim() !== '') return false;
+  const peer = socket ? parse(socket) : null;
+  return peer !== null && PRIVATE_RANGES.has(peer.range());
+}
+
+/**
  * The client address in an X-Forwarded-For chain, read right to left the same way
  * the services' `trustProxy` reads it. `socket` is the immediate peer when the
  * caller has one (a Next.js server action does not, and needs none: its peer is
