@@ -79,8 +79,11 @@ now reads kind `credit`, reference "Returned core", and its order payment carrie
 note "Credit for returned core". On screen, 2026-10-11, as Doty: Wholesale › Wasatch Front Utility Contractors, LLC ›
 Statement, This month so far: "Oct 9, 2026 · Credit for returned core · INV-000001 ·
 WFUC-24-0823 · -$150.00 · $8,323.92", the next line "Payment by check · 4459 · -$2,119.60";
-"Payments and credits $2,269.60"; INV-000001 still open, "$528.00 left of $678.00". Not
-checked: the printed and emailed copies, and Piggles.
+"Payments and credits $2,269.60"; INV-000001 still open, "$528.00 left of $678.00". The
+printed copy and Renée's statement on the site, 2026-10-19: "Oct 9, 2026 · Credit for returned
+core · INV-000001 · WFUC-24-0823 · $150.00", the payment below it. The emailed statement lists
+open invoices only, and INV-000001 has since been paid, so it is not on it. Not checked:
+Piggles.
 
 ## Rating effect
 
