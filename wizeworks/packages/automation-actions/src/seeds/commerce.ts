@@ -271,15 +271,23 @@ export const COMMERCE_ORDER_CANCELLED_EMAIL: SystemAutomationSpec = {
   status: 'active',
 };
 
+/** A refund made on the order itself. A return's money is one refund row per thing
+ *  given back, each an `order.refunded`, and the return sends its own "refund is
+ *  complete" email: Dana got "on the way" twice and then "complete" for one return
+ *  (sparx persona issue 347). */
 export const COMMERCE_ORDER_REFUNDED_EMAIL: SystemAutomationSpec = {
   key: 'commerce.order-refunded-email',
   name: 'Order refunded: email',
   previousNames: ['Order refunded — email'],
-  description: 'Emails the customer when a refund is issued for their order.',
+  description:
+    'Emails the customer when a refund is issued for their order. A return sends its own email instead.',
   trigger: { kind: 'event', eventType: 'order.refunded' },
   conditions: {
     logic: 'AND',
-    conditions: [{ field: 'customer.email', operator: 'is_set' }],
+    conditions: [
+      { field: 'customer.email', operator: 'is_set' },
+      { field: 'refund.source', operator: 'neq', value: 'return' },
+    ],
   },
   actions: [
     {

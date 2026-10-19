@@ -26,7 +26,7 @@ import { approvalService } from '@wizeworks/b2b';
 import { cartService } from '@wizeworks/commerce';
 import { typedCarrierOf } from '@wizeworks/commerce-schemas';
 import { heldOrderMoney, orderService, orderFulfillmentsService } from '@wizeworks/crm';
-import { unitsWaitingForCore } from '@wizeworks/crm-schemas';
+import { poNumberOf, unitsWaitingForCore } from '@wizeworks/crm-schemas';
 import { NET_TERMS_AR_WORKFLOW_SLUG } from '@wizeworks/crm-schemas/builtins';
 import { withTenant } from '@wizeworks/db';
 import {
@@ -570,6 +570,10 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
       // buyer nothing about how they were going to get it.
       shippingDescription: readShippingDescription(order.metadata),
       collecting: isCollectedOrder(order.metadata),
+      // The number her business gave the order, typed at checkout. The trade order
+      // page showed it and her own copy of the same order did not (sparx persona
+      // issue 348).
+      poNumber: poNumberOf(order.metadata),
       items: order.items.map((it) => ({
         id: it.id,
         name: it.name,

@@ -105,7 +105,9 @@ describe('every coded template renders', () => {
     // a trade account's own approver, asked to sign off a colleague's order
     // (sparx persona issue 087). 43 since `customer-email-confirm`: a shopper
     // confirming the address their past orders are under (sparx persona issue 329).
-    expect(IDS.length).toBe(43);
+    // 44 since `customer-password-reset`: a shopper setting a password at the
+    // shop, which used to arrive as "Set your sparx password" (sparx persona issue 345).
+    expect(IDS.length).toBe(44);
   });
 });
 
@@ -168,6 +170,7 @@ const TENANT_TO_THEIR_CUSTOMER = new Set<TemplateId>([
   'gated-delivery',
   'form-submission-confirmation',
   'customer-email-confirm',
+  'customer-password-reset',
   'document-signature-request',
 ]);
 

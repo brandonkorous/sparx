@@ -372,6 +372,8 @@ export interface OrderDetail extends Omit<OrderSummary, never> {
   /** The buyer is coming to fetch it, so there is no address to show and none
    *  was ever asked for (issue 064). */
   collecting: boolean;
+  /** The PO number the buyer gave at checkout, or null (sparx persona issue 348). */
+  poNumber: string | null;
   // Lifecycle timestamps — nullable until the order reaches each stage. Drive
   // the order-status timeline.
   paidAt: string | null;

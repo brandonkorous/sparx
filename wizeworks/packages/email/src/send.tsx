@@ -92,6 +92,11 @@ import {
   type CustomerEmailConfirmEmailProps,
 } from './templates/customer-email-confirm';
 import {
+  CustomerPasswordResetEmail,
+  customerPasswordResetSubject,
+  type CustomerPasswordResetEmailProps,
+} from './templates/customer-password-reset';
+import {
   GatedDeliveryEmail,
   gatedDeliverySubject,
   type GatedDeliveryEmailProps,
@@ -254,6 +259,8 @@ export type TemplateId =
   | 'form-submission-confirmation'
   // A shopper confirming the email they made an account with (sparx persona issue 329).
   | 'customer-email-confirm'
+  // A shopper setting a password at the shop (sparx persona issue 345).
+  | 'customer-password-reset'
   | 'gated-delivery'
   // The free-tool result a visitor asked us to send them (docs/152 A3).
   | 'tool-result'
@@ -420,6 +427,13 @@ export type TemplateSend =
       template: 'customer-email-confirm';
       to: string;
       props: CustomerEmailConfirmEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'customer-password-reset';
+      to: string;
+      props: CustomerPasswordResetEmailProps;
       from?: string;
       replyTo?: string;
     }
@@ -900,6 +914,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'customer-email-confirm',
+      };
+    }
+    case 'customer-password-reset': {
+      const element = wrap(<CustomerPasswordResetEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(opts.from),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: customerPasswordResetSubject(input.props.siteName),
+        html,
+        text,
+        templateId: 'customer-password-reset',
       };
     }
     case 'gated-delivery': {

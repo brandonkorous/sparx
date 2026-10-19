@@ -141,6 +141,12 @@ export const TEMPLATE_PROPS: { [K in TemplateId]: PropsFor<K> } = {
     confirmUrl: 'https://rosaflowers.example/account/verify?token=t',
     expiresInMinutes: 60,
   },
+  'customer-password-reset': {
+    siteName: 'Rosa Flowers',
+    name: 'Dev',
+    resetUrl: 'https://rosaflowers.example/account/reset?token=t',
+    expiresInMinutes: 60,
+  },
   'gated-delivery': {
     siteName: 'Rosa Flowers',
     name: 'Dev Patel',

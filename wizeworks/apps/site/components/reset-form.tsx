@@ -1,10 +1,10 @@
 'use client';
 
 // Set-new-password form. Reads the single-use token from the URL, posts it with
-// the new password, and on success points the shopper back to sign in.
+// the new password, and on success says so and offers the way back to sign in.
 
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import { Alert, Button, Input } from '@wizeworks/silicaui-react';
@@ -14,7 +14,6 @@ import { resetPassword, AccountError } from '@/lib/customer-client';
 
 export function ResetForm() {
   const { tenantSlug } = useCustomer();
-  const router = useRouter();
   const token = useSearchParams().get('token') ?? '';
 
   const [password, setPassword] = useState('');
@@ -42,18 +41,25 @@ export function ResetForm() {
     try {
       await resetPassword(tenantSlug, token, password);
       setState('done');
-      setTimeout(() => router.push('/account/login'), 1500);
     } catch (err) {
       setError(err instanceof AccountError ? err.message : 'Could not reset your password.');
       setState('idle');
     }
   }
 
+  // It stays until she moves on. It was a grey line for 1.5 seconds, then the
+  // sign-in page, which said nothing about a new password: a person who looked
+  // away never saw it worked (sparx persona issue 346).
   if (state === 'done') {
     return (
-      <Alert color="neutral" variant="soft" role="status">
-        Your password has been reset. Redirecting you to sign in…
-      </Alert>
+      <div className="flex max-w-[560px] flex-col gap-4">
+        <Alert color="success" variant="soft" role="status">
+          Your new password is set. Sign in with it now.
+        </Alert>
+        <Button render={<Link href="/account/login" />} color="primary" size="lg">
+          Sign in
+        </Button>
+      </div>
     );
   }
 
