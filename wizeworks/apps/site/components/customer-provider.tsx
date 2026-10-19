@@ -33,13 +33,21 @@ export interface CustomerContextValue {
    *  nothing is advertised on the strength of not knowing yet. */
   offers: AccountOffers;
   status: CustomerStatus;
-  login: (email: string, password: string) => Promise<void>;
+  /** The email a confirm link went to, while the record under it waits for that
+   *  link (sparx persona issue 329). The shopper is signed in and `status` is
+   *  still `anonymous`: nothing of the account is theirs on this site yet. */
+  awaitingEmail: string | null;
+  /** False when the confirm link could not be sent just now (sparx persona issue
+   *  337): the notice then says so instead of "check your email". */
+  awaitingLinkSent: boolean;
+  /** `confirm-email` when the account was made but must be confirmed first. */
+  login: (email: string, password: string) => Promise<AuthOutcome>;
   register: (input: {
     email: string;
     password: string;
     firstName?: string;
     lastName?: string;
-  }) => Promise<void>;
+  }) => Promise<AuthOutcome>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   /** Set right after a successful login/register when the server consolidated
@@ -50,6 +58,8 @@ export interface CustomerContextValue {
   cartHandoff: CartHandoff | null;
   clearCartHandoff: () => void;
 }
+
+export type AuthOutcome = 'signed-in' | 'confirm-email';
 
 const CustomerContext = createContext<CustomerContextValue | null>(null);
 
@@ -73,6 +83,8 @@ export function CustomerProvider({
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [offers, setOffers] = useState<AccountOffers>(NO_OFFERS);
   const [status, setStatus] = useState<CustomerStatus>('loading');
+  const [awaitingEmail, setAwaitingEmail] = useState<string | null>(null);
+  const [awaitingLinkSent, setAwaitingLinkSent] = useState(true);
   // Sister-site recognition (docs/58 D6): set when a login/register here created
   // a fresh, separate membership because the email already had an account on
   // another of the tenant's sites. Drives the one-time notice below.
@@ -108,6 +120,7 @@ export function CustomerProvider({
       return;
     }
     setMisses(0);
+    setAwaitingEmail(read.kind === 'confirm-email' ? read.email : null);
     if (read.kind === 'signed-in') {
       setCustomer(read.customer);
       setOffers(read.offers);
@@ -143,11 +156,14 @@ export function CustomerProvider({
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const {
-        customer: me,
-        recognized: r,
-        cart,
-      } = await accountApi.login(tenantSlug, { email, password }, propertySlug);
+      const result = await accountApi.login(tenantSlug, { email, password }, propertySlug);
+      if (!result.customer) {
+        setAwaitingEmail(result.confirmEmail?.email ?? email);
+        setAwaitingLinkSent(result.confirmEmail?.sent !== false);
+        return 'confirm-email' as const;
+      }
+      const { customer: me, recognized: r, cart } = result;
+      setAwaitingEmail(null);
       setCustomer(me);
       setStatus('authenticated');
       if (r) setRecognized(true);
@@ -157,17 +173,21 @@ export function CustomerProvider({
       // wholesale account in it until she reloaded the page (persona issue 084).
       // Not awaited: the sign-in has succeeded, and a slow read must not hold it.
       void loadOffers();
+      return 'signed-in' as const;
     },
     [tenantSlug, propertySlug, loadOffers]
   );
 
   const register = useCallback(
     async (input: { email: string; password: string; firstName?: string; lastName?: string }) => {
-      const {
-        customer: me,
-        recognized: r,
-        cart,
-      } = await accountApi.register(tenantSlug, input, propertySlug);
+      const result = await accountApi.register(tenantSlug, input, propertySlug);
+      if (!result.customer) {
+        setAwaitingEmail(result.confirmEmail?.email ?? input.email);
+        setAwaitingLinkSent(result.confirmEmail?.sent !== false);
+        return 'confirm-email' as const;
+      }
+      const { customer: me, recognized: r, cart } = result;
+      setAwaitingEmail(null);
       setCustomer(me);
       setStatus('authenticated');
       if (r) setRecognized(true);
@@ -177,6 +197,7 @@ export function CustomerProvider({
       // wholesale account in it until she reloaded the page (persona issue 084).
       // Not awaited: the sign-in has succeeded, and a slow read must not hold it.
       void loadOffers();
+      return 'signed-in' as const;
     },
     [tenantSlug, propertySlug, loadOffers]
   );
@@ -186,6 +207,7 @@ export function CustomerProvider({
     setCustomer(null);
     setStatus('anonymous');
     setRecognized(false);
+    setAwaitingEmail(null);
   }, [tenantSlug]);
 
   const value = useMemo<CustomerContextValue>(
@@ -195,6 +217,8 @@ export function CustomerProvider({
       customer,
       offers,
       status,
+      awaitingEmail,
+      awaitingLinkSent,
       login,
       register,
       logout,
@@ -203,6 +227,8 @@ export function CustomerProvider({
       clearCartHandoff,
     }),
     [
+      awaitingEmail,
+      awaitingLinkSent,
       tenantSlug,
       propertySlug,
       customer,

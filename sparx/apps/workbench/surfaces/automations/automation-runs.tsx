@@ -19,9 +19,9 @@ import {
   EmptyState,
   Heading,
   Select,
-  Table,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, History, ListChecks, Target } from 'lucide-react';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
@@ -287,10 +287,13 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
                       >
                         {summary === null ? '—' : triggerTypeLabel(summary)}
                       </td>
-                      <td className="hidden text-right tabular-nums @md:table-cell">
+                      <td
+                        className="hidden text-right tabular-nums @md:table-cell"
+                        data-label="Steps"
+                      >
                         {run.actionsTotal}
                       </td>
-                      <td className="hidden text-sm @lg:table-cell">
+                      <td className="hidden text-sm @lg:table-cell" data-label="Finished">
                         {run.completedAt ? (
                           <Timestamp value={run.completedAt} format="relative" />
                         ) : (

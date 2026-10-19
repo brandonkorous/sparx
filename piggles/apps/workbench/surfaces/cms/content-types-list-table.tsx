@@ -109,7 +109,12 @@ export function TypeGroup({
                       </span>
                     ) : null}
                   </td>
-                  <td className="hidden font-mono text-sm @xl:table-cell">{type.key}</td>
+                  <td
+                    className="hidden font-mono text-sm @xl:table-cell"
+                    data-label={REFERENCE_LABEL}
+                  >
+                    {type.key}
+                  </td>
                   <td className="hidden text-sm @2xl:table-cell">
                     <span className="flex flex-col">
                       <span className="whitespace-nowrap">{usage}</span>

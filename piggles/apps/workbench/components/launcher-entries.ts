@@ -166,6 +166,7 @@ export function useRecordEntries(
           route.entityLabel ??
           resolveTitle(surface, {}),
         label: hit.title || 'Untitled',
+        supporting: hit.entityType === 'media',
         subtitle: hit.subtitle,
         icon: surface.icon,
         module: surface.module,

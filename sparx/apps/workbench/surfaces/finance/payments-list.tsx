@@ -22,11 +22,12 @@ import {
   Filter,
   FilterItem,
   SearchInput,
-  Table,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Wallet } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { usePayments, type Payment } from './payments-data';
@@ -104,7 +105,7 @@ function PaymentRow({
           {state.label}
         </Badge>
       </td>
-      <td className="text-right align-top tabular-nums">
+      <td className="text-right align-top tabular-nums" data-label="Amount">
         <div className={payment.status === 'failed' ? '' : 'font-medium'}>
           {formatMoney(payment.amount, payment.currency)}
         </div>
@@ -240,10 +241,14 @@ export function PaymentsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Wallet className="size-6" aria-hidden />}
             title="Could not load payments"
             description="Something went wrong reaching the server. Your payments are unaffected. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

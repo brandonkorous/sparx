@@ -23,9 +23,9 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Gauge, PackageX, SquarePen } from 'lucide-react';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
@@ -382,10 +382,16 @@ function ClassesPanel({
                     {overrideNote(row)}
                   </td>
                   <td className="hidden whitespace-nowrap @md:table-cell">{demandBadge(row)}</td>
-                  <td className="hidden text-right tabular-nums @lg:table-cell">
+                  <td
+                    data-label="Used a year"
+                    className="hidden text-right tabular-nums @lg:table-cell"
+                  >
                     {row.annualUsageUnits}
                   </td>
-                  <td className="hidden text-right tabular-nums @xl:table-cell">
+                  <td
+                    data-label="Value a year"
+                    className="hidden text-right tabular-nums @xl:table-cell"
+                  >
                     {row.costKnown ? (
                       formatCents(row.annualUsageValueCents)
                     ) : (
@@ -394,7 +400,7 @@ function ClassesPanel({
                       </Tooltip>
                     )}
                   </td>
-                  <td className="hidden text-right tabular-nums @2xl:table-cell">
+                  <td data-label="Share" className="hidden text-right tabular-nums @2xl:table-cell">
                     {!row.costKnown
                       ? '—'
                       : row.valueSharePct < 0.01 && row.valueSharePct > 0

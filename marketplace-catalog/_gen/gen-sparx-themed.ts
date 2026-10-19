@@ -22,6 +22,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { SPARX_THEMES } from '../../wizeworks/packages/silica-catalog/src/themes';
 import { upgradeFrameChrome } from '../../wizeworks/packages/silica-catalog/src/upgrade-frame';
+import { withCartButton } from '../../wizeworks/packages/silica-catalog/src/site-chrome';
 import { siteInsideMeasure } from '../../wizeworks/packages/silica-catalog/src/page-measure';
 import { resolveSparxTheme } from '../../wizeworks/packages/silica-catalog/src/resolve-sparx-theme';
 import { colorToHex } from '../../wizeworks/packages/site-themes/src/v2/color';
@@ -56,7 +57,10 @@ function healedSite(site: Record<string, unknown>): Record<string, unknown> {
     const frame = measured.frame as { root: unknown } | null | undefined;
     if (!frame?.root) return measured;
     const healed = upgradeFrameChrome(frame.root as Parameters<typeof upgradeFrameChrome>[0]);
-    return healed.changed ? { ...measured, frame: { ...frame, root: healed.root } } : measured;
+    // And the header cart, which the repair deliberately never invents on a tenant's own
+    // draft: this design sells, so it ships with one (sparx persona issue 325).
+    const root = withCartButton(healed.root);
+    return root !== frame.root ? { ...measured, frame: { ...frame, root } } : measured;
 }
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -201,7 +205,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(opts.key)},
-  version: '1.5.3',
+  version: '1.5.6',
   name: ${JSON.stringify(opts.name)},
   summary: ${JSON.stringify(opts.summary)},
   vertical: ${JSON.stringify(opts.vertical)},
@@ -251,7 +255,7 @@ function manifestJson(opts: {
         category: 'blueprint',
         slug: opts.key,
         name: opts.name,
-        version: '1.5.3',
+        version: '1.5.6',
         tagline: opts.tagline,
         description: opts.summary,
         payload: 'blueprint.ts',

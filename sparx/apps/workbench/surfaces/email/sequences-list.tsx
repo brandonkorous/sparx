@@ -11,19 +11,13 @@
 // — a narrow pane on a wide monitor must not show six columns in 300px.
 
 import { useMemo, useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Route } from 'lucide-react';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { useSites } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useSequences, type SequenceRow } from './sequences-data';
@@ -40,7 +34,9 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [status, setStatus] = useState('all');
   const [search, setSearch] = useState('');
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSequences({ status });
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useSequences({
+    status,
+  });
   const { data: sites } = useSites();
 
   const siteName = useMemo(() => {
@@ -132,21 +128,14 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Route className="size-6" aria-hidden />}
             title="Could not load your sequences"
             description="Something went wrong reaching the server. Anyone already in a sequence is unaffected. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -216,16 +205,28 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
                         ) : null}
                       </div>
                     </td>
-                    <td className="hidden text-right tabular-nums @md:table-cell">
+                    <td
+                      className="hidden text-right tabular-nums @md:table-cell"
+                      data-label="Emails"
+                    >
                       {sequence.steps.length}
                     </td>
-                    <td className="hidden text-right tabular-nums @lg:table-cell">
+                    <td
+                      className="hidden text-right tabular-nums @lg:table-cell"
+                      data-label="In progress"
+                    >
                       {sequence.counts.active}
                     </td>
-                    <td className="hidden text-right tabular-nums @xl:table-cell">
+                    <td
+                      className="hidden text-right tabular-nums @xl:table-cell"
+                      data-label="Enrolled"
+                    >
                       {sequence.counts.total}
                     </td>
-                    <td className="hidden max-w-40 truncate text-sm @2xl:table-cell">
+                    <td
+                      className="hidden max-w-40 truncate text-sm @2xl:table-cell"
+                      data-label="For"
+                    >
                       {siteName(sequence.propertyId)}
                     </td>
                     <td>

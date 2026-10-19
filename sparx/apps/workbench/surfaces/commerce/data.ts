@@ -31,10 +31,10 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { TAKE_OFF_REASON } from './payment-undo';
 import { channelLabel as sharedChannelLabel } from '../../lib/console/channels';
-import { paymentMethodLabels } from '../../lib/payment-methods';
 import { apiErrorMessage } from '../../lib/api-error';
 import { formatAmount } from '../../lib/money-format';
 import { localityLine } from '../../lib/address-format';
+import { formatShopDateTime } from '../../lib/shop-clock';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -318,6 +318,8 @@ export function useOrder(id: string) {
   return useQuery({
     queryKey: [...ORDERS_KEY, id],
     queryFn: () => api.get<Order>(`/v1/orders/${id}`).then(normalizeOrder),
+    // The pack bench can open on a box alone, with no order named.
+    enabled: id !== '',
   });
 }
 
@@ -848,33 +850,6 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
   refunded: 'Given back',
 };
 
-/**
- * How the money arrived, in the words a business uses.
- *
- * The pane printed `payment.processor` raw, so a cash sale read "$33.00 ·
- * manual" — a column value on a screen about somebody handing over notes. Same
- * reasoning as PAYMENT_STATUS_LABELS above: "captured" means "taken", and a
- * payment processor's vocabulary is not the shopkeeper's.
- *
- * `manual` is the API's name for "the business took it themselves", and by far
- * its commonest form is cash — but not its only one, so a recorded cheque or
- * transfer keeps its own name.
- *
- * The words themselves now live in lib/payment-methods, because four panes
- * named this same column and disagreed on how to spell a cheque. This list is
- * only which processors the commerce panes expect to see.
- */
-export const PAYMENT_PROCESSOR_LABELS: Record<string, string> = paymentMethodLabels([
-  'manual',
-  'check',
-  'ach',
-  'wire',
-  'net_terms',
-  'stripe',
-  'paypal',
-  'gift_card',
-]);
-
 /** True when the money never went through a gateway, so there is nothing to
  *  send it back to. Drives the refund wording, which used to promise every
  *  refund went "back to the card it was paid with" — including a cash sale. */
@@ -1006,8 +981,8 @@ export function formatDate(value: string | null | undefined): string {
 }
 
 export function formatDateTime(value: string | null | undefined): string {
-  if (!value) return '—';
-  return new Date(value).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  // On the shop's clock, not this computer's (sparx persona issue 333).
+  return formatShopDateTime(value);
 }
 
 /** A frozen address as a list of lines, blanks dropped. Rendering the fields

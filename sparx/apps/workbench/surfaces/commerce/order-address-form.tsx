@@ -276,7 +276,7 @@ function AddressFields({
               type="tel"
               aria-label={`${prefix} phone`}
               value={draft.phone}
-              placeholder="Optional — the courier may need it"
+              placeholder="Optional. The courier may need it"
               onChange={(event) => {
                 set('phone', event.target.value);
               }}

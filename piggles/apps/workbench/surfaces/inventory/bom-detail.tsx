@@ -725,7 +725,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="What goes into it"
-            description="Quantities are for ONE RUN of the batch size above, not per finished item."
+            description="Quantities are for one run of the batch size above, not for each finished item."
           >
             {editable ? (
               <div className="flex gap-2">

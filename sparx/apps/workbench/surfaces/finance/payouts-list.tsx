@@ -13,18 +13,12 @@
 // server-driven so a filter or sort spans every deposit, not the loaded window.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Filter,
-  FilterItem,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, Filter, FilterItem } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Banknote } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { usePayouts, type Payout } from './payouts-data';
@@ -92,7 +86,7 @@ function PayoutRow({
           {state.label}
         </Badge>
       </td>
-      <td className="text-right align-top font-medium tabular-nums">
+      <td className="text-right align-top font-medium tabular-nums" data-label="Amount">
         {formatMoney(payout.amount, payout.currency)}
       </td>
     </tr>
@@ -113,7 +107,7 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const skip = (page - 1) * pageSize;
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = usePayouts({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = usePayouts({
     status,
     processor,
     sort,
@@ -221,21 +215,14 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Banknote className="size-6" aria-hidden />}
             title="Could not load payouts"
             description="Something went wrong reaching the server. Your deposits are unaffected. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">

@@ -50,11 +50,11 @@ import {
   FieldLabel,
   Input,
   Select,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CalendarClock, Copy, Link2, Pencil, Plus } from 'lucide-react';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -314,7 +314,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
                           /meet/{link.slug}
                         </Text>
                       </td>
-                      <td className="hidden @lg:table-cell">
+                      <td data-label="Booked" className="hidden @lg:table-cell">
                         <Text as="span">{link.bookingCount}</Text>
                       </td>
                       <td>

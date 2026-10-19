@@ -18,15 +18,8 @@
 // accounting package.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Card,
-  EmptyState,
-  NativeSelect,
-  Table,
-  Text,
-  Timestamp,
-} from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, NativeSelect, Text, Timestamp } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { FileText, Receipt } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -167,7 +160,10 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   {billStatusLabel(row.status)}
                 </Badge>
               </td>
-              <td className="hidden whitespace-nowrap @lg:table-cell">
+              <td
+                className="hidden whitespace-nowrap @lg:table-cell"
+                data-label={row.paidAt || !row.dueAt ? undefined : 'Due'}
+              >
                 {row.paidAt ? (
                   <Text className="text-sm">
                     Paid <Timestamp value={row.paidAt} format="relative" />
@@ -196,7 +192,7 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   </span>
                 )}
               </td>
-              <td className="text-right whitespace-nowrap tabular-nums">
+              <td className="text-right whitespace-nowrap tabular-nums" data-label="Amount">
                 {formatCents(row.totalCents, row.currency)}
               </td>
             </tr>

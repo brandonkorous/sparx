@@ -86,6 +86,7 @@ import {
 } from './products-data';
 import { FitmentChooserFields, useFitmentChoice, type ChosenRule } from './fitment-chooser';
 import { rangeLabel, ruleTitle } from './fitment-rule-words';
+import { FitmentYearsEditor } from './fitment-years-editor';
 import { ActionLabel } from '../../components/action-label';
 
 /**
@@ -285,6 +286,39 @@ function FitmentBody({
     );
   };
 
+  /** Change one rule's years (or other windows) in place, keeping its note
+   *  (sparx persona issue 330). The same whole-list write as adding one. */
+  const onSetRanges = (
+    rule: ProductFitment,
+    ranges: ProductFitment['ranges'],
+    done: () => void
+  ) => {
+    const domain = domains.find((candidate) => candidate.id === rule.domainId);
+    add.mutate(
+      rules.map((existing) => ({
+        domainId: existing.domainId,
+        nodeId: existing.nodeId,
+        ranges: existing.id === rule.id ? ranges : existing.ranges,
+        notes: existing.notes,
+      })),
+      {
+        onSuccess: () => {
+          done();
+          afterPaneChange(() => {
+            toast.add({ title: `Saved for ${ruleTitle(rule, domain, 'mid')}`, type: 'success' });
+          });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not save that',
+            description: productErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
+
   /** Remove one rule — its own action, its own confirm, naming the exact entry
    *  and what stops happening because of it. */
   const onRemove = async (rule: ProductFitment) => {
@@ -394,7 +428,7 @@ function FitmentBody({
                 <Heading level={3} className="text-lg font-semibold">
                   {domain?.displayName ?? 'Other'}
                 </Heading>
-                <Badge color="neutral" variant="outline" size="sm">
+                <Badge variant="outline" size="sm">
                   {list.length === 1 ? '1 entry' : `${String(list.length)} entries`}
                 </Badge>
               </div>
@@ -426,6 +460,15 @@ function FitmentBody({
                         </div>
                       ) : null}
                       {rule.notes === null ? null : <Text className="text-sm">{rule.notes}</Text>}
+                      <FitmentYearsEditor
+                        label={ruleTitle(rule, domain)}
+                        dimensions={(domain?.dimensions ?? []).filter((d) => d.kind === 'range')}
+                        ranges={rule.ranges}
+                        pending={add.isPending}
+                        onSave={(ranges, done) => {
+                          onSetRanges(rule, ranges, done);
+                        }}
+                      />
                     </div>
                     {/* Its own action with its own confirm, naming this exact
                         entry — not a subtraction folded into an ambient Save,

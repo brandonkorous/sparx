@@ -503,6 +503,291 @@ export function bindFooterBlurb(footer: Node): Node {
   return upgradeFooterBlurb(footer) ?? footer;
 }
 
+/** The class lists below are read as WORDS, never as substrings: `btn-primary` must not
+ *  match `btn-primary-content`, and `hidden` must not match `@sm:hidden`. */
+const classWords = (node: Node): string[] =>
+  isElement(node) || node.kind === 'host' ? (node.class ?? '').split(/\s+/).filter(Boolean) : [];
+
+const hasClass = (node: Node, word: string): boolean => classWords(node).includes(word);
+
+/** The phone menu, as the captured header shipped it: a `<details>` disclosure shown
+ *  only below `@sm`. Once repaired it reads `@5xl:hidden`, which is what keeps the repair
+ *  from running twice. */
+const isPhoneMenu = (node: Node): node is Element =>
+  isElement(node) && node.tag === 'details' && hasClass(node, '@sm:hidden');
+
+/** The header's primary call to action, still showing on a phone: a filled primary
+ *  button link in the bar. One the author already hid is not ours to move. */
+const isPhoneVisibleCta = (node: Node): node is Element =>
+  isElement(node) &&
+  node.tag === 'a' &&
+  hasClass(node, 'btn') &&
+  hasClass(node, 'btn-primary') &&
+  !hasClass(node, 'hidden');
+
+/** The bar's light/dark switch, still taking a place in the bar on a phone. Its host
+ *  wrapper is a flex item even when the site offers one look and the switch draws
+ *  nothing, so it costs the bar a gap whether or not anyone can see it. */
+const isPhoneVisibleToggle = (node: Node): boolean =>
+  node.kind === 'host' && node.component === HOST_KEYS.siteThemeToggle && !hasClass(node, 'hidden');
+
+/** The display words a toggle wrapper may carry, swapped for the phone pair below. */
+const DISPLAY_WORDS = new Set(['flex', 'inline-flex', 'block', 'inline-block', 'inline']);
+
+/** The switch as it sits in the phone menu: a row of its own under the links. */
+const MENU_TOGGLE_CLASS = 'inline-flex items-center';
+
+/** The width at which the bar trades its Menu for its full set of links, button and
+ *  switch. It was `@sm` (384px), and the full set needs about 715px with five links,
+ *  about 800px with six (Gillett's), and 760px to 860px once the switch and a longer
+ *  name join them. So from 384px up the links came back into a bar too narrow for them,
+ *  and the header ran off the side of the screen with the logo squeezed out of it: the
+ *  phone defect again, on every tablet. `@3xl` (768px) still left six links short, so
+ *  it is `@5xl` (1024px), the first step of the container set that holds a bar of up
+ *  to seven links with the switch, or eight without it. */
+const SWITCH_FROM = '@sm:';
+const SWITCH_TO = '@5xl:';
+
+/** How the bar's light/dark switch hides on a phone and comes back at the bar's switch,
+ *  so it and the Menu trade places at exactly the same width. */
+const BAR_PHONE_HIDDEN_CLASSES = ['hidden', '@5xl:inline-flex'];
+
+/** The same for the bar's CTA, which comes back as the box silicaui's `.btn` is drawn
+ *  as. The button centers its words with `align-content`, which works in a block box
+ *  and does nothing in a single-line flex box, so a CTA shown again as `inline-flex`
+ *  drew "Get in touch" against the top of its own fill on every wide screen (sparx
+ *  persona issue 328). A button that holds an icon is centered by silicaui's own
+ *  `.btn:has(svg)` flex rule, and the CTA here holds words. */
+const BAR_CTA_SHOWN = '@5xl:inline-block';
+const BAR_CTA_HIDDEN_CLASSES = ['hidden', BAR_CTA_SHOWN];
+
+/** A bar button this file once showed again as `inline-flex`, with words and no icon:
+ *  the shape issue 328 is about. */
+const isFlexShownCta = (node: Element): boolean =>
+  hasClass(node, 'btn') &&
+  hasClass(node, 'hidden') &&
+  hasClass(node, '@5xl:inline-flex') &&
+  (node.children ?? []).every((c) => typeof c === 'string');
+
+/** Show every such button again as a block box, so silicaui centers its words. Runs on
+ *  headers the phone repair already rewrote, which that repair no longer matches. */
+export function centerBarButtons(node: Node): Node | null {
+  if (!isElement(node)) return null;
+  if (isFlexShownCta(node)) {
+    return {
+      ...node,
+      class: classWords(node)
+        .map((w) => (w === '@5xl:inline-flex' ? BAR_CTA_SHOWN : w))
+        .join(' '),
+    };
+  }
+  const children = node.children ?? [];
+  let changed = false;
+  const rebuilt = children.map((child) => {
+    if (typeof child === 'string') return child;
+    const next = centerBarButtons(child);
+    if (!next) return child;
+    changed = true;
+    return next;
+  });
+  return changed ? { ...node, children: rebuilt } : null;
+}
+
+/** Move every `@sm:` word in the bar's group to the switch width, so the links, the
+ *  Menu, the group's spacing and the moved controls all change at the same place. */
+function atSwitch(node: Node): Node {
+  if (typeof node === 'string') return node;
+  if (!isElement(node) && node.kind !== 'host') return node;
+  const words = classWords(node);
+  const moved = words.map((w) =>
+    w.startsWith(SWITCH_FROM) ? SWITCH_TO + w.slice(SWITCH_FROM.length) : w
+  );
+  const withClass = moved.some((w, i) => w !== words[i])
+    ? { ...node, class: moved.join(' ') }
+    : node;
+  if (!isElement(withClass)) return withClass;
+  const children = withClass.children ?? [];
+  const rebuilt = children.map((c) => (typeof c === 'string' ? c : atSwitch(c)));
+  return rebuilt.some((c, i) => c !== children[i])
+    ? { ...withClass, children: rebuilt }
+    : withClass;
+}
+
+/** The CTA as it sits in the phone menu: the same filled primary button, full width at
+ *  the foot of the list, so it is still the one thing on the menu that is the point. */
+const MENU_CTA_CLASS = 'btn btn-primary btn-sm btn-block mt-1';
+
+/** The element in the menu that holds its links — the first one with a link (or a live
+ *  account core) as a direct child. */
+function menuList(menu: Element): Element | null {
+  const children = menu.children ?? [];
+  if (
+    children.some(
+      (c) => typeof c !== 'string' && (isElement(c) ? c.tag === 'a' : c.kind === 'host')
+    )
+  ) {
+    return menu;
+  }
+  for (const child of children) {
+    if (typeof child === 'string' || !isElement(child)) continue;
+    const hit = menuList(child);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+/** Rebuild `node` with `target` (found by identity) replaced, or null when it is not in
+ *  this subtree. Only the branch that holds it is rebuilt. */
+function replaceNode(node: Node, target: Node, next: Node): Node | null {
+  if (node === target) return next;
+  if (!isElement(node)) return null;
+  const children = node.children ?? [];
+  let hit = false;
+  const rebuilt = children.map((child) => {
+    if (typeof child === 'string' || hit) return child;
+    const replaced = replaceNode(child, target, next);
+    if (!replaced) return child;
+    hit = true;
+    return replaced;
+  });
+  return hit ? { ...node, children: rebuilt } : null;
+}
+
+/** The first `site.brand` core in a subtree. */
+function findBrandCore(node: Node): Extract<Node, { kind: 'host' }> | null {
+  if (node.kind === 'host' && node.component === HOST_KEYS.siteBrand) return node;
+  if (!isElement(node)) return null;
+  for (const child of node.children ?? []) {
+    if (typeof child === 'string') continue;
+    const hit = findBrandCore(child);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+/** The first phone menu in a subtree, with the element that holds it. */
+function findPhoneMenu(node: Node): { menu: Element; group: Element } | null {
+  if (!isElement(node)) return null;
+  const children = node.children ?? [];
+  const menu = children.find((c): c is Element => typeof c !== 'string' && isPhoneMenu(c));
+  if (menu) return { menu, group: node };
+  for (const child of children) {
+    if (typeof child === 'string') continue;
+    const hit = findPhoneMenu(child);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+/** Make the header fit a phone without losing the logo (sparx persona issue 291).
+ *
+ *  THE SHAPE IT REPAIRS. The captured golden header, which twenty two shipped designs are
+ *  built from: a bar of `[brand, group]` where the group holds the desktop links (hidden
+ *  below `@sm`), a `<details>` Menu (shown below `@sm`), the account link and a filled
+ *  primary button. At 360px the group needed about 296px of a 295px bar, and the brand
+ *  was the only flex item allowed to shrink, so the logo collapsed to 0px and the page
+ *  still scrolled 2px sideways. Every phone visitor saw a header with no business in it.
+ *
+ *  THE REPAIR, in one place:
+ *   1. the brand core gets `shrink-0`, so the logo is drawn at its own size whatever
+ *      else is in the bar;
+ *   2. the bar's primary button is hidden below the switch (`hidden @5xl:inline-block`),
+ *      the width at which the bar's links hide and the Menu appears;
+ *   3. a copy of that button becomes the menu's last item, a full-width primary button,
+ *      so the call to action is one tap away on a phone and nothing is lost;
+ *   4. the light/dark switch does the same, into its own row of the menu. Its wrapper
+ *      took a place (and a gap) in the bar even on a site with one look, where it draws
+ *      nothing, and at 320px with a switch and a seven-letter name the bar was 31px over;
+ *   5. the switch itself moves from `@sm` to `@5xl` (see `SWITCH_TO`): the full bar needs
+ *      715px to 860px, so from 384px up the links came back into a bar too narrow for them.
+ *  The account link stays on the bar: a signed-in customer's own name is how she knows
+ *  she is signed in.
+ *
+ *  Matched on the menu's own `@sm:hidden` and the visible button or switch beside it,
+ *  the way the legal pair is matched on its hrefs: an author who already hid them or
+ *  built a different phone header is left alone. It clears this file's bar for a heal
+ *  because the stale shape is broken on every published site built from it, and fixing
+ *  the bundles reaches only the next install. */
+export function fitHeaderOnPhone(nav: Node): Node | null {
+  if (!isElement(nav)) return null;
+  const found = findPhoneMenu(nav);
+  if (!found) return null;
+
+  let next: Node = nav;
+  let changed = false;
+
+  const ctas = (found.group.children ?? []).filter(
+    (c): c is Element => typeof c !== 'string' && isPhoneVisibleCta(c)
+  );
+  const toggles = (found.group.children ?? []).filter(
+    (c): c is Node => typeof c !== 'string' && isPhoneVisibleToggle(c)
+  );
+  const moving: Node[] = [...toggles, ...ctas];
+  const list = menuList(found.menu);
+  let group: Node = found.group;
+  if (moving.length > 0 && list) {
+    const copies: Node[] = [
+      // The switch first, then the button: the button stays the last thing on the menu.
+      ...toggles.map(() => hostCore(HOST_KEYS.siteThemeToggle, MENU_TOGGLE_CLASS)),
+      ...ctas.map((cta): Node => ({
+        kind: 'element',
+        tag: 'a',
+        ...(cta.attrs ? { attrs: { ...cta.attrs } } : {}),
+        class: MENU_CTA_CLASS,
+        children: [...(cta.children ?? [])],
+      })),
+    ];
+    // The list first, inside the group as it stands (the menu is one of its children),
+    // then the CTAs in that rebuilt group, then the group in the header.
+    const withList = replaceNode(found.group, list, {
+      ...list,
+      children: [...(list.children ?? []), ...copies],
+    });
+    if (withList && isElement(withList)) {
+      group = {
+        ...withList,
+        children: (withList.children ?? []).map((c) => {
+          if (typeof c === 'string' || !moving.includes(c)) return c;
+          // The toggle's own display word goes: `hidden` and `inline-flex` side by side
+          // would leave which one wins to stylesheet order.
+          const isToggle = toggles.includes(c);
+          const kept = isToggle
+            ? classWords(c).filter((w) => !DISPLAY_WORDS.has(w))
+            : classWords(c);
+          const hiding = isToggle ? BAR_PHONE_HIDDEN_CLASSES : BAR_CTA_HIDDEN_CLASSES;
+          return { ...c, class: [...kept, ...hiding].join(' ') } as Node;
+        }),
+      };
+    }
+  }
+  group = atSwitch(group);
+  if (group !== found.group) {
+    const replaced = replaceNode(next, found.group, group);
+    if (replaced) {
+      next = replaced;
+      changed = true;
+    }
+  }
+
+  // Found again in the tree as it now stands: the step above rebuilds every element on
+  // the path it walked, and a node taken from the old tree would match nothing here.
+  // A brand core with no class of its own wears the component's default, which already
+  // carries `shrink-0`; writing a class here would REPLACE that default, not add to it.
+  const brand = findBrandCore(next);
+  if (brand?.class && !hasClass(brand, 'shrink-0')) {
+    const replaced = replaceNode(next, brand, {
+      ...brand,
+      class: [...classWords(brand), 'shrink-0'].join(' '),
+    });
+    if (replaced) {
+      next = replaced;
+      changed = true;
+    }
+  }
+
+  return changed ? next : null;
+}
+
 /** Heal a stale frame. Pure — no DB, no IO — so it is safe to run on every studio load
  *  and trivial to test. `changed` lets the caller skip a pointless autosave.
  *
@@ -541,7 +826,15 @@ export function bindFooterBlurb(footer: Node): Node {
  *      that capture drew a name at the far left, a page 24px in from the house edge and
  *      a footer 24px out from it. Both move into `mx-auto max-w-6xl px-6`, the measure
  *      silica's own navbar and footer already use. Runs LAST: the brand repair above
- *      reads the header's direct children, and this one moves them into a box. */
+ *      reads the header's direct children, and this one moves them into a box.
+ *   7. **Phone header** (sparx persona issue 291): the captured header's logo keeps its
+ *      size, its button and light/dark switch move into the Menu, and the bar keeps the
+ *      Menu up to 1024px, so it fits from 320px up with no sideways scroll. See
+ *      `fitHeaderOnPhone`. It finds its nodes at any depth, so it does not care whether
+ *      the measure repair has boxed the bar yet.
+ *   8. **Bar button centering** (sparx persona issue 328): a CTA step 7 once showed
+ *      again as `@5xl:inline-flex` is shown as `@5xl:inline-block`, the box silicaui's
+ *      button centers its words in. See `centerBarButtons`. */
 export function upgradeFrameChrome(root: Node): { root: Node; changed: boolean } {
   if (!isElement(root)) return { root, changed: false };
 
@@ -602,6 +895,8 @@ export function upgradeFrameChrome(root: Node): { root: Node; changed: boolean }
     upgradeFooterAccountColumn(footer, !hasLinkTo(footer, '/account/returns'))
   );
   healRegion('footer', upgradeFooterBlurb);
+  healRegion('nav', fitHeaderOnPhone);
+  healRegion('nav', centerBarButtons);
 
   // The header first: the captured bar is the frame's first `<nav>`. Any band in the
   // frame drawn the outside way follows, the footer among them, through the same rule

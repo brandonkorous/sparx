@@ -23,13 +23,14 @@ import {
   EmptyState,
   SearchInput,
   Select,
-  Table,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Truck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { ModuleScope } from '../../components/module-scope';
 import {
@@ -229,10 +230,14 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Truck className="size-6" aria-hidden />}
             title="Could not load supplier orders"
             description="Something went wrong reaching the server. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -309,7 +314,7 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="hidden max-w-40 truncate @lg:table-cell">
                       {supplierName.get(order.supplierId) ?? 'Unknown supplier'}
                     </td>
-                    <td className="hidden @2xl:table-cell">
+                    <td className="hidden @2xl:table-cell" data-label="Tracking">
                       {order.trackingNumber ? (
                         <Badge color="neutral" variant="soft" size="sm" className="font-mono">
                           {order.trackingNumber}
@@ -318,7 +323,7 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                         <span className="text-sm">—</span>
                       )}
                     </td>
-                    <td className="hidden text-sm @xl:table-cell">
+                    <td className="hidden text-sm @xl:table-cell" data-label="Placed">
                       <Timestamp value={order.createdAt} format="relative" />
                     </td>
                     <td>

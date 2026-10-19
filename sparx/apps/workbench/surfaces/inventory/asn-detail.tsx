@@ -33,11 +33,11 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { PackageCheck, Ban } from 'lucide-react';
 import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
@@ -108,6 +108,25 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     });
   };
 
+  // There is no blank shipment notice to fill in: a notice is the supplier's own
+  // statement, recorded against an order. So an id of `new` (or none) disables
+  // the query, and without this branch the pane sat on "Loading the shipment…"
+  // forever, waiting on a request that was never going to be sent.
+  if (id === '' || id === 'new') {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneLoadError
+          reason="missing"
+          noun="shipment"
+          title="Could not load that shipment"
+          // "new" was never a shipment, so "no longer here" would be untrue. A
+          // notice is recorded from what a supplier sends, never started here.
+          missingTitle="There is no shipment at this address"
+          missingDescription="A shipment notice is recorded when a supplier tells you what they have sent. The list shows every one you have."
+        />
+      </div>
+    );
+  }
   if (notice.isError) {
     // A 404 (removed, or another business's id) and a failed request say
     // different things; the shared screen reads which from the error rather
@@ -261,12 +280,16 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     </span>
                   </span>
                 </td>
-                <td className="text-right tabular-nums">{line.quantityOrdered}</td>
-                <td className="text-right tabular-nums">{line.quantityShipped}</td>
+                <td data-label="On order" className="text-right tabular-nums">
+                  {line.quantityOrdered}
+                </td>
+                <td data-label="They sent" className="text-right tabular-nums">
+                  {line.quantityShipped}
+                </td>
                 {/* What arrived on THIS delivery, not what the order line has
                     taken in over its life — the second is what made a perfectly
                     matched second notice read "4 more than the notice". */}
-                <td className="text-right tabular-nums">
+                <td data-label="Arrived" className="text-right tabular-nums">
                   {line.quantityArrivedOnThisDelivery ?? '—'}
                 </td>
                 <td className="whitespace-nowrap">

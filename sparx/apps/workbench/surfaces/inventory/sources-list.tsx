@@ -24,10 +24,10 @@ import {
   Card,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Cable, FileSpreadsheet, Link2, Plus, Server } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -235,7 +235,10 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="hidden max-w-40 truncate @lg:table-cell">
                       {sourceTypeLabel(source.type)}
                     </td>
-                    <td className="hidden whitespace-nowrap @xl:table-cell">
+                    <td
+                      className="hidden whitespace-nowrap @xl:table-cell"
+                      data-label={source.lastSyncAt ? 'Last updated' : undefined}
+                    >
                       {source.lastSyncAt ? (
                         <Timestamp value={source.lastSyncAt} format="relative" />
                       ) : (

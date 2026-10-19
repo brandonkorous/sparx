@@ -89,7 +89,9 @@ export function DealTasks({
                   <td className="min-w-0">
                     <span className="block truncate font-medium">{task.title}</span>
                   </td>
-                  <td className="hidden text-sm @md:table-cell">{dueDay(task.dueAt)}</td>
+                  <td data-label="Due" className="hidden text-sm @md:table-cell">
+                    {dueDay(task.dueAt)}
+                  </td>
                   <td>
                     <Badge color={meta.tone} variant={meta.tone && 'soft'} size="sm">
                       {meta.label}

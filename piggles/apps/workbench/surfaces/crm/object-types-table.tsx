@@ -79,7 +79,9 @@ function ObjectTypeRow({ row, ctx }: { row: CrmObjectType; ctx: SurfaceContext }
       <td>
         <KindBadge row={row} />
       </td>
-      <td className="text-right font-mono text-sm tabular-nums">{count === 0 ? '—' : count}</td>
+      <td data-label="Extra details" className="text-right font-mono text-sm tabular-nums">
+        {count === 0 ? '—' : count}
+      </td>
       <td className="hidden text-sm @lg:table-cell">{row.description ?? '—'}</td>
       <td className="text-right">
         {row.kind === 'custom' && !row.archivedAt ? (

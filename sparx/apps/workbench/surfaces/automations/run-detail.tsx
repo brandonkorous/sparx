@@ -53,6 +53,20 @@ function gateDecisionTone(decision: string): Tone {
   }
 }
 
+/** What each safety check asked, in the owner's words. The engine records its
+ *  code name (`tenant-active`), and that is what this screen printed, in small
+ *  code type (sparx persona issue 311). An unknown one reads its name, spaced. */
+const GATE_WORDS: Record<string, string> = {
+  'tenant-active': 'Your account is active',
+  'kill-switch': 'Automations are not paused',
+  'module-active': 'The part of your account it uses is switched on',
+  'webhook-egress': 'The address it sends to is allowed',
+};
+
+function gateName(gate: string): string {
+  return GATE_WORDS[gate] ?? gate.replace(/-/g, ' ');
+}
+
 function gateDecisionLabel(decision: string): string {
   switch (decision) {
     case 'allow':
@@ -127,7 +141,7 @@ function StepCard({ step, blamed }: { step: AutomationRunStepRow; blamed: boolea
         <span className="bg-base-200 inline-flex size-6 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
           {step.actionIndex + 1}
         </span>
-        <span className="min-w-0 flex-1 truncate text-base font-medium">
+        <span className="min-w-0 flex-1 basis-48 truncate text-base font-medium">
           {actionLabel(step.actionType)}
         </span>
         <Badge color={state.tone} variant="soft" size="sm">
@@ -152,7 +166,7 @@ function StepCard({ step, blamed }: { step: AutomationRunStepRow; blamed: boolea
           <div className="flex items-center gap-1.5">
             <ShieldCheck className="size-3.5 shrink-0" aria-hidden />
             <Text as="span" className="text-sm font-medium">
-              Policy checks
+              Safety checks
             </Text>
           </div>
           {gates.map((gate, i) => (
@@ -160,7 +174,7 @@ function StepCard({ step, blamed }: { step: AutomationRunStepRow; blamed: boolea
               <Badge color={gateDecisionTone(gate.decision)} variant="soft" size="sm">
                 {gateDecisionLabel(gate.decision)}
               </Badge>
-              <span className="font-mono text-xs">{gate.gate}</span>
+              <span className="text-sm">{gateName(gate.gate)}</span>
               {gate.reason ? (
                 <Text as="span" className="text-sm">
                   {gate.reason}

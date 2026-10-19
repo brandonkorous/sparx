@@ -13,13 +13,17 @@ import { Suspense } from 'react';
 import { AuthPanel } from '@/components/auth-panel';
 import { ResetForm } from '@/components/reset-form';
 import { ForgotForm } from '@/components/account/forgot-form';
+import { VerifyEmailForm } from '@/components/account/verify-email-form';
 
-export type AuthMode = 'signin' | 'register' | 'forgot' | 'reset';
+/** `verify` opens a "confirm it's you" link (sparx persona issue 329). */
+export type AuthMode = 'signin' | 'register' | 'forgot' | 'reset' | 'verify';
 
 /** Narrow an arbitrary host-prop value to a known auth mode (defaults to sign-in — the
  *  safe default for a freshly palette-inserted core with no mode set). */
 export function toAuthMode(value: unknown): AuthMode {
-  return value === 'register' || value === 'forgot' || value === 'reset' ? value : 'signin';
+  return value === 'register' || value === 'forgot' || value === 'reset' || value === 'verify'
+    ? value
+    : 'signin';
 }
 
 export function AccountAuth({ mode }: { mode: AuthMode }) {
@@ -38,7 +42,7 @@ export function AccountAuth({ mode }: { mode: AuthMode }) {
       );
     case 'reset':
       return (
-        <div className="mx-auto w-full max-w-[68ch] px-6">
+        <div className="mx-auto w-full max-w-[68ch] sm:px-6">
           <h1
             className="text-base-content text-3xl font-semibold tracking-tight"
             style={{ marginBottom: '1.5rem' }}
@@ -47,6 +51,17 @@ export function AccountAuth({ mode }: { mode: AuthMode }) {
           </h1>
           <Suspense fallback={<div className="skeleton" style={{ height: 240 }} />}>
             <ResetForm />
+          </Suspense>
+        </div>
+      );
+    case 'verify':
+      return (
+        <div className="mx-auto w-full max-w-[68ch] py-10 sm:px-6">
+          <h1 className="text-base-content mb-6 text-3xl font-semibold tracking-tight">
+            Confirm your email
+          </h1>
+          <Suspense fallback={<div className="skeleton h-24" />}>
+            <VerifyEmailForm />
           </Suspense>
         </div>
       );

@@ -76,6 +76,7 @@ import {
   paneLoadReason,
   type PaneLoadReason,
 } from '../lib/api-error';
+import { GoneWayOut } from './gone-way-out';
 
 // The words for each cause live beside `paneLoadReason`, so an alert or an
 // empty state that reports a failed read says the same thing (issue 260).
@@ -165,6 +166,9 @@ export function PaneLoadError({
   // against a door this account may not open. A button that cannot work is
   // worse than no button.
   const retry = missing || refused ? undefined : onRetry;
+  // A gone record with no way out of its own gets its list (issue 267): 104 of
+  // 105 detail screens said "no longer here" and offered nothing to press.
+  const wayOut = actions ?? (missing ? <GoneWayOut /> : undefined);
   // The caller's `description` is written about the OTHER case — it says the
   // server could not be reached — so it must not survive into this one. A
   // caller with no `noun` and no override has said nothing about being missing,
@@ -211,7 +215,7 @@ export function PaneLoadError({
         title={shownTitle}
         description={shownDescription}
         actions={
-          retry || actions ? (
+          retry || wayOut ? (
             <>
               {retry ? (
                 // `module`, not `error`. The glyph already said it failed; this
@@ -221,7 +225,7 @@ export function PaneLoadError({
                   {retryLabel}
                 </Button>
               ) : null}
-              {actions}
+              {wayOut}
             </>
           ) : undefined
         }

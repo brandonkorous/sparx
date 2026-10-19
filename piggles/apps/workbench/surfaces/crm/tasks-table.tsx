@@ -41,7 +41,7 @@ function TaskRow({ row, onOpen }: { row: Task; onOpen: (event: OpenEvent) => voi
           {meta.label}
         </Badge>
       </td>
-      <td className="text-right">
+      <td data-label="Due" className="text-right">
         {overdue ? (
           <Badge color="danger" variant="soft" size="sm">
             {shortDate(row.dueAt)}
@@ -50,7 +50,9 @@ function TaskRow({ row, onOpen }: { row: Task; onOpen: (event: OpenEvent) => voi
           <span className="text-sm">{shortDate(row.dueAt)}</span>
         )}
       </td>
-      <td className="hidden text-sm @lg:table-cell">{subject ?? '—'}</td>
+      <td data-label="For" className="hidden text-sm @lg:table-cell">
+        {subject ?? '—'}
+      </td>
     </tr>
   );
 }

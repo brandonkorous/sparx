@@ -264,6 +264,13 @@ const EXCEPTIONS = [
     path: 'lib/dock/canvas-commands-context',
     why: 'sparx makes a floating window fill the visible canvas from its title bar (sparx persona issue 030); Piggles hides maximize on a floating window, which it resizes by dragging, so its title bar never needs the canvas commands.',
   },
+  // ── Scheduling: one zone picker for the sparx forms ─────────────────────
+  {
+    axis: 'components',
+    only: 'sparx',
+    path: 'components/timezone-select',
+    why: 'the sparx place and resource forms listed eleven raw zone names (sparx persona issue 286) and now share this city picker; Piggles never had those lists, and its scheduling forms already pick by city through lib/timezones in location-form.tsx and resource-detail.tsx.',
+  },
   // ── Auth: the consoles are entered differently ──────────────────────────
   {
     axis: 'lib',
@@ -362,6 +369,12 @@ const EXCEPTIONS = [
     only: 'sparx',
     path: 'lib/billing',
     why: 'same decision: prices and plan comparison belong to the Piggles account app, never to the console.',
+  },
+  {
+    axis: 'components',
+    only: 'sparx',
+    path: 'components/surface-module-paused',
+    why: 'the pane a paid module shows when an unpaid sparx bill pauses it (sparx persona issue 289, docs/17 §6). sparx pauses module by module because it sells modules; Piggles bills at getpiggles.com and warns through components/lifecycle-band, and has no module to pause.',
   },
 
   // ── Products that are genuinely not the same product ────────────────────
@@ -587,12 +600,6 @@ const EXCEPTIONS = [
     only: 'piggles',
     path: 'lib/billing/lifecycle',
     why: 'the WORDS for each lifecycle phase, shared by the rail card and the band so the two cannot drift — they did, and the drift was a whole population being warned by neither. Not the same thing as sparx’s lib/billing, which is prices and plan comparison: this holds a phase, a countdown and a sentence, and no money at all (RULE #2).',
-  },
-  {
-    axis: 'components',
-    only: 'piggles',
-    path: 'components/table',
-    why: 'a local default on silica’s Table scroll wrapper. A call-site patch that belongs upstream — raise it against silicaui rather than copying it into sparx (root RULE #1).',
   },
   // ── Vocabulary: one shared service, two product languages ───────────────
   {

@@ -42,7 +42,7 @@ export function RevenueNotes({ data, currency }: { data: RevenueSummary; currenc
 function Row({ name, children }: { name: string; children: React.ReactNode }) {
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-2 border-b py-2 last:border-b-0">
-      <span className="min-w-0 flex-1 font-medium">{name}</span>
+      <span className="min-w-0 flex-1 basis-48 font-medium">{name}</span>
       {children}
     </div>
   );

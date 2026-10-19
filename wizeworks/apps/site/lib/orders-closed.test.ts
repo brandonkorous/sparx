@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { ORDERS_CLOSED_MESSAGE, ordersClosed } from './orders-closed';
+import { ORDERS_CLOSED_MESSAGE, ordersClosed, shopReach } from './orders-closed';
 
 const APP = join(dirname(fileURLToPath(import.meta.url)), '..');
 const source = (path: string) => readFileSync(join(APP, path), 'utf8');
@@ -33,6 +33,21 @@ describe('ordersClosed', () => {
   });
 });
 
+describe('shopReach', () => {
+  it('gives the phone as a dialable link and the email as a mail link', () => {
+    expect(shopReach({ phone: '(801) 571-7780', email: 'contact@gillettdiesel.com' })).toEqual({
+      phone: { label: '(801) 571-7780', href: 'tel:8015717780' },
+      email: { label: 'contact@gillettdiesel.com', href: 'mailto:contact@gillettdiesel.com' },
+    });
+  });
+
+  it('gives nothing for details the shop has not filled in', () => {
+    expect(shopReach({ phone: '  ', email: null })).toEqual({ phone: null, email: null });
+    expect(shopReach({ phone: 'call us', email: '' })).toEqual({ phone: null, email: null });
+    expect(shopReach(null)).toEqual({ phone: null, email: null });
+  });
+});
+
 describe('where a shopper meets it', () => {
   it('blocks the cart page and the cart drawer before Checkout', () => {
     for (const file of ['components/cart-view.tsx', 'components/mini-cart.tsx']) {
@@ -44,7 +59,22 @@ describe('where a shopper meets it', () => {
 
   it('hands the shop’s payment mode to the drawer', () => {
     expect(source('app/layout.tsx')).toMatch(
-      /<MiniCart paymentMode=\{site\.commerce\.paymentMode\} \/>/
+      /<MiniCart paymentMode=\{site\.commerce\.paymentMode\} contact=\{site\.contact\} \/>/
+    );
+  });
+
+  it('says how to order instead, with the shop’s own details (issue 324)', () => {
+    for (const file of ['components/cart-view.tsx', 'components/mini-cart.tsx']) {
+      expect(source(file), file).toMatch(
+        /\{blocked === closed \? <OrdersClosedReach contact=\{contact\} \/> : null\}/
+      );
+    }
+    expect(source('components/checkout/checkout-chrome.tsx')).toMatch(
+      /<OrdersClosedReach contact=\{contact\} \/>/
+    );
+    expect(source('app/checkout/page.tsx')).toMatch(/shopContact=\{site\.contact\}/);
+    expect(source('components/silica-host-cores.tsx')).toMatch(
+      /<CartView paymentMode=\{ctx\.site\.commerce\.paymentMode\} contact=\{ctx\.site\.contact\} \/>/
     );
   });
 
@@ -58,7 +88,7 @@ describe('where a shopper meets it', () => {
 
   it('stops checkout at its first step', () => {
     expect(source('components/checkout/checkout-flow.tsx')).toMatch(
-      /if \(ordersClosed\(shopPaymentMode, cart\.accountRules\?\.paymentTerms\) && step === 'contact'\) \{\s*return <OrdersClosed \/>;/
+      /if \(ordersClosed\(shopPaymentMode, cart\.accountRules\?\.paymentTerms\) && step === 'contact'\) \{\s*return <OrdersClosed contact=\{shopContact\} \/>;/
     );
   });
 });

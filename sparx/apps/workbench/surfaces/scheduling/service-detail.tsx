@@ -23,7 +23,6 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
   NativeSelect,
   Text,
@@ -31,7 +30,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Briefcase, Plus, Save, Trash2, X } from 'lucide-react';
+import { Plus, Save, Trash2, X } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { CurrencyField } from '../../components/currency-field';
@@ -364,10 +363,7 @@ function ServiceEditor({
         <div className={COLUMN}>
           {existing ? (
             <div className="flex flex-col gap-1">
-              <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <Briefcase className="size-5 shrink-0" aria-hidden />
-                <span className="min-w-0 break-words">{existing.name}</span>
-              </Heading>
+              {/* The name is its own box below and the tab, not a heading too (issue 282). */}
               <Text className="text-sm">{bookingTypeLabel(existing.bookingType)}</Text>
             </div>
           ) : null}

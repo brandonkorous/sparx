@@ -148,7 +148,10 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   if (piece) return kindPieceMetadata(piece, site);
 
   const page = await getPageBySlug(site.slug, slug, previewToken ? { previewToken } : {});
-  if (!page) return {};
+  // Nothing lives here, and the page renders not-found. With no title of its own
+  // the tab read just the shop's name over "We couldn't find that page"
+  // (sparx persona issue 321); say what app/not-found.tsx says.
+  if (!page) return { title: 'Page not found', robots: { index: false, follow: false } };
 
   const seo = page.seo ?? {};
   const seoTitle = typeof seo.title === 'string' ? seo.title : undefined;

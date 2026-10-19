@@ -34,10 +34,10 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Boxes, Gauge, PackageX, TriangleAlert } from 'lucide-react';
 import { PaneLoadError } from '../../components/pane-load-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -230,13 +230,20 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
                         </span>
                       </span>
                     </td>
-                    <td className="hidden text-right tabular-nums @lg:table-cell">
-                      {row.available}
+                    <td data-label="Left" className="hidden text-right tabular-nums @lg:table-cell">
+                      {/* Sold before it was in: the same words as the sentence (issue 277). */}
+                      {row.available < 0 ? `${String(-row.available)} short` : row.available}
                     </td>
-                    <td className="hidden text-right tabular-nums @xl:table-cell">
+                    <td
+                      data-label="On the way"
+                      className="hidden text-right tabular-nums @xl:table-cell"
+                    >
                       {row.onOrder > 0 ? row.onOrder : '—'}
                     </td>
-                    <td className="hidden whitespace-nowrap @2xl:table-cell">
+                    <td
+                      data-label="Supplier takes"
+                      className="hidden whitespace-nowrap @2xl:table-cell"
+                    >
                       <Tooltip content={leadTimeSourceLabel(row.leadTimeSource)}>
                         <Badge
                           color={row.leadTimeSource === 'measured' ? 'success' : 'warning'}
@@ -252,7 +259,10 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
                         {coverPhrase(row)}
                       </Badge>
                     </td>
-                    <td className="text-right font-medium whitespace-nowrap tabular-nums">
+                    <td
+                      data-label="At risk"
+                      className="text-right font-medium whitespace-nowrap tabular-nums"
+                    >
                       {row.revenueAtRiskCents > 0 ? formatCents(row.revenueAtRiskCents) : '—'}
                     </td>
                   </tr>

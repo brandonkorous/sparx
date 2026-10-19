@@ -159,7 +159,9 @@ export function PaySection({
                 <td className="font-medium tabular-nums">
                   {rateAmountLabel(rate.basis, rate.amountCents, rate.currency)}
                 </td>
-                <td className="text-sm">{rateWindowLabel(rate.effectiveFrom, rate.effectiveTo)}</td>
+                <td className="text-sm" data-label="Applies">
+                  {rateWindowLabel(rate.effectiveFrom, rate.effectiveTo)}
+                </td>
                 <td className="hidden text-sm @lg:table-cell">{rate.note ?? '—'}</td>
                 <td className="text-right">
                   <Button

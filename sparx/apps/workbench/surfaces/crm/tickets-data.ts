@@ -270,19 +270,6 @@ export function ticketSignal(
   return null;
 }
 
-/** Business hours in the words a person would use to describe them. Empty means
- *  the desk never closes, which is a real answer and worth saying out loud. */
-export function describeHours(policy: Pick<SlaPolicy, 'businessHours' | 'timezone'>): string {
-  if (policy.businessHours.length === 0) return `Open at all hours (${policy.timezone})`;
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const hhmm = (m: number) =>
-    `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
-  const open = [...policy.businessHours]
-    .sort((a, b) => a.day - b.day || a.startMinute - b.startMinute)
-    .map((w) => `${days[w.day] ?? '?'} ${hhmm(w.startMinute)}–${hhmm(w.endMinute)}`);
-  return `${open.join(', ')} (${policy.timezone})`;
-}
-
 /** "4 hr", "2 days" — a target, in the unit it was probably meant in. Null means
  *  the business made no promise at this level, which is different from zero. */
 export function targetLabel(minutes: number | null): string | null {

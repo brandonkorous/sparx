@@ -6,7 +6,7 @@
 **Surface:** tenant site renderer (:3004) · first-run setup copy
 **Filed:** 2026-10-01
 **Fixed:** 2026-10-01
-**Confirmed by:** — (on screen at the act 13 second account; see below)
+**Confirmed by:** sparx as Mike Vanderberg (his own workspace, not yet launched), 2026-10-17
 **Blocked on:** —
 
 ## What happened
@@ -52,7 +52,6 @@ which is what publishing puts there.
 
 ## Confirmed by
 
-Doty is past these steps. To confirm on screen with the second test account made
-for the act 13 isolation check.
+On screen, 2026-10-17. As a stranger, `localhost:3004/?tenant=keen-river-1426` (Mike's workspace, never launched) shows a simple starter page: "Mike's workspace", "Welcome. Thanks for stopping by.", About and Contact. As Mike in setup, the workspace step reads "Your free web address already works, and shows your site the moment you launch." and "Free, and yours to keep. It already shows a simple starter page; your site replaces it the moment you launch."; the domain step reads "Your site replaces the simple starter page at keen-river-1426.sparx.zone when you launch." The words match what a stranger sees.
 
 Checks: sparx and Piggles workbench `tsc --noEmit` exit 0; eslint 0; prettier clean.

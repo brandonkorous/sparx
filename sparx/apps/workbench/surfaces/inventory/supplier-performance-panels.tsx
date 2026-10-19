@@ -31,12 +31,12 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Timestamp,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Calculator, Plus, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { afterCommit } from '../../lib/defer';
@@ -414,7 +414,7 @@ function PriceLadderRow({ link, currency }: { link: SupplierVariant; currency: s
           <tbody>
             {rungs.map((rung, index) => (
               <tr key={index}>
-                <td>
+                <td data-label="From quantity">
                   <Input
                     size="sm"
                     color="module"
@@ -431,7 +431,7 @@ function PriceLadderRow({ link, currency }: { link: SupplierVariant; currency: s
                     }}
                   />
                 </td>
-                <td>
+                <td data-label="Price each">
                   <MoneyTextInput
                     size="sm"
                     color="module"

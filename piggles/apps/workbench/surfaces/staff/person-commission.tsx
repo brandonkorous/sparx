@@ -43,13 +43,15 @@ export function CommissionSection({
             return (
               <tr key={row.id}>
                 <td className="max-w-48 truncate">{row.sourceLabel ?? row.sourceType}</td>
-                <td className="whitespace-nowrap">{formatDate(row.earnedOn)}</td>
+                <td className="whitespace-nowrap" data-label="Earned">
+                  {formatDate(row.earnedOn)}
+                </td>
                 <td>
                   <Badge color={state.tone} variant="soft" size="sm">
                     {state.label}
                   </Badge>
                 </td>
-                <td className="text-right font-medium tabular-nums">
+                <td className="text-right font-medium tabular-nums" data-label="Amount">
                   {formatCents(row.amountCents, row.currency)}
                 </td>
               </tr>

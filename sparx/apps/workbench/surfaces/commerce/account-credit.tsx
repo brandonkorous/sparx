@@ -26,15 +26,16 @@ import {
   Heading,
   SearchInput,
   Select,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, UserPlus, Wallet, X } from 'lucide-react';
 import { afterPaneChange } from '../../lib/defer';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents } from './products-data';
@@ -92,13 +93,15 @@ export function AccountCreditSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   const [take, setTake] = useState<number>(50);
   const skip = (page - 1) * pageSize;
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAccountCredits({
-    q: search,
-    sortBy: sort.key,
-    order: sort.dir,
-    take,
-    skip,
-  });
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useAccountCredits(
+    {
+      q: search,
+      sortBy: sort.key,
+      order: sort.dir,
+      take,
+      skip,
+    }
+  );
   const rows = data?.items ?? [];
   const total = data?.total;
 
@@ -223,9 +226,13 @@ export function AccountCreditSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
               </Heading>
             </div>
             {isError ? (
-              <EmptyState
+              <PaneLoadError
+                error={error}
                 title="Could not load balances"
                 description="Something went wrong reaching the server. Try again in a moment."
+                onRetry={() => {
+                  void refetch();
+                }}
               />
             ) : isPending ? (
               <p className="p-4 text-sm" role="status">
@@ -276,7 +283,7 @@ export function AccountCreditSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                       <td className="hidden max-w-56 truncate text-sm @md:table-cell">
                         {row.customer?.email ?? '—'}
                       </td>
-                      <td className="text-right font-medium tabular-nums">
+                      <td data-label="Balance" className="text-right font-medium tabular-nums">
                         {formatCents(row.balanceCents, row.currency)}
                       </td>
                     </tr>

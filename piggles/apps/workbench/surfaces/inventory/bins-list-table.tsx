@@ -72,7 +72,7 @@ function BinKindCell({ bin }: { bin: Bin }) {
 
 function BinFullnessCell({ fullness }: { fullness: number | null }) {
   return (
-    <td className="hidden @2xl:table-cell">
+    <td data-label="How full" className="hidden @2xl:table-cell">
       {fullness === null ? (
         <Text className="text-sm">—</Text>
       ) : (
@@ -108,10 +108,14 @@ function BinRow({ bin, onOpen }: { bin: Bin; onOpen: OpenBin }) {
       }}
     >
       <BinShelfCell bin={bin} />
-      <td className="hidden max-w-40 truncate @lg:table-cell">{bin.warehouseName ?? '—'}</td>
+      <td data-label="Location" className="hidden max-w-40 truncate @lg:table-cell">
+        {bin.warehouseName ?? '—'}
+      </td>
       <BinKindCell bin={bin} />
-      <td className="hidden text-right tabular-nums @xl:table-cell">{bin.itemCount}</td>
-      <td className="text-right font-medium whitespace-nowrap tabular-nums">
+      <td data-label="Items" className="hidden text-right tabular-nums @xl:table-cell">
+        {bin.itemCount}
+      </td>
+      <td data-label="Units" className="text-right font-medium whitespace-nowrap tabular-nums">
         {NUMBER.format(bin.unitCount)}
       </td>
       <BinFullnessCell fullness={fullness} />

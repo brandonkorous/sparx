@@ -27,11 +27,11 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Gauge, LineChart, Link2, RefreshCw, Search } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -418,16 +418,25 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="max-w-0">
                       <span className="block truncate">{query.query}</span>
                     </td>
-                    <td className="text-right font-medium tabular-nums">
+                    <td className="text-right font-medium tabular-nums" data-label="Visits">
                       {formatCount(query.clicks)}
                     </td>
-                    <td className="hidden text-right tabular-nums @lg:table-cell">
+                    <td
+                      className="hidden text-right tabular-nums @lg:table-cell"
+                      data-label="Times shown"
+                    >
                       {formatCount(query.impressions)}
                     </td>
-                    <td className="hidden text-right tabular-nums @xl:table-cell">
+                    <td
+                      className="hidden text-right tabular-nums @xl:table-cell"
+                      data-label="Clicked"
+                    >
                       {formatCtr(query.ctr)}
                     </td>
-                    <td className="hidden text-right tabular-nums @xl:table-cell">
+                    <td
+                      className="hidden text-right tabular-nums @xl:table-cell"
+                      data-label="Position"
+                    >
                       {formatPosition(query.position)}
                     </td>
                   </tr>

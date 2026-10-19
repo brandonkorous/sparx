@@ -7,19 +7,13 @@
 // the default or archived in their own columns. Deal counts are not in the list
 // payload, so they are not shown here — they live where a pipeline's deals do.
 
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useState } from 'react';
 import { Plus, Workflow } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { usePipelines, type Pipeline } from './pipelines-data';
@@ -36,7 +30,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [scope, setScope] = useState<'active' | 'all'>('active');
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = usePipelines({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = usePipelines({
     q: search,
     includeArchived: scope === 'all',
     // BOTH kinds (docs/144 §7.2) — sales pipelines and support queues. This is
@@ -119,21 +113,14 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Workflow className="size-6" aria-hidden />}
             title="Could not load your pipelines"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -195,7 +182,10 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       {row.objectKey === 'ticket' ? 'Support requests' : 'Sales deals'}
                     </Badge>
                   </td>
-                  <td className="hidden text-right text-sm tabular-nums @md:table-cell">
+                  <td
+                    data-label="Steps"
+                    className="hidden text-right text-sm tabular-nums @md:table-cell"
+                  >
                     {row.stages.length}
                   </td>
                   <td>

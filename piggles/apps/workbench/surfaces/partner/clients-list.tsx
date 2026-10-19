@@ -1,18 +1,8 @@
 'use client';
 
-// Clients — the sparx accounts you look after, and the access each one has given
-// you.
-//
-// A client is the UNION of two relationships (docs/114 §B.7): a business you
-// REFERRED (they signed up under your link, which is what earns commission), and
-// a business you MANAGE (they added you to their account as a consultant, so you
-// can work inside it). An account can be one, the other, or both — a referral you
-// also manage is the certified-tier "managed account" that earns ongoing.
-//
-// Read-only: each row states the relationship and the access it carries. Entering
-// a managed account is a workspace switch, done from the account switcher in the
-// chrome — not a per-row action here, which would be a second, competing way to
-// do the same thing.
+// Clients: the accounts you look after. A client is the UNION (docs/114 §B.7) of a business you
+// REFERRED (earns commission) and one you MANAGE (added you as a consultant); both is a managed account.
+// Read-only: entering one is a workspace switch from the account switcher, not a competing per-row action.
 
 import { Badge, Card, Heading, Text } from '@wizeworks/silicaui-react';
 import { faBuilding } from '@fortawesome/pro-solid-svg-icons';
@@ -26,7 +16,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { usePartnerClients, type PartnerClient } from './data';
 import { formatDate, referralState } from './format';
-import { PartnerLoadError, PartnerLoading } from './gate';
+import { NotAPartner, PartnerLoadError, PartnerLoading, isNotAPartner } from './gate';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -48,7 +38,7 @@ function ClientRow({ client }: { client: PartnerClient }) {
   return (
     <li className="border-base-300 flex flex-col gap-2 border-b px-4 py-3 last:border-b-0">
       <div className="flex flex-wrap items-center gap-2">
-        <Text className="min-w-0 flex-1 truncate font-medium">{client.name}</Text>
+        <Text className="min-w-0 flex-1 basis-48 truncate font-medium">{client.name}</Text>
         {client.managed ? (
           <Badge color="module" variant="soft" size="sm">
             You manage this
@@ -70,10 +60,53 @@ function ClientRow({ client }: { client: PartnerClient }) {
   );
 }
 
+function ClientsEmpty() {
+  return (
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className={COLUMN}>
+        {/* Carded like the list beside it, so the pane keeps its shape when
+            the first client arrives. */}
+        <Card>
+          <PaneEmpty
+            module={MODULE}
+            icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
+            title="No clients yet"
+            description="Refer a business with your link, or ask a client to add you to their account as a consultant. Accounts you refer or manage will appear here."
+          />
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function ClientsCard({ clients }: { clients: PartnerClient[] }) {
+  return (
+    <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className={COLUMN}>
+        <section className="card bg-base-100 overflow-hidden">
+          <header className="border-base-300 border-b px-4 py-3">
+            <Heading level={2} className="text-base font-semibold">
+              Your accounts
+            </Heading>
+          </header>
+          <ul>
+            {clients.map((client) => (
+              <ClientRow key={client.orgId} client={client} />
+            ))}
+          </ul>
+        </section>
+      </div>
+    </div>
+  );
+}
+
 export function ClientsListSurface(_props: { ctx: SurfaceContext }) {
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch, error } =
     usePartnerClients();
   const clients = data ?? [];
+
+  // Outside the partner program: its page alone, not a count over a refusal (issue 307).
+  if (isError && isNotAPartner(error)) return <NotAPartner section="Clients" />;
 
   return (
     <div className={PANE_SHELL}>
@@ -108,37 +141,9 @@ export function ClientsListSurface(_props: { ctx: SurfaceContext }) {
       ) : isPending ? (
         <PartnerLoading />
       ) : clients.length === 0 ? (
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          <div className={COLUMN}>
-            {/* Carded like the list beside it, so the pane keeps its shape when
-                the first client arrives. */}
-            <Card>
-              <PaneEmpty
-                module={MODULE}
-                icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
-                title="No clients yet"
-                description="Refer a business with your link, or ask a client to add you to their account as a consultant. Accounts you refer or manage will appear here."
-              />
-            </Card>
-          </div>
-        </div>
+        <ClientsEmpty />
       ) : (
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          <div className={COLUMN}>
-            <section className="card bg-base-100 overflow-hidden">
-              <header className="border-base-300 border-b px-4 py-3">
-                <Heading level={2} className="text-base font-semibold">
-                  Your accounts
-                </Heading>
-              </header>
-              <ul>
-                {clients.map((client) => (
-                  <ClientRow key={client.orgId} client={client} />
-                ))}
-              </ul>
-            </section>
-          </div>
-        </div>
+        <ClientsCard clients={clients} />
       )}
     </div>
   );

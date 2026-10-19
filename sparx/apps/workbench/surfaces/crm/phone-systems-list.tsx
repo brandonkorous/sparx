@@ -12,11 +12,13 @@
 // the list down the page on every visit for the sake of an action taken once,
 // and duplicated the empty state directly underneath itself.
 
-import { Badge, Button, Card, EmptyState, Table, useToast } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, useToast } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Phone, PhoneCall, Plus, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { useSites } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -126,21 +128,14 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
               description="Connecting a phone system means handing over an account token, so it is kept to the people who run the account. Ask one of them to connect it: once it is done, everyone on your team gets the Call button."
             />
           ) : isError ? (
-            <EmptyState
+            <PaneLoadError
+              error={error}
               icon={<PhoneCall className="size-6" aria-hidden />}
               title="Could not load your phone systems"
               description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              onRetry={() => {
+                void refetch();
+              }}
             />
           ) : isPending ? (
             <p className="p-4 text-sm" role="status">

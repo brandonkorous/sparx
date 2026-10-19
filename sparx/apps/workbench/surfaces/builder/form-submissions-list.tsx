@@ -26,8 +26,8 @@ import {
   Filter,
   FilterItem,
   NativeSelect,
-  Table,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Inbox } from 'lucide-react';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -319,7 +319,10 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="hidden max-w-72 @lg:table-cell">
                       <span className="block truncate">{preview || '—'}</span>
                     </td>
-                    <td className="hidden text-sm whitespace-nowrap @xl:table-cell">
+                    <td
+                      className="hidden text-sm whitespace-nowrap @xl:table-cell"
+                      data-label="Received"
+                    >
                       {formatDate(submission.createdAt)}
                     </td>
                     {manyForms ? (

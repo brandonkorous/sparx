@@ -512,9 +512,12 @@ export function featuredCarousel(): Node {
  *  was ever there. A clothing label with eight products and a customer at the bottom of
  *  one of them was offered nothing else, for exactly this reason.
  *
- *  `commerce.related` is bounded, excludes the product being viewed, and is never empty
- *  for a shop with more than one thing in it. The author can still repoint it at
- *  Featured, a category, or the whole catalog from the block's own source picker. */
+ *  `commerce.related` is bounded and excludes the product being viewed. On a product
+ *  page it is what goes WITH that product (sparx persona issue 330): parts that fit
+ *  what it fits, else the same category, else the newest. It can be empty for a part
+ *  nothing else fits, and then the rail drops rather than offer a part for another
+ *  vehicle. The author can still repoint it at Featured, a category, or the whole
+ *  catalog from the block's own source picker. */
 export function relatedCarousel(): Node {
   return productsBlock({
     source: 'commerce.related',

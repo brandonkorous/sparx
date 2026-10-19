@@ -34,10 +34,10 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Timestamp,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { History, Search, ShieldCheck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -255,7 +255,7 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 open(movement, event);
               }}
             >
-              <td className="hidden whitespace-nowrap @xl:table-cell">
+              <td data-label="When" className="hidden whitespace-nowrap @xl:table-cell">
                 <Timestamp value={movement.createdAt} format="relative" />
               </td>
 
@@ -297,7 +297,7 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </span>
               </td>
 
-              <td className="text-right whitespace-nowrap">
+              <td data-label="Change" className="text-right whitespace-nowrap">
                 <span className="flex flex-col items-end gap-1">
                   <Badge color={deltaTone(movement.delta)} variant="soft" size="sm">
                     <span className="tabular-nums">{signedDelta(movement.delta)}</span>
@@ -313,7 +313,10 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </span>
               </td>
 
-              <td className="hidden text-right tabular-nums @3xl:table-cell">
+              <td
+                data-label="Left on shelf"
+                className="hidden text-right tabular-nums @3xl:table-cell"
+              >
                 {movement.balanceAfter ?? '—'}
               </td>
 
@@ -326,7 +329,10 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   the whole table at 752px inside a 400px pane, which is the
                   sideways scroll the @container column-hiding exists to
                   prevent. Any column added beside a give-cell needs a width. */}
-              <td className="hidden max-w-28 @sm:table-cell @lg:max-w-40 @4xl:max-w-56">
+              <td
+                data-label="Why"
+                className="hidden max-w-28 @sm:table-cell @lg:max-w-40 @4xl:max-w-56"
+              >
                 <span className="flex min-w-0 flex-col">
                   <span>{movementReason(movement.reason)}</span>
                   {/* The cap above is load-bearing, so the note HAS to clip —
@@ -344,7 +350,7 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </span>
               </td>
 
-              <td className="hidden max-w-40 truncate @2xl:table-cell">
+              <td data-label="Location" className="hidden max-w-40 truncate @2xl:table-cell">
                 {movement.warehouseName ?? '—'}
               </td>
 

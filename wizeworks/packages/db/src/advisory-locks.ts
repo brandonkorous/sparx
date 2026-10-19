@@ -113,6 +113,9 @@ export const ADVISORY_LOCKS = {
   /** wizeworks/services/api-rest — blueprint-backfill reconcile: materializes an installed
    *  blueprint's slice for a module the tenant enabled AFTER install. */
   BLUEPRINT_BACKFILL_RECONCILE: 4242_4263,
+  /** wizeworks/services/api-rest — releases cart holds past their time, where no
+   *  cluster CronJob runs (sparx persona issue 335). */
+  RESERVATION_REAPER: 4242_4264,
 } as const;
 
 export type AdvisoryLockName = keyof typeof ADVISORY_LOCKS;

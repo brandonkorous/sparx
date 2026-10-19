@@ -6,7 +6,7 @@
 **Surface:** workbench › Move in › Shopify products file (and the live Shopify link)
 **Filed:** 2026-10-01
 **Fixed:** 2026-10-01
-**Confirmed by:** **not checked** on screen yet; re-run P01 act 3 and open SKU `#80`
+**Confirmed by:** sparx as Doty, 2026-10-17 (the console and the site)
 **Blocked on:** —
 
 ## What happened
@@ -34,6 +34,10 @@ the option is dropped. A real option that happens to be named "Title" keeps its
 values. Test in `vendors.test.ts`; red with the fix off.
 
 Checks: migration 194/194, tsc 0, eslint 0.
+
+## Confirmed by
+
+sparx as Doty, 2026-10-17. SKU `#80` (Mag-Hytec Dana 80 Differential Cover): Options reads "This product is sold one way", Variants "There is one version of this product. Shoppers do not choose anything." On the site its page has no picker and no "Default Title". In the database, 0 of Gillett's live versions are titled "Default Title".
 
 ## Rating effect
 

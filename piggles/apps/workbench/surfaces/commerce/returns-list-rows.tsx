@@ -36,14 +36,20 @@ function ReturnRow({
       }}
     >
       <td className="font-mono text-sm">{row.orderNumber ?? '—'}</td>
-      <td className="hidden max-w-48 truncate @lg:table-cell">
+      <td data-label="Customer" className="hidden max-w-48 truncate @lg:table-cell">
         {/* A null order number means the SALE is gone, and then "Unknown customer"
             is a guess dressed as a fact: there is nobody to know (issue 225). */}
         {row.orderNumber === null ? 'The sale is gone' : (row.customerName ?? 'Unknown customer')}
       </td>
-      <td className="hidden text-sm @2xl:table-cell">{formatDate(row.requestedAt)}</td>
-      <td className="hidden @xl:table-cell">{outcomeLabel(row.preferredOutcome)}</td>
-      <td className="text-right tabular-nums @lg:text-left">{row.itemCount}</td>
+      <td data-label="Asked" className="hidden text-sm @2xl:table-cell">
+        {formatDate(row.requestedAt)}
+      </td>
+      <td data-label="Wants" className="hidden @xl:table-cell">
+        {outcomeLabel(row.preferredOutcome)}
+      </td>
+      <td data-label="Items" className="text-right tabular-nums @lg:text-left">
+        {row.itemCount}
+      </td>
       <td>
         {row.orderNumber === null ? (
           <Badge color="warning" variant="soft" size="sm">

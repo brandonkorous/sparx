@@ -17,6 +17,7 @@
 // only — a bar reading 10% beside a note saying most never ordered would be two
 // different denominators on one panel.
 
+import { channelKeyLabel } from '../../lib/console/channels';
 import type { LeadSourceRow } from './reports-data';
 
 /** The key the report uses for a customer with no first order. */
@@ -53,7 +54,9 @@ export function splitLeadSources(rows: readonly LeadSourceRow[] | undefined): Le
   const observed = known
     .map((row) => ({
       source: row.source,
-      label: row.label,
+      // The console's words, off the key: the API's label is its own
+      // vocabulary ("Admin", "Storefront"), issue 265.
+      label: channelKeyLabel(row.source),
       count: row.count,
       sharePct: knownTotal > 0 ? +((row.count / knownTotal) * 100).toFixed(1) : 0,
     }))

@@ -191,7 +191,7 @@ function ConnectionCard({
           title={connection.displayName ?? name}
           size="md"
         />
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <div className="flex min-w-0 flex-1 basis-48 flex-col gap-0.5">
           <div className="flex flex-wrap items-center gap-2">
             <Text as="span" className="font-semibold">
               {connection.displayName ?? name}
@@ -274,7 +274,7 @@ function CatalogRow({
           the two lists read as one column. Full color even for "coming soon": the badge
           beside it already says so, and fading the logo would say it twice. */}
       <PlatformMark platform={entry.platform} className="size-10" label={entry.name} />
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-0.5">
         <Text as="span" className="font-medium">
           {entry.name}
         </Text>
@@ -659,7 +659,7 @@ export function SocialConnectionsSurface() {
                   everyone else sees where it stands. */}
               <FormSection title="Before posts go live">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex min-w-0 flex-1 items-start gap-2">
+                  <div className="flex min-w-0 flex-1 basis-48 items-start gap-2">
                     <ShieldCheck className="mt-0.5 size-5 shrink-0" aria-hidden />
                     <Text className="text-sm">
                       Posts need an admin&rsquo;s approval before they go live. This keeps anything
@@ -690,7 +690,7 @@ export function SocialConnectionsSurface() {
                     look like it drives nothing; off is a real choice, because the tag is
                     visible in the address a customer sees. */}
                 <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-3">
-                  <div className="flex min-w-0 flex-1 items-start gap-2">
+                  <div className="flex min-w-0 flex-1 basis-48 items-start gap-2">
                     <LineChart className="mt-0.5 size-5 shrink-0" aria-hidden />
                     <Text className="text-sm">
                       Add tracking to links in your posts, so the visits and sales they bring show

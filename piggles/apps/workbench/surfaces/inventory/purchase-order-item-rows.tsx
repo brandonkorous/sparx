@@ -19,7 +19,7 @@ type Shown = Pick<
  *  the ledger holds, and dropping either hides a wrong pack factor. */
 function QuantityCell({ line }: { line: Shown }) {
   return (
-    <td className="text-right tabular-nums">
+    <td data-label="Qty" className="text-right tabular-nums">
       {describeQuantityShort({
         baseQuantity: line.quantityOrdered,
         uomCode: line.uomCode,
@@ -88,10 +88,10 @@ export function DraftLineRow({
     <tr>
       <ItemCell line={line} code={code} />
       <QuantityCell line={line} />
-      <td className="hidden text-right tabular-nums @md:table-cell">
+      <td data-label="Cost each" className="hidden text-right tabular-nums @md:table-cell">
         {formatCents(line.unitCostCents, pane.currency)}
       </td>
-      <td className="text-right font-medium tabular-nums">
+      <td data-label="Line total" className="text-right font-medium tabular-nums">
         {formatCents(line.quantityOrdered * line.unitCostCents, pane.currency)}
       </td>
       <td>
@@ -107,13 +107,13 @@ export function PlacedLineRow({ line, currency }: { line: PurchaseOrderLine; cur
     <tr>
       <ItemCell line={line} code={line.variantSku ?? 'No code'} />
       <QuantityCell line={line} />
-      <td className="hidden text-right tabular-nums @md:table-cell">
+      <td data-label="Cost each" className="hidden text-right tabular-nums @md:table-cell">
         {formatCents(line.unitCostCents, currency)}
       </td>
-      <td className="text-right font-medium tabular-nums">
+      <td data-label="Line total" className="text-right font-medium tabular-nums">
         {formatCents(line.lineTotalCents, currency)}
       </td>
-      <td className="whitespace-nowrap">
+      <td data-label="Received" className="whitespace-nowrap">
         <Badge color={complete ? 'success' : 'warning'} variant="soft" size="sm">
           {line.quantityReceived} of {line.quantityOrdered}
         </Badge>

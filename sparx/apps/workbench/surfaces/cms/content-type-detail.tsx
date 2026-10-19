@@ -78,6 +78,7 @@ import {
   type FieldType,
   type TypeMetaInput,
 } from './content-types-data';
+import { REFERENCE_HELP, REFERENCE_HELP_FIXED, REFERENCE_LABEL } from './reference-word';
 import { PaneLoadError } from '../../components/pane-load-error';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -576,10 +577,9 @@ function BuiltInType({
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           <div className="flex flex-col gap-1">
+            {/* The name is its own box below and the tab, not a heading too
+                (issue 282). */}
             <span className="flex flex-wrap items-center gap-2">
-              <Heading level={1} className="text-2xl font-semibold">
-                {type.name}
-              </Heading>
               <span className="font-mono text-sm">{type.key}</span>
               {type.is_singleton ? (
                 <Badge color="info" variant="soft" size="sm">
@@ -704,7 +704,8 @@ function MetaForm({
       </div>
 
       <Field>
-        <FieldLabel>Id</FieldLabel>
+        {/* "Reference": the word the list and Tags and topics use (issue 299). */}
+        <FieldLabel>{REFERENCE_LABEL}</FieldLabel>
         <FieldControl
           render={
             <Input
@@ -724,8 +725,8 @@ function MetaForm({
         />
         <FieldDescription>
           {editableKey
-            ? 'A short internal name in lowercase letters, numbers and underscores. Filled in from the name. Change it now if you like, it cannot be changed later.'
-            : 'The internal name for this type. It is fixed once the type is created.'}
+            ? `${REFERENCE_HELP} Lowercase letters, numbers and underscores, filled in from the name. Change it now if you like, it cannot be changed later.`
+            : REFERENCE_HELP_FIXED}
         </FieldDescription>
       </Field>
 

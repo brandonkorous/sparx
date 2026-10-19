@@ -28,6 +28,10 @@
     "./property-access": {
       "types": "./src/property-access.ts",
       "default": "./src/property-access.ts"
+    },
+    "./friendly-slug": {
+      "types": "./src/friendly-slug.ts",
+      "default": "./src/friendly-slug.ts"
     }
   },
   "files": [

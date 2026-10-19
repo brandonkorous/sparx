@@ -34,15 +34,8 @@
 // the ONLY thing narrowing the list, we ask the catalog and offer what we find.
 
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Table,
-  Tooltip,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, SearchInput, Tooltip } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Boxes, PackageCheck, ShieldCheck, TrendingDown } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -435,11 +428,22 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
                   </span>
                 </td>
                 <td className="hidden max-w-48 truncate @lg:table-cell">{locationLabel(level)}</td>
-                <td className="text-right font-medium whitespace-nowrap tabular-nums">
+                <td
+                  className="text-right font-medium whitespace-nowrap tabular-nums"
+                  data-label="To sell"
+                >
                   {sellable(level)}
                 </td>
-                <td className="hidden text-right tabular-nums @xl:table-cell">{level.onHand}</td>
-                <td className="hidden text-right tabular-nums @3xl:table-cell">
+                <td
+                  className="hidden text-right tabular-nums @xl:table-cell"
+                  data-label="On the shelf"
+                >
+                  {level.onHand}
+                </td>
+                <td
+                  className="hidden text-right tabular-nums @3xl:table-cell"
+                  data-label="Spoken for"
+                >
                   {level.allocated}
                 </td>
                 <td>

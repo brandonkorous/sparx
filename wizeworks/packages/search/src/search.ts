@@ -373,6 +373,18 @@ export function personalFilter(viewerId: string | null | undefined, indexed: boo
   return `(${personal} || visible_to:=${facetList(audience)})`;
 }
 
+/**
+ * How "Search everything" orders what it finds. A photo is found by its file name,
+ * and Gillett's photos are named for the part on them: "4062328_1.png". With text
+ * match first, typing the part number 4062328 listed the photo above the O-ring it
+ * shows, and "injector" a photo above every injector (sparx persona issue 292). The
+ * thing an owner is after is the record; a photo comes below any record that also
+ * matches, and still comes first when only photos match (a file name). Exported for
+ * its test.
+ */
+export const UNIVERSAL_SORT =
+  '_eval([(entity_type:media):0,(entity_type:!=media):1]):desc,_text_match:desc,updated_at:desc';
+
 export async function searchAll(
   input: UniversalSearchInput
 ): Promise<SearchResult<UniversalSearchDocument>> {
@@ -389,7 +401,7 @@ export async function searchAll(
     query_by_weights: '5,4,3,1',
     filter_by: joinFilter(parts),
     facet_by: 'module,entity_type,status',
-    sort_by: '_text_match:desc,updated_at:desc',
+    sort_by: UNIVERSAL_SORT,
     page: input.page ?? 1,
     per_page: input.perPage ?? 20,
     ...EVERY_PREFIX,
@@ -402,6 +414,30 @@ export async function searchAll(
     ...shaped,
     hits: shaped.hits.map((hit) => ({ ...hit, document: withShortBody(hit.document) })),
   };
+}
+
+/** Facet values one kind count may list: well above the number of kinds. */
+const KIND_FACET_MAX = 500;
+
+/**
+ * The kinds of record this tenant has at least one entry for in search. Read by
+ * the indexer's boot pass (`commerce-indexer/src/new-kinds.ts`), which fills in a
+ * kind that has rows and no entries: a kind new to search, or one a seed wrote.
+ */
+export async function indexedKindsForTenant(tenantId: string): Promise<Set<string>> {
+  const params: AnySearchParams = {
+    q: '*',
+    query_by: 'title',
+    filter_by: `tenant_id:=${tenantId}`,
+    facet_by: 'entity_type',
+    max_facet_values: KIND_FACET_MAX,
+    per_page: 0,
+  };
+  const result = await getClient().collections(ENTITIES_COLLECTION).documents().search(params);
+  const kinds = shape<UniversalSearchDocument>(result, params).facetCounts.find(
+    (f) => f.fieldName === 'entity_type'
+  );
+  return new Set((kinds?.counts ?? []).filter((c) => c.count > 0).map((c) => c.value));
 }
 
 /** How much of `body` a search answer carries. */

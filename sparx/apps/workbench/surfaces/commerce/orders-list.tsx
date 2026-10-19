@@ -22,7 +22,8 @@
 // narrow pane on a wide monitor rendering six columns into 300px.
 
 import { useState } from 'react';
-import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Banknote, ShoppingBag } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -253,10 +254,12 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                         claims its width; the wrapper scrolls if the table ever
                         genuinely outgrows the pane. */}
                     <td className="font-mono text-sm whitespace-nowrap">{order.orderNumber}</td>
-                    <td className="hidden max-w-48 truncate @lg:table-cell">
+                    <td data-label="Customer" className="hidden max-w-48 truncate @lg:table-cell">
                       {customerName(order.customer)}
                     </td>
-                    <td className="hidden text-sm @3xl:table-cell">{formatDate(order.placedAt)}</td>
+                    <td data-label="Placed" className="hidden text-sm @3xl:table-cell">
+                      {formatDate(order.placedAt)}
+                    </td>
                     <td>
                       <Badge color={paid.tone} variant="soft" size="sm">
                         {paid.label}
@@ -267,7 +270,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {shipped.label}
                       </Badge>
                     </td>
-                    <td className="text-right font-medium tabular-nums">
+                    <td data-label="Total" className="text-right font-medium tabular-nums">
                       {formatMoney(order.total, order.currency)}
                     </td>
                   </tr>

@@ -26,16 +26,17 @@ import {
   Field,
   FieldLabel,
   Input,
-  Table,
   Text,
   Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CalendarOff, MailCheck, PackageSearch, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { afterCommit } from '../../lib/defer';
 import { useConfirm } from '../../lib/confirm';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -66,7 +67,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
   const toast = useToast();
   const confirm = useConfirm();
-  const { data, isLoading, isError } = useBackorder(id);
+  const { data, isLoading, isError, error, refetch } = useBackorder(id);
   const update = useUpdateBackorder(id);
   const notify = useMarkBackorderNotified(id);
   const cancel = useCancelBackorder(id);
@@ -95,10 +96,18 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   if (isError || !data) {
     return (
       <div className={PANE_SHELL}>
-        <EmptyState
+        {/* The shared screen reads the answer: gone, refused, or not reached.
+            This box said "canceled, or the server is unreachable" for all three
+            (sparx persona issue 315). */}
+        <PaneLoadError
+          error={error}
+          noun="item owed"
           icon={<PackageSearch className="size-6" aria-hidden />}
-          title="Could not load that commitment"
-          description="It may have been canceled, or the server is unreachable. Try the queue again."
+          title="Could not load what is owed"
+          description="This is a problem reaching the server. Nothing anyone is owed has changed."
+          onRetry={() => {
+            void refetch();
+          }}
         />
       </div>
     );
@@ -399,8 +408,10 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                               ? 'A stock count'
                               : 'Recorded by hand'}
                       </td>
-                      <td className="text-right tabular-nums">{a.quantity}</td>
-                      <td className="whitespace-nowrap">
+                      <td data-label="Units" className="text-right tabular-nums">
+                        {a.quantity}
+                      </td>
+                      <td data-label="When" className="whitespace-nowrap">
                         <Timestamp value={a.allocatedAt} format="relative" />
                       </td>
                     </tr>

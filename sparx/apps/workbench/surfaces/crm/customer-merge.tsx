@@ -303,7 +303,7 @@ function MergeCandidate({
         {keeping ? <Check className="size-4" aria-hidden /> : null}
         {keeping ? 'Keeping' : 'Keep this one'}
       </Button>
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col">
         <span className="flex flex-wrap items-center gap-2 font-medium">
           {customerName(customer)}
           {keeping ? null : (

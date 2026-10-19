@@ -21,6 +21,8 @@ export * as collectionService from './collection-service';
 export * as fitmentService from './fitment-service';
 // Which products a bulk write acts on: ids, or the Products list's own narrowing.
 export * as productSelectionService from './product-selection';
+// What to suggest beside what somebody bought (sparx persona issue 330).
+export * as relatedProductService from './related-products';
 
 // Phase 2 — inventory. Extracted into its own first-class module/product
 // (@wizeworks/inventory, docs/100). Re-exported here so existing consumers

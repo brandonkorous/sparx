@@ -298,11 +298,7 @@ function ProfileEditor({
                 from each product later.
               </Text>
             </div>
-          ) : (
-            <Heading level={1} className="text-2xl font-semibold">
-              {profile?.name}
-            </Heading>
-          )}
+          ) : null}
 
           <SaveFailure title="Could not save this group" message={failure} />
 
@@ -373,7 +369,7 @@ function ProfileEditor({
                 }
               />
               <FieldDescription>
-                For oversized or palletised items that go by freight rather than ordinary post.
+                For oversized or palletized items that go by freight rather than ordinary post.
               </FieldDescription>
             </Field>
 

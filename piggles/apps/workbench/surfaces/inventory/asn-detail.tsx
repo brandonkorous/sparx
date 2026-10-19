@@ -110,6 +110,25 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     });
   };
 
+  // There is no blank shipment notice to fill in: a notice is the supplier's own
+  // statement, recorded against an order. So an id of `new` (or none) disables
+  // the query, and without this branch the pane sat on "Loading the shipment…"
+  // forever, waiting on a request that was never going to be sent.
+  if (id === '' || id === 'new') {
+    return (
+      <div className={PANE_SHELL}>
+        <PaneLoadError
+          reason="missing"
+          noun="shipment"
+          title="Could not load that shipment"
+          // "new" was never a shipment, so "no longer here" would be untrue. A
+          // notice is recorded from what a supplier sends, never started here.
+          missingTitle="There is no shipment at this address"
+          missingDescription="A shipment notice is recorded when a supplier tells you what they have sent. The list shows every one you have."
+        />
+      </div>
+    );
+  }
   if (notice.isError) {
     // A 404 (removed, or another business's id) and a failed request say
     // different things; the shared screen reads which from the error rather

@@ -19,6 +19,7 @@ import type {
 } from './data';
 import { productCopy } from '../../lib/product';
 import { formatCentsAmount } from '../../lib/money-format';
+import { formatShopDateTime } from '../../lib/shop-clock';
 
 export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 
@@ -34,8 +35,8 @@ export function formatDate(iso: string | null | undefined): string {
 }
 
 export function formatDateTime(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  // On the shop's clock, not this computer's (sparx persona issue 333).
+  return formatShopDateTime(iso);
 }
 
 /** A percentage from the Decimal-as-string rate ("0.3000" → "30%"). */

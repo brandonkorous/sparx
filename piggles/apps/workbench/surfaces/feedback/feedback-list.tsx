@@ -90,7 +90,7 @@ function FeedbackBody(props: {
       description="Tell us what’s broken, what’s missing, or what you wish worked differently. A real person reads every message, and replies land right here."
       actions={
         <Button color="module" size="sm" onClick={props.onSend}>
-          Send your first message
+          Send feedback
         </Button>
       }
     />

@@ -495,7 +495,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'security.backupCodes.file': 'Piggles backup codes\n\n{codes}\n',
 
   'partner.gate.description':
-    '{section} is part of the partner program, for agencies and consultants who bring clients to Piggles. An owner or admin can apply from your account settings, and once we approve it this fills in.',
+    '{section} is part of the partner program, for agencies and consultants who bring clients to Piggles. An owner or admin can apply here, and we review each application.',
   'partner.tier.applyConfirm':
     '{commission}. We review applications, usually within a few working days. Nothing about your account changes until it is approved.',
 

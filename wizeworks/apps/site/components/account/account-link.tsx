@@ -39,7 +39,11 @@ export function AccountLink({ className }: { className?: string }) {
     const name = displayName(customer);
     return (
       <Link href="/account" className={className} title="Your orders and details">
-        {name}
+        {/* Capped on a phone, where it shares the bar with the logo and the Menu: an
+            account with no first name shows its email, which alone is wider than a
+            360px header (sparx persona issue 291). The whole name is back from 1024px
+            up, where a full bar has room for an email too. */}
+        <span className="inline-block max-w-18 truncate align-bottom @5xl:max-w-none">{name}</span>
       </Link>
     );
   }

@@ -12,7 +12,8 @@
 // notes about it, and the less-important of those give way on a narrow pane.
 
 import { useMemo, useState } from 'react';
-import { Badge, Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Tags } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
@@ -20,6 +21,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { createLabelFor, type OpenTarget, type SurfaceContext } from '../../lib/surfaces/registry';
 import { taxonomyKind, useTaxonomies, type Taxonomy } from './taxonomy-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { REFERENCE_HELP, REFERENCE_LABEL } from './reference-word';
 import { PaneLoadError } from '../../components/pane-load-error';
 
 /** Same modifier contract as every other list in the app. */
@@ -156,7 +158,9 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
             <thead>
               <tr>
                 <th>Name</th>
-                <th className="hidden @xl:table-cell">Key</th>
+                <th className="hidden @xl:table-cell" title={REFERENCE_HELP}>
+                  {REFERENCE_LABEL}
+                </th>
                 <th className="hidden @2xl:table-cell">Structure</th>
                 <th className="text-right">Terms</th>
               </tr>
@@ -184,10 +188,13 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {taxonomy.plural_name}
                       </span>
                     </td>
-                    <td className="hidden max-w-56 truncate font-mono text-sm @xl:table-cell">
+                    <td
+                      className="hidden max-w-56 truncate font-mono text-sm @xl:table-cell"
+                      data-label={REFERENCE_LABEL}
+                    >
                       {taxonomy.key}
                     </td>
-                    <td className="hidden @2xl:table-cell">
+                    <td className="hidden @2xl:table-cell" data-label="Structure">
                       {kind ? (
                         <Badge color="info" variant="soft" size="sm" title={kind.detail}>
                           {kind.label}
@@ -196,7 +203,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
                         <span className="text-sm">Flat</span>
                       )}
                     </td>
-                    <td className="text-right tabular-nums">
+                    <td className="text-right tabular-nums" data-label="Terms">
                       {taxonomy.term_count.toLocaleString()}
                     </td>
                   </tr>

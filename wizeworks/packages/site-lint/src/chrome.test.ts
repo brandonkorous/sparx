@@ -174,3 +174,43 @@ describe('no way into the account area', () => {
     expect(report.status).toBe('warn');
   });
 });
+
+describe('no cart in the header (issue 325)', () => {
+  const shop = { customerAccounts: true, shop: true };
+  const cartFindings = (input: Partial<SiteLintInput>) =>
+    lintSite({ pages: PAGES, ...input }).findings.filter((f) => f.rule === 'chrome-no-cart');
+  const withFooter = (bar: Node[], footer: Node[]) => ({
+    root: el('div', 'site', {
+      children: [
+        el('nav', 'navbar', { children: bar }),
+        outlet,
+        el('footer', 'footer', { children: footer }),
+      ],
+    }),
+  });
+  const cartLink = el('a', '', { attrs: { href: '/cart' }, text: 'Cart' });
+
+  it('tells a shop whose only way back to the cart is the footer', () => {
+    // Gillett Diesel exactly: a "Cart" link in the footer's Account column, nothing up top.
+    const findings = cartFindings({
+      frame: withFooter([hostCore(HOST_KEYS.siteAccountLink)], [cartLink]),
+      capabilities: shop,
+    });
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.severity).toBe('warning');
+  });
+
+  it('is satisfied by the live cart button, or a cart link in the header', () => {
+    expect(
+      cartFindings({ frame: frame(hostCore(HOST_KEYS.siteCartButton)), capabilities: shop })
+    ).toHaveLength(0);
+    expect(cartFindings({ frame: frame(cartLink), capabilities: shop })).toHaveLength(0);
+  });
+
+  it('stays silent on a site that does not sell, or when nobody asked', () => {
+    const bare = frame(el('span', '', { text: 'Row & Co' }));
+    expect(cartFindings({ frame: bare, capabilities: { customerAccounts: true } })).toHaveLength(0);
+    expect(cartFindings({ frame: bare, capabilities: { shop: false } })).toHaveLength(0);
+    expect(cartFindings({ frame: bare })).toHaveLength(0);
+  });
+});

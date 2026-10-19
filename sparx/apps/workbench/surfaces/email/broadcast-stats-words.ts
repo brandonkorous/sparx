@@ -31,6 +31,8 @@ export interface DeliveryCounts {
 }
 
 export interface Tile {
+  /** "Delivered" only once a receiving server has confirmed it (issue 270). */
+  label: string;
   value: number;
   hint: string;
   tone: Tone;
@@ -71,6 +73,7 @@ export function deliveredTile(
 ): Tile {
   if (stats.delivered > 0) {
     return {
+      label: 'Delivered',
       value: stats.delivered,
       hint: 'Confirmed by the receiving mail server',
       tone: 'success',
@@ -79,6 +82,7 @@ export function deliveredTile(
   if (stats.accepted > 0) {
     if (confirmationStillExpected(sentAt, now)) {
       return {
+        label: 'Sent',
         value: stats.accepted,
         hint: 'On their way. Confirmations arrive over the next few minutes.',
         tone: 'info',
@@ -90,12 +94,13 @@ export function deliveredTile(
     // either one would be a guess, and a guess here sends her to fix the wrong
     // thing.
     return {
+      label: 'Sent',
       value: stats.accepted,
       hint: 'These went out. Nothing has come back since to confirm they landed.',
       tone: 'plain',
     };
   }
-  return { value: 0, hint: 'Nothing has gone out yet', tone: 'plain' };
+  return { label: 'Sent', value: 0, hint: 'Nothing has gone out yet', tone: 'plain' };
 }
 
 /** Good news only once there is some. A zero in success green says the opposite

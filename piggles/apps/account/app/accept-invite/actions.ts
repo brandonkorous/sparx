@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import {
   auth,
+  authEmailsCanLeave,
   authPrisma,
   getSession,
   invitationMatchesUserBrand,
@@ -122,6 +123,10 @@ export async function resendInviteVerification(
   email: string,
   invitationId: string
 ): Promise<InviteActionResult> {
+  // Better Auth swallows a send that cannot leave (sparx persona issue 337).
+  if (!authEmailsCanLeave()) {
+    return { ok: false, error: 'Email cannot be sent from here right now, so no link went.' };
+  }
   try {
     await auth.api.sendVerificationEmail({
       body: {

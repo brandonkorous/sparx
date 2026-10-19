@@ -29,12 +29,12 @@ import {
   Heading,
   Input,
   Select,
-  Table,
   TagInput,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { Plus, Trash2, Truck, UserPlus } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -1035,16 +1035,21 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                         }}
                       >
                         <td className="font-mono text-sm whitespace-nowrap">{row.orderNumber}</td>
-                        <td className="hidden text-sm @lg:table-cell">
+                        <td data-label="Placed" className="hidden text-sm @lg:table-cell">
                           {formatOrderDate(row.placedAt)}
                         </td>
-                        <td className="hidden text-sm @2xl:table-cell">{placedBy(row)}</td>
+                        <td data-label="By" className="hidden text-sm @2xl:table-cell">
+                          {placedBy(row)}
+                        </td>
                         <td>
                           <Badge color={state.tone} variant="soft" size="sm">
                             {state.label}
                           </Badge>
                         </td>
-                        <td className="text-right font-mono text-sm tabular-nums">
+                        <td
+                          data-label="Total"
+                          className="text-right font-mono text-sm tabular-nums"
+                        >
                           {formatOrderMoney(row.total, row.currency)}
                         </td>
                       </tr>
@@ -1119,10 +1124,13 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                             {state.label}
                           </Badge>
                         </td>
-                        <td className="text-right font-mono text-sm tabular-nums">
+                        <td
+                          data-label="Total"
+                          className="text-right font-mono text-sm tabular-nums"
+                        >
                           {formatInvoiceMoney(doc.total, doc.currency)}
                         </td>
-                        <td className="text-right font-mono text-sm tabular-nums">
+                        <td data-label="Owed" className="text-right font-mono text-sm tabular-nums">
                           {doc.priceOffer ? '—' : formatInvoiceMoney(doc.balance, doc.currency)}
                         </td>
                       </tr>
@@ -1188,7 +1196,7 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                         {deal.stage?.name ?? meta.label}
                       </Badge>
                     </td>
-                    <td className="text-right font-mono text-sm tabular-nums">
+                    <td data-label="Value" className="text-right font-mono text-sm tabular-nums">
                       {formatDealMoney(deal.value, deal.currency)}
                     </td>
                   </tr>
@@ -1250,7 +1258,9 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
                       {priorityLabel(row.ticket.priority)}
                     </Badge>
                   </td>
-                  <td className="hidden text-sm @lg:table-cell">{row.ticket.stage?.name ?? '—'}</td>
+                  <td data-label="Step" className="hidden text-sm @lg:table-cell">
+                    {row.ticket.stage?.name ?? '—'}
+                  </td>
                 </tr>
               ))}
             </tbody>

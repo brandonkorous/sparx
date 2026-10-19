@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { Alert, Button, type ButtonProps } from '@wizeworks/silicaui-react';
 
 import { useCart } from '@/components/cart-provider';
-import { AccountError, type RefillResult } from '@/lib/customer-client';
+import { type RefillResult, accountFailureWords } from '@/lib/customer-client';
 import { RefillReport } from './refill-report';
 
 export function FillCartButton({
@@ -47,11 +47,7 @@ export function FillCartButton({
     } catch (err) {
       // A refusal the buyer can act on (a role that cannot order, an order that
       // is not theirs) says so; anything else is a failure to try again.
-      setError(
-        err instanceof AccountError && err.status < 500
-          ? err.message
-          : 'Nothing was added to your cart. Please try again.'
-      );
+      setError(accountFailureWords(err, 'Nothing was added to your cart. Please try again.'));
     } finally {
       setBusy(false);
     }

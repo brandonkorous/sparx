@@ -211,7 +211,7 @@ export function coresOwedOn(item: {
 
 /** "1 core", "3 cores". */
 export function plural(count: number, one: string, many: string): string {
-  return `${String(count)} ${count === 1 ? one : many}`;
+  return `${count.toLocaleString('en-US')} ${count === 1 ? one : many}`;
 }
 
 /** A typed whole number of parts; anything else counts as none. */

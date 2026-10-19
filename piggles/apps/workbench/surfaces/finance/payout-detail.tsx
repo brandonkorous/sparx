@@ -172,7 +172,7 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                         <td className="hidden whitespace-nowrap @lg:table-cell">
                           {channelLabel(sale.channel, sale.source)}
                         </td>
-                        <td className="text-right font-medium tabular-nums">
+                        <td className="text-right font-medium tabular-nums" data-label="Amount">
                           {formatMoney(sale.amount, sale.currency)}
                         </td>
                       </tr>

@@ -20,7 +20,7 @@ import { z } from 'zod';
 
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole, requireAnyRole, type StaffRole } from '@wizeworks/api-core/auth';
-import { forbidden } from '@wizeworks/api-core/errors';
+import { notAPartner } from '../../../lib/partners/not-a-partner.js';
 
 import { partnerService, toPartnerContext } from '../../../lib/partners/service.js';
 import { startPayoutOnboarding } from '../../../lib/partners/payouts.js';
@@ -81,7 +81,7 @@ const partnerRoutes: FastifyPluginAsync = (app) => {
     requireAnyRole(request, PARTNER_OPS);
     const ctx = toPartnerContext(request);
     const partner = await partnerService.get(ctx);
-    if (!partner) throw forbidden('This account is not a partner.');
+    if (!partner) throw notAPartner();
     const referrals = await partnerService.listReferrals(ctx);
     return ok({ referralCode: partner.referralCode, referrals });
   });
@@ -93,7 +93,7 @@ const partnerRoutes: FastifyPluginAsync = (app) => {
     requireAnyRole(request, PARTNER_OPS);
     const ctx = toPartnerContext(request);
     const partner = await partnerService.get(ctx);
-    if (!partner) throw forbidden('This account is not a partner.');
+    if (!partner) throw notAPartner();
     const clients = await partnerService.listClients(ctx);
     return ok(clients);
   });
@@ -116,7 +116,7 @@ const partnerRoutes: FastifyPluginAsync = (app) => {
     requireAnyRole(request, PARTNER_OPS);
     const ctx = toPartnerContext(request);
     const partner = await partnerService.get(ctx);
-    if (!partner) throw forbidden('This account is not a partner.');
+    if (!partner) throw notAPartner();
     const body = ConnectBody.parse(request.body);
     const result = await startPayoutOnboarding({
       partnerTenantId: ctx.tenantId,

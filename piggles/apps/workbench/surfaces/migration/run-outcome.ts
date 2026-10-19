@@ -1,13 +1,6 @@
-// WHAT A RUN ACTUALLY DID, IN WORDS.
-//
-// Split from the panes because both of them tell the same story and must not tell
-// it differently: the progress pane while you watch, the history list afterwards.
-//
-// It exists because `imported + updated` was the only number either screen showed,
-// and that one number cannot tell 25 new customers from 25 overwritten ones. Devi
-// re-imported the mailing list she had already imported: nothing arrived, twenty
-// five records were replaced, and both screens said "25 of 25 brought over" — the
-// same sentence a run that added twenty five people would have produced.
+// WHAT A RUN ACTUALLY DID, IN WORDS, shared so the progress pane and the history list tell one story.
+// `imported + updated` alone cannot tell 25 new customers from 25 overwritten: Devi's re-import replaced
+// twenty five records and both screens said "25 of 25 brought over".
 
 /** The two halves of a landed run, summed across every kind of record in it. */
 export interface Landed {
@@ -30,16 +23,21 @@ export function nothingIsNew({ imported, updated }: Landed): boolean {
   return imported === 0 && updated > 0;
 }
 
-/**
- * The breakdown line under a count, or null when there is nothing to break down.
- *
- * A file of all-new people needs no second sentence — the count already says it.
- * Anything else does, and the all-updates case says so in words rather than
- * leaving a person to work it out from two numbers.
- */
-export function landedBreakdown(landed: Landed, dryRun: boolean): string | null {
+/** The breakdown line under a count, or null when there is nothing to break down. All-new needs no
+ *  second sentence; anything else does, and all-updates says so in words rather than two numbers. */
+export function landedBreakdown(
+  landed: Landed,
+  dryRun: boolean,
+  /** Every row is a person (customers). Products are things, not "somebody" (issue 284). */
+  people: boolean
+): string | null {
   if (landed.updated === 0) return null;
   if (landed.imported === 0) {
+    if (!people) {
+      return dryRun
+        ? 'none of them new: every one is already here'
+        : 'none of them new: every one was already here';
+    }
     return dryRun
       ? 'none of them new: every one is somebody you already have'
       : 'none of them new: every one was somebody you already had';
@@ -53,30 +51,61 @@ export interface RunHeadline {
   description: string;
 }
 
-/**
- * The banner at the top of a run.
- *
- * "Nobody in this file is new" is a warning rather than a success on purpose. Nothing
- * failed, but a bulk overwrite of records she already has is not the thing she pressed
- * the button for, and on a practice run it is the moment to stop.
- */
-export function runHeadline(run: { status: string; dryRun: boolean }, landed: Landed): RunHeadline {
-  if (run.status === 'running') {
-    // A practice run must not claim to be moving anything WHILE it runs — that is
-    // the one sentence a nervous person is watching for, and it was not true.
-    return run.dryRun
+function runningHeadline(dryRun: boolean): RunHeadline {
+  // A practice run must not claim to be moving anything WHILE it runs. That is
+  // the one sentence a nervous person is watching for, and it was not true.
+  return dryRun
+    ? {
+        tone: 'info',
+        title: 'Trying it out: nothing is being saved…',
+        description:
+          'We are checking every row against what you already have. Nothing is being written to your business.',
+      }
+    : {
+        tone: 'info',
+        title: 'Bringing your business over…',
+        description: 'You can close this and come back. It keeps going without you.',
+      };
+}
+
+function nothingNewHeadline(count: string, dryRun: boolean, people: boolean): RunHeadline {
+  if (!people) {
+    return dryRun
       ? {
-          tone: 'info',
-          title: 'Trying it out: nothing is being saved…',
-          description:
-            'We are checking every row against what you already have. Nothing is being written to your business.',
+          tone: 'warning',
+          title: 'Nothing in this file is new',
+          description: `All ${count} are already here. Doing this for real replaces them with whatever this file says, including anything you have changed here since the file was made.`,
         }
       : {
-          tone: 'info',
-          title: 'Bringing your business over…',
-          description: 'You can close this and come back. It keeps going without you.',
+          tone: 'warning',
+          title: 'Nothing in this file was new',
+          description: `All ${count} were already here. They now match this file.`,
         };
   }
+  return dryRun
+    ? {
+        tone: 'warning',
+        title: 'Nobody in this file is new',
+        // Not "and address": the import adds an address only to someone who has
+        // none, and keeps the one on file (sparx persona issue 106).
+        description: `All ${count} are people you already have. Doing this for real replaces their name, phone and tags with whatever this file says, including anything you have changed here since the file was made. Addresses they already have are kept. Anyone who has been taken off marketing stays off it.`,
+      }
+    : {
+        tone: 'warning',
+        title: 'Nobody in this file was new',
+        description: `All ${count} were people you already had. Their names, phones and tags now match this file, and the addresses they already had were kept. Anyone who had been taken off marketing stayed off it.`,
+      };
+}
+
+/** The banner at the top of a run. "Nobody in this file is new" is a warning on purpose: nothing failed,
+ *  but a bulk overwrite is not what she pressed the button for, and on a practice run it is the moment to stop. */
+export function runHeadline(
+  run: { status: string; dryRun: boolean },
+  landed: Landed,
+  /** Every row is a person (customers); see `landedBreakdown`. */
+  people: boolean
+): RunHeadline {
+  if (run.status === 'running') return runningHeadline(run.dryRun);
 
   if (run.status === 'failed') {
     return {
@@ -88,20 +117,7 @@ export function runHeadline(run: { status: string; dryRun: boolean }, landed: La
   }
 
   if (nothingIsNew(landed)) {
-    const count = landed.updated.toLocaleString();
-    return run.dryRun
-      ? {
-          tone: 'warning',
-          title: 'Nobody in this file is new',
-          // Not "and address": the import adds an address only to someone who has
-          // none, and keeps the one on file (sparx persona issue 106).
-          description: `All ${count} are people you already have. Doing this for real replaces their name, phone and tags with whatever this file says, including anything you have changed here since the file was made. Addresses they already have are kept. Anyone who has been taken off marketing stays off it.`,
-        }
-      : {
-          tone: 'warning',
-          title: 'Nobody in this file was new',
-          description: `All ${count} were people you already had. Their names, phones and tags now match this file, and the addresses they already had were kept. Anyone who had been taken off marketing stayed off it.`,
-        };
+    return nothingNewHeadline(landed.updated.toLocaleString(), run.dryRun, people);
   }
 
   return run.dryRun

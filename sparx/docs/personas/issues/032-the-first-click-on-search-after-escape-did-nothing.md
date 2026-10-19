@@ -1,13 +1,13 @@
 # 032 — The first click on "Search everything" after Escape did nothing
 
-**Status:** open
+**Status:** fixed
 **Severity:** minor
 **Found by:** P01 · Gillett Diesel Service · act 2
 **Surface:** workbench › top bar › Search everything
 **Filed:** 2026-10-01
-**Fixed:** 2026-10-13 (silicaui, not yet released)
-**Confirmed by:** —
-**Blocked on:** silicaui PR #112 merged and released, then the `@wizeworks/silicaui` catalog version raised in `pnpm-workspace.yaml` and installed
+**Fixed:** 2026-10-13 (silicaui 0.59.2, in the catalog at ^0.59.3)
+**Confirmed by:** sparx as Doty, 2026-10-14
+**Blocked on:** —
 
 ## What happened
 
@@ -81,8 +81,10 @@ dialog and drawer in both consoles.
 
 ## Confirmed by
 
-Not yet with the released package. After the release and the catalog bump: Escape the
-search, click the box at once, and type.
+sparx as Doty, silicaui 0.59.3 installed: "Search everything" clicked, Escape, the box
+clicked again at once, and "Monday" typed in the same breath. The box opened and held
+every letter. The page's style sheet carries the `[data-ending-style]`
+`pointer-events: none` rule.
 
 ## Next (superseded by the cause above)
 

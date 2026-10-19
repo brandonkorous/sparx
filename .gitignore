@@ -127,3 +127,6 @@ videos/
 
 # WizeLens local trace store (development only; each traced app keeps .wizelens/traces.db)
 .wizelens/
+
+# A tool run with an unexpanded Windows variable writes its cache here
+/%SystemDrive%/

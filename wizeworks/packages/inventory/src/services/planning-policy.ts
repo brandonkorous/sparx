@@ -74,7 +74,7 @@ export async function loadPlanningPolicy(
       updatedAt: null,
     };
   }
-  return {
+  const settings = {
     serviceLevel: row.serviceLevel as ServiceLevel,
     holdingCostRatePct: Number(row.holdingCostRatePct),
     abcAThresholdPct: Number(row.abcAThresholdPct),
@@ -85,8 +85,16 @@ export async function loadPlanningPolicy(
     deadStockDays: row.deadStockDays,
     autoApplyReorderPoints: row.autoApplyReorderPoints,
     minSeasonalityHistoryDays: row.minSeasonalityHistoryDays,
+  };
+  return {
+    ...settings,
     lastSweepAt: row.lastSweepAt?.toISOString() ?? null,
-    configured: true,
+    // The row also exists just to stamp a sweep (`markSweepCompleted`), so its
+    // existence says nothing about a choice. "Configured" means some value
+    // differs from the standard one (issue 279).
+    configured: (Object.keys(DEFAULT_PLANNING_POLICY) as (keyof typeof settings)[]).some(
+      (key) => settings[key] !== DEFAULT_PLANNING_POLICY[key]
+    ),
     updatedAt: row.updatedAt.toISOString(),
   };
 }

@@ -13,10 +13,12 @@
 // @container so the same table reads in a 320px docked pane or a full window.
 
 import { useState } from 'react';
-import { Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Blocks, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -56,7 +58,7 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [take, setTake] = useState<number>(50);
   const skip = (page - 1) * pageSize;
 
-  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useBundles({
+  const { data, isLoading, isError, error, isFetching, dataUpdatedAt, refetch } = useBundles({
     q: search,
     sortBy: sort.key,
     order: sort.dir,
@@ -165,9 +167,13 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             title="Could not load your bundles"
             description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

@@ -47,6 +47,7 @@ import { api } from '../../lib/api/client';
 import { formatCentsAmount } from '../../lib/money-format';
 import { oneLineAddress } from '../../lib/address-format';
 import { runCopy } from './hours-copy';
+import { zoneWords } from '../../lib/wall-clock';
 
 /* ── Shared ─────────────────────────────────────────────────────────────── */
 
@@ -604,22 +605,6 @@ export function formatAddress(address: LocationAddress): string {
   return oneLineAddress(address);
 }
 
-/** A short, familiar set of zones — the same list the resource form offers, so a
- *  place and the people working it are described the same way. */
-export const TIMEZONE_OPTIONS = [
-  'UTC',
-  'America/New_York',
-  'America/Chicago',
-  'America/Denver',
-  'America/Los_Angeles',
-  'America/Toronto',
-  'Europe/London',
-  'Europe/Paris',
-  'Europe/Berlin',
-  'Australia/Sydney',
-  'Pacific/Auckland',
-] as const;
-
 export const RESOURCE_KINDS: { value: ResourceKind; label: string; hint: string }[] = [
   {
     value: 'staff',
@@ -1123,5 +1108,5 @@ export function hoursMissingNotice(resource: {
 export function followBusinessLabel(zone: string | null | undefined): string {
   if (zone === undefined) return 'Same as your business';
   if (zone === null) return 'Same as your business (not set yet)';
-  return `Same as your business (${zone})`;
+  return `Same as your business (${zoneWords(zone)})`;
 }

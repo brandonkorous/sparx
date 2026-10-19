@@ -84,7 +84,7 @@ function PickerToolbar({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div className="max-w-xs min-w-0 flex-1">
+      <div className="max-w-xs min-w-0 flex-1 basis-48">
         <SearchInput
           size="sm"
           aria-label="Search your pictures"

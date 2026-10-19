@@ -27,9 +27,9 @@ import {
   FilterItem,
   Heading,
   NativeSelect,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { AlertTriangle, TrendingUp } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -116,17 +116,17 @@ function JobRow({
           {[job.customerName, formatDate(job.occurredAt)].filter(Boolean).join(' · ')}
         </div>
       </td>
-      <td className="hidden text-right tabular-nums @lg:table-cell">
+      <td className="hidden text-right tabular-nums @lg:table-cell" data-label="Made">
         {formatCents(job.revenueCents, job.currency)}
       </td>
-      <td className="hidden text-right tabular-nums @2xl:table-cell">
+      <td className="hidden text-right tabular-nums @2xl:table-cell" data-label="Cost">
         {unmeasured ? (
           <span className="text-warning">Not recorded</span>
         ) : (
           formatCents(costCents, job.currency)
         )}
       </td>
-      <td className="text-right">
+      <td className="text-right" data-label="Kept">
         {unmeasured ? (
           <span className="text-warning">Not known</span>
         ) : (
@@ -135,7 +135,7 @@ function JobRow({
           </span>
         )}
       </td>
-      <td className="text-right">
+      <td className="text-right" data-label="Margin">
         {unmeasured ? (
           <Badge color="warning" variant="soft" size="sm">
             Not measured

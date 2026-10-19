@@ -40,10 +40,16 @@ function SequenceTableRow(props: {
           ) : null}
         </div>
       </td>
-      <td className="hidden text-right tabular-nums @md:table-cell">{sequence.steps.length}</td>
-      <td className="hidden text-right tabular-nums @lg:table-cell">{sequence.counts.active}</td>
-      <td className="hidden text-right tabular-nums @xl:table-cell">{sequence.counts.total}</td>
-      <td className="hidden max-w-40 truncate text-sm @2xl:table-cell">
+      <td className="hidden text-right tabular-nums @md:table-cell" data-label="Emails">
+        {sequence.steps.length}
+      </td>
+      <td className="hidden text-right tabular-nums @lg:table-cell" data-label="In progress">
+        {sequence.counts.active}
+      </td>
+      <td className="hidden text-right tabular-nums @xl:table-cell" data-label="Enrolled">
+        {sequence.counts.total}
+      </td>
+      <td className="hidden max-w-40 truncate text-sm @2xl:table-cell" data-label="For">
         {props.siteName(sequence.propertyId)}
       </td>
       <td>

@@ -26,11 +26,11 @@ import {
   Input,
   SearchInput,
   Select,
-  Table,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Check, UserPlus, Users } from 'lucide-react';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
@@ -269,19 +269,22 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
                         ) : null}
                       </div>
                     </td>
-                    <td className="hidden text-sm tabular-nums @md:table-cell">
+                    <td
+                      className="hidden text-sm tabular-nums @md:table-cell"
+                      data-label="Progress"
+                    >
                       {totalSteps > 0
                         ? `${String(Math.min(row.currentStep, totalSteps))} of ${String(totalSteps)}`
                         : String(row.currentStep)}
                     </td>
-                    <td className="hidden text-sm @xl:table-cell">
+                    <td className="hidden text-sm @xl:table-cell" data-label="Enrolled">
                       <Timestamp
                         value={row.enrolledAt}
                         format="relative"
                         title={onClock(row.enrolledAt, clock)}
                       />
                     </td>
-                    <td className="hidden text-sm @lg:table-cell">
+                    <td className="hidden text-sm @lg:table-cell" data-label="Next email">
                       {row.status === 'active' ? (
                         <Timestamp
                           value={row.nextRunAt}

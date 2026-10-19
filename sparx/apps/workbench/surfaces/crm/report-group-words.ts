@@ -89,10 +89,19 @@ export function groupText(value: unknown, context: Parameters<typeof groupName>[
   return groupName(value, context) ?? formatCell(value);
 }
 
-/** Why an answer is empty. "Loosen a filter" only when something narrows it: a
- *  report with no filter over all time is empty because there is nothing to
- *  count, and said otherwise sent the owner hunting for a filter (issue 255). */
-export function emptyAnswer(context: { narrowed: boolean; labelPlural: string }): string {
+/** Why an answer is empty. "Loosen a filter" only when something narrows it AND
+ *  there is something to find: a business with no deals is told so, even on a
+ *  ready-made report that carries a filter of its own ("Where your deals are"
+ *  keeps to open deals since issue 250), because loosening it would find nothing
+ *  either (issue 255). `holdsAny` is unknown until asked; the narrowed sentence
+ *  stands until then. */
+export function emptyAnswer(context: {
+  narrowed: boolean;
+  holdsAny?: boolean;
+  labelPlural: string;
+}): string {
+  const none = `There are no ${context.labelPlural.toLowerCase()} to count yet.`;
+  if (context.holdsAny === false) return none;
   if (context.narrowed) return 'Nothing matches yet. Loosen a filter, or widen the period.';
-  return `There are no ${context.labelPlural.toLowerCase()} to count yet.`;
+  return none;
 }

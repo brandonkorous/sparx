@@ -22,6 +22,7 @@ import {
   type CustomerDocument,
 } from './customers-data';
 import { useMediaAssets, useUploadMedia, type MediaAsset } from '../commerce/products-data';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 const ACCEPT = 'application/pdf,image/*';
 
@@ -96,7 +97,7 @@ function DocumentRow({
 }
 
 export function CustomerDocumentsTab({ customerId }: { customerId: string }) {
-  const { data: docs, isPending, isError } = useCustomerDocuments(customerId);
+  const { data: docs, isPending, isError, error, refetch } = useCustomerDocuments(customerId);
   const upload = useUploadMedia();
   const add = useAddDocument(customerId);
   const remove = useDeleteDocument(customerId);
@@ -192,10 +193,14 @@ export function CustomerDocumentsTab({ customerId }: { customerId: string }) {
 
       <Card className="overflow-hidden">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<FileText className="size-6" aria-hidden />}
             title="Could not load documents"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">

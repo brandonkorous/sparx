@@ -623,6 +623,7 @@ export interface EmailSendPayload {
     | 'login-otp'
     | 'form-submission-notification'
     | 'form-submission-confirmation'
+    | 'customer-email-confirm'
     | 'tool-result'
     | 'billing-receipt'
     | 'billing-payment-failed'

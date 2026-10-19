@@ -24,7 +24,7 @@ export {
 } from './social-providers';
 // Publishes an `email.send` event from auth-side contexts (better-auth callbacks +
 // the workbench accept-invite server action). See email-events.ts.
-export { publishAuthEmail, type PublishAuthEmailInput } from './email-events';
+export { authEmailsCanLeave, publishAuthEmail, type PublishAuthEmailInput } from './email-events';
 export {
   signUpMerchant,
   SignUpError,
@@ -42,7 +42,7 @@ export {
   type ProvisionInvitedOwnerInput,
   type ProvisionInvitedOwnerResult,
 } from './provision-invited-owner';
-export { randomFriendlySlug } from './friendly-slug';
+export { isFriendlySlug, randomFriendlySlug } from './friendly-slug';
 export { getSession, requireSession, type SparxSession } from './session';
 export { ORG_ROLES, ASSIGNABLE_ORG_ROLES, type OrgRole, type AssignableOrgRole } from './org-roles';
 export {

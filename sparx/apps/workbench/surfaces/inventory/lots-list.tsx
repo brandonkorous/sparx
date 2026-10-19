@@ -42,11 +42,11 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Layers, ScanBarcode } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -457,11 +457,16 @@ function LotRows({
                   ) : null}
                 </span>
               </td>
-              <td className="hidden max-w-48 truncate @lg:table-cell">{lotLocationLabel(lot)}</td>
-              <td className="text-right font-medium whitespace-nowrap tabular-nums">
+              <td data-label="Location" className="hidden max-w-48 truncate @lg:table-cell">
+                {lotLocationLabel(lot)}
+              </td>
+              <td
+                data-label="Remaining"
+                className="text-right font-medium whitespace-nowrap tabular-nums"
+              >
                 {lot.quantity}
               </td>
-              <td className="hidden whitespace-nowrap @xl:table-cell">
+              <td data-label="Expiry" className="hidden whitespace-nowrap @xl:table-cell">
                 {expiry ? (
                   <Text className="text-sm">{expiry.long}</Text>
                 ) : (
@@ -546,8 +551,13 @@ function SerialRows({
                   ) : null}
                 </span>
               </td>
-              <td className="hidden max-w-48 truncate @lg:table-cell">{location}</td>
-              <td className="hidden max-w-40 truncate font-mono text-sm @xl:table-cell">
+              <td data-label="Location" className="hidden max-w-48 truncate @lg:table-cell">
+                {location}
+              </td>
+              <td
+                data-label="Batch"
+                className="hidden max-w-40 truncate font-mono text-sm @xl:table-cell"
+              >
                 {serial.lotNumber ?? 'No batch'}
               </td>
               <td>

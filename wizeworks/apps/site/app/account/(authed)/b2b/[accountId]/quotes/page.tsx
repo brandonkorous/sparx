@@ -24,7 +24,6 @@ import { useParams } from 'next/navigation';
 
 import { useCustomer } from '@/components/customer-provider';
 import {
-  AccountError,
   acceptB2bQuote,
   declineB2bQuote,
   getB2bQuotes,
@@ -33,6 +32,7 @@ import {
   ORDERING_ROLES,
   type B2bQuoteEntry,
   type QuoteRequest,
+  accountFailureWords,
 } from '@/lib/customer-client';
 import { neededByWords } from '@/lib/buying-again-words';
 import { formatMoney } from '@/lib/format';
@@ -170,10 +170,7 @@ export default function B2bQuotesPage() {
       // trying again changes none of those.
       setActionError({
         id: quoteId,
-        message:
-          err instanceof AccountError && err.status < 500
-            ? err.message
-            : 'The quote was not accepted. Please try again.',
+        message: accountFailureWords(err, 'The quote was not accepted. Please try again.'),
       });
     } finally {
       setActing(null);

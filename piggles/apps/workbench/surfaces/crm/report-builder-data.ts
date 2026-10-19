@@ -156,3 +156,27 @@ export function useArchiveReport() {
     onSuccess: invalidate,
   });
 }
+
+/** Whether the business holds any record of this kind at all, over all time and
+ *  with no filter. Asked only when a narrowed answer comes back empty, so the
+ *  empty sentence can tell "nothing matches" from "there is nothing yet"
+ *  (sparx persona issue 255). */
+export function useHoldsAny(objectKey: string, enabled: boolean) {
+  return useQuery({
+    queryKey: [...reportBuilderKeys.all, 'holds-any', objectKey] as const,
+    queryFn: () =>
+      api
+        .post<ReportResult>('/v1/crm/reports/preview', {
+          objectKey,
+          filters: { logic: 'AND', conditions: [] },
+          groupBy: null,
+          measures: [{ fn: 'count' }],
+          dateRange: { kind: 'all' },
+          visualization: 'number',
+          name: 'Everything of this kind',
+        })
+        .then((result) => result.rows.some((row) => Object.values(row).some((v) => Number(v) > 0))),
+    enabled: enabled && objectKey !== '',
+    retry: false,
+  });
+}

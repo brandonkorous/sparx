@@ -29,9 +29,9 @@ import {
   Badge,
   Card,
   EmptyState,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CalendarClock, PackageSearch } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -42,6 +42,7 @@ import { formatDay, formatMoment } from './purchase-orders-data';
 import { latenessTone, useLatePurchaseOrders } from './supplier-performance-data';
 import { useBusinessZone } from '../../lib/business-timezone';
 import { daysPastDue } from '../../lib/console/days';
+import { useLateOrderListened } from './late-order-listeners';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -50,6 +51,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
+  const heard = useLateOrderListened();
   const report = useLatePurchaseOrders();
   // HOW LATE, COUNTED IN CALENDAR DAYS, IN THE SHOP'S OWN ZONE.
   //
@@ -153,18 +155,20 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
                         notified, so the phrase must not imply they were. Both
                         halves are shown, or the meaning only ever lives in the
                         absence of the words. */}
-                    {row.alertedAt === null
-                      ? ' · not passed to your other software yet'
-                      : ' · passed to your other software'}
+                    {heard
+                      ? row.alertedAt === null
+                        ? ' · not passed to your other software yet'
+                        : ' · passed to your other software'
+                      : null}
                   </span>
                 </span>
               </td>
-              <td className="whitespace-nowrap">
+              <td data-label="Overdue by" className="whitespace-nowrap">
                 <Badge color={latenessTone(lateDays(row))} variant="soft" size="sm">
                   {plural(lateDays(row), 'day', 'days')}
                 </Badge>
               </td>
-              <td className="hidden whitespace-nowrap @lg:table-cell">
+              <td data-label="Was due" className="hidden whitespace-nowrap @lg:table-cell">
                 {/* The date itself, not "2 weeks ago". "Overdue by" beside it
                     already says how long; this is the one a buyer quotes down
                     the phone, and it was the only column that did not carry
@@ -181,10 +185,15 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
                   ? formatDay(row.dueAt)
                   : formatMoment(row.dueAt)}
               </td>
-              <td className="hidden text-right tabular-nums @xl:table-cell">
+              <td
+                data-label="Still to come"
+                className="hidden text-right tabular-nums @xl:table-cell"
+              >
                 {row.unitsOutstanding}
               </td>
-              <td className="text-right tabular-nums">{formatCents(row.valueOutstandingCents)}</td>
+              <td data-label="Value" className="text-right tabular-nums">
+                {formatCents(row.valueOutstandingCents)}
+              </td>
             </tr>
           ))}
         </tbody>

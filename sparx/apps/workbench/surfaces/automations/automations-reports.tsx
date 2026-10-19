@@ -117,7 +117,7 @@ function OverviewRow({
       onClick={onOpen}
     >
       <div className="flex min-w-0 flex-wrap items-center gap-2">
-        <span className="min-w-0 flex-1 truncate font-medium">{row.name}</span>
+        <span className="min-w-0 flex-1 basis-48 truncate font-medium">{row.name}</span>
         <Badge
           color={health ? health.tone : state.tone}
           variant="soft"
@@ -128,7 +128,7 @@ function OverviewRow({
         </Badge>
       </div>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
-        <Text as="span" className="min-w-0 flex-1 text-sm">
+        <Text as="span" className="min-w-0 flex-1 basis-48 text-sm">
           {/* The report carries the trigger TYPE and no config, so
               `summarizeTrigger` could not parse a schedule out of the empty
               object and printed `schedule.daily` at her. */}

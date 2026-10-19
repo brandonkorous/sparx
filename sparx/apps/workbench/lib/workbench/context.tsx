@@ -53,6 +53,12 @@ export function useWorkbench(): WorkbenchValue {
   return value;
 }
 
+/** The workbench, or null outside one: for shared parts that also render in
+ *  places with no dock, such as a torn-off window or a test. */
+export function useOptionalWorkbench(): WorkbenchValue | null {
+  return useContext(WorkbenchCtx);
+}
+
 /** Live view of every open pane in this window — drives the pane switcher and overview. */
 export function useOpenPanes(): PaneDescriptor[] {
   const { controller } = useWorkbench();

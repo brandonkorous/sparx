@@ -9,15 +9,8 @@
 // a person chasing money needs at a glance.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  Filter,
-  FilterItem,
-  SearchInput,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, Filter, FilterItem, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Receipt, X } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -237,10 +230,13 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="hidden max-w-48 truncate @lg:table-cell">
                       {invoice.account?.companyName ?? '—'}
                     </td>
-                    <td className="hidden text-sm @2xl:table-cell">
+                    <td className="hidden text-sm @2xl:table-cell" data-label="Due">
                       {formatDueDay(invoice.dueAt)}
                     </td>
-                    <td className="hidden text-right font-medium tabular-nums @xl:table-cell">
+                    <td
+                      className="hidden text-right font-medium tabular-nums @xl:table-cell"
+                      data-label="Owed"
+                    >
                       {invoice.balanceCents > 0
                         ? formatCents(invoice.balanceCents)
                         : formatCents(0)}

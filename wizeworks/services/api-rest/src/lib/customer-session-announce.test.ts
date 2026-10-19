@@ -40,7 +40,14 @@ beforeEach(() => {
 describe('ensureAnnouncedMembership', () => {
   it('announces a brand-new person as a new customer', async () => {
     ensureMembership.mockResolvedValue({ customerId: MARCUS, created: true, adopted: false });
-    const result = await ensureAnnouncedMembership(CTX, SITE, USER, EMAIL, { firstName: 'Marcus' });
+    const result = await ensureAnnouncedMembership(
+      CTX,
+      SITE,
+      USER,
+      EMAIL,
+      { firstName: 'Marcus' },
+      true
+    );
     expect(result.customerId).toBe(MARCUS);
     expect(announceCustomer).toHaveBeenCalledWith(CTX.tenantId, 'crm.customer.created', {
       id: MARCUS,
@@ -51,7 +58,7 @@ describe('ensureAnnouncedMembership', () => {
 
   it('announces a guest who now has a login as changed', async () => {
     ensureMembership.mockResolvedValue({ customerId: MARCUS, created: false, adopted: true });
-    await ensureAnnouncedMembership(CTX, SITE, USER, EMAIL, {});
+    await ensureAnnouncedMembership(CTX, SITE, USER, EMAIL, {}, true);
     expect(announceCustomer).toHaveBeenCalledWith(CTX.tenantId, 'crm.customer.updated', {
       id: MARCUS,
     });
@@ -61,7 +68,24 @@ describe('ensureAnnouncedMembership', () => {
   // re-index the same person on every click.
   it('says nothing about somebody who was already signed up here', async () => {
     ensureMembership.mockResolvedValue({ customerId: MARCUS, created: false, adopted: false });
-    await ensureAnnouncedMembership(CTX, SITE, USER, EMAIL, {});
+    await ensureAnnouncedMembership(CTX, SITE, USER, EMAIL, {}, true);
+    expect(announceCustomer).not.toHaveBeenCalled();
+  });
+});
+
+// Sparx persona issue 329: a login that has not confirmed the email a guest record
+// sits under is handed nothing, so there is nobody new or changed to announce.
+describe('ensureAnnouncedMembership, awaiting a confirmed email', () => {
+  it('passes the confirmation state on and announces nothing', async () => {
+    ensureMembership.mockResolvedValue({
+      customerId: null,
+      created: false,
+      adopted: false,
+      awaitingConfirmation: true,
+    });
+    const result = await ensureAnnouncedMembership(CTX, SITE, USER, EMAIL, {}, false);
+    expect(ensureMembership).toHaveBeenCalledWith(CTX, SITE, USER, EMAIL, {}, false);
+    expect(result.awaitingConfirmation).toBe(true);
     expect(announceCustomer).not.toHaveBeenCalled();
   });
 });

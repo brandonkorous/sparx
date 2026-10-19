@@ -6,7 +6,7 @@
 **Surface:** workbench › first-run setup › "Make it yours"
 **Filed:** 2026-10-01
 **Fixed:** 2026-10-01
-**Confirmed by:** —
+**Confirmed by:** sparx as Mike Vanderberg (his own workspace, not yet launched), 2026-10-17
 **Blocked on:** —
 
 ## What happened
@@ -38,8 +38,7 @@ against the five new ones shows only import lines and `export` keywords changed.
 
 ## Confirmed by
 
-Not yet: the sentence names "Domains, under Your business". To confirm when Doty
-looks for Domains after launch (act 2) that this is where he finds it.
+On screen, sparx as Mike Vanderberg in his own workspace (never launched), 2026-10-17. Setup › step by step › the domain step, "Happy on the free address?": "Your site replaces the simple starter page at keen-river-1426.sparx.zone when you launch. Just press Continue. Already own a domain, or want one later? Buy or connect it anytime from Domains, under Your business." Nothing says the site is live, and a domain he owns is offered. Reaching the step found [294].
 
 Checks: sparx and Piggles workbench `tsc --noEmit` exit 0; eslint 0; prettier
 clean; `check:console-parity` green.

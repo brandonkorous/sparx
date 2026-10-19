@@ -246,7 +246,7 @@ function Certificates(props: TaxExemptionsSectionProps) {
             {coverLine && account ? (
               <div className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border p-3">
                 <Building2 className="size-4 shrink-0" aria-hidden />
-                <Text className="min-w-0 flex-1">{coverLine}</Text>
+                <Text className="min-w-0 flex-1 basis-48">{coverLine}</Text>
                 {onOpenAccount ? (
                   <Button
                     size="sm"
@@ -282,7 +282,7 @@ function CertificateRow({
   const badge = standingBadge(exemptionStanding(certificate));
   return (
     <li className="border-base-300 flex flex-wrap items-start gap-x-3 gap-y-2 border-b pb-3 last:border-b-0 last:pb-0">
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-0.5">
         <span className="font-semibold">
           {reasonLabel(certificate.reason)} · {coverageLabel(certificate.jurisdiction)}
         </span>

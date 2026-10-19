@@ -892,7 +892,7 @@ function PriceListEditor({
                       className="border-base-300 flex flex-col gap-2 border-b pb-3 last:border-b-0 last:pb-0"
                     >
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <span className="min-w-0 flex-1">
+                        <span className="min-w-0 flex-1 basis-48">
                           <span className="block font-medium">{entry.productTitle}</span>
                           {entry.variantName && entry.variantName !== entry.productTitle ? (
                             <Text as="span" className="block text-sm">

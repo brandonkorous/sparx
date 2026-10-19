@@ -10,6 +10,7 @@ import { z } from 'zod';
 
 import { getCustomerAuth } from './server';
 import { CustomerAuthError } from './errors';
+import { customerAuthEmailsCanLeave } from './email';
 
 export interface CustomerAuthContext {
   tenantId: string;
@@ -32,12 +33,16 @@ export interface AuthOutcome {
   /** True when the USER already existed before this call. Combined with a freshly
    *  created membership it yields the docs/58 D6 `recognized` signal. */
   userPreexisted: boolean;
+  /** Whether this login has shown it owns the inbox (sparx persona issue 329). */
+  emailVerified: boolean;
 }
 
 export interface SessionUser {
   userId: string;
   email: string;
   name: string;
+  /** Whether this login has shown it owns the inbox (sparx persona issue 329). */
+  emailVerified: boolean;
 }
 
 // ─── input validation (normalises email before Better Auth sees it) ─────────
@@ -92,7 +97,7 @@ function getSetCookies(res: Response): string[] {
 }
 
 interface AuthUserBody {
-  user?: { id?: string; email?: string; name?: string | null };
+  user?: { id?: string; email?: string; name?: string | null; emailVerified?: boolean | null };
 }
 interface AuthErrorBody {
   code?: string;
@@ -122,6 +127,7 @@ function outcomeFromBody(
     name: user.name ?? user.email,
     setCookies: getSetCookies(res),
     userPreexisted,
+    emailVerified: user.emailVerified === true,
   };
 }
 
@@ -227,7 +233,12 @@ export function getCustomerSession(
     // the scoped query (the cookieCache-leak class). Fail-closed on mismatch/absent.
     const sessionTenantId = (res.session as { tenantId?: unknown }).tenantId;
     if (sessionTenantId !== ctx.tenantId) return null;
-    return { userId: user.id, email: user.email, name: user.name ?? user.email };
+    return {
+      userId: user.id,
+      email: user.email,
+      name: user.name ?? user.email,
+      emailVerified: user.emailVerified === true,
+    };
   });
 }
 
@@ -244,6 +255,42 @@ export function signOutCustomer(
     headers.set('cookie', cookieHeader);
     const res = await auth.api.signOut({ headers, asResponse: true });
     return getSetCookies(res);
+  });
+}
+
+// ─── confirming the address (sparx persona issue 329) ─────────────────────────
+
+const ConfirmInput = z.object({ token: z.string().min(1).max(2048) });
+
+/** Email the login a "confirm it's you" link. Better Auth sends only for a login
+ *  that exists and is not yet confirmed, and answers the same either way. */
+export function sendCustomerEmailConfirmation(
+  ctx: CustomerAuthContext,
+  email: string
+): Promise<void> {
+  const address = parse(emailSchema, email);
+  // Better Auth would swallow a send that cannot leave and answer success.
+  if (!customerAuthEmailsCanLeave()) {
+    return Promise.reject(
+      new CustomerAuthError('EMAIL_UNAVAILABLE', 'Email cannot be sent right now.')
+    );
+  }
+  return tenantStore.run(ctx.tenantId, async () => {
+    const auth = getCustomerAuth();
+    await auth.api.sendVerificationEmail({ body: { email: address } });
+  });
+}
+
+/** Consume a confirm link. False on an invalid, expired or another tenant's token. */
+export function confirmCustomerEmail(
+  ctx: CustomerAuthContext,
+  rawInput: unknown
+): Promise<boolean> {
+  const input = parse(ConfirmInput, rawInput);
+  return tenantStore.run(ctx.tenantId, async () => {
+    const auth = getCustomerAuth();
+    const res = await auth.api.verifyEmail({ query: { token: input.token }, asResponse: true });
+    return res.ok;
   });
 }
 

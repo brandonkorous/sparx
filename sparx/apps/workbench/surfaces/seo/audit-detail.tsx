@@ -112,7 +112,7 @@ function ScoreCard({ card }: { card: Scorecard }) {
         </span>
         <Text className="text-sm">out of 100</Text>
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-1">
         <Badge color={tone} variant="soft" size="sm" className="self-start">
           {gradeLabel(card.grade)}
         </Badge>
@@ -157,7 +157,7 @@ function CheckRow({ check }: { check: AuditCheck }) {
         <Badge color={checkTone(check.status)} variant="soft" size="sm">
           {checkStatusLabel(check.status)}
         </Badge>
-        <Text className="min-w-0 flex-1 font-medium">{check.label}</Text>
+        <Text className="min-w-0 flex-1 basis-48 font-medium">{check.label}</Text>
         {check.value ? <Text className="shrink-0 font-mono text-sm">{check.value}</Text> : null}
       </div>
       {check.tip ? <Text className="text-sm">{check.tip}</Text> : null}

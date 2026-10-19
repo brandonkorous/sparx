@@ -52,6 +52,7 @@ import { useOnboarding } from '../lib/onboarding/api';
 import { setStorageOwner } from '../lib/workbench/storage-owner';
 import { isOnboardingFinished } from '../lib/onboarding/entry';
 import { OnboardingGate } from '../surfaces/onboarding/onboarding-gate';
+import { useShopClock } from '../lib/business-timezone';
 // Registers every surface. Must be imported before the dock mounts, since a
 // restored layout resolves surface keys synchronously while deserializing.
 import '../lib/surfaces/catalog';
@@ -83,6 +84,9 @@ export function WorkbenchShell({
 }) {
   // First, before anything below reads browser storage.
   setStorageOwner(userId);
+  // Every "when did this happen" stamp reads the shop's clock, not this
+  // computer's (sparx persona issue 333).
+  const shopClockKnown = useShopClock();
 
   // Minted once per window. A popout gets its own id from the popout bootstrap.
   const windowIdRef = useRef<string | null>(null);
@@ -267,7 +271,9 @@ export function WorkbenchShell({
   // since finished; the gate only shows on a state we actually read.
   // A server blip is retried until it clears (lib/onboarding/reads.ts), so the
   // hold says so once the first try has failed rather than sitting blank.
-  if (onboarding === undefined && !onboardingError) {
+  // Held for the shop's clock too, so no pane draws a time on this computer's
+  // clock before the business's zone is in (sparx persona issue 333).
+  if ((onboarding === undefined && !onboardingError) || !shopClockKnown) {
     return (
       <div
         className="bg-base-300 flex h-dvh w-full items-center justify-center gap-3 px-4"

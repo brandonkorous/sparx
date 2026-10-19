@@ -32,11 +32,12 @@ import {
   Filter,
   FilterItem,
   SearchInput,
-  Table,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, GitBranch, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { stageTone, type DocumentWorkflowDetail } from './types';
@@ -218,24 +219,17 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<GitBranch className="size-6" aria-hidden />}
             title="Could not load your workflows"
             description={workflowErrorMessage(
               error,
               'Something went wrong reaching the server. Your workflows are unaffected and your documents keep working.'
             )}
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -303,7 +297,8 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
                           </Badge>
                         ) : null}
                       </span>
-                      <span className="font-mono text-sm">{workflow.slug}</span>
+                      {/* No code name here: "net-terms-ar" means nothing to the owner. It stays in
+                          the editor, where it is set (sparx persona issue 299). */}
                       {/* The chain, where the Stages column cannot fit. This
                           screen is called "what happens when", and on a narrow
                           pane the column that answers that is the first one to
@@ -337,7 +332,7 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </span>
                     )}
                   </td>
-                  <td className="hidden text-right tabular-nums @2xl:table-cell">
+                  <td className="hidden text-right tabular-nums @2xl:table-cell" data-label="Steps">
                     {workflow.stages.length}
                   </td>
                   {state === 'active' ? null : (

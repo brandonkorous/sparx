@@ -6,7 +6,7 @@
 **Surface:** Customers › Build a report › one report, sparx console and Piggles
 **Filed:** 2026-10-13
 **Fixed:** 2026-10-13
-**Confirmed by:** Piggles as Thistle & Rye (sparx: tests only), 2026-10-13
+**Confirmed by:** Piggles as Thistle & Rye, 2026-10-13; sparx as Ines Varga (Quiet Bench Repair), 2026-10-17, after a second fix
 **Blocked on:** —
 
 ## What happened
@@ -56,8 +56,8 @@ Tests: `report-group-words.test.ts` (both sentences) and `report-builder-result.
 
 - Piggles, Marisol (Thistle & Rye has no deals): Customers › Build a report › "Where your
   deals are" says "There are no deals to count yet."
-- sparx: not seen on screen. Every sparx business I can sign in as has deals. The code is
-  the same and its test is green.
+
+sparx, 2026-10-17, as Ines Varga in Quiet Bench Repair (no deals): "Where your deals are" first still read "Nothing matches yet. Loosen a filter, or widen the period." The report had gained a filter of its own since this fix ([250]: "Closed is empty", so only open deals), and the rule looked only at whether a filter was set. Fixed in both consoles: when a narrowed answer is empty, the builder asks once whether any record of that kind exists at all (`useHoldsAny`, a count over all time with no filter), and `emptyAnswer` says "There are no deals to count yet." when none does. Test: `report-group-words.test.ts` +1 per console, red without the new rule. After: the same report reads "There are no deals to count yet." Not checked: Piggles on screen.
 
 ## Rating effect
 

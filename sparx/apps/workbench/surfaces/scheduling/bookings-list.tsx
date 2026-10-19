@@ -11,18 +11,12 @@
 
 import { CANVAS_CORNER_CLEARANCE } from '../../components/canvas-corner';
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  NativeSelect,
-  SearchInput,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, NativeSelect, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CalendarClock, Plus } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import {
@@ -191,10 +185,14 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<CalendarClock className="size-6" aria-hidden />}
             title="Could not load your bookings"
             description="Something went wrong reaching the server. It may be a temporary problem. Try refreshing in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-base" role="status">

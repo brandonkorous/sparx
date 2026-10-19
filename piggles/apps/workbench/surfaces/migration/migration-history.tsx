@@ -72,7 +72,8 @@ function RunRowCount({ run }: { run: RunSummary }) {
   // five read the same; see run-outcome.
   const breakdown = landedBreakdown(
     { imported: run.importedCount, updated: run.updatedCount },
-    run.dryRun
+    run.dryRun,
+    run.entities.every((entity) => entity === 'customers')
   );
   return (
     <div className="flex flex-col items-end gap-0.5">

@@ -120,11 +120,13 @@ export function ReturnLinesCard({ data }: DataProps) {
                   </span>
                 </span>
               </td>
-              <td className="text-right tabular-nums">{line.quantity}</td>
-              <td className="text-right tabular-nums">
+              <td className="text-right tabular-nums" data-label="Quantity">
+                {line.quantity}
+              </td>
+              <td className="text-right tabular-nums" data-label="Paid each">
                 {formatCents(line.unitCostCents, data.currency)}
               </td>
-              <td className="text-right tabular-nums">
+              <td className="text-right tabular-nums" data-label="Worth">
                 {formatCents(line.lineTotalCents, data.currency)}
               </td>
             </tr>

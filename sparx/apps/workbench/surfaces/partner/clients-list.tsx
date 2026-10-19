@@ -21,7 +21,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { usePartnerClients, type PartnerClient } from './data';
 import { formatDate, referralState } from './format';
-import { PartnerLoadError, PartnerLoading } from './gate';
+import { NotAPartner, PartnerLoadError, PartnerLoading, isNotAPartner } from './gate';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -43,7 +43,7 @@ function ClientRow({ client }: { client: PartnerClient }) {
   return (
     <li className="border-base-300 flex flex-col gap-2 border-b px-4 py-3 last:border-b-0">
       <div className="flex flex-wrap items-center gap-2">
-        <Text className="min-w-0 flex-1 truncate font-medium">{client.name}</Text>
+        <Text className="min-w-0 flex-1 basis-48 truncate font-medium">{client.name}</Text>
         {client.managed ? (
           <Badge color="module" variant="soft" size="sm">
             You manage this
@@ -69,6 +69,9 @@ export function ClientsListSurface(_props: { ctx: SurfaceContext }) {
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch, error } =
     usePartnerClients();
   const clients = data ?? [];
+
+  // Outside the partner program: its page alone, not a count over a refusal (issue 307).
+  if (isError && isNotAPartner(error)) return <NotAPartner section="Clients" />;
 
   return (
     <div className={PANE_SHELL}>

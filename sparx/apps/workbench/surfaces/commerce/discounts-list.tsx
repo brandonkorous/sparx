@@ -13,19 +13,13 @@
 // working right now, scheduled, or ended.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Percent, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { formatCents } from './products-data';
@@ -221,10 +215,14 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Percent className="size-6" aria-hidden />}
             title="Could not load your discounts"
             description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -283,7 +281,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <td className="max-w-56 truncate font-medium">{row.name}</td>
-                    <td>
+                    <td data-label="Code">
                       {row.code ? (
                         <Badge color="neutral" variant="soft" size="sm" className="font-mono">
                           {row.code}
@@ -300,10 +298,13 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {state.label}
                       </Badge>
                     </td>
-                    <td className="hidden text-right text-sm tabular-nums @lg:table-cell">
+                    <td
+                      data-label="Given away"
+                      className="hidden text-right text-sm tabular-nums @lg:table-cell"
+                    >
                       {givenAwayCell(row.usageCount, row.givenAwayCents, row.currency ?? 'USD')}
                     </td>
-                    <td className="hidden text-right text-sm @2xl:table-cell">
+                    <td data-label="Changed" className="hidden text-right text-sm @2xl:table-cell">
                       {whenChanged(row.updatedAt)}
                     </td>
                   </tr>

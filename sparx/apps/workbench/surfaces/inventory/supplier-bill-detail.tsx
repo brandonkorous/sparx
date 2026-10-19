@@ -42,12 +42,12 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Ban, Banknote, Check, MessageCircleWarning } from 'lucide-react';
 import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
@@ -407,8 +407,10 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                     </span>
                   </span>
                 </td>
-                <td className="text-right tabular-nums">{line.orderedQuantity ?? '—'}</td>
-                <td className="text-right tabular-nums">
+                <td className="text-right tabular-nums" data-label="Ordered">
+                  {line.orderedQuantity ?? '—'}
+                </td>
+                <td className="text-right tabular-nums" data-label="Arrived">
                   {/* What arrived, and how much of it somebody else's invoice
                       has already charged for. Without the second line, a row
                       saying 40 arrived, 2 billed and "agrees" looks broken. */}
@@ -421,8 +423,10 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                     ) : null}
                   </span>
                 </td>
-                <td className="text-right tabular-nums">{line.quantity}</td>
-                <td className="text-right tabular-nums">
+                <td className="text-right tabular-nums" data-label="Billed">
+                  {line.quantity}
+                </td>
+                <td className="text-right tabular-nums" data-label="Each">
                   <span className="flex flex-col items-end">
                     <span>{formatCents(line.unitCostCents, data.currency)}</span>
                     {line.orderedUnitCostCents !== null &&

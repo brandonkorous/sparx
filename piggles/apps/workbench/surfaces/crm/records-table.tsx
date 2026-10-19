@@ -46,7 +46,7 @@ function RecordRow(props: {
         </Text>
       </td>
       {columns.rest.map((field) => (
-        <td key={field.key} className="hidden @md:table-cell">
+        <td data-label={field.label} key={field.key} className="hidden @md:table-cell">
           {cellText(record.values[field.key], field)}
         </td>
       ))}

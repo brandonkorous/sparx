@@ -32,12 +32,12 @@ import {
   FieldDescription,
   FieldLabel,
   NativeSelect,
-  Table,
   Text,
   Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Check, ShieldCheck, SlidersVertical, X } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -238,10 +238,10 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                   {row.note ? <span className="truncate text-sm">{row.note}</span> : null}
                 </span>
               </td>
-              <td className="text-right whitespace-nowrap tabular-nums">
+              <td data-label="Amount" className="text-right whitespace-nowrap tabular-nums">
                 {formatCents(row.amountCents, row.currency)}
               </td>
-              <td className="hidden whitespace-nowrap @lg:table-cell">
+              <td data-label="Asked by" className="hidden whitespace-nowrap @lg:table-cell">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">{row.requestedByName ?? 'Someone'}</span>
                   <span className="truncate text-sm">
@@ -249,7 +249,10 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                   </span>
                 </span>
               </td>
-              <td className="whitespace-nowrap">
+              <td
+                data-label={row.status === 'pending' ? 'Waiting' : undefined}
+                className="whitespace-nowrap"
+              >
                 {/* On the ROW's own state, not the filter's. Everything mixes
                     the two, and a waiting row there still has to read as
                     waiting. */}

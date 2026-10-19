@@ -22,7 +22,12 @@
 // opens nothing from an inbox, and every link here was one until issue 064.
 
 import { contentSiteVisibilityWhere, withTenant } from '@wizeworks/db';
-import { COLLECTION_RATE_REF, discountService, productService } from '@wizeworks/commerce';
+import {
+  COLLECTION_RATE_REF,
+  discountService,
+  productService,
+  relatedProductService,
+} from '@wizeworks/commerce';
 import { carrierLabel, typedCarrierOf } from '@wizeworks/commerce-schemas';
 import { dueOnCollectionCents } from './collection-balance.js';
 import { billingDocumentMail, businessTimeZone, daysPastDue } from '@wizeworks/crm';
@@ -556,7 +561,7 @@ async function resolveOrder(
             description: true,
             quantity: true,
             unitPrice: true,
-            lineTotal: true,
+            lineSubtotal: true,
             coreCharge: true,
             coreFirst: true,
             product: { select: { handle: true } },
@@ -647,7 +652,10 @@ async function resolveOrder(
         name: firstText(i.name, i.description),
         quantity: qty(i.quantity),
         unitPrice: money(i.unitPrice),
-        lineTotal: money(i.lineTotal),
+        // Before tax, as the printed invoice shows it (sparx persona issue 227):
+        // `lineTotal` carries the line's tax, so the email read "$13.41" on a line
+        // above "Subtotal $12.50" and "Tax $0.91" (sparx persona issue 323).
+        lineTotal: money(i.lineSubtotal),
       };
       // Bought by sending the old part first (issue 057): no money row, but the
       // promise and the address, under the part it is about.
@@ -1076,7 +1084,7 @@ async function resolveQuote(
         companyId: true,
         lines: {
           orderBy: { sortOrder: 'asc' },
-          select: { description: true, quantity: true, unitPrice: true, lineTotal: true },
+          select: { description: true, quantity: true, unitPrice: true, lineSubtotal: true },
         },
       },
     })
@@ -1094,7 +1102,7 @@ async function resolveQuote(
       name: l.description,
       quantity: qty(l.quantity),
       unitPrice: money(l.unitPrice),
-      lineTotal: money(l.lineTotal),
+      lineTotal: money(l.lineSubtotal), // before tax: see the order items above
     })),
   };
 }
@@ -1119,7 +1127,7 @@ async function resolveInvoice(
           companyId: true,
           lines: {
             orderBy: { sortOrder: 'asc' },
-            select: { description: true, quantity: true, unitPrice: true, lineTotal: true },
+            select: { description: true, quantity: true, unitPrice: true, lineSubtotal: true },
           },
         },
       }),
@@ -1157,7 +1165,7 @@ async function resolveInvoice(
       description: l.description,
       quantity: qty(l.quantity),
       unitPrice: money(l.unitPrice),
-      lineTotal: money(l.lineTotal),
+      lineTotal: money(l.lineSubtotal), // before tax: see the order items above
     })),
   };
 }
@@ -1212,15 +1220,59 @@ async function resolveLoyalty(
 
 // ── per-send sources (kept) ─────────────────────────────────────────────────
 
+/** What the email is about, as the products in it: the order's lines, else the
+ *  cart's (the one named, else the customer's live basket, the same one
+ *  `resolveCart` reads). Empty for an email about neither. */
+async function productsInEmail(
+  ctx: ServiceContext,
+  ref: EmailRecipientRef | undefined
+): Promise<string[]> {
+  if (!ref) return [];
+  return withTenant(ctx, async (tx) => {
+    if (ref.orderId) {
+      const lines = await tx.orderItem.findMany({
+        where: { orderId: ref.orderId, productId: { not: null } },
+        select: { productId: true },
+      });
+      return lines.map((l) => l.productId).filter((id): id is string => id !== null);
+    }
+    const cartWhere = ref.cartId
+      ? { id: ref.cartId }
+      : ref.customerId
+        ? { customerId: ref.customerId, checkoutSessions: { none: { step: 'completed' } } }
+        : null;
+    if (!cartWhere) return [];
+    const cart = await tx.cart.findFirst({
+      where: cartWhere,
+      orderBy: { updatedAt: 'desc' },
+      select: { items: { select: { variant: { select: { productId: true } } } } },
+    });
+    return (cart?.items ?? []).map((l) => l.variant.productId);
+  });
+}
+
+/**
+ * The product rail: what goes with what the email is about (sparx persona issue
+ * 330). It was the six newest products whatever the order held, so a buyer of a
+ * 6.7L Cummins injector was offered exhaust brakes for a 5.9L and a Duramax under
+ * her receipt. `relatedProductIds` keeps to parts that fit what she bought, and
+ * returns none rather than parts for somebody else's truck; the rail then drops.
+ */
 async function resolveProducts(
   ctx: ServiceContext,
-  site: EmailSite
+  site: EmailSite,
+  ref: EmailRecipientRef | undefined,
+  propertyId: string | null | undefined
 ): Promise<Record<string, string>[]> {
-  const { items } = await productService.list(ctx, {
-    status: 'active',
+  const bought = await productsInEmail(ctx, ref);
+  const ids = await relatedProductService.relatedProductIds(ctx, bought, {
     take: 6,
-    sortBy: 'createdAt',
+    propertyId: propertyId ?? null,
   });
+  if (ids.length === 0) return [];
+  const { items: found } = await productService.list(ctx, { status: 'active', ids, take: 6 });
+  const byId = new Map(found.map((p) => [p.id, p]));
+  const items = ids.map((id) => byId.get(id)).filter((p) => p !== undefined);
   return items.map((p) => ({
     title: p.title,
     priceLabel: moneyCents(p.priceMinCents),
@@ -1437,7 +1489,7 @@ async function loadEmailSources(
   if (keys.has('commerce.product')) {
     tasks.push(
       site()
-        .then((s) => resolveProducts(ctx, s))
+        .then((s) => resolveProducts(ctx, s, ref, propertyId))
         .then((v) => {
           const commerce = (out.commerce as Record<string, unknown>) ?? {};
           commerce.product = v;

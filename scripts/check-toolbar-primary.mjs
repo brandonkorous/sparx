@@ -95,7 +95,6 @@ const SPARX_DEBT = new Set([
   'sparx/apps/workbench/surfaces/commerce/product-configurator.tsx',
   'sparx/apps/workbench/surfaces/commerce/product-detail.tsx',
   'sparx/apps/workbench/surfaces/commerce/product-fitment.tsx',
-  'sparx/apps/workbench/surfaces/crm/customers-list.tsx',
   'sparx/apps/workbench/surfaces/email/sequence-detail.tsx',
   'sparx/apps/workbench/surfaces/finance/expense-detail.tsx',
   'sparx/apps/workbench/surfaces/finance/recurring-costs.tsx',

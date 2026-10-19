@@ -41,8 +41,10 @@ function BillLineRow({ line, index, currency, setLines }: BillLineRowProps) {
   return (
     <tr>
       <BillLineLabel line={line} currency={currency} />
-      <td className="text-right tabular-nums">{line.receivedQuantity}</td>
-      <td>
+      <td className="text-right tabular-nums" data-label="Arrived">
+        {line.receivedQuantity}
+      </td>
+      <td data-label="Billed">
         <Input
           size="sm"
           color="module"
@@ -59,7 +61,7 @@ function BillLineRow({ line, index, currency, setLines }: BillLineRowProps) {
           }}
         />
       </td>
-      <td>
+      <td data-label="Each">
         <MoneyTextInput
           size="sm"
           color="module"

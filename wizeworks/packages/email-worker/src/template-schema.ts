@@ -269,6 +269,16 @@ export const TemplateSendSchema = z.discriminatedUnion('template', [
     }),
   }),
   z.object({
+    template: z.literal('customer-email-confirm'),
+    ...TemplateMeta,
+    props: z.object({
+      siteName: z.string().nullable().optional(),
+      name: z.string().nullable().optional(),
+      confirmUrl: z.string().url(),
+      expiresInMinutes: z.number().int().positive().optional(),
+    }),
+  }),
+  z.object({
     template: z.literal('gated-delivery'),
     ...TemplateMeta,
     props: z.object({

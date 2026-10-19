@@ -130,7 +130,8 @@ function ToolRow({
   return (
     <li className="border-base-300 flex items-start gap-3 border-b px-4 py-3 last:border-b-0">
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <Text className="font-medium">{tool.description}</Text>
+        {/* The owner-word title; the description is written for the AI (issue 297). */}
+        <Text className="font-medium">{tool.title}</Text>
         <div className="flex flex-wrap items-center gap-2">
           {tool.write ? (
             <Badge color="warning" variant="soft" size="sm">
@@ -157,7 +158,7 @@ function ToolRow({
               variant="ghost"
               color="neutral"
               shape="square"
-              aria-label={`Reset “${tool.description}” to its default`}
+              aria-label={`Reset “${tool.title}” to its default`}
               loading={busy}
               onClick={onReset}
             >
@@ -173,8 +174,8 @@ function ToolRow({
             disabled={busy}
             aria-label={
               tool.enabled
-                ? `Allowed: ${tool.description}. Switch off to block it.`
-                : `Blocked: ${tool.description}. Switch on to allow it.`
+                ? `Allowed: ${tool.title}. Switch off to block it.`
+                : `Blocked: ${tool.title}. Switch on to allow it.`
             }
             onCheckedChange={onToggle}
           />
@@ -380,26 +381,23 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
                 connections.
               </Text>
             </div>
-            <div className="border-base-300 flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-lg border px-3 py-2">
-              <Text as="span" className="text-sm">
-                This is about an outside app reaching into your business and acting. It’s not the
-                writing help sparx does with your own AI account: that’s in
-              </Text>
+            {/* One sentence, so its full stop cannot wrap onto a line of its own. */}
+            <Text className="border-base-300 rounded-lg border px-3 py-2 text-sm">
+              This is about an outside app reaching into your business and acting. It’s not the
+              writing help sparx does with your own AI account: that’s in{' '}
               <Button
                 variant="link"
                 color="module"
                 size="sm"
-                className="h-auto p-0"
+                className="h-auto p-0 align-baseline"
                 onClick={(event) => {
                   ctx.open('ai.prompts', {}, { target: targetFor(event) });
                 }}
               >
                 Instructions
               </Button>
-              <Text as="span" className="text-sm">
-                .
-              </Text>
-            </div>
+              .
+            </Text>
           </div>
 
           {!canManage && !isError && !isPending ? (

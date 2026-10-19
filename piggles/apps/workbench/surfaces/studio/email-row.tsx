@@ -46,7 +46,7 @@ export function EmailRow({
         <span className="block max-w-56 truncate font-medium">{email.name}</span>
         {origin === null ? null : <span className="block max-w-56 truncate text-sm">{origin}</span>}
       </td>
-      <td>
+      <td data-label="Subject">
         <span className="block max-w-72 truncate">{email.subject || 'No subject yet'}</span>
       </td>
       <td className="hidden @lg:table-cell">

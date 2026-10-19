@@ -202,7 +202,8 @@ export function checkTip(id: string, found: Finding): string | null {
     case 'og-image':
       // `warn` is the card we generate; `fail` is nothing at all.
       return status === 'warn'
-        ? 'We make one for you in your colors. Your own photograph will always do better.'
+        ? // Read on its own in "Fix this first", so it names what it is about (sparx issue 287).
+          'When this page is shared, it shows a picture we make in your colors. Your own photograph will always do better.'
         : 'Add a picture, so a link to this page shows something rather than a bare address.';
 
     case 'structured-data':

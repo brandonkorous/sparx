@@ -107,7 +107,8 @@ export function skippedPagesOf(
 /**
  * What this site's visitors can actually DO.
  *
- * Today one question: does anybody have an ACCOUNT here? The signed-in area — orders,
+ * Two questions. Can a visitor fill a BASKET here (Commerce on for this site)? And
+ * does anybody have an ACCOUNT here? The signed-in area — orders,
  * returns, bookings, quotes, saved addresses — is one route on the storefront and is not
  * itself gated, so what decides whether it holds anything is whether the tenant runs a
  * module that puts something in it. Commerce gives a customer orders and returns,
@@ -130,7 +131,12 @@ export async function siteCapabilities(ctx: PropertyContext): Promise<SiteCapabi
   if (flags.some((flag) => flag === null) || siteOff === null) return {};
   // THIS site's answer, not the account's: a journal that switched its shop off has
   // nothing for a reader to sign in to, whatever else the account sells (issue 947).
-  return { customerAccounts: modules.some((m, i) => flags[i] && !siteOff.includes(m)) };
+  return {
+    customerAccounts: modules.some((m, i) => flags[i] && !siteOff.includes(m)),
+    // Whether a visitor can fill a basket here, for the header-cart rule (sparx persona
+    // issue 325). Commerce is the first of the three lookups above.
+    shop: flags[0] === true && !siteOff.includes('commerce'),
+  };
 }
 
 /**

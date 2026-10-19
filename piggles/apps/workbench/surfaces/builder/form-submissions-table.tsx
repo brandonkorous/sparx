@@ -109,7 +109,7 @@ export function FormSubmissionsTable({
               <td className="hidden max-w-72 @lg:table-cell">
                 <span className="block truncate">{preview || '—'}</span>
               </td>
-              <td className="hidden text-sm whitespace-nowrap @xl:table-cell">
+              <td className="hidden text-sm whitespace-nowrap @xl:table-cell" data-label="Received">
                 {formatDate(submission.createdAt)}
               </td>
               {manyForms ? (

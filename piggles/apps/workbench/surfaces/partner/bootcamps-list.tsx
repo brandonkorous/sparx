@@ -30,7 +30,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useBootcamps, usePartnerProfile, type Bootcamp } from './data';
 import { bootcampState, formatDate, formatLabel } from './format';
-import { PartnerLoadError, PartnerLoading } from './gate';
+import { NotAPartner, PartnerLoadError, PartnerLoading } from './gate';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -65,7 +65,7 @@ function BootcampRow({
       }}
     >
       <td className="align-top font-medium">{bootcamp.title}</td>
-      <td className="hidden align-top whitespace-nowrap @lg:table-cell">
+      <td className="hidden align-top whitespace-nowrap @lg:table-cell" data-label="Starts">
         {formatDate(bootcamp.startsAt)}
       </td>
       <td className="hidden align-top @xl:table-cell">{formatLabel(bootcamp.format)}</td>
@@ -93,6 +93,10 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const openBootcamp = (bootcamp: Bootcamp, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('partner.bootcamp.detail', { id: bootcamp.id }, { target: targetFor(event) });
   };
+
+  // Outside the partner program: its page, not an empty list that implies a
+  // pending application (sparx persona issue 307).
+  if (profile.isSuccess && profile.data === null) return <NotAPartner section="Bootcamps" />;
 
   return (
     <div className={PANE_SHELL}>

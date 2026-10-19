@@ -54,14 +54,17 @@ export function marginSubline(e: JobCostEvidence): string {
   if (noneMeasured(e)) {
     return 'Every one of them shows as pure profit because nothing has been taken off.';
   }
-  const more = e.unmeasuredJobs === 1 ? '1 more job' : `${String(e.unmeasuredJobs)} more jobs`;
+  const more =
+    e.unmeasuredJobs === 1 ? '1 more job' : `${e.unmeasuredJobs.toLocaleString('en-US')} more jobs`;
   return `${more} sold things with no cost recorded, so what they kept is not known. They are at the bottom of the list.`;
 }
 
 function shelves(e: JobCostEvidence): string {
   if (e.uncostedItems <= 0) return '';
-  const things = e.uncostedItems === 1 ? '1 thing' : `${String(e.uncostedItems)} things`;
-  const units = e.uncostedUnits === 1 ? '1 unit' : `${String(e.uncostedUnits)} units`;
+  const things =
+    e.uncostedItems === 1 ? '1 thing' : `${e.uncostedItems.toLocaleString('en-US')} things`;
+  const units =
+    e.uncostedUnits === 1 ? '1 unit' : `${e.uncostedUnits.toLocaleString('en-US')} units`;
   return ` ${things} on your shelves, ${units} in all, have never had a cost recorded.`;
 }
 

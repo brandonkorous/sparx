@@ -33,8 +33,8 @@ import {
   EmptyState,
   Filter,
   FilterItem,
-  Table,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { BarChart3 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -206,10 +206,14 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
                       <span className="block max-w-64 truncate font-semibold">{row.name}</span>
                       <span className="block max-w-64 truncate">{subtitleOf(row)}</span>
                     </td>
-                    <td className="text-right">{formatCount(row.visitors)}</td>
-                    <td className="hidden text-right @lg:table-cell">{formatCount(row.views)}</td>
+                    <td className="text-right" data-label="People">
+                      {formatCount(row.visitors)}
+                    </td>
+                    <td className="hidden text-right @lg:table-cell" data-label="Times opened">
+                      {formatCount(row.views)}
+                    </td>
                     {commerce ? (
-                      <td className="hidden text-right @xl:table-cell">
+                      <td className="hidden text-right @xl:table-cell" data-label="Bought">
                         {/* Orders alongside the rate, because a rate on its own is
                             unreadable at small numbers — "20%" of five people is one
                             sale, and the owner needs to know which they are looking at. */}
@@ -219,16 +223,16 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
                       </td>
                     ) : null}
                     {commerce ? (
-                      <td className="text-right">
+                      <td className="text-right" data-label="Sales">
                         {!untraced && row.revenueCents > 0 ? formatMoney(row.revenueCents) : '—'}
                       </td>
                     ) : null}
-                    <td className="hidden @2xl:table-cell">
+                    <td className="hidden @2xl:table-cell" data-label="Time to appear">
                       <Badge color={loadTone(row.loadMs)} variant="soft" size="sm">
                         {formatLoad(row.loadMs)}
                       </Badge>
                     </td>
-                    <td className="hidden @3xl:table-cell">
+                    <td className="hidden @3xl:table-cell" data-label="Found by search">
                       {row.noindex ? (
                         <Badge color="neutral" variant="soft" size="sm">
                           Hidden on purpose

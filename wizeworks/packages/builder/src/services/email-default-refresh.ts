@@ -117,6 +117,9 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     // appended, computed from the code at each commit that shipped them.
     // 62b77fb02 (2026-08-11) through 5e402a0a8 (2026-08-24), until 851aa54d6 (2026-09-16):
     'fed9f856f7af3ecc9ee7d812719a8e089e978c564daf2261d0619ba93d2c7105',
+    // Outgoing (2026-10-18, sparx persona issue 330): the product rail before it
+    // dropped when nothing goes with the order.
+    '6475489eaf04430d5d2bf62c7c3c5bc7664035eb72bc34a13a418a7ae83d06f3',
   ]),
   'post-purchase-review': new Set([
     '7dda0d718e85cc2c11313fb63f3fa3a5d87aa4438d24eea9008c1a8069413271',
@@ -131,6 +134,9 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     // appended, computed from the code at each commit that shipped them.
     // 788298f62 (2026-07-29) through 475d3e695 (2026-08-04), until 5151ec196 (2026-08-07):
     'a29ae5ca1a3da37c8d6d80b27f9fb755feba4752d2a9bf88c94ffc91ba8b6026',
+    // Outgoing (2026-10-18, sparx persona issue 330): the product rail before it
+    // dropped when nothing goes with the order.
+    '0e9f38a0597749d6968da838073ce786413e54765d510e97ee971ef4f6a36c96',
   ]),
   'b2b-account-approved': new Set([
     '441bf1990f64208d59bebe4fd11e905bf8e1828766e4a9414b142992d456dd3c',
@@ -223,6 +229,9 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     // promised "we'll let you know when it's ready to pick up" to a counter sale
     // already handed over. Never released, but the dev refresh put it on rows.
     'a29816b886fbe85b5205d40ed960bc213ee82c21cd4bb558775085892c6cdcbb',
+    // Outgoing (2026-10-18, sparx persona issue 330): the product rail before it
+    // dropped when nothing goes with the order.
+    'a257d6ec5f4959198795be575592138c39e1c483e6a26230d3b45aa5882344a6',
   ]),
   'shipping-confirmation': new Set([
     'c9d48b50aaf7363fc5f029b24d1ec49476259ba20c7a29a746a47707d4162fdc',
@@ -255,6 +264,9 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     '5a9760f56f1e5e67faf360c1e13f178849e6f11ce6ba72f852c097664c9468e8',
     'd1acc230009aad6b3e219aedc6b56b66a89d7269d30e0df074b3e0e1cd2d9b67',
     '39c373a4d7518e64424dc474e6bec58430f0e1bf2c9fa19584d8299d5ae252af',
+    // Outgoing (2026-10-18, sparx persona issue 330): the product rail before it
+    // dropped when nothing goes with the order.
+    'f60e6671bedf852a64bc831dd63e6f2b042601bd0373d9d411017efb636db115',
   ]),
   'order-cancelled': new Set([
     '1e15199075b2e949414fb79039ab1b41aaf432acc81a0b56499d79a3d625d990',

@@ -286,7 +286,7 @@ function AllocationEditor({
               <Badge color="module" variant="soft" size="sm">
                 {TARGET_LABELS[allocation.targetType] ?? allocation.targetType}
               </Badge>
-              <Text className="min-w-0 flex-1 truncate font-medium">
+              <Text className="min-w-0 flex-1 basis-48 truncate font-medium">
                 {allocation.targetLabel ?? 'Untitled record'}
               </Text>
               {/* `MoneyInput` owns the text it is being typed into. Rebuilding

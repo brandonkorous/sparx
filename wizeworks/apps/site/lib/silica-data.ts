@@ -38,6 +38,7 @@ import {
   isNotFound,
   listCollectionProducts,
   listProducts,
+  listRelatedProducts,
   type PublicCollection,
   type PublicProduct,
   type PublicProductListItem,
@@ -58,6 +59,7 @@ type KindRow = Awaited<ReturnType<typeof getPublicKind>>;
 const SHOWN_DIFFERENTLY = new Set(['asset', 'enum', 'date', 'datetime', 'boolean']);
 import { fleetFitRecordFields } from './fleet-fit-tree';
 import { REPEAT_NOTE } from './repeat-copy';
+import { telHref } from './tel-href';
 
 /** How many products a bounded rail shows at most — a curated handful, never the whole
  *  catalog (the whole-catalog grid binds `commerce.product`).
@@ -741,15 +743,6 @@ export interface SilicaSiteData {
   timezone?: string | null;
 }
 
-/** A phone number as a dialable `tel:` URI — `+` and digits only, since that is
- *  what a dialer parses. Null in, null out (an unset number must not become the
- *  string "tel:"), and a number with no digits at all is treated as unset. */
-function telHref(phone: string | null): string | null {
-  if (!phone) return null;
-  const digits = phone.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
-  return /\d/.test(digits) ? `tel:${digits}` : null;
-}
-
 /** The identity payload every render path supplies, built from the resolved site
  *  in ONE place.
  *
@@ -884,6 +877,10 @@ export async function buildSilicaHost(
   };
   const currentProductId =
     record?.key === 'product' ? (record.value as { id?: string } | undefined)?.id : undefined;
+  const currentProductHandle =
+    record?.key === 'product'
+      ? (record.value as { handle?: string } | undefined)?.handle
+      : undefined;
   const notCurrent = (i: PublicProductListItem) => i.id !== currentProductId;
   /** Exclude the current product, cap to the rail's size, shape as cards. `cap` is the
    *  author's limit for THIS rail when they set one, so two rails over different sources
@@ -1015,27 +1012,46 @@ export async function buildSilicaHost(
     );
   }
 
-  // Newest — the "New" rail. Also the fallback source for the "Related" rail until the
-  // public product API exposes a product's collection membership (see index-active-work).
-  if (p.fresh || p.related) {
+  // On a product page, "Related" is what goes WITH this product (sparx persona issue
+  // 330): it was the newest products, so a 6.7L Cummins injector's page offered
+  // exhaust brakes for a 5.9L and a Duramax. Empty is an answer, and the rail drops.
+  const relatedOnProduct = p.related && currentProductHandle !== undefined;
+  if (relatedOnProduct && currentProductHandle) {
+    tasks.push(
+      listRelatedProducts(
+        tenantSlug,
+        { handle: currentProductHandle },
+        loadCount('commerce.related', FEATURED_LIMIT)
+      )
+        .then((items) => setAtPath(root, 'commerce.related', bounded(items, 'commerce.related')))
+        .catch(emptyOnlyIfGone(root, 'commerce.related'))
+    );
+  }
+
+  // Newest — the "New" rail, and "Related" anywhere but a product page, where there
+  // is no product for it to relate to.
+  const relatedOnNewest = p.related && !relatedOnProduct;
+  if (p.fresh || relatedOnNewest) {
     // `+ 1` so excluding the in-scope PDP product still leaves a full rail. The pool is
     // the LARGER of the two rails' needs, since one fetch serves both.
     const freshPool =
       Math.max(
         p.fresh ? loadCount('commerce.new', FEATURED_LIMIT) : 0,
-        p.related ? loadCount('commerce.related', FEATURED_LIMIT) : 0
+        relatedOnNewest ? loadCount('commerce.related', FEATURED_LIMIT) : 0
       ) + 1;
     tasks.push(
       listProducts(tenantSlug, { sort: 'newest', perPage: freshPool })
         .then(({ items }) => {
           if (p.fresh) setAtPath(root, 'commerce.new', bounded(items, 'commerce.new'));
-          if (p.related) setAtPath(root, 'commerce.related', bounded(items, 'commerce.related'));
+          if (relatedOnNewest) {
+            setAtPath(root, 'commerce.related', bounded(items, 'commerce.related'));
+          }
         })
         .catch(
           emptyOnlyIfGone(
             root,
             ...(p.fresh ? ['commerce.new'] : []),
-            ...(p.related ? ['commerce.related'] : [])
+            ...(relatedOnNewest ? ['commerce.related'] : [])
           )
         )
     );

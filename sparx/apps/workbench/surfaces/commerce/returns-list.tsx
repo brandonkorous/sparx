@@ -14,7 +14,8 @@
 // only the loaded page would lie on a list that pages.
 
 import { useState } from 'react';
-import { Badge, Card, EmptyState, Filter, FilterItem, Table } from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, Filter, FilterItem } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Undo2 } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -172,14 +173,18 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="font-mono text-sm whitespace-nowrap">
                       {row.orderNumber ?? '—'}
                     </td>
-                    <td className="hidden max-w-48 truncate @lg:table-cell">
+                    <td data-label="Customer" className="hidden max-w-48 truncate @lg:table-cell">
                       {row.customerName ?? 'Unknown customer'}
                     </td>
-                    <td className="hidden text-sm @2xl:table-cell">
+                    <td data-label="Asked" className="hidden text-sm @2xl:table-cell">
                       {formatDate(row.requestedAt)}
                     </td>
-                    <td className="hidden @xl:table-cell">{outcomeLabel(row.preferredOutcome)}</td>
-                    <td className="text-right tabular-nums @lg:text-left">{row.itemCount}</td>
+                    <td data-label="Wants" className="hidden @xl:table-cell">
+                      {outcomeLabel(row.preferredOutcome)}
+                    </td>
+                    <td data-label="Items" className="text-right tabular-nums @lg:text-left">
+                      {row.itemCount}
+                    </td>
                     <td>
                       <Badge color={state.tone} variant="soft" size="sm">
                         {state.label}

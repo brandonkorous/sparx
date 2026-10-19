@@ -475,7 +475,7 @@ function ByHand({
             key={candidate.productId}
             className="border-base-300 flex flex-wrap items-start justify-between gap-x-4 gap-y-2 border-b py-3 first:pt-0 last:border-b-0 last:pb-0"
           >
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <div className="flex min-w-0 flex-1 basis-48 flex-col gap-0.5">
               <span className="font-medium">{candidate.title}</span>
               <FieldStatus status="error">{candidate.problem}</FieldStatus>
             </div>
@@ -530,7 +530,7 @@ function Results({
               key={result.productId}
               className="border-base-300 flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b py-2 first:pt-0 last:border-b-0 last:pb-0"
             >
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <div className="flex min-w-0 flex-1 basis-48 flex-col gap-0.5">
                 <button
                   type="button"
                   className="link link-hover text-left font-medium"

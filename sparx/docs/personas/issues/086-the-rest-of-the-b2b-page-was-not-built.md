@@ -1,12 +1,12 @@
 # 086 — The rest of the /b2b page described a product that was not built
 
-**Status:** open
+**Status:** fixed
 **Severity:** blocker
 **Found by:** P01 · Gillett Diesel Service · act 5 (the /b2b promises left after 085)
 **Surface:** sparx.works /b2b; site › product page, cart, account › Wholesale account (quotes, orders, fleet, service); workbench › Invoicing › quote editor; workbench › Wholesale › account; workbench › Sell › product trade pricing; workbench › Scheduling › booking; workbench › search box
 **Filed:** 2026-10-02
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-10-02 to 2026-10-03
+**Confirmed by:** sparx as Doty, Renée and Marcus, 2026-10-02 to 2026-10-18 (11 and 20 not checked: see below)
 **Blocked on:** —
 
 ## What happened
@@ -492,6 +492,56 @@ In progress, on screen, 2026-10-02 evening, as Doty, Renée and Marcus:
   under Orders; the order opened on "Order O-000014", badge "Waiting for approval",
   with her PO. (That "waiting for us" sentence, and Teodora never being asked, are
   issue 087.)
+
+- **2026-10-16, as Doty (the leftovers):**
+  - **8, 9:** sparx.works/b2b reads "The lifecycle is tracked: submitted, quoted,
+    accepted" and shows the late groups "1–30", "31–60", "61–90" and "90+ days late",
+    as the Owed to you screen groups them.
+  - **14:** Wasatch Front's "Add a vehicle" opens empty: "Choose a make", no made-up
+    unit, year or model. Doty typed the fleet size the account has always had, 38; it
+    read 38 after a reload.
+  - **35:** "Wasatch" in the search box lists the account as "Wasatch Front Utility
+    Contractors, LLC · Fleet"; its Customers screen reads Price tier "Fleet · 12% off",
+    the Wholesale screen's own choice.
+  - Statement, checked by hand: $12,151.68 of charges, $2,269.60 of payments and
+    credits, $9,882.08 owed at the end, $117.92 of the $10,000.00 limit left. Every
+    figure on screen matches.
+  - **15:** the O-ring 4062328's Pricing tab: "What it cost you" is an empty box under
+    "A blank box and 0.00 are different". (The quantity discount box below it still
+    started at 0.00: [290], fixed.)
+  - **18:** Q-000011 in Price & respond: the quantity box reads "100" in full (86px
+    wide, nothing cut off); the line reads "71.1% margin, $270.00 profit".
+  - **25:** the Gillett shop page, reloaded with the console open: no warning about
+    smooth scrolling.
+  - **26:** New service: an empty name, "What is included, what to bring, anything a
+    customer should know." and nothing from a salon.
+  - **20:** not reachable on screen: the two cores owed today are Brynn's, a retail
+    buyer with no company.
+  - **37:** signed in on the site as Renée, the shop's list for "90343" reads "Your
+    price: $20.23" beside $22.99 struck through: Fleet's 12% off $22.99 is $20.2312.
+  - **17, 19:** shown by 33 above (Marcus found by name; a person already on the
+    account is listed as such and cannot be picked twice).
+  - **11:** not checked. It needs a card payment (Stripe is not set up).
+  - **22, 23, 24, 2026-10-18:** the API was restarted four times (a saved file under
+    `tsx watch`, about 15 seconds down each time) with Renée signed in on the site
+    and Doty in the console, both watched every 3 seconds.
+    - **23:** Renée's account page never went to sign-in. While the API was down it read
+      "We couldn’t reach your account just now. This page will try again.", and it
+      showed "Hi, Renée" again by itself once the API was back.
+    - **24 was not fixed.** "Order again" pressed during the outage still read
+      "Nothing was added to your cart. Please try again.": eight buttons kept the
+      server's words only under 500, so the proxy's 503 fell to the fallback, and the
+      cart's own `CartError` was not read at all. Fixed with `accountFailureWords` in
+      `wizeworks/apps/site/lib/customer-client.ts`, used by all eight (Order again, Save
+      this cart, add to quote request, sign-off, the quotes and saved-carts pages, the
+      silica quote button). Test `lib/account-failure-words.test.ts` (5; red without the
+      outage branch). Pressed again in the next outage it read "Nothing was
+      added to your cart. We couldn’t reach the shop just now. Please try again in a
+      moment." Save this cart was not pressed on screen (same helper, tests only).
+    - **22:** Q-000012 opened in the console while the API was down. The pane read
+      "Reconnecting. Your work is safe, and this page carries on by itself.", and
+      about 8 seconds after the API answered it showed Quote Q-000012, Submitted,
+      with no reload.
 
 ## Rating effect
 

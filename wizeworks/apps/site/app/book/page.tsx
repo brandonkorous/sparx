@@ -16,6 +16,7 @@ import { getPublishedSilicaPage, resolveSchedulingEnabled } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 import { SUSPENDED_METADATA } from '@/lib/suspended';
 import { metadataTitle, socialTitle } from '@/lib/page-title';
+import { shellHasPageTitle } from '@/lib/shell-page-title';
 
 // KEEPS `force-dynamic` while the content routes dropped it (docs/127 §6). Appointment
 // availability is the one storefront read where a stale answer is visible to the
@@ -88,7 +89,8 @@ export default async function BookIndexPage() {
     // (issue 095). The words are the author's; only the LEVEL is worked out, and
     // it is worked out from the route rather than stored — so a page authored
     // before this still gets the right one.
-    bookingHeadingIsPageTitle: true,
+    // Unless the tenant's own page already has one (issue 321).
+    bookingHeadingIsPageTitle: !shellHasPageTitle(published?.root),
   });
 
   return (

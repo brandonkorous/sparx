@@ -41,15 +41,17 @@ function OwnedStockRow({ row, onOpen }: { row: OwnedStock; onOpen: OpenItem }) {
           {ownershipLabel(row.ownership)}
         </Badge>
       </td>
-      <td className="hidden max-w-[14rem] truncate @lg:table-cell">
+      <td className="hidden max-w-[14rem] truncate @lg:table-cell" data-label="Owner">
         {/* Named, or conspicuously not: consigned stock with no owner is a debt to
             nobody, and settlement will refuse it later. */}
         {row.ownerSupplierName ?? row.ownerCustomerName ?? (
           <Text className="text-sm">nobody named</Text>
         )}
       </td>
-      <td className="text-right tabular-nums">{row.onHand}</td>
-      <td className="text-right tabular-nums">
+      <td className="text-right tabular-nums" data-label="On hand">
+        {row.onHand}
+      </td>
+      <td className="text-right tabular-nums" data-label="Value">
         {row.valueCents === null ? (
           <Text className="text-sm">not costed</Text>
         ) : (

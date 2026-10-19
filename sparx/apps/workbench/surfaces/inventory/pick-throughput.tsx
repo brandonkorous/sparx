@@ -22,7 +22,8 @@
 // dashboard and buys a number nobody has to caveat.
 
 import { useState, type KeyboardEvent as ReactKeyboardEvent } from 'react';
-import { Badge, Card, EmptyState, NativeSelect, Table, Text } from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, NativeSelect, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { BarChart3, Gauge, ScanLine, TriangleAlert } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -219,13 +220,19 @@ export function PickThroughputSurface({ ctx }: { ctx: SurfaceContext }) {
                     {/* Same rule as the headline: a walk done too fast to
                         measure has no rate, and 0.0 is not the honest way to
                         say so. */}
-                    <td className="text-right whitespace-nowrap tabular-nums">
+                    <td data-label="Units/hr" className="text-right whitespace-nowrap tabular-nums">
                       {pickingRate(picker.unitsPicked, picker.activeMinutes).value}
                     </td>
-                    <td className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell">
+                    <td
+                      data-label="Lines"
+                      className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell"
+                    >
                       {picker.linesPicked}
                     </td>
-                    <td className="hidden text-right whitespace-nowrap @xl:table-cell">
+                    <td
+                      data-label="Scanned"
+                      className="hidden text-right whitespace-nowrap @xl:table-cell"
+                    >
                       <RateBadge
                         figure={ratePercent(
                           picker.linesScanVerified,
@@ -235,7 +242,7 @@ export function PickThroughputSurface({ ctx }: { ctx: SurfaceContext }) {
                         scan
                       />
                     </td>
-                    <td className="text-right whitespace-nowrap">
+                    <td data-label="Short" className="text-right whitespace-nowrap">
                       <RateBadge
                         figure={ratePercent(
                           picker.linesShort,
@@ -331,16 +338,19 @@ export function PickThroughputSurface({ ctx }: { ctx: SurfaceContext }) {
                           </span>
                         </span>
                       </td>
-                      <td className="hidden whitespace-nowrap @lg:table-cell">
+                      <td
+                        data-label="Usual reason"
+                        className="hidden whitespace-nowrap @lg:table-cell"
+                      >
                         {shortReasonLabel(bin.topReason)}
                       </td>
-                      <td className="text-right whitespace-nowrap tabular-nums">
+                      <td data-label="Short" className="text-right whitespace-nowrap tabular-nums">
                         {bin.linesShort} of {bin.linesTotal}
                       </td>
                       {/* Below the floor this cell would print "1 of 2", which the
                         column to its left already says. A rate it has not earned
                         is not worth saying twice. */}
-                      <td className="text-right whitespace-nowrap">
+                      <td data-label="Rate" className="text-right whitespace-nowrap">
                         {binRate(bin).enough ? (
                           <RateBadge figure={binRate(bin)} />
                         ) : (
@@ -408,13 +418,13 @@ export function PickThroughputSurface({ ctx }: { ctx: SurfaceContext }) {
                         {whoDidIt(packer.packedBy, packer.packerName)}
                       </span>
                     </td>
-                    <td className="text-right whitespace-nowrap tabular-nums">
+                    <td data-label="Boxes" className="text-right whitespace-nowrap tabular-nums">
                       {packer.boxesPacked}
                     </td>
-                    <td className="text-right whitespace-nowrap tabular-nums">
+                    <td data-label="Units" className="text-right whitespace-nowrap tabular-nums">
                       {packer.unitsPacked}
                     </td>
-                    <td className="text-right whitespace-nowrap">
+                    <td data-label="Scanned" className="text-right whitespace-nowrap">
                       <RateBadge
                         figure={ratePercent(packer.unitsScanned, packer.unitsPacked, verifiedTone)}
                       />

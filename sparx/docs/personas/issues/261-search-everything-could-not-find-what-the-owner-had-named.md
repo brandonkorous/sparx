@@ -1,12 +1,12 @@
 # 261 — "Search everything" could not find what the owner had named
 
-**Status:** open
+**Status:** fixed
 **Severity:** major
 **Found by:** P01 · Gillett Diesel Service · confirming issue 032 (searching "Monday" for the "Monday numbers" board)
 **Surface:** the top bar's "Search everything", sparx console and Piggles (they share the index and the routing)
 **Filed:** 2026-10-13
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-10-14
+**Confirmed by:** sparx as Doty, 2026-10-14
 **Blocked on:** —
 
 ## What happened
@@ -95,9 +95,36 @@ Known limits: a renamed platform-wide product type, and rows written outside the
 services (SQL migrations, cascade deletes, the dev seed), reach search only on a
 rebuild of the index.
 
+### Follow-up found while confirming: records written before a kind was searchable
+
+On screen, "Monday" first still found nothing. A projector indexes a record when it is
+written, so every board, report and shelf a business had BEFORE this release would stay
+out of search, and the box offered no "Put them back": it only counts products,
+customers and orders. The same was true of rows a seed or migration wrote.
+
+- `wizeworks/packages/commerce-indexer/src/new-kinds.ts` (new): on every indexer boot,
+  in the background, per tenant: ask search which kinds it holds
+  (`indexedKindsForTenant`, new in `wizeworks/packages/search/src/search.ts`), and for
+  each registered kind with no entries, index its rows. Each tenant is sealed off.
+- `reindex.ts`: the per-kind step is now `indexKind`, shared by the full rebuild and
+  the boot pass. One row that cannot be read is counted and logged, not thrown. Before,
+  one such row stopped every other kind of that tenant's rebuild, against the
+  function's own comment.
+- Test: `test/unit/new-kinds-reach-old-records.test.ts` (5), red by breaking the skip
+  and the per-row catch, then green; indexer 86/86.
+- The indexer package's own `tsc` runs out of memory on this machine (it pulls in all
+  of commerce): not checked. ESLint and Prettier are clean; the search package's `tsc`
+  is clean.
+
 ## Confirmed by
 
-—
+- sparx as Doty: "Monday" in "Search everything" lists "Monday numbers" under
+  Dashboards, "1 record matched". Enter opens the board in its pane.
+- The boot pass, run once by hand against the dev data after the board's entry was
+  deleted from search: "Monday" found nothing, then the pass reported 121 businesses,
+  0 skipped, 1 filled (Gillett, dashboard, 1 indexed), and the entry was back. Its first
+  run skipped one business (WizeWorks LLC: five pages on another tenant's site); after
+  the per-row fix the second run skipped none.
 
 ## Rating effect
 

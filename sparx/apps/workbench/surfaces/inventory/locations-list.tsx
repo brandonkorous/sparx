@@ -26,7 +26,8 @@
 // mistyped is the worse of the mistakes, so the narrowed case says so instead.
 
 import { useState } from 'react';
-import { Badge, Button, Card, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Warehouse } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -201,7 +202,10 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     edge — the one column that must never be the one to go. */}
                 <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
-                    <span className="flex min-w-0 items-center gap-2">
+                    {/* Wraps: the badges never shrink, and "Ships online
+                        orders" with "Address too short for couriers" beside a
+                        name is wider than a phone (sparx persona issue 274). */}
+                    <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="truncate font-medium">{location.name}</span>
                       {/* Where it came FROM, beside the name, because the whole
                           problem is that a place nobody set up looks exactly
@@ -255,10 +259,12 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     {place ? <span className="truncate text-sm @xl:hidden">{place}</span> : null}
                   </span>
                 </td>
-                <td className="hidden whitespace-nowrap @lg:table-cell">
+                <td data-label="Kind" className="hidden whitespace-nowrap @lg:table-cell">
                   {locationTypeLabel(location.type)}
                 </td>
-                <td className="hidden max-w-48 truncate @xl:table-cell">{place ?? '—'}</td>
+                <td data-label="Where" className="hidden max-w-48 truncate @xl:table-cell">
+                  {place ?? '—'}
+                </td>
                 <td>
                   <Badge color={state.tone} variant="soft" size="sm">
                     {state.label}

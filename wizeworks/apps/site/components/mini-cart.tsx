@@ -12,6 +12,7 @@ import { cadenceLabel } from '@wizeworks/commerce-schemas';
 
 import { checkoutBlock, lineRule, ruleSentence } from '@/lib/account-buying-rules';
 import { ordersClosed } from '@/lib/orders-closed';
+import { OrdersClosedReach } from './orders-closed-reach';
 import type { StorefrontPaymentMode } from '@/lib/made-to-order-copy';
 import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
@@ -19,7 +20,15 @@ import { CART_UNREACHABLE_MESSAGE } from '@/lib/shop-reach';
 import { CoreLine } from './core-choice';
 import { QuantityStepper } from './quantity-stepper';
 
-export function MiniCart({ paymentMode = 'card' }: { paymentMode?: StorefrontPaymentMode }) {
+export function MiniCart({
+  paymentMode = 'card',
+  contact = null,
+}: {
+  paymentMode?: StorefrontPaymentMode;
+  /** The shop's phone and email, so a shop that cannot be paid here says how
+   *  to order instead (sparx persona issue 324). */
+  contact?: { phone: string | null; email: string | null } | null;
+}) {
   const {
     drawerOpen,
     closeDrawer,
@@ -213,7 +222,10 @@ export function MiniCart({ paymentMode = 'card' }: { paymentMode?: StorefrontPay
                       accountRules?.canOrder === false || blocked === closed ? 'info' : 'warning'
                     }
                   >
-                    {blocked}
+                    <span>
+                      {blocked}
+                      {blocked === closed ? <OrdersClosedReach contact={contact} /> : null}
+                    </span>
                   </Alert>
                   <Button color="primary" size="lg" className="w-full" disabled>
                     Checkout

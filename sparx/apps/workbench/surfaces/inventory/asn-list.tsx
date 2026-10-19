@@ -24,9 +24,9 @@ import {
   Card,
   EmptyState,
   NativeSelect,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { PackageSearch, Truck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -153,15 +153,17 @@ export function AsnListSurface({ ctx }: { ctx: SurfaceContext }) {
                   {asnStatusLabel(row)}
                 </Badge>
               </td>
-              <td className="hidden whitespace-nowrap @lg:table-cell">
+              <td data-label="Expected" className="hidden whitespace-nowrap @lg:table-cell">
                 {row.expectedArrivalAt ? (
                   dayCountLabel(daysUntilDue(row.expectedArrivalAt, now, zone))
                 ) : (
                   <Text className="text-sm">No date given</Text>
                 )}
               </td>
-              <td className="hidden text-right tabular-nums @xl:table-cell">{row.unitsShipped}</td>
-              <td className="hidden whitespace-nowrap @2xl:table-cell">
+              <td data-label="Units" className="hidden text-right tabular-nums @xl:table-cell">
+                {row.unitsShipped}
+              </td>
+              <td data-label="Carrier" className="hidden whitespace-nowrap @2xl:table-cell">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">{row.carrier ?? '—'}</span>
                   {row.trackingNumber ? (

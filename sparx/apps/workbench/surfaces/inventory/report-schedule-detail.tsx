@@ -35,12 +35,12 @@ import {
   Input,
   NativeSelect,
   Switch,
-  Table,
   Text,
   Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Save, Send, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -681,10 +681,12 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                             ) : null}
                           </span>
                         </td>
-                        <td className="hidden max-w-48 truncate @md:table-cell">
+                        <td data-label="To" className="hidden max-w-48 truncate @md:table-cell">
                           {delivery.recipients.join(', ')}
                         </td>
-                        <td className="text-right tabular-nums">{delivery.rowCount ?? '—'}</td>
+                        <td data-label="Rows" className="text-right tabular-nums">
+                          {delivery.rowCount ?? '—'}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

@@ -37,14 +37,18 @@ function CartRowView({ row, onOpen }: { row: CartRow; onOpen: (event: OpenEvent)
       }}
     >
       <td className="max-w-48 truncate">{cartShopperName(row.customer, row.contact)}</td>
-      <td className="text-right tabular-nums @lg:text-left">{row.itemCount}</td>
-      <td className="hidden text-sm @2xl:table-cell">{formatDateTime(row.updatedAt)}</td>
+      <td data-label="Items" className="text-right tabular-nums @lg:text-left">
+        {row.itemCount}
+      </td>
+      <td data-label="Last active" className="hidden text-sm @2xl:table-cell">
+        {formatDateTime(row.updatedAt)}
+      </td>
       <td className="hidden @xl:table-cell">
         <Badge color={state.tone} variant="soft" size="sm">
           {state.label}
         </Badge>
       </td>
-      <td className="text-right font-medium tabular-nums">
+      <td data-label="Value" className="text-right font-medium tabular-nums">
         {formatMoney(row.totalCents / 100, row.currency)}
       </td>
     </tr>

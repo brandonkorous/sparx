@@ -24,4 +24,22 @@ describe('a record name is not repeated as a heading', () => {
       "{isNew ? 'Add a markup rule' : (rule?.name ?? 'Markup rule')}"
     );
   });
+
+  // Persona issue 282: the same on a location, a content type, a shipping group and
+  // a delivery region. Each kept a heading over the box that holds the name.
+  it.each([
+    ['./inventory/location-detail.tsx', /<Heading[^>]*>[\s\S]{0,200}?\{existing\.name\}/],
+    ['./cms/content-type-detail.tsx', /<Heading[^>]*>\s*\{type\.name\}\s*<\/Heading>/],
+    [
+      './commerce/shipping-profile-detail.tsx',
+      /<Heading[^>]*>\s*\{profile\?\.name\}\s*<\/Heading>/,
+    ],
+    ['./commerce/shipping-zone-detail.tsx', /<Heading[^>]*>\s*\{zone\?\.name\}\s*<\/Heading>/],
+    ['./scheduling/location-detail.tsx', /<Heading[^>]*>[\s\S]{0,200}?\{existing\.name\}/],
+    ['./scheduling/policy-detail.tsx', /<Heading[^>]*>[\s\S]{0,200}?\{existing\.name\}/],
+    ['./scheduling/resource-detail.tsx', /<Heading[^>]*>[\s\S]{0,200}?\{existing\.name\}/],
+    ['./scheduling/service-detail.tsx', /<Heading[^>]*>[\s\S]{0,200}?\{existing\.name\}/],
+  ])('on %s', (file, heading) => {
+    expect(read(file)).not.toMatch(heading);
+  });
 });

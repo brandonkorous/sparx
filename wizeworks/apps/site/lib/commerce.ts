@@ -790,21 +790,24 @@ export async function searchEverything(
   }
 }
 
-/** Products related to the given one: same product type, self excluded.
- *  Falls back to an empty list rather than throwing — it's a nice-to-have
- *  section, never load-bearing. */
+/** What goes with a product, for its page's "You might also like" (sparx persona
+ *  issue 330): parts that fit what it fits, else the same category, best first and
+ *  the product itself never among them. It was the same product type, or on the
+ *  builder's product page the newest products, so a 6.7L Cummins injector's page
+ *  offered exhaust brakes for a 5.9L and a Duramax. Empty when nothing qualifies,
+ *  and on a failed read: it is a nice-to-have section, never load-bearing. */
 export async function listRelatedProducts(
   tenantSlug: string,
-  product: Pick<PublicProduct, 'id' | 'productType'>,
+  product: Pick<PublicProduct, 'handle'>,
   limit = 4
 ): Promise<PublicProductListItem[]> {
-  if (!product.productType) return [];
   try {
-    const { items } = await listProducts(tenantSlug, {
-      productType: product.productType,
-      perPage: limit + 1,
-    });
-    return items.filter((p) => p.id !== product.id).slice(0, limit);
+    const { data } = await publicGet<PublicProductListItem[]>(
+      `/v1/public/commerce/products/${encodeURIComponent(product.handle)}/related`,
+      { tenant: tenantSlug, limit },
+      [`commerce:${tenantSlug}:products`]
+    );
+    return data;
   } catch {
     return [];
   }

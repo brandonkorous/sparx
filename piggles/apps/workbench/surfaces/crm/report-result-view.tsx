@@ -76,7 +76,7 @@ function ResultTable({ result, naming }: { result: ReportResult; naming: Naming 
           {result.rows.map((row, index) => (
             <tr key={index}>
               {result.columns.map((column, at) => (
-                <td key={column.key}>
+                <td data-label={column.label} key={column.key}>
                   {result.grouped && at === 0
                     ? groupText(row[column.key], naming)
                     : formatCell(row[column.key], { kind: column.kind, currency: result.currency })}

@@ -20,6 +20,7 @@ import type { RawEmailSendPayload } from '@wizeworks/events';
 import type { EmailRecipientRef } from './email-data.js';
 import { buildFrom, loadSenderIdentity, renderBuilderEmailDoc } from './tenant-email.js';
 import { personalizeUnsubscribe, unsubscribeUrl } from './email-unsubscribe.js';
+import { addRecordLink, type RecordLink } from './record-link.js';
 
 const EMAIL_DISPATCH_LOCK_KEY = ADVISORY_LOCKS.EMAIL_DISPATCH;
 const DEFAULT_INTERVAL_MS = 60_000;
@@ -35,7 +36,7 @@ interface SendPayload {
   props?: Record<string, unknown>;
   automationKey?: string | null;
   /** Pre-rendered broadcast body — delivered as-is by the worker. */
-  raw?: { subject: string; html: string; text: string; templateId?: string };
+  raw?: { subject: string; html: string; text: string; templateId?: string; link?: RecordLink };
   /** Per-recipient deferred render (docs/52 §6, docs/91 §6): reload the published
    *  Builder email tree — by row `builderEmailId` (a tenant broadcast) OR built-in
    *  `builderEmailKey` (a system automation; resolves the per-site override →
@@ -247,8 +248,15 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
           // that is each reader's own: the unsubscribe link and its header, swapped in
           // here for the placeholder the render-once body carries (piggles persona
           // issue 985). It went out as `#`, with no header, to every reader.
-          const own = personalizeUnsubscribe(
+          // A staff alert's record, as a link on the business's console (sparx
+          // persona issue 331).
+          const linked = await addRecordLink(
+            row.tenant_id,
             { html: payload.raw.html, text: payload.raw.text },
+            payload.raw.link
+          );
+          const own = personalizeUnsubscribe(
+            linked,
             UNSUBSCRIBE_PLACEHOLDER,
             unsubscribeUrl(row.tenant_id, to, dispatch.broadcastId)
           );

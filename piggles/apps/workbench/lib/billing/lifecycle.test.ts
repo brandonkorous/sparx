@@ -2,15 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { lifecycleNotice } from './lifecycle';
 import type { BillingPhaseView } from '../../surfaces/finance/bill-data';
 
-// The sentences that tell somebody their business is about to stop working.
-// Every one is checked for being TRUE, not merely present — a warning that names
-// the wrong cause is worse than no warning, because it sends them to fix the
-// wrong thing.
+// The sentences that tell somebody their business is about to stop working, checked for being TRUE,
+// not merely present: a warning that names the wrong cause sends them to fix the wrong thing.
 
 const view = (over: Partial<BillingPhaseView>): BillingPhaseView => ({
   phase: 'trialing',
   daysLeft: 10,
-  trialEndsAt: '2026-09-06T10:15:19.163Z',
+  trialEndsAt: null,
   suspendsAt: null,
   ...over,
 });
@@ -47,7 +45,7 @@ describe('a trial counts down and gets louder', () => {
   it('says day, not days, on the last one', () => {
     const life = lifecycleNotice(view({ daysLeft: 1 }));
     expect(life?.detail).toBe('1 day left');
-    expect(life?.sentence).toContain('ends in 1 day.');
+    expect(life?.sentence).toContain('ends tomorrow.');
   });
 
   it('promises nothing changes, which is what setting up payment does', () => {
@@ -157,5 +155,20 @@ describe('a countdown nobody measured is never printed as a number', () => {
     const life = lifecycleNotice(view({ phase: 'grace', daysLeft: null }));
     expect(life?.detail).toBe('Your site goes offline soon');
     expect(life?.sentence).not.toMatch(/\d/);
+  });
+});
+
+describe('the countdown, said as a day (issue 272)', () => {
+  it('says tomorrow for a trial that ends tomorrow, 25 hours away', () => {
+    const now = new Date('2026-10-14T18:00:00Z');
+    const billing = {
+      phase: 'trialing',
+      daysLeft: 2,
+      trialEndsAt: '2026-10-15T19:00:00Z',
+      suspendsAt: null,
+    } as const;
+    expect(lifecycleNotice(billing, true, now)?.sentence).toMatch(
+      /^Your free trial ends tomorrow\./
+    );
   });
 });

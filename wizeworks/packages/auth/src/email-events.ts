@@ -60,6 +60,19 @@ const AWAITED = new Set<PublishAuthEmailInput['template']>([
   'login-otp',
 ]);
 
+/**
+ * Whether an auth email can leave this process at all (sparx persona issue 337).
+ *
+ * Better Auth runs `sendVerificationEmail` through `runInBackgroundOrAwait`,
+ * which catches what the callback throws and only logs it. So the refusal in
+ * `publishAuthEmail` below never reaches the caller for a confirm link: on a
+ * console with no `EVENT_BROKER`, "Send the link again" answered "A new link is
+ * on its way" and nothing was sent. A caller asks this first, and says so.
+ */
+export function authEmailsCanLeave(): boolean {
+  return !createPublisher({ logger }).discards;
+}
+
 export async function publishAuthEmail(input: PublishAuthEmailInput): Promise<void> {
   const publisher = createPublisher({
     logger,

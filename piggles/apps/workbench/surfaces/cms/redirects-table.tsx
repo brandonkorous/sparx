@@ -61,13 +61,15 @@ export function RedirectsTable({ rows, onOpen, onDelete, removingId, busy }: Red
               }}
             >
               <td>
+                {/* Wrapped, not cut: an old address and the one it goes to often share
+                          everything but the end, so cutting the end hid where it goes. */}
                 <div className="flex min-w-0 flex-col gap-0.5">
-                  <span className="max-w-96 truncate font-mono text-sm font-medium">
+                  <span className="max-w-96 font-mono text-sm font-medium [overflow-wrap:anywhere]">
                     {row.from_path}
                   </span>
-                  <span className="flex max-w-96 items-center gap-1 font-mono text-sm">
+                  <span className="flex max-w-96 items-start gap-1 font-mono text-sm">
                     <Icon glyph={faArrowRight} className="size-3.5 shrink-0" aria-hidden />
-                    <span className="truncate">{row.to_path}</span>
+                    <span className="min-w-0 [overflow-wrap:anywhere]">{row.to_path}</span>
                   </span>
                   {row.property_id === null ? (
                     <span className="text-sm">Shared across all your sites</span>
@@ -79,10 +81,10 @@ export function RedirectsTable({ rows, onOpen, onDelete, removingId, busy }: Red
                   {type.label}
                 </Badge>
               </td>
-              <td className="hidden text-right tabular-nums @xl:table-cell">
+              <td className="hidden text-right tabular-nums @xl:table-cell" data-label="Times used">
                 {row.hit_count.toLocaleString()}
               </td>
-              <td className="hidden text-sm whitespace-nowrap @2xl:table-cell">
+              <td className="hidden text-sm whitespace-nowrap @2xl:table-cell" data-label="Added">
                 {formatDate(row.created_at)}
               </td>
               <td className="text-right">

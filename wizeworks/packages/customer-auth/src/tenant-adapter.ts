@@ -1,7 +1,7 @@
 // Tenant-scoping database adapter for the customer Better Auth instance
 // (docs/27 v2 §3.2). This is the load-bearing piece of the application-level
 // multi-tenancy: it hands Better Auth's stock `prismaAdapter` a PROXY over the
-// shared @wizeworks/db client that does exactly two things and nothing else, so all
+// shared @wizeworks/db client that does exactly three things and nothing else, so all
 // of Better Auth's audited where/select/join logic is reused verbatim:
 //
 //   1. Remaps the mcp() plugin's fixed OAuth model keys (oauthApplication /
@@ -13,6 +13,10 @@
 //      app.tenant_id on the sparx_app connection — so Postgres RLS scopes it. The
 //      tenant comes from the request-scoped `tenantStore` (fail-closed: no tenant
 //      in context ⇒ throw, never an unscoped query).
+//   3. Spells a customer user addressed by EMAIL ALONE as the unique key it is
+//      here, (tenant, email). Better Auth marks an address confirmed with
+//      `update({ where: { email } })`, which a store unique per tenant rejects,
+//      so every "confirm it's you" link failed (sparx persona issue 329).
 //
 // Correctness rests on the DB: FORCE RLS + `@@unique([tenant_id, email])` +
 // `tenant_id DEFAULT current_tenant_id()`. This Proxy guarantees the GUC is set.
@@ -64,6 +68,26 @@ function invokeOnTx(
   return fn(args);
 }
 
+/** Methods whose `where` must name a unique key. */
+const UNIQUE_WHERE_METHODS = new Set(['update', 'delete', 'findUnique', 'upsert']);
+
+/** `{ where: { email } }` on a customer user, as `{ where: { tenantId_email } }`.
+ *  Anything else is returned untouched. Exported for its test. */
+export function withTenantEmailKey(
+  model: string,
+  method: string,
+  args: unknown,
+  tenantId: string
+): unknown {
+  if (model !== 'customerUser' || !UNIQUE_WHERE_METHODS.has(method)) return args;
+  const where = (args as { where?: Record<string, unknown> } | null)?.where;
+  if (!where || typeof where.email !== 'string' || Object.keys(where).length !== 1) return args;
+  return {
+    ...(args as Record<string, unknown>),
+    where: { tenantId_email: { tenantId, email: where.email } },
+  };
+}
+
 /** A per-model delegate whose every method runs inside a tenant-scoped
  *  transaction on the real model (GUC set → RLS enforces the scope). */
 function scopedDelegate(baModel: string): ModelDelegate {
@@ -73,8 +97,11 @@ function scopedDelegate(baModel: string): ModelDelegate {
     {
       get(_t, method: string | symbol) {
         const name = typeof method === 'string' ? method : method.toString();
-        return (args: unknown) =>
-          withTenant(currentTenant(), (tx) => invokeOnTx(tx, key, name, args));
+        return (args: unknown) => {
+          const scope = currentTenant();
+          const keyed = withTenantEmailKey(key, name, args, scope.tenantId);
+          return withTenant(scope, (tx) => invokeOnTx(tx, key, name, keyed));
+        };
       },
     }
   );

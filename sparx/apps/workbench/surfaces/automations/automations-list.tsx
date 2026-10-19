@@ -13,20 +13,13 @@
 // narrow pane on a wide monitor must not show six columns in 300px.
 
 import { useMemo, useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-  Timestamp,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select, Timestamp } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { AlertTriangle, ArrowDown, ArrowUp, Plus, Workflow } from 'lucide-react';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   automationState,
@@ -59,7 +52,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<{ key: SortKey; dir: Dir }>({ key: 'lastRun', dir: 'desc' });
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAutomations({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useAutomations({
     status,
     origin,
   });
@@ -211,21 +204,14 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Workflow className="size-6" aria-hidden />}
             title="Could not load your automations"
             description="Something went wrong reaching the server. Your rules are unaffected and still running. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -318,7 +304,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         actions={actions}
                       />
                     </td>
-                    <td className="hidden text-right tabular-nums @md:table-cell">
+                    <td className="hidden text-right tabular-nums @md:table-cell" data-label="Runs">
                       <div className="inline-flex items-center justify-end gap-1.5">
                         {automation.errorCount > 0 ? (
                           <span
@@ -332,7 +318,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {automation.runCount}
                       </div>
                     </td>
-                    <td className="hidden text-sm @xl:table-cell">
+                    <td className="hidden text-sm @xl:table-cell" data-label="Last run">
                       {/* A failed run does not write `lastRunAt`, so reading only
                           that said "Not run yet" over a red failure count. It
                           ran. It did not work. See `lastAttempt`. */}

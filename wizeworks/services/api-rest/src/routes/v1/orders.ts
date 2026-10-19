@@ -15,6 +15,7 @@
 //   GET    /v1/orders/:id                   → fetch one (with items)
 //   PATCH  /v1/orders/:id                   → update
 //   POST   /v1/orders/:id/cancel            → cancel
+//   POST   /v1/orders/:id/resend-confirmation → email the buyer the order confirmation again
 //   GET    /v1/orders/:id/payments          → list payments for order
 //   POST   /v1/orders/:id/payments          → record a payment
 //   POST   /v1/orders/:id/payments/:paymentId/void  → void a payment
@@ -47,8 +48,11 @@ import {
 import { listFulfillmentLabels, quoteOutboundRates, shippingService } from '@wizeworks/commerce';
 import { inventoryService } from '@wizeworks/inventory';
 import { ok, paged } from '@wizeworks/api-core/envelope';
+import { notFound } from '@wizeworks/api-core/errors';
 import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
+import { withTenant } from '@wizeworks/db';
 import { requireOrderAccess, toOrderContext } from '../../lib/order-context.js';
+import { sendTenantEmailByKey } from '../../lib/tenant-email.js';
 import { refundOrderThroughGateway } from '../../lib/order-refund.js';
 import { reachableSiteIds } from '../../lib/property.js';
 import {
@@ -187,6 +191,49 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     const body = (request.body ?? {}) as Record<string, unknown>;
     const order = await orderService.cancel(toOrderContext(request), { ...body, orderId: id });
     return ok(order);
+  });
+
+  // Email the buyer the order confirmation again (sparx persona issue 336). "She
+  // says she never got it" had no answer in the console: only WizeWorks support
+  // could resend it. The same email the order sent, rendered from this business's
+  // own published order confirmation, to the address on the order's customer.
+  // Not to an address on the do-not-email list: one that bounced or complained is
+  // said so, rather than mailed again.
+  app.post('/v1/orders/:id/resend-confirmation', async (request) => {
+    requireRole(request, 'editor');
+    await requireOrderAccess(request);
+    const { id } = PathId.parse(request.params);
+    const { tenantId } = requireAuth(request);
+    const found = await withTenant({ tenantId }, async (tx) => {
+      const order = await tx.order.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          orderNumber: true,
+          customerId: true,
+          propertyId: true,
+          customer: { select: { email: true } },
+        },
+      });
+      const to = order?.customer?.email ?? null;
+      const blocked = to
+        ? await tx.emailSuppression.count({ where: { email: to.toLowerCase(), scope: 'all' } })
+        : 0;
+      return order ? { order, to, blocked: blocked > 0 } : null;
+    });
+    // An order this business cannot see is not there, as at `/v1/orders/:id`.
+    if (!found) throw notFound('Order', id);
+    const { order, to, blocked } = found;
+    if (!to) return ok({ sent: false, reason: 'no-email', to: null });
+    if (blocked) return ok({ sent: false, reason: 'suppressed', to });
+    const res = await sendTenantEmailByKey(request.log, tenantId, {
+      key: 'order-confirmation',
+      to,
+      propertyId: order.propertyId,
+      ref: { customerId: order.customerId, orderId: order.id },
+      variables: { owner_resend: '1' },
+    });
+    return ok({ sent: res.sent, reason: res.reason ?? null, to });
   });
 
   // ── payments ────────────────────────────────────────────────────────────

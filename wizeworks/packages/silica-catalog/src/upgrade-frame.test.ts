@@ -768,3 +768,251 @@ describe('upgradeFrameChrome — the footer line under the business name', () =>
     );
   });
 });
+
+// ─── The phone header (sparx persona issue 291) ─────────────────────────────────
+//
+// The captured golden header, which 22 shipped designs are built from, put the Menu,
+// the light/dark switch, the account link and the filled button side by side in the
+// bar on a phone. They needed more than the bar had, the brand was the only thing
+// allowed to shrink, and so the logo was drawn 0px wide on every phone visit.
+
+const LINK = 'text-sm font-medium text-base-content transition-colors hover:text-primary';
+const MENU_ITEM = 'text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200';
+
+/** The header exactly as the captured golden bundle shipped it before the repair. */
+const capturedHeader = (ctaClass = 'btn btn-primary btn-sm'): Node =>
+  el('div', 'min-h-screen flex flex-col bg-base-100', {
+    children: [
+      el('nav', '@container border-b border-base-300 bg-base-100', {
+        attrs: { 'aria-label': 'Primary' },
+        children: [
+          el('div', 'mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4', {
+            children: [
+              hostCore(HOST_KEYS.siteBrand, 'wordmark inline-flex items-center gap-2', {
+                show: 'logo',
+              }),
+              el('div', 'flex items-center gap-3 @sm:gap-6', {
+                children: [
+                  el('div', 'hidden items-center gap-6 @sm:flex', {
+                    children: [
+                      el('a', LINK, { attrs: { href: '/shop' }, text: 'Shop' }),
+                      el('a', LINK, { attrs: { href: '/contact' }, text: 'Contact' }),
+                    ],
+                  }),
+                  el('details', 'relative @sm:hidden', {
+                    children: [
+                      el('summary', 'cursor-pointer list-none rounded-btn px-3 py-2 text-sm', {
+                        text: 'Menu',
+                      }),
+                      el('div', 'absolute right-0 z-30 mt-2 w-48 rounded-box border p-2', {
+                        children: [
+                          el('div', 'flex flex-col gap-1', {
+                            children: [
+                              el('a', MENU_ITEM, { attrs: { href: '/shop' }, text: 'Shop' }),
+                              hostCore(HOST_KEYS.siteAccountLink, MENU_ITEM),
+                            ],
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  hostCore(HOST_KEYS.siteThemeToggle, 'inline-flex items-center'),
+                  hostCore(HOST_KEYS.siteAccountLink, 'btn btn-ghost btn-sm'),
+                  el('a', ctaClass, { attrs: { href: '/contact' }, text: 'Get in touch' }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      }),
+      el('main', 'flex-1', { children: [{ kind: 'outlet' }] }),
+    ],
+  });
+
+interface Loose {
+  kind?: string;
+  tag?: string;
+  class?: string;
+  component?: string;
+  children?: unknown[];
+  attrs?: Record<string, unknown>;
+}
+
+/** Every node in a tree, depth first. */
+const nodesOf = (node: unknown, out: Loose[] = []): Loose[] => {
+  if (!node || typeof node !== 'object') return out;
+  out.push(node);
+  for (const c of (node as Loose).children ?? []) nodesOf(c, out);
+  return out;
+};
+
+const words = (n: Loose | null | undefined): string[] =>
+  (n?.class ?? '').split(/\s+/).filter(Boolean);
+
+/** The bar's right-hand group: the element that holds the Menu. */
+const barGroup = (root: Node): Loose => {
+  const group = nodesOf(root).find((n) =>
+    (n.children ?? []).some((c) => (c as Loose).tag === 'details')
+  );
+  if (!group) throw new Error('no bar group');
+  return group;
+};
+
+const groupChild = (root: Node, match: (n: Loose) => boolean): Loose | undefined =>
+  (barGroup(root).children ?? []).map((c) => c as Loose).find(match);
+
+const menuItems = (root: Node): Loose[] => {
+  const details = nodesOf(root).find((n) => n.tag === 'details');
+  const list = nodesOf(details).find((n) => words(n).includes('flex-col'));
+  return ((list?.children ?? []) as Loose[]).filter((c) => typeof c === 'object');
+};
+
+// Sparx persona issue 328. Every header this file repaired before showed its button
+// again as `@5xl:inline-flex`, so "Get in touch" sat at the top of its own fill on
+// every wide screen. The phone repair no longer matches those headers, so they need
+// their own step.
+describe('upgradeFrameChrome — a bar button shown as a flex box', () => {
+  const repairedTheOldWay = (): Node =>
+    JSON.parse(
+      JSON.stringify(upgradeFrameChrome(capturedHeader()).root).replace(
+        'hidden @5xl:inline-block',
+        'hidden @5xl:inline-flex'
+      )
+    ) as Node;
+
+  it('shows the button as a block box again', () => {
+    const before = repairedTheOldWay();
+    expect(words(groupChild(before, (n) => n.tag === 'a'))).toContain('@5xl:inline-flex');
+    const { root, changed } = upgradeFrameChrome(before);
+    expect(changed).toBe(true);
+    const bar = words(groupChild(root, (n) => n.tag === 'a'));
+    expect(bar).toEqual(
+      expect.arrayContaining(['btn', 'btn-primary', 'hidden', '@5xl:inline-block'])
+    );
+    expect(bar).not.toContain('@5xl:inline-flex');
+  });
+
+  it('leaves the light/dark switch a flex box, and runs once', () => {
+    const { root } = upgradeFrameChrome(repairedTheOldWay());
+    const toggle = groupChild(root, (n) => n.component === HOST_KEYS.siteThemeToggle);
+    expect(words(toggle)).toContain('@5xl:inline-flex');
+    expect(upgradeFrameChrome(root).changed).toBe(false);
+  });
+
+  it('leaves a button with an icon alone: silicaui centers that one as a flex box', () => {
+    const iconCta = el('a', 'btn btn-primary btn-sm hidden @5xl:inline-flex', {
+      attrs: { href: '/cart' },
+      children: [el('svg', 'size-4'), 'Cart'],
+    });
+    const header = el('div', 'flex flex-col', {
+      children: [el('nav', 'navbar', { children: [iconCta] })],
+    });
+    const { root } = upgradeFrameChrome(header);
+    const kept = nodesOf(root).find((n) => n.tag === 'a');
+    expect(words(kept)).toContain('@5xl:inline-flex');
+  });
+});
+
+describe('upgradeFrameChrome — the header on a phone', () => {
+  it('keeps the logo at its own size, and keeps its own classes', () => {
+    const { root, changed } = upgradeFrameChrome(capturedHeader());
+    expect(changed).toBe(true);
+    const brand = words(findBrand(root));
+    expect(brand).toContain('shrink-0');
+    expect(brand).toEqual(expect.arrayContaining(['wordmark', 'inline-flex', 'items-center']));
+  });
+
+  it('moves the button into the Menu, as its last item, and off the bar on a phone', () => {
+    const { root } = upgradeFrameChrome(capturedHeader());
+    const bar = groupChild(root, (n) => n.tag === 'a');
+    expect(words(bar)).toEqual(
+      expect.arrayContaining(['btn', 'btn-primary', 'hidden', '@5xl:inline-block'])
+    );
+    // Shown again as a flex box, silicaui's button drew its words at the top of its
+    // fill: it centers them with align-content, which a flex box ignores (issue 328).
+    expect(words(bar)).not.toContain('@5xl:inline-flex');
+
+    const last = menuItems(root).at(-1);
+    expect(last?.tag).toBe('a');
+    expect(last?.attrs?.href).toBe('/contact');
+    expect(last?.children).toEqual(['Get in touch']);
+    expect(words(last)).toEqual(expect.arrayContaining(['btn', 'btn-primary', 'btn-block']));
+  });
+
+  it('moves the light/dark switch into the Menu too, dropping its own display word', () => {
+    const { root } = upgradeFrameChrome(capturedHeader());
+    const bar = groupChild(root, (n) => n.component === HOST_KEYS.siteThemeToggle);
+    expect(words(bar)).toEqual(expect.arrayContaining(['hidden', '@5xl:inline-flex']));
+    // `hidden` beside a bare `inline-flex` would leave the winner to stylesheet order.
+    expect(words(bar)).not.toContain('inline-flex');
+    expect(menuItems(root).at(-2)?.component).toBe(HOST_KEYS.siteThemeToggle);
+  });
+
+  it('keeps the account link on the bar, unchanged', () => {
+    const { root } = upgradeFrameChrome(capturedHeader());
+    const account = groupChild(root, (n) => n.component === HOST_KEYS.siteAccountLink);
+    expect(account?.class).toBe('btn btn-ghost btn-sm');
+  });
+
+  it('moves the bar switch from @sm to @5xl, so links, Menu and button trade at one width', () => {
+    const { root } = upgradeFrameChrome(capturedHeader());
+    const all = nodesOf(barGroup(root)).flatMap(words);
+    expect(all.filter((w) => w.startsWith('@sm:'))).toEqual([]);
+    expect(all).toEqual(expect.arrayContaining(['@5xl:gap-6', '@5xl:flex', '@5xl:hidden']));
+  });
+
+  it('is idempotent: a repaired header repairs to itself', () => {
+    const once = upgradeFrameChrome(capturedHeader());
+    const twice = upgradeFrameChrome(once.root);
+    expect(twice.changed).toBe(false);
+    expect(twice.root).toBe(once.root);
+    const copies = menuItems(twice.root).filter((n) => words(n).includes('btn-primary'));
+    expect(copies).toHaveLength(1);
+  });
+
+  it('leaves a button the author already hid on a phone where it is', () => {
+    const { root } = upgradeFrameChrome(
+      capturedHeader('btn btn-primary btn-sm hidden @sm:inline-flex')
+    );
+    expect(menuItems(root).some((n) => words(n).includes('btn-primary'))).toBe(false);
+  });
+
+  it('does not write a class onto a brand that wears the component default', () => {
+    // The component's default already carries shrink-0; a class here would replace it.
+    const frame = capturedHeader();
+    delete (findBrand(frame) as Loose).class;
+    const { root } = upgradeFrameChrome(frame);
+    expect((findBrand(root) as Loose).class).toBeUndefined();
+  });
+
+  it('heals the older shape too, where the nav itself is the bar (a live site today)', () => {
+    // Gillett's published header: no inner measure box, the brand and the group sit
+    // straight in the `<nav>`. The measure repair boxes it afterwards; this one must
+    // not care which it sees.
+    const frame = capturedHeader();
+    const nav = nodesOf(frame).find((n) => n.tag === 'nav')!;
+    const bar = (nav.children ?? [])[0] as Loose;
+    nav.class = `${nav.class ?? ''} flex items-center justify-between gap-6 px-6 py-4`;
+    nav.children = bar.children;
+    const { root } = upgradeFrameChrome(frame);
+    expect(words(findBrand(root))).toContain('shrink-0');
+    expect(menuItems(root).at(-1)?.attrs?.href).toBe('/contact');
+    expect(
+      nodesOf(barGroup(root))
+        .flatMap(words)
+        .filter((w) => w.startsWith('@sm:'))
+    ).toEqual([]);
+  });
+
+  it('leaves the starter navbar alone: it has its own phone layout', () => {
+    const frame = starterFrame({ commerceEnabled: true }).root;
+    expect(upgradeFrameChrome(frame).root).toBe(frame);
+  });
+
+  it('does not mutate the input tree', () => {
+    const frame = capturedHeader();
+    const before = JSON.stringify(frame);
+    upgradeFrameChrome(frame);
+    expect(JSON.stringify(frame)).toBe(before);
+  });
+});

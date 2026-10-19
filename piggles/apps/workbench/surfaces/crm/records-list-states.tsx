@@ -25,20 +25,9 @@ interface OpenEvent {
   altKey: boolean;
 }
 
-/**
- * A BUILT-IN OBJECT HAS ITS OWN SCREEN, AND THIS IS NOT IT.
- *
- * `crm_records` holds tenant-invented objects only. Addressed with a built-in
- * key — `/crm/records/contact` — this pane drew a working, permanently empty
- * list: "No customers yet · 0 in total", on a shop with forty of them, under a
- * sentence telling her she had made the idea up herself. Every word of it was
- * false, and the fact that makes it false was already on the record the pane
- * had fetched: `kind: 'builtin'`.
- * [[feedback_fetched_but_never_rendered]] [[feedback_never_present_absence_as_measurement]]
- *
- * A `target` of undefined still gets the refusal, just without a way through,
- * because being sent nowhere is better than being told a number that is not true.
- */
+/** A BUILT-IN OBJECT HAS ITS OWN SCREEN: `crm_records` holds invented objects only, so a built-in key
+ *  drew a false "0 in total" list though the record said `kind: 'builtin'`. An undefined `target`
+ *  still refuses, with no way through: sent nowhere beats a number that is not true. */
 export function BuiltinScreen(props: {
   labelPlural: string;
   target: string | undefined;
@@ -140,13 +129,13 @@ export function NoRecords(props: {
       }}
       firstRun={{
         // The tenant invented this type, so the welcome is about the thing
-        // they invented — in their word for it, not "records".
+        // they invented, in their word for it, not "records".
         title: `No ${labelPlural.toLowerCase()} yet`,
         description: `You made this up yourself, which means nobody else's software has it. Add the first ${label.toLowerCase()} and it will show here, with its own search, its own saved views, and a page of its own.`,
         actions: (
           <Button size="sm" color="module" onClick={props.onAdd}>
             <Icon glyph={faPlus} className="size-4" aria-hidden />
-            Add the first {label.toLowerCase()}
+            Add {label.toLowerCase()}
           </Button>
         ),
       }}

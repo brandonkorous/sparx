@@ -25,8 +25,8 @@ import {
   FilterItem,
   NativeSelect,
   SearchInput,
-  Table,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { FileText, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -375,8 +375,13 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
                         )}
                       </td>
                     ) : null}
-                    <td className="hidden max-w-40 truncate @2xl:table-cell">{author}</td>
-                    <td className="hidden text-sm whitespace-nowrap @4xl:table-cell">
+                    <td className="hidden max-w-40 truncate @2xl:table-cell" data-label="Author">
+                      {author}
+                    </td>
+                    <td
+                      className="hidden text-sm whitespace-nowrap @4xl:table-cell"
+                      data-label="Changed"
+                    >
                       {formatDate(entry.updated_at)}
                     </td>
                     <td>

@@ -1,12 +1,8 @@
 'use client';
 
-// The version history of one rule — every time it was published, newest first.
-//
-// Publishing snapshots the rule, so this is an append-only record: "Restore"
-// never rewinds it, it copies a chosen snapshot back into the working draft for
-// you to review and publish again (which appends a NEW version). Because restore
-// overwrites the current draft, it is a named confirm and is blocked while there
-// are unsaved edits on the form.
+// The version history of one rule, newest first. It is append-only: "Restore" copies a snapshot into
+// the working draft to review and publish again (a NEW version). It overwrites the draft, so it is a
+// named confirm and is blocked while the form has unsaved edits.
 
 import { Badge, Button, Text, Timestamp, useToast } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
@@ -40,7 +36,7 @@ function VersionRow({
           Live
         </Badge>
       ) : null}
-      <Text as="span" className="min-w-0 flex-1 text-sm">
+      <Text as="span" className="min-w-0 flex-1 basis-48 text-sm">
         {version.note ?? 'No note'}
       </Text>
       <Text as="span" className="shrink-0 text-sm">
@@ -68,22 +64,9 @@ function VersionRow({
   );
 }
 
-export function HistoryPanel({
-  id,
-  liveVersion,
-  dirty,
-  onRestored,
-}: {
-  id: string;
-  liveVersion: number;
-  /** Unsaved form edits — restore is blocked until they're saved or discarded. */
-  dirty: boolean;
-  /** Fired with the restored automation so the editor loads its new draft. */
-  onRestored: (automation: Automation) => void;
-}) {
+function useRestoreAction(id: string, onRestored: (automation: Automation) => void) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data: versions, isPending, isError } = useAutomationVersions(id);
   const restore = useRestoreVersion(id);
 
   const onRestore = async (version: AutomationVersionRow) => {
@@ -117,6 +100,22 @@ export function HistoryPanel({
     });
   };
 
+  return { onRestore, isPending: restore.isPending };
+}
+
+interface HistoryPanelProps {
+  id: string;
+  liveVersion: number;
+  /** Unsaved form edits: restore is blocked until they're saved or discarded. */
+  dirty: boolean;
+  /** Fired with the restored automation so the editor loads its new draft. */
+  onRestored: (automation: Automation) => void;
+}
+
+export function HistoryPanel({ id, liveVersion, dirty, onRestored }: HistoryPanelProps) {
+  const { data: versions, isPending, isError } = useAutomationVersions(id);
+  const restore = useRestoreAction(id, onRestored);
+
   if (isError) {
     return <Text className="text-sm">Could not load the history just now.</Text>;
   }
@@ -145,7 +144,7 @@ export function HistoryPanel({
           isLive={version.version === liveVersion}
           disabled={dirty || restore.isPending}
           onRestore={() => {
-            void onRestore(version);
+            void restore.onRestore(version);
           }}
         />
       ))}

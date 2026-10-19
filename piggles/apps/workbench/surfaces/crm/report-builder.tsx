@@ -15,6 +15,7 @@ import { productCopy } from '../../lib/product';
 import { useModuleColor } from '../analytics/charts';
 import { toFilters, type Draft } from './report-builder-draft';
 import { emptyAnswer } from './report-group-words';
+import { useHoldsAny } from './report-builder-data';
 import {
   BreakdownSection,
   LookAtSection,
@@ -70,6 +71,7 @@ function ReportAnswer(props: {
 }) {
   const { preview, draft, accent, labelPlural } = props;
   const narrowed = toFilters(draft).conditions.length > 0 || draft.rangeKind !== 'all';
+  const holdsAny = useHoldsAny(draft.objectKey, narrowed && preview.data?.rows.length === 0);
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
@@ -94,7 +96,7 @@ function ReportAnswer(props: {
             accent={accent}
             objectKey={draft.objectKey}
             groupField={draft.groupByField || undefined}
-            empty={emptyAnswer({ narrowed, labelPlural })}
+            empty={emptyAnswer({ narrowed, holdsAny: holdsAny.data, labelPlural })}
           />
           {preview.data.truncated ? (
             <Alert color="info">

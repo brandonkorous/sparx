@@ -22,9 +22,9 @@ import {
   Button,
   Card,
   EmptyState,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { PlusCircle, ShieldCheck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -122,10 +122,15 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
                   <span className="truncate text-sm">{ruleScopeLabel(row)}</span>
                 </span>
               </td>
-              <td className="text-right whitespace-nowrap tabular-nums">
+              <td
+                data-label={row.minAmountCents === 0 ? undefined : 'Holds from'}
+                className="text-right whitespace-nowrap tabular-nums"
+              >
                 {row.minAmountCents === 0 ? 'Every order' : formatCents(row.minAmountCents)}
               </td>
-              <td className="hidden whitespace-nowrap @lg:table-cell">{approverLabel(row)}</td>
+              <td data-label="Signed off by" className="hidden whitespace-nowrap @lg:table-cell">
+                {approverLabel(row)}
+              </td>
               <td className="whitespace-nowrap">
                 <Badge color={row.isActive ? 'success' : 'neutral'} variant="soft" size="sm">
                   {row.isActive ? 'In force' : 'Switched off'}

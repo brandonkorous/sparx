@@ -30,6 +30,7 @@ import { HOST_COMPONENTS, HOST_KEYS } from '@wizeworks/silica-catalog';
 import {
   AccountLinkMark,
   BrandMark,
+  CartButtonMark,
   FrameMark,
   LegalLinksColumn,
   PagerMark,
@@ -87,6 +88,9 @@ export function makeRenderHostNode(root: unknown): RenderHostNode {
     }
     if (node.component === HOST_KEYS.siteAccountLink) {
       return <AccountLinkMark hint={hint} />;
+    }
+    if (node.component === HOST_KEYS.siteCartButton) {
+      return <CartButtonMark hint={hint} />;
     }
     if (node.component === HOST_KEYS.sitePagination) {
       return <PagerMark hint={hint} />;

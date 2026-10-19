@@ -30,6 +30,8 @@ import { ProductFitmentCore } from '@/components/products/product-fitment-core';
 import { ProductQuestionsCore } from '@/components/products/product-questions-core';
 import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
 import { AccountLink } from '@/components/account/account-link';
+import { CartButton } from '@/components/cart-button';
+import { siteShowsModule } from '@/lib/site-modules';
 import { SiteBrand, toBrandShow } from '@/components/brand/site-brand';
 import { Archive } from '@/components/cms/archive';
 import { ArticleBody } from '@/components/cms/article-body';
@@ -92,6 +94,10 @@ export interface HostCoreContext {
    *  "All products" is the page's `<h1>`. A Shop page brings its own heading, and
    *  the listing printed "All products" straight under it (persona issue 273). */
   listingHeadingIsPageTitle?: boolean;
+  /** Whether a visitor can shop here at all: the account sells and this site shows its
+   *  shop. For the header cart, which must not offer a basket on a journal (sparx persona
+   *  issue 325). Absent on routes that do not pass it, which reads as yes. */
+  sells?: boolean;
 }
 
 /** Build the storefront `HostRenderer` for a route — a single switch over the pinned
@@ -105,7 +111,7 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
         // Cart state is client-side, so the basket needs nothing handed to it —
         // except the one thing it cannot know from the basket: whether this shop
         // takes money on this website at all (issue 185).
-        return <CartView paymentMode={ctx.site.commerce.paymentMode} />;
+        return <CartView paymentMode={ctx.site.commerce.paymentMode} contact={ctx.site.contact} />;
       case HOST_KEYS.commerceSearch:
         return <SearchExperience site={ctx.site} searchParams={ctx.searchParams ?? {}} />;
       case HOST_KEYS.commercePlp:
@@ -247,6 +253,11 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
         // (an inline link in the bar, a full-width button in the phone panel), so it is
         // passed through rather than replaced.
         return <AccountLink {...(node.class ? { className: node.class } : {})} />;
+      case HOST_KEYS.siteCartButton:
+        // The header's cart, with the live count (sparx persona issue 325). Nothing at
+        // all on a site that has switched its shop off: an empty basket on a journal is
+        // a promise of a shop that is not there.
+        return ctx.sells !== false && siteShowsModule(ctx.site, 'commerce') ? <CartButton /> : null;
       case HOST_KEYS.siteLegalLinks:
         // The tenant's published legal pages, resolved from doc placements by the
         // layout. Renders nothing until at least one is published — which is why the

@@ -25,10 +25,10 @@ import {
   FilterItem,
   Heading,
   SearchInput,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { AlertTriangle, Clock, Plus, UserPlus, Users } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -328,7 +328,7 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
                 search.trim()
                   ? 'Try a different name, or switch the filter to Everyone.'
                   : everyoneLeft
-                    ? 'Everyone on your roster has left, so this view is empty. Switch the filter to Everyone to see them, their hours and what they cost — none of it has gone anywhere.'
+                    ? 'Everyone on your roster has left, so this view is empty. Switch the filter to Everyone to see them, their hours and what they cost. None of it has gone anywhere.'
                     : 'Add the people who work for you and sparx can track their hours, what those hours cost, and when their tickets and licenses run out.'
               }
               actions={
@@ -341,7 +341,7 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <Plus className="size-4" aria-hidden />
-                    Add the first person
+                    Add someone
                   </Button>
                 )
               }

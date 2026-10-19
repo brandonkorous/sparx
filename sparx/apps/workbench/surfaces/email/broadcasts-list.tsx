@@ -21,16 +21,16 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Send } from 'lucide-react';
 import { RefreshButton } from '../../components/refresh-button';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useReaderClock } from '../../lib/business-timezone';
 import { onClock } from '../../lib/publish-clock';
@@ -65,10 +65,18 @@ function EngagementCells({ broadcast }: { broadcast: Broadcast }) {
   const clicked = data ? engagementCell(data.clicked, data, broadcast.recipientCount) : null;
   return (
     <>
-      <td className="hidden text-right tabular-nums @xl:table-cell" title={opened?.title}>
+      <td
+        className="hidden text-right tabular-nums @xl:table-cell"
+        data-label="Opened"
+        title={opened?.title}
+      >
         {opened ? opened.text : '…'}
       </td>
-      <td className="hidden text-right tabular-nums @2xl:table-cell" title={clicked?.title}>
+      <td
+        className="hidden text-right tabular-nums @2xl:table-cell"
+        data-label="Clicked"
+        title={clicked?.title}
+      >
         {clicked ? clicked.text : '…'}
       </td>
     </>
@@ -79,7 +87,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [status, setStatus] = useState('all');
   const [search, setSearch] = useState('');
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useBroadcasts();
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useBroadcasts();
   // "2 days ago" carries the exact time on hover, and that was this computer's
   // clock with no name. It is the business's, named, like the broadcast itself
   // (Piggles persona issue 984).
@@ -166,21 +174,14 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Send className="size-6" aria-hidden />}
             title="Could not load your broadcasts"
             description="Something went wrong reaching the server. Anything already sent is unaffected. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -249,10 +250,13 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         <span className="truncate text-sm">{broadcast.subject}</span>
                       </div>
                     </td>
-                    <td className="hidden text-right tabular-nums @md:table-cell">
+                    <td
+                      className="hidden text-right tabular-nums @md:table-cell"
+                      data-label="Sent to"
+                    >
                       {isSent ? broadcast.recipientCount.toLocaleString() : '—'}
                     </td>
-                    <td className="hidden text-sm @lg:table-cell">
+                    <td className="hidden text-sm @lg:table-cell" data-label="When">
                       {broadcast.sentAt ? (
                         <Timestamp
                           value={broadcast.sentAt}
@@ -273,8 +277,12 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       <EngagementCells broadcast={broadcast} />
                     ) : (
                       <>
-                        <td className="hidden text-right @xl:table-cell">—</td>
-                        <td className="hidden text-right @2xl:table-cell">—</td>
+                        <td className="hidden text-right @xl:table-cell" data-label="Opened">
+                          —
+                        </td>
+                        <td className="hidden text-right @2xl:table-cell" data-label="Clicked">
+                          —
+                        </td>
                       </>
                     )}
                     <td>

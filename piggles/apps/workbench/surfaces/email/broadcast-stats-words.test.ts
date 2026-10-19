@@ -9,27 +9,27 @@ import {
   anythingCameBack,
 } from './broadcast-stats-words';
 
-/**
- * A PROMISE WITH NO CLOCK IN IT.
- *
- * "Delivered 0" a minute after a send was issue 246: nothing had failed, nothing
- * had been CONFIRMED yet. The fix put a sentence under the number —
- *
- *     23   On their way. Confirmations arrive over the next few minutes.
- *
- * — and that sentence had no clock in it, so it went on saying so for ever. On
- * 2026-09-15 Devi opened her autumn newsletter, sent 2026-08-26, and read it
- * twenty days late. The confirmations were not arriving over the next few
- * minutes. They were never arriving.
- *
- * A sentence about what happens NEXT is a contract. This file is here because
- * the contract has a deadline in it now, and a deadline is a thing a test can
- * hold you to.
- */
+// A PROMISE WITH NO CLOCK IN IT. The fix for issue 246 said "Confirmations arrive over the next few
+// minutes" for ever; Devi read it twenty days after a send. A sentence about what happens NEXT is a
+// contract, and it has a deadline now that a test can hold it to.
 const SENT = '2026-08-26T09:20:07.947Z';
 const sent = { accepted: 23, delivered: 0 };
 
-describe('the Delivered tile', () => {
+describe('the title on the first tile (issue 270)', () => {
+  // "Delivered 6" over "Nothing has come back since to confirm they landed": the
+  // title said delivered while nothing had confirmed it.
+  it('says Sent until a delivery is confirmed', () => {
+    const later = new Date('2026-09-15T09:20:07.947Z');
+    expect(deliveredTile({ accepted: 6, delivered: 0 }, SENT, later).label).toBe('Sent');
+    expect(deliveredTile({ accepted: 0, delivered: 0 }, null, later).label).toBe('Sent');
+  });
+
+  it('says Delivered once the receiving server confirms it', () => {
+    expect(deliveredTile({ accepted: 6, delivered: 4 }, SENT).label).toBe('Delivered');
+  });
+});
+
+describe('the Delivered tile over time', () => {
   it('stops promising confirmations once they are plainly not coming', () => {
     const twentyDaysLater = new Date('2026-09-15T09:20:07.947Z');
     const tile = deliveredTile(sent, SENT, twentyDaysLater);
@@ -49,7 +49,9 @@ describe('the Delivered tile', () => {
     expect(tile.hint).toMatch(/next few minutes/);
     expect(tile.tone).toBe('info');
   });
+});
 
+describe('the Delivered tile at the window', () => {
   it('turns over exactly at the window, not vaguely near it', () => {
     const at = Date.parse(SENT);
     const justInside = new Date(at + CONFIRMATION_WINDOW_MS - 1);
@@ -66,7 +68,9 @@ describe('the Delivered tile', () => {
     expect(confirmationStillExpected('not a date', now)).toBe(true);
     expect(deliveredTile(sent, null, now).hint).toMatch(/next few minutes/);
   });
+});
 
+describe('the Delivered tile at either end', () => {
   it('prefers a confirmed delivery over anything the clock says', () => {
     const long = new Date('2027-01-01T00:00:00.000Z');
     const tile = deliveredTile({ accepted: 23, delivered: 23 }, SENT, long);
@@ -97,31 +101,21 @@ describe('the other tiles', () => {
   });
 });
 
-/**
- * A SHARE NOBODY MEASURED, ON THE LIST.
- *
- * "Autumn drop announcement · Sent to 23 · Opened 0% · Clicked 0%" reads as
- * twenty-three people getting her newsletter and not one opening it — a fact
- * about her writing. The truth is that her mail service has never reported an
- * open to this platform at all: measured 2026-09-16, every one of the 153
- * `email_events` rows on this platform is `accepted`, with no `delivered`,
- * `opened`, `clicked` or `bounced` among them.
- *
- * The DETAIL screen was given four honest states for exactly this in issue 531.
- * The list kept `Math.round((opened / base) * 100)` over the same numbers, so
- * the fix reached one of the two places it lives — for the third time on this
- * screen family (246, 251, 531).
- */
+// A SHARE NOBODY MEASURED, ON THE LIST. "Opened 0%" reads as a fact about her writing when her mail
+// service has never reported an open (2026-09-16: all 153 email_events rows were `accepted`). Issue 531
+// fixed only the detail screen: the third time on this screen family (246, 251, 531).
+const NOTHING_BACK = {
+  accepted: 23,
+  delivered: 0,
+  opened: 0,
+  clicked: 0,
+  bounced: 0,
+  complained: 0,
+  unsubscribed: 0,
+};
+
 describe('engagementCell', () => {
-  const nothingBack = {
-    accepted: 23,
-    delivered: 0,
-    opened: 0,
-    clicked: 0,
-    bounced: 0,
-    complained: 0,
-    unsubscribed: 0,
-  };
+  const nothingBack = NOTHING_BACK;
 
   it('does NOT print 0% when nothing has come back at all', () => {
     const cell = engagementCell(0, nothingBack, 23);

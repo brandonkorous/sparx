@@ -334,7 +334,7 @@ function ConnectionRow({
   const state = connectionStateMeta(connection.status);
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-3 rounded-lg border p-3">
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-2">
           <Text className="font-medium">{providerLabel(connection.provider)}</Text>
           <Badge color={state.tone} variant="soft" size="sm">

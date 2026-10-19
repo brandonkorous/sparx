@@ -34,12 +34,12 @@ import {
   Heading,
   Input,
   NativeSelect,
-  Table,
   Switch,
   Text,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Archive, Grid3x3, QrCode, Save } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -620,10 +620,13 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                             <span className="truncate font-mono text-sm">{row.sku}</span>
                           ) : null}
                         </td>
-                        <td className="text-right font-medium tabular-nums">
+                        <td data-label="Here" className="text-right font-medium tabular-nums">
                           {NUMBER.format(row.onHand)}
                         </td>
-                        <td className="hidden whitespace-nowrap @lg:table-cell">
+                        <td
+                          data-label="Last checked"
+                          className="hidden whitespace-nowrap @lg:table-cell"
+                        >
                           {row.lastCountedAt ? (
                             <Timestamp value={row.lastCountedAt} format="relative" />
                           ) : (

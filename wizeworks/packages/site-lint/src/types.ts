@@ -103,6 +103,14 @@ export interface SiteCapabilities {
    * the check inventing work.
    */
   customerAccounts?: boolean;
+  /**
+   * This site shows its shop: a visitor can put things in a basket here.
+   *
+   * `true` makes "the header has no cart" worth telling the owner about (sparx persona
+   * issue 325). `false` and `undefined` stay silent, on the same contract as
+   * `customerAccounts`.
+   */
+  shop?: boolean;
 }
 
 /** The whole site as the linter sees it — what `lintSite` takes. */
@@ -199,6 +207,7 @@ export type LintRuleId =
   | 'duplicate-node-id'
   // What the shared chrome offers
   | 'chrome-no-account-link'
+  | 'chrome-no-cart'
   // Search-engine metadata
   | 'seo-title-missing'
   | 'seo-title-duplicate'

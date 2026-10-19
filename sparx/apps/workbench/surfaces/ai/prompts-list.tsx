@@ -254,26 +254,23 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 personality. The ones you turn on are the ones it follows.
               </Text>
             </div>
-            <div className="border-base-300 flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-lg border px-3 py-2">
-              <Text as="span" className="text-sm">
-                This is not about letting an outside AI app into your business to look things up or
-                make changes: that’s in
-              </Text>
+            {/* One sentence, so its full stop cannot wrap onto a line of its own. */}
+            <Text className="border-base-300 rounded-lg border px-3 py-2 text-sm">
+              This is not about letting an outside AI app into your business to look things up or
+              make changes: that’s in{' '}
               <Button
                 variant="link"
                 color="module"
                 size="sm"
-                className="h-auto p-0"
+                className="h-auto p-0 align-baseline"
                 onClick={(event) => {
                   ctx.open('ai.tools', {}, { target: targetFor(event) });
                 }}
               >
                 Permissions
               </Button>
-              <Text as="span" className="text-sm">
-                .
-              </Text>
-            </div>
+              .
+            </Text>
           </div>
 
           {isError ? (
@@ -324,7 +321,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   ) : canEdit ? (
                     <Button size="sm" color="module" onClick={openNew}>
                       <Plus className="size-4" aria-hidden />
-                      Write your first instruction
+                      New instruction
                     </Button>
                   ) : undefined
                 }

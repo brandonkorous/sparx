@@ -28,7 +28,11 @@ import {
 } from '@wizeworks/silicaui-react';
 
 import { useCustomer } from '@/components/customer-provider';
-import { AccountError, decideAccountOrder, type B2bOrderDetail } from '@/lib/customer-client';
+import {
+  decideAccountOrder,
+  type B2bOrderDetail,
+  accountFailureWords,
+} from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
 import {
   decisionResultSentence,
@@ -102,9 +106,7 @@ export function SignOffPanel({
       // The server's own words: "You placed this order, so someone else on the
       // account has to approve it", "Ana Ruiz has already approved this order".
       setError(
-        err instanceof AccountError && err.status < 500
-          ? err.message
-          : 'Your decision could not be saved just now. Please try again.'
+        accountFailureWords(err, 'Your decision could not be saved just now. Please try again.')
       );
       setBusy(false);
     }

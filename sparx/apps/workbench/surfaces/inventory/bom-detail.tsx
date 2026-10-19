@@ -46,11 +46,11 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { CookingPot, Hammer, Plus, Save, Trash2 } from 'lucide-react';
 import { FITS_ITS_NAME, PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -718,7 +718,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="What goes into it"
-            description="Quantities are for ONE RUN of the batch size above, not per finished item."
+            description="Quantities are for one run of the batch size above, not for each finished item."
           >
             {editable ? (
               <div className="flex gap-2">
@@ -789,7 +789,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                             />
                           </span>
                         </td>
-                        <td>
+                        <td data-label="Per run">
                           <Input
                             color="module"
                             size="sm"
@@ -811,7 +811,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                             }}
                           />
                         </td>
-                        <td className="hidden @md:table-cell">
+                        <td data-label="Waste %" className="hidden @md:table-cell">
                           <Input
                             color="module"
                             size="sm"
@@ -834,7 +834,10 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                         </td>
                         {/* Waste is a plan, and showing what it actually costs
                             you to pull is what makes a 20% figure feel real. */}
-                        <td className="hidden text-right tabular-nums @lg:table-cell">
+                        <td
+                          data-label="Actually pull"
+                          className="hidden text-right tabular-nums @lg:table-cell"
+                        >
                           {withScrap > quantity ? (
                             <Badge color="warning" variant="soft" size="sm">
                               {withScrap}
@@ -934,11 +937,16 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                           />
                         </span>
                       </td>
-                      <td className="text-right tabular-nums">{component.available}</td>
-                      <td className="hidden text-right tabular-nums @md:table-cell">
+                      <td data-label="Free here" className="text-right tabular-nums">
+                        {component.available}
+                      </td>
+                      <td
+                        data-label="Needed per run"
+                        className="hidden text-right tabular-nums @md:table-cell"
+                      >
                         {component.requiredPerBatch}
                       </td>
-                      <td className="text-right">
+                      <td data-label="Allows" className="text-right">
                         <Badge
                           color={
                             component.isLimiting

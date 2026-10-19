@@ -6,7 +6,7 @@
 **Surface:** the order a supplier gets for a product they ship (every kind of supplier)
 **Filed:** 2026-10-11
 **Fixed:** 2026-10-11
-**Confirmed by:** P01 on screen, 2026-10-11
+**Confirmed by:** the dev outbox, a real send, 2026-10-11
 **Blocked on:** —
 
 ## What happened
@@ -68,6 +68,8 @@ P01, 2026-10-11: Renée's second order (O-000024) went to S&B with "Ship to our 
 Accounts Payable, 2275 S 900 W, Suite 200, Salt Lake City, UT 84119, US" (rendered from the
 order with the same code the worker runs; the dev mail file did not exist yet). Her saved
 address names "Accounts Payable" and no company; her checkout said the same.
+
+In the dev outbox, a real send: "Purchase order O-000026 from Gillett Diesel Service Inc." to S&B Filters (08:43 UTC Oct 11), "Ship to our customer: Accounts Payable, 2275 S 900 W, Suite 200, Salt Lake City, UT 84119, US", with her delivery note.
 
 ## Rating effect
 

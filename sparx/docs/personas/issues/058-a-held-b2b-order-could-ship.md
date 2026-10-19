@@ -6,7 +6,7 @@
 **Surface:** workbench › an order's ship and handover actions, Send to the warehouse, pick lists, the pack bench, pack-and-ship; REST and MCP for the same
 **Filed:** 2026-10-01
 **Fixed:** 2026-10-01
-**Confirmed by:** service tests: `crm/src/services/fulfillment-gate.test.ts` 4 (3 red with the old check), `crm-schemas/src/ship-gate.test.ts` 8. On screen: **not checked** (needs a held B2B order; act 5)
+**Confirmed by:** sparx as Doty, 2026-10-17 (held order O-000020); service tests
 **Blocked on:** —
 
 ## What happened
@@ -33,6 +33,10 @@ screen that would send it says so.
 - The warehouse refuses early with the same words: pick list generation, opening a
   box (`inventory/src/services/pick-lists.ts`, `packing.ts`).
 - The workbench order screen reads the same rule (built with [057]).
+
+## Confirmed by
+
+On screen, sparx as Doty, 2026-10-17, on O-000020 (Renée, $1,380.65, "Waiting for Teodora Vukić-Hale"). The order reads "Not to send yet" and offers only "Open Approvals" and "Cancel order": no shipment, handover or Send to the warehouse. Orders › To pack lists 16 orders and leaves it out. The pack bench refused a box: "Order O-000020 is waiting for approval. Approve it before anything on it is sent.", and the database holds 0 boxes for it. The bench had offered the box first ([293], fixed).
 
 ## Rating effect
 

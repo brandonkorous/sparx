@@ -40,11 +40,12 @@ function RunRow({ run, onOpen }: { run: RunSummary; onOpen: () => void }) {
   // a run that overwrote thirty (run-outcome, sparx persona issue 106).
   const breakdown = landedBreakdown(
     { imported: run.importedCount, updated: run.updatedCount },
-    run.dryRun
+    run.dryRun,
+    run.entities.every((entity) => entity === 'customers')
   );
   return (
     <div className="border-base-300 bg-base-100 flex flex-wrap items-center gap-3 rounded-xl border p-4">
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-2">
           <Heading level={3} className="text-base">
             {/* The platform's own name ("Shopify"), not its slug (sparx persona 053). */}

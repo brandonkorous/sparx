@@ -25,6 +25,11 @@ The blueprint has two halves (perfect-template doc, "Two workstreams"):
 
 ## Regenerating `site.json` (the capture step)
 
+**Before you capture again:** put the "Cart button (with item count)" piece in the live
+Template's header, right after the account link. Version 1.6.5 added it to this file with
+`withCartButton` (sparx persona issue 325) because the Template did not have it, so a
+capture from a Template without it takes the cart back out of every install.
+
 `site.json` in the repo is a **placeholder** until captured. Produce the real one from
 the live Template, either way:
 

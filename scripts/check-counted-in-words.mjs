@@ -123,8 +123,13 @@ const STRINGS = /'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*"|`(?:[^`\\]|\\.)*`/g;
  * tests: the character class in that regex opens with a quote, so the scanner
  * above tokenises part of it as a string. Two of those were the only false
  * alarms in the first run, and both are method calls.
+ *
+ * And the word is a WORD: lower case, or capitalised at the start of a sentence.
+ * A camelCase name is a function: `servicePriceLabel(s)` inside a template
+ * literal is a call on a service `s`, not "label(s)" (2026-10-18: the only two
+ * findings on main were that one call, in each console).
  */
-const COUNTED = /(?:^|[^.\w$])[A-Za-z]+\(s\)/;
+const COUNTED = /(?:^|[^.\w$])[A-Z]?[a-z]+\(s\)/;
 
 /**
  * Two things, and only two.

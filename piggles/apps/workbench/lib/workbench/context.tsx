@@ -1,11 +1,8 @@
 'use client';
 
-// Workbench context — how a surface reaches the app around it.
-//
-// A surface gets exactly one handle (SurfaceContext) and it comes from here.
-// There is no escape hatch to the dock, the window manager, or a sibling pane,
-// because the moment one exists surfaces start arranging each other and the
-// operator stops being in charge of their own screen.
+// Workbench context: how a surface reaches the app around it, through exactly one handle (SurfaceContext).
+// There is no escape hatch to the dock, window manager or a sibling pane, because then surfaces start
+// arranging each other and the operator stops being in charge of their own screen.
 
 import { createContext, useContext, useMemo, useRef, useSyncExternalStore } from 'react';
 import type { ReactNode } from 'react';
@@ -15,7 +12,7 @@ import type { PaneDescriptor, SurfaceParams } from '../surfaces/descriptor';
 
 interface WorkbenchValue {
   controller: WorkbenchController;
-  /** This window's id — panes render differently in a detached window (no launcher rail). */
+  /** This window's id: panes render differently in a detached window (no launcher rail). */
   windowId: string;
   role: 'main' | 'detached';
 }
@@ -53,7 +50,13 @@ export function useWorkbench(): WorkbenchValue {
   return value;
 }
 
-/** Live view of every open pane in this window — drives the pane switcher and overview. */
+/** The workbench, or null outside one: for shared parts that also render in
+ *  places with no dock, such as a torn-off window or a test. */
+export function useOptionalWorkbench(): WorkbenchValue | null {
+  return useContext(WorkbenchCtx);
+}
+
+/** Live view of every open pane in this window. Drives the pane switcher and overview. */
 export function useOpenPanes(): PaneDescriptor[] {
   const { controller } = useWorkbench();
   const snapshot = useSyncExternalStore(
@@ -65,10 +68,8 @@ export function useOpenPanes(): PaneDescriptor[] {
   return useMemo(() => Object.values(snapshot), [snapshot]);
 }
 
-/**
- * Builds the handle handed to one surface. Memoised on the pane id so a surface
- * doesn't re-render every time an unrelated pane opens.
- */
+/** Builds the handle handed to one surface. Memoized on the pane id so a surface
+ *  doesn't re-render every time an unrelated pane opens. */
 export function useSurfaceContext(descriptor: PaneDescriptor): SurfaceContext {
   const { controller } = useWorkbench();
 
@@ -85,10 +86,9 @@ export function useSurfaceContext(descriptor: PaneDescriptor): SurfaceContext {
       close: () => {
         controller.close(descriptor.id);
       },
-      // The imperative form, kept for surfaces that need to register outside
-      // React's render cycle. Registers under the fixed surface source id, so
-      // it is ONE of a pane's dirty sources rather than the only one — a nested
-      // editor adds its own via useDirtySource. Prefer that hook in a component.
+      // The imperative form, for registering outside React's render cycle. It is ONE of a pane's
+      // dirty sources (the fixed surface id); a nested editor adds its own via useDirtySource,
+      // which is the hook to prefer in a component.
       guard: (isDirty: () => boolean, message?: string) =>
         controller.registerGuard(descriptor.id, SURFACE_DIRTY_SOURCE, isDirty, message),
       setViewParams: (patch: Readonly<Record<string, string | null>>) => {

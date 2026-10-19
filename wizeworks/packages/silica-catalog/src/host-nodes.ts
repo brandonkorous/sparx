@@ -222,6 +222,19 @@ export const HOST_KEYS = {
    *  is already sitting in. Not pinned — the tenant owns where it sits, exactly as
    *  they own the brand mark and the theme toggle. */
   siteAccountLink: 'site.account-link',
+  /** The header's CART BUTTON — a cart glyph with the live count of what is in it,
+   *  opening the cart drawer (a plain link to `/cart` without JavaScript).
+   *
+   *  A host core because the count is per visitor and changes as she shops; a stamped
+   *  "Cart" link cannot say "2 items". It was missing outright: the site had a
+   *  finished `CartButton` that nothing mounted, so on every silica-framed shop the
+   *  drawer opened once, on Add to cart, and once it was closed the only way back to
+   *  the basket was the footer's "Cart" link (sparx persona issue 325).
+   *
+   *  Renders NOTHING on a site that does not show its shop, so a journal or a portfolio
+   *  that carries it from a design never shows an empty basket. Not pinned — the tenant
+   *  owns where it sits, as with the account link. */
+  siteCartButton: 'site.cart-button',
   /** PAGE LINKS for a bound list on this page — Previous / 1 2 3 / Next, plus
    *  "Showing 25–48 of 137".
    *
@@ -660,6 +673,17 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     hint: 'Says “Sign in” to a visitor and shows a customer their own name once they are signed in, linking to their orders and details. Put it in your header.',
     defaultClass: 'inline-flex items-center',
     // Not pinned: the tenant owns whether and where an account link sits in their chrome.
+    pinned: false,
+  },
+  {
+    key: HOST_KEYS.siteCartButton,
+    label: 'Cart button (with item count)',
+    category: 'Your site',
+    // No cart glyph in the curated set; `box` is what the shopping cart core uses too.
+    icon: 'box',
+    hint: 'A cart icon with the number of items in it. Opens the cart from any page. Shows only while your site shows its shop. Put it in your header.',
+    defaultClass: 'inline-flex items-center',
+    // Not pinned: the tenant owns where the cart sits in their header.
     pinned: false,
   },
   {

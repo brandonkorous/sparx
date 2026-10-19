@@ -103,14 +103,16 @@ function Row({
         <span className="line-clamp-2 font-medium break-words">{product.title}</span>
         <span className="block truncate font-mono text-sm">/{product.handle}</span>
       </td>
-      <td className="hidden max-w-40 truncate whitespace-nowrap @xl:table-cell">
+      <td data-label="Brand" className="hidden max-w-40 truncate whitespace-nowrap @xl:table-cell">
         {product.vendor ?? product.productType ?? '—'}
       </td>
-      <td className="hidden text-right tabular-nums @2xl:table-cell">{product.variantCount}</td>
-      <td className="hidden text-sm whitespace-nowrap @4xl:table-cell">
+      <td data-label="Versions" className="hidden text-right tabular-nums @2xl:table-cell">
+        {product.variantCount}
+      </td>
+      <td data-label="Changed" className="hidden text-sm whitespace-nowrap @4xl:table-cell">
         {formatDate(product.updatedAt)}
       </td>
-      <td className="text-right font-medium whitespace-nowrap tabular-nums">
+      <td data-label="Price" className="text-right font-medium whitespace-nowrap tabular-nums">
         {priceLabel(product)}
       </td>
       <td className="whitespace-nowrap">

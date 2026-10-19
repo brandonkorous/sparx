@@ -22,6 +22,8 @@ export interface EnsureMembershipNames {
 export interface EnsureMembershipResult {
   /** The per-site `customers` row id this login maps to on the active site. */
   customerId: string;
+  /** Always false here: see {@link AwaitingConfirmation}. */
+  awaitingConfirmation?: false;
   /** True when this call CREATED the membership for the active site (drives the
    *  docs/58 D6 "recognized" signal in combination with a pre-existing user). */
   created: boolean;
@@ -29,6 +31,21 @@ export interface EnsureMembershipResult {
    *  writing the login (and maybe a site and a name) onto it. The row is
    *  somebody the business already had, now changed. */
   adopted: boolean;
+}
+
+/**
+ * A login whose email is not confirmed, on a site where somebody already left a
+ * record under that email (a guest's orders, a booking, a CRM import). The record
+ * is not handed over until the address is confirmed (sparx persona issue 329), and
+ * a second row cannot be made beside it (one email per site), so this login has
+ * no membership on this site yet. The caller treats it as not signed in here and
+ * asks for the confirm link.
+ */
+export interface AwaitingConfirmation {
+  customerId: null;
+  created: false;
+  adopted: false;
+  awaitingConfirmation: true;
 }
 
 /**
@@ -54,6 +71,14 @@ export interface EnsureMembershipResult {
  * docs/58 D6 true: a first sign-in on a sister site gets a fresh membership and
  * fresh consent, never another site's.
  *
+ * ADOPTING NEEDS A CONFIRMED EMAIL (sparx persona issue 329). The row a guest left
+ * holds what she bought, where she lives and when she is booked in. Sign-up does
+ * not check the inbox, so adopting on the email alone gave all of that to anyone
+ * who typed her address and a password: a stranger's guest order, with her home
+ * address, opened in an account made a minute before. An unconfirmed login now
+ * gets {@link AwaitingConfirmation} instead, and the next request after the link
+ * is opened adopts the row as before.
+ *
  * THIS DOES NOT ANNOUNCE THE PERSON. This package cannot reach the CRM bus, so
  * the caller must, from `created` and `adopted`, once this has returned (it has
  * committed by then). api-rest's `ensureAnnouncedMembership` is that caller, and
@@ -65,9 +90,10 @@ export function ensureMembership(
   propertyId: string | null,
   authUserId: string,
   email: string,
-  names: EnsureMembershipNames
-): Promise<EnsureMembershipResult> {
-  return withTenant(ctx, async (tx) => {
+  names: EnsureMembershipNames,
+  emailVerified: boolean
+): Promise<EnsureMembershipResult | AwaitingConfirmation> {
+  return withTenant(ctx, async (tx): Promise<EnsureMembershipResult | AwaitingConfirmation> => {
     const linked = await tx.customer.findFirst({
       where: { propertyId, authUserId, deletedAt: null },
       select: { id: true },
@@ -86,6 +112,9 @@ export function ensureMembership(
             select: { id: true, firstName: true, lastName: true, propertyId: true },
           })
         : null);
+    if (guest && !emailVerified) {
+      return { customerId: null, created: false, adopted: false, awaitingConfirmation: true };
+    }
     if (guest) {
       // Registering an account links the login; it is not a purchase, so the
       // lifecycle stage is left to the order path to advance (see checkout-service).

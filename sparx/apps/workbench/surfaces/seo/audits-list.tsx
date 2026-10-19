@@ -80,7 +80,7 @@ function ChecklistRow({ check }: { check: ChecklistCheck }) {
       <Badge color={checkTone(check.status)} variant="soft" size="sm">
         {check.status === 'fail' ? 'Failing' : check.status === 'warn' ? 'Warning' : 'Good'}
       </Badge>
-      <Text className="min-w-0 flex-1 font-medium">{check.label}</Text>
+      <Text className="min-w-0 flex-1 basis-48 font-medium">{check.label}</Text>
       <Text className="shrink-0 text-sm tabular-nums">
         {affected === 0
           ? 'All pages pass'

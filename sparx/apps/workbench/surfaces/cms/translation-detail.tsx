@@ -383,9 +383,6 @@ function Editor({
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {product.title}
-            </Heading>
             <Text className="text-base">
               {locales.length === 0
                 ? 'Written in one language. Add another and shoppers reading your site in it will see your words, not a machine translation.'

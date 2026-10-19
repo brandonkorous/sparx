@@ -29,9 +29,9 @@ import {
   Card,
   EmptyState,
   NativeSelect,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Handshake, PackageSearch } from 'lucide-react';
 import { useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -132,7 +132,7 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
                   {ownershipLabel(row.ownership)}
                 </Badge>
               </td>
-              <td className="hidden max-w-[14rem] truncate @lg:table-cell">
+              <td className="hidden max-w-[14rem] truncate @lg:table-cell" data-label="Owner">
                 {/* Named, or conspicuously not. Consigned stock with no owner is
                     a debt to nobody, and settlement will refuse it later — better
                     to see the gap here. */}
@@ -140,8 +140,10 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
                   <Text className="text-sm">nobody named</Text>
                 )}
               </td>
-              <td className="text-right tabular-nums">{row.onHand}</td>
-              <td className="text-right tabular-nums">
+              <td className="text-right tabular-nums" data-label="On hand">
+                {row.onHand}
+              </td>
+              <td className="text-right tabular-nums" data-label="Value">
                 {row.valueCents === null ? (
                   <Text className="text-sm">not costed</Text>
                 ) : (

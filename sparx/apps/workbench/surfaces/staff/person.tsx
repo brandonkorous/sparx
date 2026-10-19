@@ -43,11 +43,11 @@ import {
   FieldLabel,
   Input,
   NativeSelect,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   Archive,
   ArchiveRestore,
@@ -604,7 +604,9 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
                 <td className="font-medium tabular-nums">
                   {rateAmountLabel(rate.basis, rate.amountCents, rate.currency)}
                 </td>
-                <td className="text-sm">{rateWindowLabel(rate.effectiveFrom, rate.effectiveTo)}</td>
+                <td className="text-sm" data-label="Applies">
+                  {rateWindowLabel(rate.effectiveFrom, rate.effectiveTo)}
+                </td>
                 <td className="hidden text-sm @lg:table-cell">{rate.note ?? '—'}</td>
                 <td className="text-right">
                   <Button
@@ -1161,7 +1163,9 @@ function HoursSection({
                 return (
                   <tr key={entry.id}>
                     <td className="whitespace-nowrap">{formatDate(entry.workedOn)}</td>
-                    <td className="tabular-nums">{formatMinutes(entry.minutes)}</td>
+                    <td className="tabular-nums" data-label="Hours">
+                      {formatMinutes(entry.minutes)}
+                    </td>
                     <td>
                       <Badge color={state.tone} variant="soft" size="sm">
                         {state.label}
@@ -1242,13 +1246,15 @@ function CommissionSection({
             return (
               <tr key={row.id}>
                 <td className="max-w-48 truncate">{row.sourceLabel ?? row.sourceType}</td>
-                <td className="whitespace-nowrap">{formatDate(row.earnedOn)}</td>
+                <td className="whitespace-nowrap" data-label="Earned">
+                  {formatDate(row.earnedOn)}
+                </td>
                 <td>
                   <Badge color={state.tone} variant="soft" size="sm">
                     {state.label}
                   </Badge>
                 </td>
-                <td className="text-right font-medium tabular-nums">
+                <td className="text-right font-medium tabular-nums" data-label="Amount">
                   {formatCents(row.amountCents, row.currency)}
                 </td>
               </tr>

@@ -237,7 +237,7 @@ function WeeklyHours({
                         <Input
                           type="time"
                           color={invalid ? 'error' : 'module'}
-                          className="max-w-32 tabular-nums"
+                          className="max-w-36 tabular-nums"
                           aria-label={`${day.label}: start of hours ${String(index + 1)}`}
                           value={window.start}
                           onChange={(event) => {
@@ -255,7 +255,7 @@ function WeeklyHours({
                         <Input
                           type="time"
                           color={invalid ? 'error' : 'module'}
-                          className="max-w-32 tabular-nums"
+                          className="max-w-36 tabular-nums"
                           aria-label={`${day.label}: end of hours ${String(index + 1)}`}
                           value={window.end}
                           onChange={(event) => {
@@ -563,7 +563,7 @@ function Closures({
                   <Input
                     type="time"
                     color={hoursValid ? 'module' : 'error'}
-                    className="max-w-32 tabular-nums"
+                    className="max-w-36 tabular-nums"
                     aria-label="Opening time on these dates"
                     value={openTime}
                     onChange={(event) => {
@@ -580,7 +580,7 @@ function Closures({
                   <Input
                     type="time"
                     color={hoursValid ? 'module' : 'error'}
-                    className="max-w-32 tabular-nums"
+                    className="max-w-36 tabular-nums"
                     aria-label="Closing time on these dates"
                     value={closeTime}
                     onChange={(event) => {

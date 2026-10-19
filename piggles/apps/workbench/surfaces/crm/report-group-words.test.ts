@@ -66,4 +66,15 @@ describe('an empty answer (sparx persona issue 255)', () => {
       'There are no deals to count yet.'
     );
   });
+
+  it('says there is nothing yet when nothing exists, filter or not', () => {
+    // "Where your deals are" keeps to open deals (issue 250), so a business
+    // with no deals at all was told to loosen a filter it could not change.
+    expect(emptyAnswer({ narrowed: true, holdsAny: false, labelPlural: 'Deals' })).toBe(
+      'There are no deals to count yet.'
+    );
+    expect(emptyAnswer({ narrowed: true, holdsAny: true, labelPlural: 'Deals' })).toBe(
+      'Nothing matches yet. Loosen a filter, or widen the period.'
+    );
+  });
 });

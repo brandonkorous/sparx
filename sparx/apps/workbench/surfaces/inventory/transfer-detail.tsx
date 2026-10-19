@@ -95,6 +95,7 @@ import {
   type TransferLine,
 } from './transfers-data';
 import { formatCount } from './reporting-data';
+import { availableTitle, spokenForReason } from './transfer-availability';
 import { ScanInput, playScanFeedback } from './scan-input';
 import { useScanQueue, useScanToTransfer, type ScanActionResult } from './scan-data';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -398,13 +399,10 @@ function LineEditorModal({
               ) : tooMany ? (
                 <Alert color="warning" variant="soft">
                   <AlertContent>
-                    <AlertTitle>
-                      {formatCount(sourceLevel.available)} available at {fromWarehouseName}
-                    </AlertTitle>
+                    <AlertTitle>{availableTitle(sourceLevel, fromWarehouseName)}</AlertTitle>
                     <AlertDescription>
-                      {sourceLevel.allocated > 0
-                        ? `${formatCount(sourceLevel.onHand)} are on the shelf, but ${formatCount(sourceLevel.allocated)} are spoken for by orders that have not shipped. A transfer can only take what is free.`
-                        : 'A transfer this big cannot be sent, and it will be refused when you try.'}
+                      {spokenForReason(sourceLevel) ??
+                        'A transfer this big cannot be sent, and it will be refused when you try.'}
                     </AlertDescription>
                   </AlertContent>
                 </Alert>

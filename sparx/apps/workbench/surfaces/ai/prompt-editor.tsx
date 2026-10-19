@@ -263,8 +263,8 @@ function InstructionEditor({
   const keyError =
     isNew && !KEY_RE.test(draft.key)
       ? draft.key.trim() === ''
-        ? 'An id is needed. It is created from the name.'
-        : 'The id can use lowercase letters, numbers and dashes only.'
+        ? 'A reference name is needed. It is created from the name.'
+        : 'The reference name can use lowercase letters, numbers and dashes only.'
       : null;
   const bodyError = draft.body.trim() === '' ? 'Write the instruction itself.' : null;
 
@@ -509,7 +509,7 @@ function InstructionEditor({
 
             {isNew ? (
               <Field>
-                <FieldLabel>Id</FieldLabel>
+                <FieldLabel>Reference name</FieldLabel>
                 <FieldControl
                   render={
                     <Input
@@ -530,17 +530,17 @@ function InstructionEditor({
                   <FieldStatus status="error">{keyError}</FieldStatus>
                 ) : (
                   <FieldDescription>
-                    A short, permanent tag used behind the scenes. It is filled in from the name and
-                    cannot be changed once saved.
+                    A short, permanent name used behind the scenes. It is filled in from the name
+                    and cannot be changed once saved.
                   </FieldDescription>
                 )}
               </Field>
             ) : prompt ? (
               <Field>
-                <FieldLabel>Id</FieldLabel>
+                <FieldLabel>Reference name</FieldLabel>
                 <Text className="font-mono text-sm">{prompt.key}</Text>
                 <FieldDescription>
-                  The permanent tag for this instruction. It cannot be changed.
+                  The permanent reference name for this instruction. It cannot be changed.
                 </FieldDescription>
               </Field>
             ) : null}

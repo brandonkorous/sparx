@@ -6,7 +6,7 @@
 **Surface:** workbench › Move in (Shopify products); the site editor's link box
 **Filed:** 2026-10-01
 **Fixed:** 2026-10-01
-**Confirmed by:** re-imported his file: 653 products, 777 versions, 0 errors; `07-CC-24V19+`, `#80`, `GDS H1/HX`, `0281 006414` all in, at the file's prices. The link-box half is in silicaui source, **not checked** on screen until the next silicaui release.
+**Confirmed by:** re-import on screen, 2026-10-01; the link box, sparx as Doty, 2026-10-17, read from the page
 **Blocked on:** —
 
 ## What happened
@@ -53,6 +53,10 @@ list goes to the page from anywhere on the site.
   addresses.
 
 Checks: import-worker 82/82, commerce-schemas 573+, silicaui-builder tsc 0.
+
+## Confirmed by
+
+The link-box half, sparx as Doty, 2026-10-17 (silicaui 0.60.2): the "Links to" box offers 700 places, the policy pages among them, read from the page. See [042].
 
 ## Rating effect
 

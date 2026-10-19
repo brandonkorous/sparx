@@ -19,23 +19,11 @@ function contactName(contact: AccountContact): string {
   return contact.customer.company ?? contact.customer.email ?? 'Unnamed contact';
 }
 
-export function ContactRow({
-  contact,
-  busy,
-  onRole,
-  onToggleActive,
-}: {
-  contact: AccountContact;
-  busy: boolean;
-  onRole: (role: ContactRole) => void;
-  onToggleActive: () => void;
-}) {
-  // Asked first. Remove is one click and the list re-sorts after every change,
-  // so after Restore the pointer sat on the NEXT person's Remove: a double click
-  // took the account's only approver away, with nothing to say so (sparx persona
-  // issue 091). Restore needs no question; it gives access back.
+// Remove is asked first: the list re-sorts after every change, so a double click after Restore took
+// the account's only approver away unannounced (sparx persona issue 091). Restore gives access back.
+function useToggleWithConfirm(contact: AccountContact, onToggleActive: () => void) {
   const confirm = useConfirm();
-  const onToggle = async () => {
+  return async () => {
     if (contact.isActive) {
       const name = contactName(contact);
       const ok = await confirm({
@@ -49,9 +37,23 @@ export function ContactRow({
     }
     onToggleActive();
   };
+}
+
+export function ContactRow({
+  contact,
+  busy,
+  onRole,
+  onToggleActive,
+}: {
+  contact: AccountContact;
+  busy: boolean;
+  onRole: (role: ContactRole) => void;
+  onToggleActive: () => void;
+}) {
+  const onToggle = useToggleWithConfirm(contact, onToggleActive);
   return (
     <li className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-2 border-b pb-3 last:border-b-0 last:pb-0">
-      <span className="min-w-0 flex-1">
+      <span className="min-w-0 flex-1 basis-48">
         <span className="block font-medium">{contactName(contact)}</span>
         {contact.customer.email ? (
           <Text as="span" className="block text-sm">

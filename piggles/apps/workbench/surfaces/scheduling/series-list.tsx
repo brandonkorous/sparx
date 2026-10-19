@@ -217,7 +217,10 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       <div className="font-medium">{series.serviceName ?? 'A service'}</div>
                       <div className="text-sm">{humanizeRrule(series.rrule)}</div>
                     </td>
-                    <td className="hidden text-right align-top font-mono text-sm tabular-nums @xl:table-cell">
+                    <td
+                      className="hidden text-right align-top font-mono text-sm tabular-nums @xl:table-cell"
+                      data-label="Still to come"
+                    >
                       {series.upcomingBookings}
                     </td>
                     <td className="text-right align-top">

@@ -6,7 +6,7 @@
 **Surface:** catalog, cart, checkout, orders, invoices, returns, reports, the live site
 **Filed:** 2026-10-01
 **Fixed:** 2026-10-01
-**Confirmed by:** **not checked** on screen yet. Re-run P01: set a core deposit on SKU 0986435621, buy it on the site with a test card, receive the core on the order, and read the refund, the receipt email and the cores-owed list.
+**Confirmed by:** sparx as Doty and the Gillett site, 2026-10-17, in part (a card purchase not checked: needs Stripe)
 **Blocked on:** —
 
 **Decision (Brandon, 2026-10-01):** build real core deposits and refunds. "No
@@ -95,6 +95,10 @@ clean on every touched package.
 
 - Sending cores on to the remanufacturer for credit (supplier side) is not part
   of this. The supplier return screens exist but have no "core" reason.
+
+## Confirmed by
+
+On screen, 2026-10-17, in part. SKU 0986435621 in the console: "+ $150.00 core, or old part first". On the site, signed in as Renée: $528.00 (was $600.00) and "A $150.00 refundable core deposit, or send your old part first". Cores owed: "2 cores owed on 2 order lines. If every deposit came back, you would give back $150.00.", with O-000033 (0986435621, 1 of 2, $150.00) and "Core came back" / "Keep deposit". Held order O-000020 lists "Core deposit 1 × $150.00" per injector. Earlier in the run, on screen: a core received on INV-000001 ($678.00 → $528.00, 2026-10-09) and the deposits left out of Reports' revenue ([172]). Not checked: buying with a test card, the gateway refund and the receipt email (no business here takes card payments).
 
 ## Rating effect
 

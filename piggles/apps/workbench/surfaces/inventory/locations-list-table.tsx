@@ -50,7 +50,10 @@ function Row({
             edge — the one column that must never be the one to go. */}
       <td className="w-full max-w-0 min-w-56">
         <span className="flex min-w-0 flex-col">
-          <span className="flex min-w-0 items-center gap-2">
+          {/* Wraps: the badges never shrink, and "Ships online orders" with
+                "Address too short for couriers" beside a name is wider than
+                a phone (sparx persona issue 274). */}
+          <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
             <span className="truncate font-medium">{location.name}</span>
             {/* Where it came FROM, beside the name, because the whole
                   problem is that a place nobody set up looks exactly
@@ -88,10 +91,12 @@ function Row({
           {place ? <span className="truncate text-sm @xl:hidden">{place}</span> : null}
         </span>
       </td>
-      <td className="hidden whitespace-nowrap @lg:table-cell">
+      <td data-label="Kind" className="hidden whitespace-nowrap @lg:table-cell">
         {locationTypeLabel(location.type)}
       </td>
-      <td className="hidden max-w-48 truncate @xl:table-cell">{place ?? '—'}</td>
+      <td data-label="Where" className="hidden max-w-48 truncate @xl:table-cell">
+        {place ?? '—'}
+      </td>
       <td>
         <Badge color={state.tone} variant="soft" size="sm">
           {state.label}

@@ -6,7 +6,7 @@
 **Surface:** every invoice email: "Remind before a wholesale invoice is due", "Invoice reminder", the overdue notices
 **Filed:** 2026-10-06
 **Fixed:** 2026-10-06
-**Confirmed by:** P01, 2026-10-06
+**Confirmed by:** the dev outbox, a real send, 2026-10-17
 **Blocked on:** —
 
 ## What happened
@@ -47,6 +47,8 @@ Test, proved red:
 ## Confirmed by
 
 Renée's 4459 reminder, rebuilt with the sending code at 23:2x Denver time on Oct 6 (05:2x UTC Oct 7): "is now 7 days overdue … Days overdue 7", due Sep 29. Seven calendar days in Denver.
+
+In the dev outbox, a real send: "Final notice: 4466" to Lars Høgberg at 01:51 UTC Oct 17 (7:51 pm Oct 16 in Denver) reads "Invoice 4466 is now 30 days overdue" and "Days overdue 30". 4466 was due Sep 16: 30 calendar days in Denver, where counting by UTC would have said 31.
 
 ## Rating effect
 

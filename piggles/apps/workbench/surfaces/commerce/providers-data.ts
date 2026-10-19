@@ -83,6 +83,10 @@ export interface SparxPayStatus {
   chargesEnabled: boolean;
   payoutsEnabled: boolean;
   detailsSubmitted: boolean;
+  /** Stripe's requirement keys still owed (currently and past due). */
+  due?: string[];
+  /** Stripe has everything and is checking it. */
+  checking?: boolean;
 }
 
 export interface PaymentConfig {
@@ -273,4 +277,72 @@ export function checkoutSummary(
   return active.checkout === 'none'
     ? { tone: 'info', label: 'No card payments' }
     : { tone: 'success', label: 'Taking payments' };
+}
+
+export interface SparxPayNeed {
+  tone: 'info' | 'warning';
+  title: string;
+  description: string;
+}
+
+/** Stripe's requirement keys in the owner's words, matched on the key's last
+ *  part so `individual.`, `company.` and `person_….` prefixes all read the same.
+ *  First match wins, so the ID photo is not also read as "your date of birth". */
+const NEED_WORDS: readonly (readonly [RegExp, string])[] = [
+  [/verification.(additional_)?document$/, 'a photo of your ID'],
+  [/^external_account$/, 'your bank account for payouts'],
+  [/^tos_acceptance./, "your OK to Stripe's terms"],
+  [/(ssn_last_4|id_number)$/, 'your Social Security number'],
+  [/tax_id$/, "your business's tax ID"],
+  [/dob./, 'your date of birth'],
+  [/address./, 'your address'],
+  [/^business_type$/, 'what kind of business it is'],
+  [/statement_descriptor/, 'the name buyers see on their card statement'],
+  [/^business_profile./, 'a few words about your business'],
+  [/^(representative|owners|directors|executives)/, 'who owns and runs the business'],
+  [/(first_name|last_name|email|phone)$/, 'your name and contact details'],
+];
+
+function inWords(due: readonly string[]): string {
+  const words: string[] = [];
+  for (const key of due) {
+    const word = NEED_WORDS.find(([pattern]) => pattern.test(key))?.[1] ?? 'a few more details';
+    if (!words.includes(word)) words.push(word);
+  }
+  if (words.length < 2) return words[0] ?? 'a few more details';
+  return `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
+}
+
+/**
+ * What sparx Pay is waiting on, said plainly, or null when it is waiting on
+ * nothing. Stripe sends the exact list of what it still needs; the pane used to
+ * read only "details submitted", so once the form was sent it said "not
+ * finished" and nothing else while Stripe was waiting on a photo of an ID
+ * (sparx persona issue 327).
+ */
+export function sparxPayNeed(status: SparxPayStatus | undefined): SparxPayNeed | null {
+  if (!status?.accountId || status.chargesEnabled) return null;
+  const due = status.due ?? [];
+  if (due.length > 0) {
+    return {
+      tone: 'warning',
+      title: `Stripe needs ${inWords(due)}`,
+      description: 'Continue setup to add it. Card payments start once Stripe has it.',
+    };
+  }
+  if (status.checking) {
+    return {
+      tone: 'info',
+      title: 'Stripe is checking your details',
+      description: 'There is nothing for you to do. Check back here in a few minutes.',
+    };
+  }
+  if (!status.detailsSubmitted) {
+    return {
+      tone: 'info',
+      title: 'Details still needed',
+      description: 'Card payments start once the rest of your details are in.',
+    };
+  }
+  return null;
 }

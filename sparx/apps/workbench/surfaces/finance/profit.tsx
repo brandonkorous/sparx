@@ -25,6 +25,7 @@
 import { useMemo, useState } from 'react';
 import {
   Alert,
+  AlertActions,
   AlertContent,
   AlertDescription,
   AlertTitle,
@@ -316,6 +317,9 @@ export function ProfitSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         ) : (
           <ProfitBody
+            onOpenCosts={() => {
+              ctx.open('inventory.costing.uncosted', {}, { target: 'tab' });
+            }}
             current={data.current}
             previous={data.previous}
             series={data.series}
@@ -334,7 +338,10 @@ function ProfitBody({
   series,
   period,
   currency,
+  onOpenCosts,
 }: {
+  /** Opens the screen where a cost is put on each thing that has none. */
+  onOpenCosts: () => void;
   current: ProfitFigures;
   previous: ProfitFigures;
   series: { bucket: string; revenueCents: number; netProfitCents: number }[] | null;
@@ -351,6 +358,8 @@ function ProfitBody({
     uncosted.data?.uncostedUnits ?? 0
   );
   const lost = current.netProfitCents < 0;
+  // Stock with no cost counts as free, so a profit over it is overstated.
+  const uncounted = cogs.partial || cogs.unmeasured;
   const margin = revenue > 0 ? current.netProfitCents / revenue : null;
 
   // The word says which way it went; the number says how big it was. Both halves
@@ -392,12 +401,34 @@ function ProfitBody({
             period={period}
           />
           {margin !== null ? (
-            <Badge color={lost ? 'danger' : 'success'} variant="soft" size="sm">
+            // Not good news while free-counted stock props it up (issue 271).
+            <Badge
+              color={lost ? 'danger' : uncounted ? 'warning' : 'success'}
+              variant="soft"
+              size="sm"
+            >
               {/* The size of the share. "You lost" above already said which way. */}
               {formatRate(Math.abs(margin))} of everything you sold
             </Badge>
           ) : null}
         </div>
+
+        {uncounted && !lost ? (
+          <Alert color="warning" className="mt-4">
+            <AlertContent>
+              <AlertTitle>You kept less than this</AlertTitle>
+              <AlertDescription>
+                Things with no cost recorded count as free here, so this figure is too high.{' '}
+                {cogs.gap}
+              </AlertDescription>
+            </AlertContent>
+            <AlertActions>
+              <Button size="sm" color="module" onClick={onOpenCosts}>
+                Put in costs
+              </Button>
+            </AlertActions>
+          </Alert>
+        ) : null}
 
         {lost ? (
           <Alert color="warning" className="mt-4">

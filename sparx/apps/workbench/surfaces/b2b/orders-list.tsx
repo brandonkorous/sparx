@@ -27,14 +27,15 @@ import {
   Filter,
   FilterItem,
   SearchInput,
-  Table,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, ShoppingCart, X } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneLoadError } from '../../components/pane-load-error';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { orderBusiness, orderBuyer } from './wholesale-order-row';
 import {
   customerName,
   formatDate,
@@ -236,10 +237,19 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <td className="font-mono text-sm whitespace-nowrap">{order.orderNumber}</td>
-                    <td className="hidden max-w-48 truncate @lg:table-cell">
-                      {customerName(order.customer)}
+                    {/* The column is headed Business, so it says the business, with who
+                        rang under it (issue 310). */}
+                    <td className="hidden max-w-48 @lg:table-cell">
+                      <span className="block truncate">
+                        {orderBusiness(order) ?? customerName(order.customer)}
+                      </span>
+                      {orderBuyer(order) ? (
+                        <span className="block truncate text-sm">{orderBuyer(order)}</span>
+                      ) : null}
                     </td>
-                    <td className="hidden text-sm @2xl:table-cell">{formatDate(order.placedAt)}</td>
+                    <td className="hidden text-sm @2xl:table-cell" data-label="Placed">
+                      {formatDate(order.placedAt)}
+                    </td>
                     <td>
                       <Badge color={paid.tone} variant="soft" size="sm">
                         {paid.label}
@@ -250,7 +260,7 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {shipped.label}
                       </Badge>
                     </td>
-                    <td className="text-right font-medium tabular-nums">
+                    <td className="text-right font-medium tabular-nums" data-label="Total">
                       {formatMoney(order.total, order.currency)}
                     </td>
                   </tr>

@@ -17,17 +17,17 @@ import {
   Badge,
   Button,
   Card,
-  EmptyState,
   SearchInput,
   Select,
-  Table,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, Link2, PackageSearch, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { supplierState, useSuppliersPage, type SortDir, type SupplierSort } from './dropship-data';
@@ -173,10 +173,14 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {error ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Link2 className="size-6" aria-hidden />}
             title="Could not load your suppliers"
             description="Something went wrong reaching the server. Your suppliers are unaffected. Try again in a moment."
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -246,7 +250,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
                   >
                     <td className="max-w-48 truncate font-medium">{supplier.name}</td>
                     <td className="hidden @lg:table-cell">{supplier.vendorLabel}</td>
-                    <td className="hidden text-sm @xl:table-cell">
+                    <td className="hidden text-sm @xl:table-cell" data-label="Last sync">
                       {supplier.lastSyncAt ? (
                         <Timestamp value={supplier.lastSyncAt} format="relative" />
                       ) : supplier.capabilities.catalogSync ? (
@@ -255,7 +259,10 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
                         'Takes orders by email'
                       )}
                     </td>
-                    <td className="hidden text-right tabular-nums @2xl:table-cell">
+                    <td
+                      className="hidden text-right tabular-nums @2xl:table-cell"
+                      data-label="Products"
+                    >
                       {supplier.productCount ?? '—'}
                     </td>
                     <td>

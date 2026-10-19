@@ -38,8 +38,10 @@ function BinContentsRow({ ctx, row }: { ctx: SurfaceContext; row: BinContent }) 
         </span>
         {row.sku ? <span className="truncate font-mono text-sm">{row.sku}</span> : null}
       </td>
-      <td className="text-right font-medium tabular-nums">{NUMBER.format(row.onHand)}</td>
-      <td className="hidden whitespace-nowrap @lg:table-cell">
+      <td data-label="Here" className="text-right font-medium tabular-nums">
+        {NUMBER.format(row.onHand)}
+      </td>
+      <td data-label="Last checked" className="hidden whitespace-nowrap @lg:table-cell">
         {row.lastCountedAt ? (
           <Timestamp value={row.lastCountedAt} format="relative" />
         ) : (

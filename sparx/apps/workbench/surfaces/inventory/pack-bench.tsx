@@ -36,10 +36,10 @@ import {
   Card,
   EmptyState,
   Input,
-  Table,
   Text,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Box, Package, PackageCheck, Plus, Printer, ScanLine, Truck } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -62,6 +62,9 @@ import {
   type PackageDetail,
 } from './picking-data';
 import { ActionLabel } from '../../components/action-label';
+import { useOrder } from '../commerce/data';
+import { whatCanShipNow } from '../commerce/order-ship-gate';
+import { PaneLoadError } from '../../components/pane-load-error';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -79,6 +82,12 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const boxes = usePackages({ ...(orderId ? { orderId } : {}), take: 50 });
   const create = useCreatePackage();
+  // Whether anything on this order may be sent at all, by the rule the server
+  // refuses a box with (issue 058): held for approval, canceled, refunded, or
+  // every line waiting for an old part. Said before the press, so the bench
+  // never invites a box it is about to refuse (sparx persona issue 293).
+  const order = useOrder(orderId);
+  const refusal = order.data ? whatCanShipNow(order.data).refusal : null;
 
   // The box to work in: the one that was asked for, else the open one, else
   // nothing yet. Resolved in an effect rather than during render because it
@@ -96,8 +105,35 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
           icon={<Box className="size-6" aria-hidden />}
           title="Pick an order to pack"
           description="Open the pack bench from a finished walk or from an order, and it knows what is meant to be in the box."
+          actions={
+            // The way to an order, rather than only a sentence about it.
+            <Button
+              color="module-commerce"
+              onClick={(event) => {
+                ctx.open('commerce.orders.list', {}, { target: targetFor(event) });
+              }}
+            >
+              Go to orders
+            </Button>
+          }
         />
       </div>
+    );
+  }
+
+  // An order this business does not have, or one that could not be reached, has
+  // nothing to pack: a box on it would be refused (issue 293).
+  if (orderId && order.isError) {
+    return (
+      <PaneLoadError
+        error={order.error}
+        noun="order"
+        title="Could not load this order"
+        description="This is a problem reaching the server. The order itself is unaffected. Nothing has been changed or lost."
+        onRetry={() => {
+          void order.refetch();
+        }}
+      />
     );
   }
 
@@ -141,7 +177,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module-inventory"
             variant="outline"
             className="ml-auto"
-            disabled={create.isPending || !orderId}
+            disabled={create.isPending || !orderId || refusal !== null}
             onClick={startBox}
           >
             <Plus className="size-4" aria-hidden />
@@ -175,6 +211,27 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
 
         {activeId ? (
           <ActiveBox packageId={activeId} ctx={ctx} />
+        ) : refusal ? (
+          <Alert color="warning">
+            <AlertContent>
+              <AlertTitle>Not ready to pack</AlertTitle>
+              <AlertDescription>{refusal}</AlertDescription>
+              <AlertActions>
+                <Button
+                  color="module-commerce"
+                  onClick={(event) => {
+                    ctx.open(
+                      'commerce.order.detail',
+                      { id: orderId },
+                      { target: targetFor(event) }
+                    );
+                  }}
+                >
+                  Open the order
+                </Button>
+              </AlertActions>
+            </AlertContent>
+          </Alert>
         ) : (
           <Alert color="info">
             <AlertContent>
@@ -379,7 +436,7 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
                       <span className="truncate font-mono text-sm">{line.sku}</span>
                     </span>
                   </td>
-                  <td className="text-right whitespace-nowrap tabular-nums">
+                  <td data-label="In box" className="text-right whitespace-nowrap tabular-nums">
                     {box.status === 'open' ? (
                       <Input
                         size="sm"
@@ -408,7 +465,10 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
                       line.quantity
                     )}
                   </td>
-                  <td className="hidden text-right whitespace-nowrap @lg:table-cell">
+                  <td
+                    data-label="Scanned"
+                    className="hidden text-right whitespace-nowrap @lg:table-cell"
+                  >
                     {line.scannedQuantity >= line.quantity ? (
                       <Badge color="success" variant="soft" size="sm">
                         <ScanLine className="size-3" aria-hidden />

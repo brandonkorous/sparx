@@ -21,13 +21,11 @@ import {
   FieldDescription,
   FieldLabel,
   FieldStatus,
-  Heading,
   Input,
-  NativeSelect,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { MapPin, Save, Trash2 } from 'lucide-react';
+import { Save, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { CountryField } from '../../components/country-field';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -40,7 +38,6 @@ import { useBusinessTimezone, useBusinessZone } from '../../lib/business-timezon
 import { useBusinessCountry } from '../../lib/business-country';
 import { SaveFailure } from '@/components/save-failure';
 import {
-  TIMEZONE_OPTIONS,
   schedulingErrorMessage,
   useCreateLocation,
   useDeleteLocation,
@@ -51,6 +48,7 @@ import {
   followBusinessLabel,
 } from './setup-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { TimezoneSelect } from '../../components/timezone-select';
 
 const COLUMN = 'mx-auto flex w-full max-w-2xl flex-col gap-4';
 const DETAIL_KEY = 'scheduling.locations.detail';
@@ -343,10 +341,7 @@ function LocationEditor({
         <div className={COLUMN}>
           {existing ? (
             <div className="flex flex-col gap-1">
-              <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                <MapPin className="size-5 shrink-0" aria-hidden />
-                <span className="min-w-0 break-words">{existing.name}</span>
-              </Heading>
+              {/* The name is its own box below and the tab, not a heading too (issue 282). */}
               <Text className="text-sm">
                 {existing.counts.resources} people &amp; things · {existing.counts.services}{' '}
                 services · {existing.counts.bookings} bookings
@@ -386,30 +381,16 @@ function LocationEditor({
 
             <Field>
               <FieldLabel>Time zone</FieldLabel>
-              <FieldControl
-                render={
-                  <NativeSelect
-                    color="module"
-                    value={draft.timezone}
-                    onChange={(event) => {
-                      set('timezone', event.target.value);
-                    }}
-                  >
-                    {/* No zone of its own: it follows the business. Saying so,
-                        rather than showing a blank box, is the difference between
-                        a choice and a gap (sparx persona issue 119). */}
-                    <option value="">{followBusinessLabel(followZone)}</option>
-                    {draft.timezone === '' ||
-                    (TIMEZONE_OPTIONS as readonly string[]).includes(draft.timezone) ? null : (
-                      <option value={draft.timezone}>{draft.timezone}</option>
-                    )}
-                    {TIMEZONE_OPTIONS.map((zone) => (
-                      <option key={zone} value={zone}>
-                        {zone}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                }
+              {/* No zone of its own: it follows the business. Saying so, rather
+                  than a blank box, is the difference between a choice and a gap
+                  (issue 119). Cities, not raw zone names (issue 286). */}
+              <TimezoneSelect
+                value={draft.timezone}
+                follow={followBusinessLabel(followZone)}
+                ariaLabel="Time zone"
+                onChange={(zone) => {
+                  set('timezone', zone);
+                }}
               />
               <FieldDescription>
                 The zone this place is in. Each person&rsquo;s working hours are read in their own

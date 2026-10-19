@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-garage",
   "name": "Garage",
-  "version": "1.5.3",
+  "version": "1.5.6",
   "tagline": "A complete multi-module starter in the Garage look, for vehicle service, repair, and parts.",
   "description": "A complete starter in the Garage look, tuned for vehicle service, repair, and parts: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",

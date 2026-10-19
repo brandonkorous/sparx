@@ -58,6 +58,21 @@ const CHANNEL: Record<string, string> = {
 const DOCUMENT_SOURCE = 'document:';
 
 /**
+ * Where a sale came from, for a key that is ALREADY derived.
+ *
+ * A report groups by ONE key, so it has no (channel, source) pair to hand over:
+ * a marketplace order keys by its own slug so Etsy and Faire are separate
+ * lines, and everything else keys by its channel. Buckets and slugs share no
+ * names, so the marketplace lookup goes first without risk.
+ *
+ * This exists because the customer reports pane drew the API's wording
+ * instead: "Storefront", "Admin", "B2B portal" (sparx persona issue 265).
+ */
+export function channelKeyLabel(key: string): string {
+  return MARKETPLACE_SOURCE[key] ?? CHANNEL[key] ?? key.replace(/_/g, ' ');
+}
+
+/**
  * Where a sale came from, in one phrase.
  *
  * `source` is optional because not every screen has it: a report grouped by

@@ -46,12 +46,12 @@ import {
   Heading,
   Input,
   NativeSelect,
-  Table,
   Textarea,
   Text,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 // `MoneyInput`, not a number field: this amount lives in the draft as CENTS, so
 // the caller cannot own the text. A `value` rebuilt from those cents on every
 // render rewrote each keystroke mid-word — select "0.00", type "25.00", and the
@@ -133,6 +133,7 @@ import { freightNote } from './freight-words';
 import { expectedDateHelp } from './expected-date-words';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { readFailureMessage } from '../../lib/api/write-failure';
+import { lateWords } from './po-late-words';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -837,10 +838,10 @@ function OrderChargesSection({
                     <td className="hidden text-sm @lg:table-cell">
                       {basisLabel(charge.allocationBasis)}
                     </td>
-                    <td className="text-right font-medium tabular-nums">
+                    <td data-label="Quoted" className="text-right font-medium tabular-nums">
                       {formatCents(charge.amountCents, currency)}
                     </td>
-                    <td className="hidden text-right @md:table-cell">
+                    <td data-label="On deliveries" className="hidden text-right @md:table-cell">
                       {/* Color carries the state: fully apportioned is done,
                           partly is in progress, nothing yet is simply waiting. */}
                       <Badge
@@ -1438,6 +1439,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   const state = detail ? purchaseOrderState(detail) : null;
+  const late = detail ? lateWords(detail) : null;
   const outstanding = detail ? outstandingUnits(detail) : 0;
   const canReceive = detail !== null && isReceivable(status);
   const emailable =
@@ -1678,14 +1680,16 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {/* Where a placed order stands, in one line. */}
           {detail && !editable ? (
-            <Alert color={state?.tone ?? 'info'} variant="soft">
+            // Late is said here, on the order, not only on the overdue list (issue 280).
+            <Alert color={late ? 'warning' : (state?.tone ?? 'info')} variant="soft">
               <AlertContent>
                 <AlertTitle>
                   {outstanding > 0
-                    ? `${String(outstanding)} of ${String(detail.quantityOrdered)} units still to come`
+                    ? `${String(outstanding)} of ${String(detail.quantityOrdered)} ${detail.quantityOrdered === 1 ? 'unit' : 'units'} still to come`
                     : 'Everything ordered has been received'}
                 </AlertTitle>
                 <AlertDescription>
+                  {late ? `${late} ` : ''}
                   {state?.detail}
                   {emailable ? ` ${emailedLine(detail, formatMoment)}` : ''}
                 </AlertDescription>
@@ -1950,17 +1954,23 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                               was bought; the singles are what the ledger holds,
                               and dropping either is how a wrong pack factor
                               stays invisible until a stock take. */}
-                          <td className="text-right tabular-nums">
+                          <td data-label="Qty" className="text-right tabular-nums">
                             {describeQuantityShort({
                               baseQuantity: line.quantityOrdered,
                               uomCode: line.uomCode,
                               unitsPerUom: line.unitsPerUom,
                             })}
                           </td>
-                          <td className="hidden text-right tabular-nums @md:table-cell">
+                          <td
+                            data-label="Cost each"
+                            className="hidden text-right tabular-nums @md:table-cell"
+                          >
                             {formatCents(line.unitCostCents, currency)}
                           </td>
-                          <td className="text-right font-medium tabular-nums">
+                          <td
+                            data-label="Line total"
+                            className="text-right font-medium tabular-nums"
+                          >
                             {formatCents(line.quantityOrdered * line.unitCostCents, currency)}
                           </td>
                           <td>
@@ -2007,20 +2017,26 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                                 </span>
                               </span>
                             </td>
-                            <td className="text-right tabular-nums">
+                            <td data-label="Qty" className="text-right tabular-nums">
                               {describeQuantityShort({
                                 baseQuantity: line.quantityOrdered,
                                 uomCode: line.uomCode,
                                 unitsPerUom: line.unitsPerUom,
                               })}
                             </td>
-                            <td className="hidden text-right tabular-nums @md:table-cell">
+                            <td
+                              data-label="Cost each"
+                              className="hidden text-right tabular-nums @md:table-cell"
+                            >
                               {formatCents(line.unitCostCents, currency)}
                             </td>
-                            <td className="text-right font-medium tabular-nums">
+                            <td
+                              data-label="Line total"
+                              className="text-right font-medium tabular-nums"
+                            >
                               {formatCents(line.lineTotalCents, currency)}
                             </td>
-                            <td className="whitespace-nowrap">
+                            <td data-label="Received" className="whitespace-nowrap">
                               <Badge
                                 color={complete ? 'success' : 'warning'}
                                 variant="soft"

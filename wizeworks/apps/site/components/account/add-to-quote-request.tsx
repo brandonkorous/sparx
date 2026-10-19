@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 import { Alert, Button, Label, NativeSelect } from '@wizeworks/silicaui-react';
 
 import { useCustomer } from '@/components/customer-provider';
-import { AccountError, addToQuoteRequest } from '@/lib/customer-client';
+import { addToQuoteRequest, accountFailureWords } from '@/lib/customer-client';
 import { useOrderingAccounts } from './ordering-accounts';
 
 export function AddToQuoteRequest({
@@ -60,9 +60,7 @@ export function AddToQuoteRequest({
       setAdded({ accountId: account.accountId, count: request.lines.length });
     } catch (err) {
       setError(
-        err instanceof AccountError && err.status < 500
-          ? err.message
-          : 'It was not added to your quote request. Please try again.'
+        accountFailureWords(err, 'It was not added to your quote request. Please try again.')
       );
     } finally {
       setBusy(false);

@@ -5,7 +5,8 @@
 // card, never a blank board. A private report's card hides it (issue 264).
 
 import { useMemo } from 'react';
-import { Alert, Badge, Button, Card, Select, Table, Text } from '@wizeworks/silicaui-react';
+import { Alert, Badge, Button, Card, Select, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
 import { faExpand, faLock, faPencil, faXmark } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -144,7 +145,7 @@ function WidgetTable({ data, naming }: { data: ReportResult; naming: GroupNaming
           {data.rows.slice(0, 8).map((row, index) => (
             <tr key={index}>
               {data.columns.map((column, at) => (
-                <td key={column.key}>
+                <td data-label={column.label} key={column.key}>
                   {data.grouped && at === 0
                     ? groupText(row[column.key], naming)
                     : formatCell(row[column.key], { kind: column.kind, currency: data.currency })}

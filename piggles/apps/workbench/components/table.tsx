@@ -84,7 +84,8 @@ import { Table as SilicaTable, type TableProps } from '@wizeworks/silicaui-react
 export type { TableProps, TableSize } from '@wizeworks/silicaui-react';
 
 /**
- * Silica's `Table`, with the horizontal-scroll wrapper set to fill its parent.
+ * Silica's `Table`, with the horizontal-scroll wrapper set to fill its parent,
+ * codes kept on one line, and rows stacked in a narrow pane.
  *
  * Identical to `@wizeworks/silicaui-react`'s in every other respect — every prop
  * passes through and `ref` still lands on the `<table>`.
@@ -96,12 +97,17 @@ export type { TableProps, TableSize } from '@wizeworks/silicaui-react';
  * `h-auto` appended to `h-full` would win or lose on stylesheet order.
  */
 export const Table = forwardRef<HTMLTableElement, TableProps>(function Table(
-  { wrapperClassName, className, ...rest },
+  { wrapperClassName, className, stack = true, ...rest },
   ref
 ) {
   return (
     <SilicaTable
       ref={ref}
+      // Stacked by default: below a 36rem pane each row becomes a block, so a
+      // list fits a phone or a pane beside two others instead of hiding its
+      // state and its button past the right edge (sparx persona issue 274). A
+      // table that must keep its grid says `stack={false}` and why.
+      stack={stack}
       wrapperClassName={wrapperClassName ?? 'h-full'}
       className={className ? `${CODES_ON_ONE_LINE} ${className}` : CODES_ON_ONE_LINE}
       {...rest}

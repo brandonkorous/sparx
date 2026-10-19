@@ -57,7 +57,7 @@ function ZoneRow({ zone, onOpen }: { zone: ShippingZone; onOpen: RowOpen }) {
         onOpen('commerce.shipping.zone.detail', zone.id, event);
       }}
     >
-      <span className="flex min-w-0 flex-1 flex-col">
+      <span className="flex min-w-0 flex-1 basis-48 flex-col">
         <span className="font-semibold">{zone.name}</span>
         <Text as="span" className="text-sm">
           {coverageSummary(zone.targeting.countries)}
@@ -90,7 +90,7 @@ function ProfileRow({ profile, onOpen }: { profile: ShippingProfile; onOpen: Row
         onOpen('commerce.shipping.profile.detail', profile.id, event);
       }}
     >
-      <span className="flex min-w-0 flex-1 flex-col">
+      <span className="flex min-w-0 flex-1 basis-48 flex-col">
         <span className="font-semibold">{profile.name}</span>
         {profile.requiresFreight || profile.requiresSignature ? (
           <Text as="span" className="text-sm">

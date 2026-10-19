@@ -242,7 +242,8 @@ export async function billingDocumentEmail(
           const part = {
             title: line.description,
             subtitle: quantityLine(Number(line.quantity), Number(line.unitPrice), currency),
-            amount: money(Number(line.lineTotal), currency),
+            // Before tax, as the printed invoice prints it (issues 227, 323).
+            amount: money(Number(line.lineSubtotal), currency),
           };
           if (line.coreCharge === null) return [part];
           const core = Number(line.coreCharge);

@@ -69,11 +69,13 @@ function AsOfRows({ data }: { data: AsOfValuation }) {
                 <span className="truncate font-mono text-sm">{row.sku ?? 'No code'}</span>
               </span>
             </td>
-            <td className="hidden max-w-32 truncate @lg:table-cell">{row.warehouseCode}</td>
-            <td className="hidden text-right tabular-nums @md:table-cell">
+            <td data-label="Where" className="hidden max-w-32 truncate @lg:table-cell">
+              {row.warehouseCode}
+            </td>
+            <td data-label="Units" className="hidden text-right tabular-nums @md:table-cell">
               {NUMBER.format(row.units)}
             </td>
-            <td className="text-right font-medium tabular-nums">
+            <td data-label="Value" className="text-right font-medium tabular-nums">
               {formatCents(row.valueCents, data.currency)}
             </td>
           </tr>

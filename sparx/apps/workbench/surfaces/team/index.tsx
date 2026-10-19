@@ -49,11 +49,11 @@ import {
   Input,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { Plus, Send, UserX, Users, X } from 'lucide-react';
 import { ListPagination, type PageSize } from '../../components/list-pagination';

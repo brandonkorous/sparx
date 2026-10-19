@@ -22,7 +22,12 @@ export const COMMERCE_HIGH_VALUE_ORDER_ALERT: SystemAutomationSpec = {
   actions: [
     {
       type: 'email.send_internal',
-      config: { subject: 'High-value order: {{order.number}} · ${{order.total}}' },
+      // Who and how much, not only the number, and the dispatcher adds "Open the
+      // order" (sparx persona issue 331). It was one line with nothing to click.
+      config: {
+        subject: 'High-value order: {{order.number}} · ${{order.total}}',
+        text: '{{customer.fullName ?? "A customer"}} ({{customer.email ?? "no email given"}}) paid ${{order.total}} for order {{order.number}}.',
+      },
     },
   ],
   locked: false,
@@ -44,7 +49,10 @@ export const COMMERCE_LOW_INVENTORY_ALERT: SystemAutomationSpec = {
       // one lands in her email: `product.title` named the product on an event
       // about one version of it (issue 861). "Low inventory" went too — the
       // console calls this Stock, and an owner is not a stock controller.
-      config: { subject: 'Running low: {{item.name}} · {{inventory.quantity}} left' },
+      config: {
+        subject: 'Running low: {{item.name}} · {{inventory.quantity}} left',
+        text: '{{item.name}} is down to {{inventory.quantity}} on hand.',
+      },
     },
   ],
   locked: false,
@@ -71,6 +79,7 @@ export const COMMERCE_RETURN_REQUESTED_ALERT: SystemAutomationSpec = {
       type: 'email.send_internal',
       config: {
         subject: 'Return requested: {{order.number}} · wants a {{return.preferredOutcome}}',
+        text: '{{customer.fullName ?? "A customer"}} asked to send back something from order {{order.number}} and would like a {{return.preferredOutcome}}.',
       },
     },
   ],

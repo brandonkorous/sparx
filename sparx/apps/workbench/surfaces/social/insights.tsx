@@ -92,7 +92,7 @@ function AccountRow({
         title={account.name}
         size="sm"
       />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col">
         <span className="truncate text-base font-medium">{account.name}</span>
         <span className="text-sm">{platformName(account.platform, catalogMap)}</span>
       </div>
@@ -130,7 +130,7 @@ function TopPostRow({
             but not its id, so there is no profile picture to look up. The platform disc
             still answers "where did this one do well?" without reading the line. */}
         <PlatformMark platform={post.platform} className="size-8" />
-        <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="flex min-w-0 flex-1 basis-48 flex-col gap-1">
           <span className="min-w-0 text-base font-medium break-words">{post.excerpt}</span>
           <span className="text-sm">
             {post.targetName} · {platformName(post.platform, catalogMap)}
@@ -222,7 +222,7 @@ function BestTimePanel({
                 key={`${String(bucket.weekday)}-${String(bucket.hour)}`}
                 className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-1 border-b px-4 py-3 last:border-b-0"
               >
-                <span className="min-w-0 flex-1 text-base font-medium">
+                <span className="min-w-0 flex-1 basis-48 text-base font-medium">
                   {WEEKDAY_NAMES[bucket.weekday]}s around {formatMinuteOfDay(bucket.hour * 60)}
                 </span>
                 <Stat label="Avg engagements" value={bucket.averageEngagements} />

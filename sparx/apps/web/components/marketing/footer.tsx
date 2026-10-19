@@ -2,7 +2,7 @@ import { Badge, Footer as SilicaFooter, FooterTitle, Link, Text } from '@wizewor
 import { Wordmark } from '@sparx/brand/react';
 import { SparkFooterPeek } from '@sparx/brand/react';
 import type { MarketingModule } from './primitives';
-import { MODULES, MODULE_HEX } from './modules-catalog';
+import { MODULES, MODULE_BACKGROUND_COLOR } from './modules-catalog';
 import { VERTICALS } from './verticals/registry';
 import { ConsentPreferencesLink } from './consent-preferences-link';
 
@@ -23,7 +23,7 @@ const FOOTER_LABEL: Partial<Record<MarketingModule, string>> = {
  * — mirrors daisyUI's own documented "main footer + legal bar" pattern
  * (nesting a second `<footer>` inside the first isn't valid HTML). Content
  * (columns, links, domain list, copyright) is unchanged. Domain dot colors
- * reference the shared `MODULE_HEX` map instead of re-typed hex literals.
+ * are the module fill classes from `MODULE_BACKGROUND_COLOR`, never a hex.
  *
  * The grid utilities here are load-bearing, not taste. silicaui's `.footer` is
  * `grid; grid-auto-flow: column; grid-auto-columns: max-content` with no
@@ -228,13 +228,11 @@ export function Footer() {
             <FooterTitle>The sparx domain network</FooterTitle>
             <div className="flex flex-wrap gap-6">
               {DOMAINS.map((d) => {
-                const color = d.module ? MODULE_HEX[d.module] : undefined;
+                // A fill class, so the dot follows the theme (RULE #1; issue 322).
+                const fill = d.module ? MODULE_BACKGROUND_COLOR[d.module] : 'bg-base-content/40';
                 return (
                   <span key={d.name} className="flex items-center gap-2">
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${color ? '' : 'bg-base-content/40'}`}
-                      style={color ? { backgroundColor: color } : undefined}
-                    />
+                    <span className={`h-1.5 w-1.5 rounded-full ${fill}`} />
                     <Text
                       variant="caption"
                       className={d.primary ? 'text-base-content' : 'text-base-content'}

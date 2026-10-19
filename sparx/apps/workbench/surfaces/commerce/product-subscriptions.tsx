@@ -138,9 +138,6 @@ function SubscriptionsBody({
   return (
     <>
       <div className="flex flex-col gap-1">
-        <Heading level={1} className="text-2xl font-semibold">
-          {product.title}
-        </Heading>
         <Text className="text-sm">
           {everSubscribed
             ? 'People who have this delivered again and again, rather than buying it once.'

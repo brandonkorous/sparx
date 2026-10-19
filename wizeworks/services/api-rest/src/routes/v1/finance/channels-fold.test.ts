@@ -51,6 +51,16 @@ describe('folding orders into channel rows', () => {
     expect(channelKey(null, null)).toBe('other');
   });
 
+  it('names a native channel by its channel, not by the source of one order (issue 301)', () => {
+    const { rows } = foldChannels([
+      order({ channel: 'b2b_portal', source: 'document:Q-000006' }),
+      order({ channel: 'b2b_portal', source: null }),
+      order({ channel: 'marketplace', source: 'etsy' }),
+    ]);
+    expect(rows.find((r) => r.key === 'b2b_portal')?.source).toBeNull();
+    expect(rows.find((r) => r.key === 'etsy')?.source).toBe('etsy');
+  });
+
   it('sorts by money actually received, biggest first', () => {
     const { rows } = foldChannels([
       order({ channel: 'admin', total: 500, amountPaid: 10 }),

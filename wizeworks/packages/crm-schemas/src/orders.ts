@@ -229,13 +229,18 @@ export type CancelOrderInput = z.infer<typeof CancelOrderInput>;
 // the single source of truth shared by the reporting service (REST + MCP) and the
 // dashboard — never re-hardcode these maps in a feature.
 
-/** Human labels for the high-level order `channel` bucket. */
+/** Human labels for the high-level order `channel` bucket, in an owner's words:
+ *  the same words both consoles use (`lib/console/channels.ts`). They read
+ *  "Storefront", "Admin", "B2B portal", "Import" and "MCP / AI" until sparx
+ *  persona issue 265: a retired word, a role, and the code's own names. */
 export const ORDER_CHANNEL_LABELS: Record<string, string> = {
-  storefront: 'Storefront',
-  b2b_portal: 'B2B portal',
-  admin: 'Admin',
-  import: 'Import',
-  mcp: 'MCP / AI',
+  storefront: 'Your website',
+  b2b_portal: 'Wholesale portal',
+  admin: 'Added by hand',
+  pos: 'At the till',
+  subscription: 'Subscriptions',
+  import: 'Imported',
+  mcp: 'AI assistant',
   marketplace: 'Marketplace',
   unknown: 'Other',
 };

@@ -10,18 +10,12 @@
 // typed up in the CRM.
 
 import { useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Receipt } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { ModuleScope } from '../../components/module-scope';
 import {
@@ -64,7 +58,7 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useOrders({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useOrders({
     ...(search.trim() ? { q: search.trim() } : {}),
     ...(status === 'all' ? {} : { status }),
     sortBy: 'placedAt',
@@ -130,21 +124,14 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
 
         <Card className="min-h-0 flex-1 overflow-y-auto">
           {isError ? (
-            <EmptyState
+            <PaneLoadError
+              error={error}
               icon={<Receipt className="size-6" aria-hidden />}
               title="Could not load orders"
               description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              onRetry={() => {
+                void refetch();
+              }}
             />
           ) : isPending ? (
             <p className="p-4 text-sm" role="status">
@@ -190,14 +177,18 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
                       }}
                     >
                       <td className="font-mono text-sm whitespace-nowrap">{row.orderNumber}</td>
-                      <td className="hidden @md:table-cell">{customerName(row.customer)}</td>
-                      <td className="hidden text-sm @lg:table-cell">{formatDate(row.placedAt)}</td>
+                      <td data-label="Customer" className="hidden @md:table-cell">
+                        {customerName(row.customer)}
+                      </td>
+                      <td data-label="Placed" className="hidden text-sm @lg:table-cell">
+                        {formatDate(row.placedAt)}
+                      </td>
                       <td>
                         <Badge color={state.tone} variant="soft" size="sm">
                           {state.label}
                         </Badge>
                       </td>
-                      <td className="text-right font-mono text-sm tabular-nums">
+                      <td data-label="Total" className="text-right font-mono text-sm tabular-nums">
                         {formatMoney(row.total, row.currency)}
                       </td>
                     </tr>

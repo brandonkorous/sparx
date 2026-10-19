@@ -6,7 +6,7 @@
 **Surface:** the branded footer on every email; the plain-text copy of every email
 **Filed:** 2026-10-06
 **Fixed:** 2026-10-06
-**Confirmed by:** P01, 2026-10-06
+**Confirmed by:** the dev outbox, a real send, 2026-10-17
 **Blocked on:** —
 
 ## What happened
@@ -49,6 +49,8 @@ Tests, proved red:
 ## Confirmed by
 
 Renée's 4459 reminder, rebuilt with the sending code after the fix: "Gillett Diesel Service (https://gillettdiesel.sparx.zone/…)" and "Your account (…) · Privacy Policy (…) · Terms of Service (…)".
+
+In the dev outbox, a real send: "Final notice: 4466" (01:51 UTC Oct 17) ends "Gillett Diesel Service (https://gillettdiesel.sparx.zone/…)", then "Your account · Contact · Privacy Policy · Terms of Service · Cookie Policy · Shipping Policy · Refund Policy" each with its link, the four social links, and the address. None of Gillett's 39 emails there has empty brackets.
 
 ## Rating effect
 

@@ -12,6 +12,7 @@ import { cadenceLabel, type RepeatCadence } from '@wizeworks/commerce-schemas';
 
 import { checkoutBlock, lineRule, ruleSentence } from '@/lib/account-buying-rules';
 import { ordersClosed } from '@/lib/orders-closed';
+import { OrdersClosedReach } from './orders-closed-reach';
 import { formatMoney } from '@/lib/format';
 import { useCart } from './cart-provider';
 import { QuantityStepper } from './quantity-stepper';
@@ -29,8 +30,12 @@ export function CartView({
    *  and the basket must not offer to charge a card that will never be charged
    *  (issue 185). */
   paymentMode = 'card',
+  /** The shop's phone and email, so a shop that cannot be paid here says how
+   *  to order instead (sparx persona issue 324). */
+  contact = null,
 }: {
   paymentMode?: StorefrontPaymentMode;
+  contact?: { phone: string | null; email: string | null } | null;
 } = {}) {
   const {
     lines,
@@ -315,7 +320,10 @@ export function CartView({
           <Alert
             color={accountRules?.canOrder === false || blocked === closed ? 'info' : 'warning'}
           >
-            {blocked}
+            <span>
+              {blocked}
+              {blocked === closed ? <OrdersClosedReach contact={contact} /> : null}
+            </span>
           </Alert>
         ) : null}
         {blocked ? (

@@ -19,6 +19,7 @@ import {
   AlertTitle,
   Badge,
   Button,
+  Card,
   EmptyState,
   Heading,
   Text,
@@ -29,6 +30,7 @@ import { Check, CopyCheck } from 'lucide-react';
 import { useState } from 'react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import { useViewer } from '../../lib/api/shell-data';
 import {
@@ -73,7 +75,15 @@ function shortDate(iso: string | null): string {
 }
 
 export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
-  const { data: groups, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDuplicates();
+  const {
+    data: groups,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useDuplicates();
   // What the check compared, from the business's own rules (issue 108).
   const settings = useCrmSettings();
   const checked = duplicatesCheckedWords(
@@ -151,24 +161,17 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <div className="flex h-full items-center justify-center p-8">
-            <EmptyState
+          <Card className="min-h-0 flex-1 items-center justify-center">
+            <PaneLoadError
+              error={error}
               icon={<CopyCheck className="size-6" aria-hidden />}
               title="Could not check for duplicates"
               description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              onRetry={() => {
+                void refetch();
+              }}
             />
-          </div>
+          </Card>
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
             Checking your customers for duplicates…
@@ -387,7 +390,7 @@ function CandidateRow({
         </Button>
       ) : null}
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 basis-48 flex-col">
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"

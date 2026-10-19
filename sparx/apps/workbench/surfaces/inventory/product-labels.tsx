@@ -70,6 +70,7 @@ import {
   type Barcode,
   type UnbarcodedVariant,
 } from './scan-data';
+import { createBarcodesLabel } from './barcode-words';
 
 /** Label sizes named by what they are FOR. Nobody picks a label by remembering 62mm. */
 const SIZES = [
@@ -336,6 +337,7 @@ function NotYetScannable({
       <AlertActions>
         <GenerateBarcodesButton
           variantIds={chosen.map((row) => row.variantId)}
+          outOf={total}
           onDone={(result) => {
             setMade((current) => ({
               generated: (current?.generated ?? 0) + result.generated,
@@ -587,9 +589,12 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
  */
 export function GenerateBarcodesButton({
   variantIds,
+  outOf,
   onDone,
 }: {
   variantIds: string[];
+  /** How many need a code in all, when this button covers only some of them. */
+  outOf?: number;
   onDone?: (result: { generated: number; skipped: number }) => void;
 }) {
   const generate = useGenerateBarcodes();
@@ -614,9 +619,7 @@ export function GenerateBarcodesButton({
         }}
       >
         <Sparkles className="size-4" aria-hidden />
-        {generate.isPending
-          ? 'Creating…'
-          : `Create ${plural(variantIds.length, 'barcode', 'barcodes')}`}
+        {generate.isPending ? 'Creating…' : createBarcodesLabel(variantIds.length, outOf)}
       </Button>
     </Tooltip>
   );

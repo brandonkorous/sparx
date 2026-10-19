@@ -21,7 +21,13 @@
 import { useState } from 'react';
 import { Text } from '@wizeworks/silicaui-react';
 import { Display } from './primitives';
-import { MODULES, PAID_MODULES, MODULE_HEX, MODULE_ICON } from './modules-catalog';
+import {
+  MODULES,
+  PAID_MODULES,
+  MODULE_BACKGROUND_COLOR,
+  MODULE_CONTENT_COLOR,
+  MODULE_ICON,
+} from './modules-catalog';
 import { ModuleToggleCard } from './module-toggle-card';
 import { StackSummaryCard, type StackLineItem } from './stack-summary-card';
 
@@ -145,7 +151,7 @@ export function PricingSwitchboard() {
     id: m.id,
     label: m.label,
     icon: MODULE_ICON[m.id],
-    color: MODULE_HEX[m.id],
+    fill: `${MODULE_BACKGROUND_COLOR[m.id]} ${MODULE_CONTENT_COLOR[m.id]}`,
     price: billed(m.id, m.price),
     included: lockOf(m.id) === 'included',
   }));
@@ -153,7 +159,9 @@ export function PricingSwitchboard() {
   return (
     <div className="flex flex-col gap-14">
       <div className="max-w-2xl">
-        <Display as="h1" size={60} lineHeight={60}>
+        {/* A section of /pricing, whose hero already holds the page title: an h1
+            here gave the page two (sparx persona issue 322). */}
+        <Display as="h2" size={60} lineHeight={60}>
           Switch on what you use
         </Display>
         <Text variant="lead" className="mt-4 max-w-[480px]">

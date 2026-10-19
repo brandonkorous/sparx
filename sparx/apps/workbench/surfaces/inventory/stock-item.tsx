@@ -99,6 +99,7 @@ import { StockRecalledBand } from './stock-recalled-band';
 import { OwnershipBadge, StockOwnershipBlock } from './stock-ownership-block';
 import { useGenerateBarcodes, useVariantBarcodes } from './scan-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { soldOutBody } from './sold-out-words';
 
 /** Centred and capped — a pane torn onto a second monitor is 2000px wide, and
  *  uncapped this becomes a line of numbers pinned to the left edge. */
@@ -1075,7 +1076,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
             out.length === levels.length
               ? 'Nothing left to sell'
               : `${plural(out.length, 'location has', 'locations have')} nothing left`,
-          body: 'Your website shows it as sold out and will not take an order for it. It comes back on sale by itself the moment you count some in.',
+          body: soldOutBody(out),
         }
       : low.length > 0
         ? {

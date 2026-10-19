@@ -1,12 +1,12 @@
 # 264 — A board "kept to you" was open to everyone
 
-**Status:** open
+**Status:** fixed
 **Severity:** major
 **Found by:** P01 · Gillett Diesel Service · the search work for issue 261 (checking who may see a board before putting its name in search)
 **Surface:** Customers › Boards, and Build a report, sparx console and Piggles (one API)
 **Filed:** 2026-10-13
-**Fixed:** —
-**Confirmed by:** —
+**Fixed:** 2026-10-13
+**Confirmed by:** sparx as Mike, 2026-10-14
 **Blocked on:** —
 
 ## What happened
@@ -87,7 +87,13 @@ green; crm tsc clean.
 
 ## Confirmed by
 
-—
+- sparx as Doty: a new board "Doty's cash notes" with "Share it with your team" off.
+  Turning on "Open this board first" turned sharing on too; turning sharing off turned
+  "Open this board first" off. Saved private (`shared = false`); its search entry is
+  visible only to Doty, and Doty's "cash notes" search finds it.
+- sparx as Mike: the board's own link says "That dashboard is no longer here". "cash
+  notes" in "Search everything" finds no board. His board menu lists only "Monday
+  numbers".
 
 ## Rating effect
 

@@ -100,8 +100,12 @@ function LostRow({
         </span>
         {item.variantSku ? <span className="text-sm">{item.variantSku}</span> : null}
       </td>
-      <td className="text-right tabular-nums">{NUMBER.format(item.units)}</td>
-      <td className="text-right tabular-nums">{formatCents(item.valueCents, currency)}</td>
+      <td data-label="Units" className="text-right tabular-nums">
+        {NUMBER.format(item.units)}
+      </td>
+      <td data-label="Cost to you" className="text-right tabular-nums">
+        {formatCents(item.valueCents, currency)}
+      </td>
     </tr>
   );
 }

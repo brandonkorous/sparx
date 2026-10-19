@@ -295,7 +295,8 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
                           </Badge>
                         ) : null}
                       </span>
-                      <span className="font-mono text-sm">{workflow.slug}</span>
+                      {/* No code name here: "net-terms-ar" means nothing to the owner. It stays in
+                          the editor, where it is set (sparx persona issue 299). */}
                       {/* The chain, where the Stages column cannot fit. This
                           screen is called "what happens when", and on a narrow
                           pane the column that answers that is the first one to

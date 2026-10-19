@@ -24,9 +24,9 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Gauge, PackageX, Snail } from 'lucide-react';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
@@ -34,6 +34,7 @@ import { slowMoverLabel, slowMoverTone, useSlowMovers } from './planning-data';
 import { PlanningShell, targetFor, useHasBeenMeasured } from './planning-shell';
 import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { badNewsTone } from './bad-news-tone';
 
 export function PlanningIdleSurface({ ctx }: { ctx: SurfaceContext }) {
   const report = useSlowMovers('');
@@ -92,7 +93,7 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
           <StatTitle>Cash tied up</StatTitle>
           {measured ? (
             <>
-              <StatValue className="text-warning">
+              <StatValue className={badNewsTone(totals?.excessValueCents ?? 0, 'text-warning')}>
                 {formatCents(totals?.excessValueCents ?? 0)}
               </StatValue>
               <StatDesc>In stock beyond what the demand can absorb</StatDesc>
@@ -122,7 +123,9 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
           <StatTitle>Not selling at all</StatTitle>
           {measured ? (
             <>
-              <StatValue className="text-danger">{totals?.deadItems ?? 0}</StatValue>
+              <StatValue className={badNewsTone(totals?.deadItems ?? 0, 'text-danger')}>
+                {totals?.deadItems ?? 0}
+              </StatValue>
               <StatDesc>{formatCents(totals?.deadValueCents ?? 0)} of it</StatDesc>
             </>
           ) : (
@@ -229,15 +232,26 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
                       {slowMoverLabel(row.kind)}
                     </Badge>
                   </td>
-                  <td className="hidden text-right tabular-nums @lg:table-cell">{row.onHand}</td>
-                  <td className="hidden text-right tabular-nums @xl:table-cell">
+                  <td
+                    data-label="In stock"
+                    className="hidden text-right tabular-nums @lg:table-cell"
+                  >
+                    {row.onHand}
+                  </td>
+                  <td
+                    data-label="Too many"
+                    className="hidden text-right tabular-nums @xl:table-cell"
+                  >
                     {row.excessUnits > 0 ? row.excessUnits : '—'}
                   </td>
                   {/* No cost price means these are zero because nothing was
                       recorded, not because the stock is worthless. A hundred
                       notebooks reading $0.00 is a wrong answer; "No cost set"
                       is the right one and points at the fix. */}
-                  <td className="text-right font-medium whitespace-nowrap tabular-nums">
+                  <td
+                    data-label="Cash in it"
+                    className="text-right font-medium whitespace-nowrap tabular-nums"
+                  >
                     {row.costKnown ? (
                       formatCents(row.excessValueCents)
                     ) : (
@@ -246,7 +260,10 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
                       </Tooltip>
                     )}
                   </td>
-                  <td className="hidden text-right whitespace-nowrap tabular-nums @2xl:table-cell">
+                  <td
+                    data-label="A year"
+                    className="hidden text-right whitespace-nowrap tabular-nums @2xl:table-cell"
+                  >
                     {row.costKnown ? formatCents(row.annualHoldingCostCents) : '—'}
                   </td>
                 </tr>

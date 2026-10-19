@@ -9,7 +9,8 @@
 // Orders are Commerce's data seen from the customer's side, so that one tab
 // wears the Commerce hue via a nested ModuleScope; the rest are the CRM's own.
 
-import { Badge, Card, EmptyState, Table, Text } from '@wizeworks/silicaui-react';
+import { Badge, Card, EmptyState, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   Activity,
   FileText,
@@ -24,6 +25,7 @@ import { useQuery } from '@wizeworks/query';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { api } from '../../lib/api/client';
 import { ModuleScope } from '../../components/module-scope';
+import { PaneLoadError } from '../../components/pane-load-error';
 import {
   formatMoney as formatInvoiceMoney,
   normalizeDocument,
@@ -80,6 +82,8 @@ export function openableRowProps(open: (event: { shiftKey: boolean; altKey: bool
 export function RelatedCard({
   isPending,
   isError,
+  error,
+  onRetry,
   isEmpty,
   icon,
   emptyTitle,
@@ -88,6 +92,10 @@ export function RelatedCard({
 }: {
   isPending: boolean;
   isError: boolean;
+  /** The query's error, so a 404 or a refusal is worded as what it is rather
+   *  than blamed on the connection. */
+  error?: unknown;
+  onRetry?: () => void;
   isEmpty: boolean;
   icon: React.ReactNode;
   emptyTitle: string;
@@ -97,10 +105,12 @@ export function RelatedCard({
   return (
     <Card className="overflow-hidden">
       {isError ? (
-        <EmptyState
+        <PaneLoadError
+          error={error}
           icon={icon}
           title="Could not load this"
           description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
+          onRetry={onRetry}
         />
       ) : isPending ? (
         <p className="p-4 text-sm" role="status">
@@ -124,7 +134,7 @@ export function CustomerOrdersTab({
   ctx: SurfaceContext;
   customerId: string;
 }) {
-  const { data, isPending, isError } = useOrders({
+  const { data, isPending, isError, error, refetch } = useOrders({
     customerId,
     sortBy: 'placedAt',
     order: 'desc',
@@ -139,6 +149,10 @@ export function CustomerOrdersTab({
       <RelatedCard
         isPending={isPending}
         isError={isError}
+        error={error}
+        onRetry={() => {
+          void refetch();
+        }}
         isEmpty={rows.length === 0}
         icon={<Receipt className="size-6" aria-hidden />}
         emptyTitle="No orders yet"
@@ -164,13 +178,15 @@ export function CustomerOrdersTab({
                   })}
                 >
                   <td className="font-mono text-sm whitespace-nowrap">{row.orderNumber}</td>
-                  <td className="hidden text-sm @lg:table-cell">{formatOrderDate(row.placedAt)}</td>
+                  <td data-label="Placed" className="hidden text-sm @lg:table-cell">
+                    {formatOrderDate(row.placedAt)}
+                  </td>
                   <td>
                     <Badge color={state.tone} variant="soft" size="sm">
                       {state.label}
                     </Badge>
                   </td>
-                  <td className="text-right font-mono text-sm tabular-nums">
+                  <td data-label="Total" className="text-right font-mono text-sm tabular-nums">
                     {formatOrderMoney(row.total, row.currency)}
                   </td>
                 </tr>
@@ -207,7 +223,7 @@ export function CustomerInvoicesTab({
   ctx: SurfaceContext;
   customerId: string;
 }) {
-  const { data, isPending, isError } = useQuery({
+  const { data, isPending, isError, error, refetch } = useQuery({
     queryKey: ['invoicing', 'documents', { customerId }],
     queryFn: () =>
       api
@@ -230,6 +246,10 @@ export function CustomerInvoicesTab({
       <RelatedCard
         isPending={isPending}
         isError={isError}
+        error={error}
+        onRetry={() => {
+          void refetch();
+        }}
         isEmpty={rows.length === 0}
         icon={<FileText className="size-6" aria-hidden />}
         emptyTitle="Nothing billed yet"
@@ -262,7 +282,7 @@ export function CustomerInvoicesTab({
                   {/* A document with no number has not been issued yet — saying
                     "Draft" is the honest reading of a blank there. */}
                   <td className="font-mono text-sm whitespace-nowrap">{row.number ?? 'Draft'}</td>
-                  <td className="hidden text-sm @lg:table-cell">
+                  <td data-label="Due" className="hidden text-sm @lg:table-cell">
                     {row.dueAt ? formatOrderDate(row.dueAt) : 'No due date'}
                   </td>
                   <td>
@@ -270,10 +290,10 @@ export function CustomerInvoicesTab({
                       {state.label}
                     </Badge>
                   </td>
-                  <td className="text-right font-mono text-sm tabular-nums">
+                  <td data-label="Total" className="text-right font-mono text-sm tabular-nums">
                     {formatInvoiceMoney(row.total, row.currency)}
                   </td>
-                  <td className="text-right font-mono text-sm tabular-nums">
+                  <td data-label="Owed" className="text-right font-mono text-sm tabular-nums">
                     {row.priceOffer ? '—' : formatInvoiceMoney(row.balance, row.currency)}
                   </td>
                 </tr>
@@ -289,13 +309,17 @@ export function CustomerInvoicesTab({
 /* ── Deals ──────────────────────────────────────────────────────────────── */
 
 export function CustomerDealsTab({ ctx, customerId }: { ctx: SurfaceContext; customerId: string }) {
-  const { data, isPending, isError } = useDeals({ customerId });
+  const { data, isPending, isError, error, refetch } = useDeals({ customerId });
   const rows = data?.items ?? [];
 
   return (
     <RelatedCard
       isPending={isPending}
       isError={isError}
+      error={error}
+      onRetry={() => {
+        void refetch();
+      }}
       isEmpty={rows.length === 0}
       icon={<Handshake className="size-6" aria-hidden />}
       emptyTitle="No deals with this customer"
@@ -327,7 +351,7 @@ export function CustomerDealsTab({ ctx, customerId }: { ctx: SurfaceContext; cus
                     {deal.stage?.name ?? stage.label}
                   </Badge>
                 </td>
-                <td className="text-right font-mono text-sm tabular-nums">
+                <td data-label="Value" className="text-right font-mono text-sm tabular-nums">
                   {formatDealMoney(deal.value, deal.currency)}
                 </td>
               </tr>
@@ -349,13 +373,17 @@ function shortDate(iso: string | null): string {
 }
 
 export function CustomerTasksTab({ ctx, customerId }: { ctx: SurfaceContext; customerId: string }) {
-  const { data, isPending, isError } = useTasks({ customerId });
+  const { data, isPending, isError, error, refetch } = useTasks({ customerId });
   const rows = data?.items ?? [];
 
   return (
     <RelatedCard
       isPending={isPending}
       isError={isError}
+      error={error}
+      onRetry={() => {
+        void refetch();
+      }}
       isEmpty={rows.length === 0}
       icon={<ListTodo className="size-6" aria-hidden />}
       emptyTitle="Nothing to do for this customer"
@@ -383,7 +411,9 @@ export function CustomerTasksTab({ ctx, customerId }: { ctx: SurfaceContext; cus
                 <td className="min-w-0">
                   <span className="block truncate font-medium">{task.title}</span>
                 </td>
-                <td className="hidden text-sm @md:table-cell">{shortDate(task.dueAt)}</td>
+                <td data-label="Due" className="hidden text-sm @md:table-cell">
+                  {shortDate(task.dueAt)}
+                </td>
                 <td>
                   <Badge color={meta.tone} variant={meta.tone && 'soft'} size="sm">
                     {meta.label}
@@ -426,7 +456,11 @@ export function CustomerSubscriptionsTab({
   ctx: SurfaceContext;
   customerId: string;
 }) {
-  const { data, isPending, isError } = useSubscriptions({ customerId, take: 100, skip: 0 });
+  const { data, isPending, isError, error, refetch } = useSubscriptions({
+    customerId,
+    take: 100,
+    skip: 0,
+  });
   const rows = data?.items ?? [];
 
   return (
@@ -435,6 +469,10 @@ export function CustomerSubscriptionsTab({
       <RelatedCard
         isPending={isPending}
         isError={isError}
+        error={error}
+        onRetry={() => {
+          void refetch();
+        }}
         isEmpty={rows.length === 0}
         icon={<Repeat className="size-6" aria-hidden />}
         emptyTitle="No repeat orders"
@@ -466,7 +504,7 @@ export function CustomerSubscriptionsTab({
                   <td className="text-sm">
                     {sub.itemCount} {sub.itemCount === 1 ? 'item' : 'items'}
                   </td>
-                  <td className="hidden text-sm @md:table-cell">
+                  <td data-label="Next" className="hidden text-sm @md:table-cell">
                     {subNextDate(sub.nextOccurrenceAt)}
                   </td>
                   <td>
@@ -474,7 +512,7 @@ export function CustomerSubscriptionsTab({
                       {meta.label}
                     </Badge>
                   </td>
-                  <td className="text-right font-mono text-sm tabular-nums">
+                  <td data-label="Per month" className="text-right font-mono text-sm tabular-nums">
                     {formatOrderMoney(sub.monthlyRecurringRevenueCents / 100, sub.currency)}
                   </td>
                 </tr>
@@ -565,7 +603,7 @@ export function CustomerNotesTab({
    *  when it can actually work. */
   canEmail?: boolean;
 }) {
-  const { data, isPending, isError } = useCustomerActivities(customerId);
+  const { data, isPending, isError, error, refetch } = useCustomerActivities(customerId);
   const rows = (data ?? []).filter((activity) => HUMAN_ACTIVITY_TYPES.has(activity.type));
 
   return (
@@ -577,6 +615,10 @@ export function CustomerNotesTab({
       <RelatedCard
         isPending={isPending}
         isError={isError}
+        error={error}
+        onRetry={() => {
+          void refetch();
+        }}
         isEmpty={rows.length === 0}
         icon={<StickyNote className="size-6" aria-hidden />}
         emptyTitle="No notes yet"
@@ -648,7 +690,7 @@ function callWhen(iso: string): string {
  * question they came to answer.
  */
 function CustomerCalls({ customerId }: { customerId: string }) {
-  const { data, isPending, isError } = useEngagementThreads({ customerId });
+  const { data, isPending, isError, error, refetch } = useEngagementThreads({ customerId });
   const calls = (data?.items ?? [])
     .flatMap((thread) => thread.messages)
     .filter((message) => message.kind === 'call')
@@ -669,6 +711,10 @@ function CustomerCalls({ customerId }: { customerId: string }) {
     <RelatedCard
       isPending={isPending}
       isError={isError}
+      error={error}
+      onRetry={() => {
+        void refetch();
+      }}
       isEmpty={calls.length === 0}
       icon={<Phone className="size-6" aria-hidden />}
       emptyTitle="No calls yet"
@@ -696,8 +742,10 @@ function CustomerCalls({ customerId }: { customerId: string }) {
                     {call.outcome === null ? 'Not said' : OUTCOME_LABELS[call.outcome]}
                   </Badge>
                 </td>
-                <td className="text-right tabular-nums">{callLength(call.durationSec)}</td>
-                <td className="text-right">
+                <td data-label="How long" className="text-right tabular-nums">
+                  {callLength(call.durationSec)}
+                </td>
+                <td data-label="Recording" className="text-right">
                   {recording === undefined ? (
                     <Text as="span" className="text-sm">
                       —
@@ -721,13 +769,17 @@ function CustomerCalls({ customerId }: { customerId: string }) {
 // customer, newest first: the notes you logged AND every order, email and
 // lifecycle event the platform recorded on its own.
 export function CustomerActivityTab({ customerId }: { customerId: string }) {
-  const { data, isPending, isError } = useCustomerActivities(customerId);
+  const { data, isPending, isError, error, refetch } = useCustomerActivities(customerId);
   const rows = data ?? [];
 
   return (
     <RelatedCard
       isPending={isPending}
       isError={isError}
+      error={error}
+      onRetry={() => {
+        void refetch();
+      }}
       isEmpty={rows.length === 0}
       icon={<Activity className="size-6" aria-hidden />}
       emptyTitle="Nothing has happened yet"

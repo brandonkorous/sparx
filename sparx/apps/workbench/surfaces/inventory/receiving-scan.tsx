@@ -36,11 +36,11 @@ import {
   EmptyState,
   Input,
   Progress,
-  Table,
   Text,
   Timestamp,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CircleCheck, PackageCheck, TriangleAlert, Undo2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -295,11 +295,16 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
                       )}
                     </span>
                   </td>
-                  <td className="text-right tabular-nums">{line.ordered}</td>
-                  <td className="hidden text-right tabular-nums @lg:table-cell">
+                  <td data-label="Ordered" className="text-right tabular-nums">
+                    {line.ordered}
+                  </td>
+                  <td
+                    data-label="Already in"
+                    className="hidden text-right tabular-nums @lg:table-cell"
+                  >
                     {line.receivedPreviously}
                   </td>
-                  <td className="text-right tabular-nums">
+                  <td data-label="Scanned" className="text-right tabular-nums">
                     {line.scanned > 0 ? (
                       <span className="flex flex-col items-end gap-0.5">
                         <Badge color="module-inventory" size="sm">
@@ -315,7 +320,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
                       <Text className="text-sm">—</Text>
                     )}
                   </td>
-                  <td className="text-right tabular-nums">
+                  <td data-label="Left" className="text-right tabular-nums">
                     {line.outstanding === 0 ? (
                       <CircleCheck className="text-success inline size-4" aria-label="All in" />
                     ) : (

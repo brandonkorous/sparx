@@ -128,11 +128,13 @@ export function NumberCells({ row, sells }: { row: ReorderRow; sells: string | n
   const lead = leadTimeSignal(row);
   return (
     <>
-      <td className="hidden text-right tabular-nums @lg:table-cell">{row.available}</td>
+      <td data-label="Available" className="hidden text-right tabular-nums @lg:table-cell">
+        {row.available}
+      </td>
       {/* Replaces "Reorder at". The trigger level is on the row's own calculation
           page; how long the supplier ACTUALLY takes, and whether that is measured
           or claimed, changes what to do now. */}
-      <td className="hidden whitespace-nowrap @6xl:table-cell">
+      <td data-label="Takes" className="hidden whitespace-nowrap @6xl:table-cell">
         {lead ? (
           <Badge color={lead.tone} variant="soft" size="sm" title={lead.detail}>
             {lead.label}
@@ -141,13 +143,16 @@ export function NumberCells({ row, sells }: { row: ReorderRow; sells: string | n
           '—'
         )}
       </td>
-      <td className="hidden text-right whitespace-nowrap tabular-nums @xl:table-cell">
+      <td
+        data-label="Sells"
+        className="hidden text-right whitespace-nowrap tabular-nums @xl:table-cell"
+      >
         {sells ?? '—'}
       </td>
-      <td className="text-right font-medium whitespace-nowrap tabular-nums">
+      <td data-label="To order" className="text-right font-medium whitespace-nowrap tabular-nums">
         {row.suggestedQuantity}
       </td>
-      <td className="hidden text-right tabular-nums @6xl:table-cell">
+      <td data-label="On the way" className="hidden text-right tabular-nums @6xl:table-cell">
         {row.onOrder > 0 ? row.onOrder : '—'}
       </td>
       <td className="hidden whitespace-nowrap @4xl:table-cell">
@@ -158,7 +163,10 @@ export function NumberCells({ row, sells }: { row: ReorderRow; sells: string | n
       {/* A number, not a badge. Zero reads as a dash — "$0.00" would look like a
           measurement of nothing, when it almost always means there is no
           deadline at all. */}
-      <td className="hidden text-right font-medium whitespace-nowrap tabular-nums @4xl:table-cell">
+      <td
+        data-label="At risk"
+        className="hidden text-right font-medium whitespace-nowrap tabular-nums @4xl:table-cell"
+      >
         {row.revenueAtRiskCents > 0 ? formatCents(row.revenueAtRiskCents) : '—'}
       </td>
     </>

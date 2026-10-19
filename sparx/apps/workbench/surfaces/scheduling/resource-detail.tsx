@@ -22,7 +22,6 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
-  Heading,
   Input,
   NativeSelect,
   Text,
@@ -44,7 +43,6 @@ import { SiteScopeField } from '../../components/site-scope-field';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { resourceKindGlyph } from './resource-kind-icon';
 import { useBusinessTimezone } from '../../lib/business-timezone';
 import { SaveFailure } from '@/components/save-failure';
 import {
@@ -62,26 +60,11 @@ import {
   hoursMissingNotice,
 } from './setup-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { TimezoneSelect } from '../../components/timezone-select';
 
 const COLUMN = 'mx-auto flex w-full max-w-2xl flex-col gap-4';
 
 const DETAIL_KEY = 'scheduling.resources.detail';
-
-/** A short, familiar set of zones. The engine resolves the hours a resource is
- *  free in ITS zone, so this is the zone the person or place actually works in. */
-const TIMEZONES = [
-  'UTC',
-  'America/New_York',
-  'America/Chicago',
-  'America/Denver',
-  'America/Los_Angeles',
-  'America/Toronto',
-  'Europe/London',
-  'Europe/Paris',
-  'Europe/Berlin',
-  'Australia/Sydney',
-  'Pacific/Auckland',
-] as const;
 
 interface Draft {
   name: string;
@@ -316,10 +299,7 @@ function ResourceEditor({
         <div className={COLUMN}>
           {existing ? (
             <div className="flex flex-col gap-1">
-              <Heading level={1} className="flex min-w-0 items-center gap-2 text-2xl font-semibold">
-                {resourceKindGlyph(existing.kind, 'size-5 shrink-0')}
-                <span className="min-w-0 break-words">{existing.name}</span>
-              </Heading>
+              {/* The name is its own box below and the tab, not a heading too (issue 282). */}
               <Text className="text-sm">{resourceKindLabel(existing.kind)}</Text>
             </div>
           ) : null}
@@ -414,23 +394,12 @@ function ResourceEditor({
 
             <Field>
               <FieldLabel>Time zone</FieldLabel>
-              <FieldControl
-                render={
-                  <NativeSelect
-                    className="max-w-sm"
-                    value={draft.timezone}
-                    aria-label="Time zone"
-                    onChange={(event) => {
-                      set('timezone', event.target.value);
-                    }}
-                  >
-                    {TIMEZONES.map((zone) => (
-                      <option key={zone} value={zone}>
-                        {zone.replace(/_/g, ' ')}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                }
+              <TimezoneSelect
+                value={draft.timezone}
+                ariaLabel="Time zone"
+                onChange={(zone) => {
+                  set('timezone', zone);
+                }}
               />
               <FieldDescription>
                 The zone this works in: the hours you set are read in this time.

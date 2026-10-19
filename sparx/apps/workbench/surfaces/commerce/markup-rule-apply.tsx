@@ -39,7 +39,7 @@ function PreviewSummary({ preview }: { preview: MarkupPreview }) {
         <ul className="flex flex-col gap-1">
           {sample.map((line) => (
             <li key={line.variantId} className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="min-w-0 flex-1 truncate">{line.title ?? line.sku}</span>
+              <span className="min-w-0 flex-1 basis-48 truncate">{line.title ?? line.sku}</span>
               <Text as="span" className="text-sm tabular-nums">
                 {formatCentsAmount(line.currentPriceCents, 'USD')} to{' '}
                 {line.newPriceCents === null

@@ -46,11 +46,11 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { useConfirm } from '../../lib/confirm';
 import { Ban, CheckCircle2, CookingPot, Hammer, Lock } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -71,12 +71,14 @@ import {
   runState,
   useAssemblyOrder,
   useBoms,
+  useBuildable,
   useCancelRun,
   useCompleteRun,
   usePlanRun,
   useReleaseRun,
   type AssemblyKind,
 } from './assembly-data';
+import { planRunNote } from './plan-run-words';
 import { PaneLoadError } from '../../components/pane-load-error';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
@@ -97,6 +99,14 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
   const [quantity, setQuantity] = useState('1');
   const [plannedFor, setPlannedFor] = useState<Date | null>(null);
   const [notes, setNotes] = useState('');
+
+  // What the shelf can build here, said before the run is planned rather than
+  // after, on "Hold the parts". Taking a thing apart needs the finished one, not
+  // the parts, so only a build asks (issue 317).
+  const buildable = useBuildable(kind === 'assemble' ? bomId : '', warehouseId);
+  const placeName = activeLocationName(locations.data?.items, warehouseId);
+  const partsNote =
+    kind === 'assemble' ? planRunNote(buildable.data, Number(quantity), placeName) : null;
 
   // Somewhere the making actually happens, and the components come off a
   // shelf there. Not a bucket for things on a van.
@@ -353,6 +363,16 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
                 />
               </Field>
             </div>
+
+            {partsNote?.short ? (
+              <Alert color="warning" variant="soft">
+                <AlertContent>
+                  <AlertDescription>{partsNote.text}</AlertDescription>
+                </AlertContent>
+              </Alert>
+            ) : partsNote ? (
+              <Text className="text-sm">{partsNote.text}</Text>
+            ) : null}
 
             <Field>
               <FieldLabel>Notes</FieldLabel>
@@ -738,10 +758,12 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                           />
                         </span>
                       </td>
-                      <td className="text-right tabular-nums">{line.quantityRequired}</td>
+                      <td data-label="Planned" className="text-right tabular-nums">
+                        {line.quantityRequired}
+                      </td>
                       {data.status === 'completed' ? (
                         <>
-                          <td className="text-right tabular-nums">
+                          <td data-label="Actually used" className="text-right tabular-nums">
                             {line.quantityConsumed === line.quantityRequired ? (
                               line.quantityConsumed
                             ) : (
@@ -753,12 +775,18 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                               </Badge>
                             )}
                           </td>
-                          <td className="hidden text-right tabular-nums @md:table-cell">
+                          <td
+                            data-label="Cost"
+                            className="hidden text-right tabular-nums @md:table-cell"
+                          >
                             {formatCents(Math.abs(line.costConsumedCents))}
                           </td>
                         </>
                       ) : (
-                        <td className="hidden text-right tabular-nums @md:table-cell">
+                        <td
+                          data-label="Waste allowed"
+                          className="hidden text-right tabular-nums @md:table-cell"
+                        >
                           {line.scrapPercent > 0 ? `${String(line.scrapPercent)}%` : '—'}
                         </td>
                       )}
@@ -798,4 +826,12 @@ export function AssemblyDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   if (id === 'new' || id === '') return <PlanRun ctx={ctx} />;
   return <ViewRun ctx={ctx} id={id} />;
+}
+
+/** The name of the chosen location, for a sentence about it. */
+function activeLocationName(
+  locations: readonly { id: string; name: string }[] | undefined,
+  id: string
+): string {
+  return locations?.find((l) => l.id === id)?.name ?? 'this location';
 }

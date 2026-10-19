@@ -9,7 +9,6 @@
 // "usps". One list, so a new carrier is named once.
 import { carrierLabel, typedCarrierOf } from '@wizeworks/commerce-schemas';
 import { channelLabel as sharedChannelLabel } from '../../lib/console/channels';
-import { paymentMethodLabels } from '../../lib/payment-methods';
 import type { Order, OrderFulfillment } from './order-types';
 
 /** Plain-word labels for a payment record's own status, which uses card-industry
@@ -22,30 +21,6 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
   voided: 'Canceled',
   refunded: 'Given back',
 };
-
-/**
- * How the money arrived, in the words a business uses.
- *
- * The pane printed `payment.processor` raw, so a cash sale read "$33.00 ·
- * manual" — a column value on a screen about somebody handing over notes. Same
- * reasoning as PAYMENT_STATUS_LABELS above: "captured" means "taken", and a
- * payment processor's vocabulary is not the shopkeeper's.
- *
- * The words themselves now live in lib/payment-methods, because four panes
- * named this same column and disagreed on how to spell a cheque. This list is
- * only which processors the commerce panes expect to see.
- */
-export const PAYMENT_PROCESSOR_LABELS: Record<string, string> = paymentMethodLabels([
-  'manual',
-  'card',
-  'check',
-  'ach',
-  'wire',
-  'net_terms',
-  'stripe',
-  'paypal',
-  'gift_card',
-]);
 
 /** True when the money never went through a gateway, so there is nothing to
  *  send it back to. Drives the refund wording, which used to promise every

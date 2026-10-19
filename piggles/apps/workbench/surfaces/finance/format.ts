@@ -10,6 +10,7 @@ import { daysPastDue } from '../../lib/console/days';
 import { channelLabel } from '../../lib/console/channels';
 import { paymentMethodLabel } from '../../lib/payment-methods';
 import { formatAmount } from '../../lib/money-format';
+import { formatShopDateTime } from '../../lib/shop-clock';
 
 export function formatMoney(amount: number, currency = 'USD'): string {
   return formatAmount(amount, currency);
@@ -117,8 +118,8 @@ export function formatDay(iso: string | null | undefined): string {
 export { daysPastDue };
 
 export function formatDateTime(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  // On the shop's clock, not this computer's (sparx persona issue 333).
+  return formatShopDateTime(iso);
 }
 
 /** A short "how long ago" for a payments feed, where the exact clock time rarely

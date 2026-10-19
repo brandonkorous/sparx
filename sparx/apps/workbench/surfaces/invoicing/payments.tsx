@@ -27,10 +27,10 @@ import {
   FieldLabel,
   Input,
   Select,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { HandCoins } from 'lucide-react';
 import { api } from '../../lib/api/client';
 import { paymentMethodLabel, paymentMethodLabels } from '../../lib/payment-methods';
@@ -144,11 +144,14 @@ export function PaymentsSection({ doc, noun, priceOffer }: PaymentsSectionProps)
                   </td>
                   <td>{KIND_LABELS[payment.kind]}</td>
                   <td className="hidden @xl:table-cell">{paymentMethodLabel(payment.method)}</td>
-                  <td className="hidden max-w-40 truncate @2xl:table-cell">
+                  <td className="hidden max-w-40 truncate @2xl:table-cell" data-label="Reference">
                     {payment.reference ?? '—'}
                   </td>
                   {/* Refunds show negative — the ledger reads like a ledger. */}
-                  <td className={`text-right tabular-nums ${refund ? 'text-danger' : ''}`}>
+                  <td
+                    data-label="Amount"
+                    className={`text-right tabular-nums ${refund ? 'text-danger' : ''}`}
+                  >
                     {refund ? '−' : ''}
                     {formatMoney(amount, doc.currency)}
                   </td>

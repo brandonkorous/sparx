@@ -29,12 +29,12 @@ import {
   Card,
   EmptyState,
   NativeSelect,
-  Table,
   Text,
   Timestamp,
   Tooltip,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { CalendarSync, Inbox, PackageSearch } from 'lucide-react';
 import { useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -163,7 +163,9 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
               {/* Position in the queue, which is the single most useful thing a
                   salesperson on the phone can say. Derived server-side, so it is
                   always contiguous. */}
-              <td className="text-right tabular-nums">{row.position ?? '—'}</td>
+              <td data-label="#" className="text-right tabular-nums">
+                {row.position ?? '—'}
+              </td>
               <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <ItemName
@@ -178,13 +180,13 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
                   </span>
                 </span>
               </td>
-              <td className="text-right whitespace-nowrap tabular-nums">
+              <td data-label="Owed" className="text-right whitespace-nowrap tabular-nums">
                 {row.outstanding}
                 {row.allocatedQuantity > 0 ? (
                   <span className="text-sm"> of {row.quantity}</span>
                 ) : null}
               </td>
-              <td className="whitespace-nowrap">
+              <td data-label="Told them" className="whitespace-nowrap">
                 {/* The date AND where it came from, together. A date derived
                     from past deliveries and one a supplier committed to are not
                     the same promise, and a buyer quoting the wrong one on the
@@ -201,7 +203,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
                   </Badge>
                 )}
               </td>
-              <td className="hidden whitespace-nowrap @lg:table-cell">
+              <td data-label="Waiting since" className="hidden whitespace-nowrap @lg:table-cell">
                 <Timestamp value={row.createdAt} format="relative" />
               </td>
               <td className="hidden whitespace-nowrap @xl:table-cell">

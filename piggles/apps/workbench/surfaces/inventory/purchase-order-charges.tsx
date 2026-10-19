@@ -35,10 +35,10 @@ function ChargeRow({ charge, model }: { charge: Charge; model: ChargesModel }) {
         </span>
       </td>
       <td className="hidden text-sm @lg:table-cell">{basisLabel(charge.allocationBasis)}</td>
-      <td className="text-right font-medium tabular-nums">
+      <td data-label="Quoted" className="text-right font-medium tabular-nums">
         {formatCents(charge.amountCents, model.currency)}
       </td>
-      <td className="hidden text-right @md:table-cell">
+      <td data-label="On deliveries" className="hidden text-right @md:table-cell">
         <LandedBadge charge={charge} currency={model.currency} />
       </td>
       <td>

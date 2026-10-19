@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "b3df2873-75a6-492c-a3f2-c2bcc4cb3e18",
+                  "id": "7f647cdf-f581-4dcc-b636-eb79aa14c2a6",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "b09aa4cb-dcf2-45ec-afc5-e8105b7886a9",
+                      "id": "9c489eac-cdf4-445e-b1ba-b0d4f8a4e2ff",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "f32f548d-64a4-4356-b892-7e22d11a01ee",
+                      "id": "0f319510-77f5-4af3-8f71-3e10c7cab14b",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "c43af7cd-25e5-4e1a-b72c-a3497ca69350",
+                      "id": "f0148f48-0a8c-460c-b3b6-40c91a69a37a",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "ce59dc5c-e14c-4bdb-b05e-cd158144008d",
+                      "id": "f90a6cb9-ac2c-44d7-bd42-d9775c9b6b40",
                       "ord": "a3"
                     }
                   ],
-                  "id": "c0e4b01d-e9d2-40e7-8bf1-2cf2a4c2797a",
+                  "id": "b88aa602-bc68-4b6a-a16e-1478aa5ab063",
                   "ord": "a1"
                 },
                 {
@@ -107,14 +107,14 @@
                       "kind": "host",
                       "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "id": "4d7f0a47-3c13-4762-9487-9c0a99a65dd8",
+                      "id": "33c046fd-a09d-4405-aa63-f87d754395d1",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "55628cfd-9c81-4846-bb81-2bca4ee4db4a",
+                      "id": "745d2561-3a80-47ef-905b-363edb314424",
                       "ord": "a1"
                     },
                     {
@@ -130,8 +130,15 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "e5f8a5ef-d1d5-4d1c-8b66-d9ef21a0e59d",
+                      "id": "79a25b15-a6c8-4036-8ca2-99a8a6878e9f",
                       "ord": "a2"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.cart-button",
+                      "class": "inline-flex items-center",
+                      "id": "fa7d8a3b-8df5-422b-8eeb-c6aaa25fe49e",
+                      "ord": "a3"
                     },
                     {
                       "kind": "element",
@@ -148,20 +155,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "8ff57af5-f2ff-4365-a2db-9911cba353d7",
+                          "id": "3837a072-f6ad-49cc-b414-ae0534755427",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "3a1277d5-f1bf-4c61-af86-074446372ba3",
-                      "ord": "a3"
+                      "id": "a58b710e-3369-4b4b-ba66-c68609c3a8cd",
+                      "ord": "a4"
                     }
                   ],
-                  "id": "d61079cf-0d13-4361-b1e0-a2cdc7487da3",
+                  "id": "1f10c601-3453-4301-a0bc-9c2280ac4c09",
                   "ord": "a2"
                 }
               ],
-              "id": "259f557d-7dfa-4e9f-802a-a9c3706ed41a",
+              "id": "32d2dd34-9b23-4ad5-926e-b97b99394280",
               "ord": "a0"
             },
             {
@@ -185,7 +192,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "53b7ca04-b71a-454d-a2e3-fc6b388e3b0d",
+                  "id": "2bc1ecd2-b281-42cf-a76d-2e72efdc5b3f",
                   "ord": "a0"
                 },
                 {
@@ -201,7 +208,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "09979d4a-aa62-4f99-9a1c-3c014ed92d57",
+                  "id": "4a9088bf-ea7e-492b-b977-586a4807ca1d",
                   "ord": "a1"
                 },
                 {
@@ -217,7 +224,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "d644f766-c366-4964-8efa-63235bc0eacc",
+                  "id": "3e52f695-af1c-4c30-9740-5e0b766fbc3d",
                   "ord": "a2"
                 },
                 {
@@ -233,14 +240,14 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "230947e1-4ffa-4b3a-bbe1-e0af917f612c",
+                  "id": "dd414738-2e0b-462f-8f24-62fa331e4a14",
                   "ord": "a3"
                 },
                 {
                   "kind": "host",
                   "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "id": "106b61b6-a89f-4a30-a5bb-f82f321d1af8",
+                  "id": "aede3ebc-2098-4407-bd08-7861b3bb3c46",
                   "ord": "a4"
                 },
                 {
@@ -256,19 +263,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "42558fd2-bc55-4f53-a6e9-4684c55a89e0",
+                  "id": "0b7fb701-f9f9-4377-b478-3eb926453184",
                   "ord": "a5"
                 }
               ],
               "part": "panel",
-              "id": "16822d6b-103d-426a-bd6f-58300a13ef38",
+              "id": "0a631a91-7232-43b1-80e1-b0793817522a",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "8fbc4ff4-7cae-42ff-a3ef-798ca41b5527",
+          "id": "0fdb31c4-abbe-40f9-b29b-2e6666b22df2",
           "ord": "a0"
         },
         {
@@ -284,7 +291,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "b7d45205-5d9d-446a-8d1e-50ed6b67aeef",
+          "id": "07f33f9f-fe0b-4c92-b3ef-e6434066424d",
           "ord": "a1"
         },
         {
@@ -314,7 +321,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "c9a38ab7-714d-43c8-b8b8-d1c33bc51f78",
+                          "id": "6a82994d-ea0d-4059-80bb-e9874661f306",
                           "ord": "a0"
                         },
                         {
@@ -332,7 +339,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "d4e35f0a-50ed-4fcc-8a2d-c946ed754bd9",
+                          "id": "56989896-6fb6-4e02-b23d-d613f7a56f82",
                           "ord": "a1"
                         },
                         {
@@ -353,7 +360,7 @@
                                 "placeholder": "you@example.com",
                                 "required": true
                               },
-                              "id": "b58cde17-481b-4b98-84ae-391f2df6b3ac",
+                              "id": "7b2c330a-2c4f-4a44-89aa-c4fc7f3b8ab5",
                               "ord": "a0"
                             },
                             {
@@ -369,11 +376,11 @@
                                 "type": "text",
                                 "label": "Button label"
                               },
-                              "id": "feb784b2-056a-4e59-bac9-44bbd7b9c156",
+                              "id": "0c0d5dfd-af9d-48cc-a44b-c9c556999372",
                               "ord": "a1"
                             }
                           ],
-                          "id": "017583fb-256c-46b0-9ea6-6e4fa6da5f74",
+                          "id": "f3c31120-146c-4a1e-b532-8e41d1c63313",
                           "ord": "a2"
                         },
                         {
@@ -386,11 +393,11 @@
                             "type": "text",
                             "label": "Reassurance line"
                           },
-                          "id": "f3e2b26b-7d8e-4c34-b1d8-cc9abe6c21c0",
+                          "id": "66c95d26-aaa7-44ca-84ba-5499a873c156",
                           "ord": "a3"
                         }
                       ],
-                      "id": "fc8528e4-b1ac-4b8b-b1d5-4486b3674f39",
+                      "id": "0f364090-b613-4388-8e00-7b37cb43a545",
                       "ord": "a0"
                     },
                     {
@@ -416,7 +423,7 @@
                               "attrs": {
                                 "href": "/"
                               },
-                              "id": "60c7c5fa-8c2b-4a0a-b2e1-14172c4577aa",
+                              "id": "a2916185-65ed-48d1-858c-66dfb5fc3877",
                               "ord": "a0"
                             },
                             {
@@ -441,11 +448,11 @@
                                         "type": "link",
                                         "label": "Features"
                                       },
-                                      "id": "302e1d4a-bf34-47fc-984f-445ce89cb15e",
+                                      "id": "0cceea65-499e-4bea-a584-a984e882197f",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "28b17bc1-79ec-4326-bfb5-ef09aed44523",
+                                  "id": "1e273534-6fc1-4bb2-b048-ca796a7980fb",
                                   "ord": "a0"
                                 },
                                 {
@@ -465,11 +472,11 @@
                                         "type": "link",
                                         "label": "Pricing"
                                       },
-                                      "id": "38fc1f8c-8b4c-4c47-b102-238fa11d722e",
+                                      "id": "073883e7-0cd3-46d3-bf5d-650a4745ae77",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "bb1f5c38-c3e5-48e7-b785-687a58a82ac6",
+                                  "id": "cab6bd39-7476-464b-af7f-efae9c665b23",
                                   "ord": "a1"
                                 },
                                 {
@@ -489,11 +496,11 @@
                                         "type": "link",
                                         "label": "Changelog"
                                       },
-                                      "id": "a8dcb78b-8bad-43b5-9c53-e8b9226e7897",
+                                      "id": "bfb98626-32ad-4dbb-babf-411c4df102b5",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "7c53b9e3-006b-4e96-93fc-05b9b407e3c7",
+                                  "id": "cc83b4ce-9c82-46f3-85dd-bc4e84778a78",
                                   "ord": "a2"
                                 },
                                 {
@@ -513,12 +520,31 @@
                                         "type": "link",
                                         "label": "Roadmap"
                                       },
-                                      "id": "4ee2cffc-a522-4702-bf4d-6142feb03330",
+                                      "id": "427ceb37-0862-4c48-9d2e-3df83b90123a",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "015cbae1-07b7-4423-bf3b-d7a4a69bce28",
+                                  "id": "1975de40-6496-4577-99d5-7041ea6990e0",
                                   "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/collections"
+                                      },
+                                      "children": ["Collections"],
+                                      "id": "ff7bc53e-5750-458d-a3ff-0f31c54c2536",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "b30f5e23-45dc-4d72-8652-d18554283082",
+                                  "ord": "a4"
                                 },
                                 {
                                   "kind": "element",
@@ -532,19 +558,19 @@
                                         "href": "/search"
                                       },
                                       "children": ["Search"],
-                                      "id": "a2999c2e-b69d-410a-ad1b-319ae7089a78",
+                                      "id": "0622f3e0-8f22-4a42-aa7e-edaa8f56a1f5",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "8f615795-ac76-4a82-9cd6-694b23878430",
-                                  "ord": "a4"
+                                  "id": "e087d975-f318-45a5-b9fc-b186e075db88",
+                                  "ord": "a5"
                                 }
                               ],
-                              "id": "26deb958-1623-4d53-878b-087731ec4d02",
+                              "id": "25372978-0ed5-4265-a9ba-2b5a66b90ff5",
                               "ord": "a1"
                             }
                           ],
-                          "id": "92902557-5ffe-452c-8f51-882f3d1fb1bb",
+                          "id": "0d82d714-e008-41d9-afe4-d8b454533c80",
                           "ord": "a0"
                         },
                         {
@@ -565,7 +591,7 @@
                               "attrs": {
                                 "href": "/account"
                               },
-                              "id": "20cf27d4-5ee8-45b8-bad8-64ed4afb2a05",
+                              "id": "80d7d560-eb31-418b-aced-d244b3348485",
                               "ord": "a0"
                             },
                             {
@@ -590,11 +616,11 @@
                                         "type": "link",
                                         "label": "About"
                                       },
-                                      "id": "1f2746cd-42f8-4440-8ab4-517e2855ff21",
+                                      "id": "40bccc08-fe8a-4357-ae37-d658ed5a87c6",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "7d8042d3-c450-4054-a199-9a698d5168f9",
+                                  "id": "43d308fd-6a55-4b72-bfa8-060b007a2fe2",
                                   "ord": "a0"
                                 },
                                 {
@@ -614,11 +640,11 @@
                                         "type": "link",
                                         "label": "Careers"
                                       },
-                                      "id": "71abef80-8922-4c75-80fb-6b0881932052",
+                                      "id": "a93b39d5-1cb1-496d-9f6b-8a97f97a1185",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "4fcb4cf8-213a-43d8-92e4-3774d16f93bd",
+                                  "id": "e5b7a9c7-6c3e-4291-9849-ebda144c031e",
                                   "ord": "a1"
                                 },
                                 {
@@ -638,11 +664,11 @@
                                         "type": "link",
                                         "label": "Press"
                                       },
-                                      "id": "a64d70f1-f7a6-4bea-ac13-7be6c7542cef",
+                                      "id": "f81ad6d6-5cfb-4476-86b6-17fa13575e5b",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "dc096dcf-d9f4-4a27-89ce-344261ac73c3",
+                                  "id": "632c72a2-fb2c-4e1d-8274-ad391177f41a",
                                   "ord": "a2"
                                 },
                                 {
@@ -662,19 +688,19 @@
                                         "type": "link",
                                         "label": "Contact"
                                       },
-                                      "id": "ef8a3a36-353e-4048-a277-35e431fc30bc",
+                                      "id": "4736b8ad-b8be-46f3-8f26-8fea09c0b62b",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "34c59c28-fd31-4ee0-94af-6f53bead2e2e",
+                                  "id": "feb212a3-90c7-4a08-9969-52b532ca0609",
                                   "ord": "a3"
                                 }
                               ],
-                              "id": "3467e593-7839-48a9-8963-503b8b6c30fe",
+                              "id": "12f2e729-0cab-4c34-a811-5abc73b63a47",
                               "ord": "a1"
                             }
                           ],
-                          "id": "2f0afe0a-ebc9-467e-8090-333a59107b16",
+                          "id": "cd9b79c1-7c0b-446d-bd56-113d4012c742",
                           "ord": "a1"
                         },
                         {
@@ -684,15 +710,15 @@
                           "props": {
                             "heading": "Legal"
                           },
-                          "id": "3e178f24-2224-42fe-a129-a89d577a7af6",
+                          "id": "3e5f0b5b-2f6f-4df8-a79a-e2b6776e6f80",
                           "ord": "a2"
                         }
                       ],
-                      "id": "66597111-1b19-45dc-ab1c-5fe78dc294ff",
+                      "id": "1d25241c-43cd-4747-87b1-e39c0e528fa6",
                       "ord": "a1"
                     }
                   ],
-                  "id": "fdc5b2e2-3a73-4e19-badf-c67ce1911f08",
+                  "id": "4d793277-04d2-4692-8256-6bcfbe5e83fd",
                   "ord": "a0"
                 },
                 {
@@ -715,35 +741,51 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "c7be58e0-36e5-4a3a-b808-404c73b96233",
+                          "id": "037561c7-8716-4861-a8fd-a19ed2cbcd1c",
                           "ord": "a0"
                         }
                       ],
-                      "id": "406ccf5d-5d5d-4e95-bd85-9a26405cca62",
+                      "id": "2bfbb36e-5d0a-4f3f-ae67-b1bad31e9860",
                       "ord": "a0"
                     },
                     {
                       "kind": "element",
                       "tag": "ul",
                       "class": "flex items-center gap-5",
-                      "children": [],
-                      "id": "6e04efe5-7a65-427e-9dd7-d8377a7a6a0b",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "li",
+                          "children": [
+                            {
+                              "kind": "host",
+                              "component": "site.social-links",
+                              "class": "mt-2",
+                              "id": "8cdf2b53-9e50-4ac6-b2e4-16fba9eccb12",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "89f89e79-42a2-4578-9a94-f8c0ea19b36a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "387224f2-23c0-43c7-b678-7b3bd4621194",
                       "ord": "a1"
                     }
                   ],
-                  "id": "bfaaebba-e704-4d1d-a5bd-58f3e7c45928",
+                  "id": "c1dd2f27-fdc7-4464-86b2-a72731c39f44",
                   "ord": "a1"
                 }
               ],
-              "id": "dcf950de-a2bc-40c1-9adb-3f9370eff4eb",
+              "id": "5a528208-e94a-4fa1-961c-e37115e02c75",
               "ord": "a0"
             }
           ],
-          "id": "b54b8847-2fc9-46ef-9524-1c073305a135",
+          "id": "a01f379f-4d95-4d33-8d18-17649e6f774d",
           "ord": "a2"
         }
       ],
-      "id": "f3e088aa-d167-4cc0-a368-f39ed0ca443f"
+      "id": "2dd931b8-2593-4c23-9d05-5c0b620ab092"
     }
   },
   "pages": [
@@ -757,7 +799,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "6af9b501-3108-4d2e-94d1-d6ad191f394d",
+        "id": "afb0bd73-254e-481b-a95f-0f1724c333cf",
         "children": [
           {
             "kind": "element",
@@ -773,7 +815,7 @@
                   "alt": "A calm, naturally lit kitchen in wood and stone",
                   "loading": "lazy"
                 },
-                "id": "65590386-ac6e-4133-a188-7349d9c01495",
+                "id": "6dedb897-9d72-4464-ba09-00b3a32eb7f6",
                 "ord": "a0"
               },
               {
@@ -791,7 +833,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
                         "children": ["A home made from honest things"],
-                        "id": "0744937d-2fbb-4013-8793-7180517d22a4",
+                        "id": "58dcc470-f864-4647-9856-76182f335d38",
                         "ord": "a0"
                       },
                       {
@@ -801,7 +843,7 @@
                         "children": [
                           "Everyday housewares in cotton, linen, wood and glass: the useful, unfussy things a kitchen and a home actually run on, made from what the earth gives back and built to be kept."
                         ],
-                        "id": "0d16d9ee-44b4-4041-a69c-7925a64d2fec",
+                        "id": "8ba375a9-fa4f-401f-a1a6-22608473f894",
                         "ord": "a1"
                       },
                       {
@@ -817,7 +859,7 @@
                               "href": "/shop"
                             },
                             "children": ["Shop everything"],
-                            "id": "012147c3-3b26-40f1-85f9-74d8cfbeda27",
+                            "id": "0a03bc86-a855-4c63-bf4c-807bed7aaef8",
                             "ord": "a0"
                           },
                           {
@@ -828,23 +870,23 @@
                               "href": "/journal"
                             },
                             "children": ["Read the journal"],
-                            "id": "e0bbf0b2-b913-49ec-94cd-a74d941eee36",
+                            "id": "a8a2bb38-8927-4670-842d-f1dfb441ac87",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b77b190d-9806-4aba-b370-09090e2db8a7",
+                        "id": "8f9cc275-5e7c-45b6-9320-43539adcc4f3",
                         "ord": "a2"
                       }
                     ],
-                    "id": "19c73c9d-3603-46ad-87b3-3a86902563e1",
+                    "id": "cf39a9e1-5e75-4494-9422-c92c01f4b5af",
                     "ord": "a0"
                   }
                 ],
-                "id": "c5942011-8703-4807-9d5f-88a425afc66b",
+                "id": "ebee69cf-0902-440d-8b26-deac65e05165",
                 "ord": "a1"
               }
             ],
-            "id": "5552e581-b2a9-4ba7-ae2e-89413819097e",
+            "id": "92d4ac7c-68df-48b1-a586-447a5b73142e",
             "ord": "a0"
           },
           {
@@ -867,7 +909,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
                         "children": ["Room by room"],
-                        "id": "0866265a-743c-4dc5-b892-9df576f93307",
+                        "id": "8ce954b4-c774-469f-9895-7ca05fd046dd",
                         "ord": "a0"
                       },
                       {
@@ -877,11 +919,11 @@
                         "children": [
                           "Five small collections for the parts of a home that get used every day."
                         ],
-                        "id": "3c5a95ad-56f8-4fc2-a40c-a14ccb5c1075",
+                        "id": "9fd6b87b-fc12-4c91-ad12-692469830231",
                         "ord": "a1"
                       }
                     ],
-                    "id": "e8f4d755-e2fc-4e90-93e2-9622d13b4ae7",
+                    "id": "6b7ae08d-1f0d-449d-b6b3-b1c94670f8f0",
                     "ord": "a0"
                   },
                   {
@@ -902,11 +944,11 @@
                             "tag": "span",
                             "class": "text-xl font-semibold",
                             "children": ["Kitchen"],
-                            "id": "efa80849-0889-4309-aa37-6843fc102197",
+                            "id": "a5427773-a9e4-4ecd-b7c1-7453c916a4cc",
                             "ord": "a0"
                           }
                         ],
-                        "id": "2bb4b0b0-82d9-4b1c-b1e6-4dcd53412a0c",
+                        "id": "a6604334-c19a-4daf-ad1a-0a6d074a4ac9",
                         "ord": "a0"
                       },
                       {
@@ -922,11 +964,11 @@
                             "tag": "span",
                             "class": "text-xl font-semibold",
                             "children": ["Cleaning"],
-                            "id": "96b51b54-8d42-49a9-b36a-9bf75b709b89",
+                            "id": "6156ee5c-8847-46a4-bd40-75e271333199",
                             "ord": "a0"
                           }
                         ],
-                        "id": "a86c36a9-ac2e-45a7-a585-dcd0d826fd61",
+                        "id": "231225f4-c2a1-41aa-b1b4-a676752b110b",
                         "ord": "a1"
                       },
                       {
@@ -942,11 +984,11 @@
                             "tag": "span",
                             "class": "text-xl font-semibold",
                             "children": ["Storage"],
-                            "id": "64822ffb-7590-45a2-8a14-b8140cc27d8d",
+                            "id": "505ac969-b6ec-46a0-a7e4-982dcfb66735",
                             "ord": "a0"
                           }
                         ],
-                        "id": "9601267e-71a7-4523-b690-0a0993cf24a7",
+                        "id": "6e2be957-4c39-41b0-98f8-fb5ebb1248d2",
                         "ord": "a2"
                       },
                       {
@@ -962,11 +1004,11 @@
                             "tag": "span",
                             "class": "text-xl font-semibold",
                             "children": ["Tableware"],
-                            "id": "7a294ec7-cdbe-4350-8acb-37ba41a3e72a",
+                            "id": "0d800b60-12a5-4078-b04b-3126ff701e63",
                             "ord": "a0"
                           }
                         ],
-                        "id": "549ec022-3e0f-49ee-a29f-07fe5857f618",
+                        "id": "1eada83a-56f9-4bb5-b402-6a3bb50eeb66",
                         "ord": "a3"
                       },
                       {
@@ -982,23 +1024,23 @@
                             "tag": "span",
                             "class": "text-xl font-semibold",
                             "children": ["Bath & textiles"],
-                            "id": "846b0b99-825f-46d9-bca5-1b45ec457624",
+                            "id": "e349fba2-4074-4962-9755-ec5bd04867f7",
                             "ord": "a0"
                           }
                         ],
-                        "id": "08394100-72af-4ff5-851a-194325a510e0",
+                        "id": "2fadd4d1-96df-4fa5-a8db-819f4d83d394",
                         "ord": "a4"
                       }
                     ],
-                    "id": "565c3a7e-4a3e-4557-8748-4f2917578301",
+                    "id": "4a04c439-5bcf-450f-8c0d-3b4052d14233",
                     "ord": "a1"
                   }
                 ],
-                "id": "2161c59d-74c3-4305-b7c3-351bbd44aecf",
+                "id": "b01425c3-44b3-48d6-af9c-18dee7086972",
                 "ord": "a0"
               }
             ],
-            "id": "6cc4211a-d9fb-4b77-bd79-f68d2d02bad4",
+            "id": "69d085dc-af1a-449e-b808-f6a9e7a470eb",
             "ord": "a1"
           },
           {
@@ -1021,7 +1063,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-semibold text-base-content",
                         "children": ["What people buy again"],
-                        "id": "353905c4-aec8-4995-a071-0082fe3198b7",
+                        "id": "aef537b6-8449-4058-85f4-3aafd1d0505b",
                         "ord": "a0"
                       },
                       {
@@ -1045,12 +1087,12 @@
                                 "props": {
                                   "name": "arrow-left"
                                 },
-                                "id": "0b15ac6e-7788-4d24-a930-811d3b3ab9e8",
+                                "id": "977f5a48-2485-41a2-a062-ba05c90ffaff",
                                 "ord": "a0"
                               }
                             ],
                             "part": "prev",
-                            "id": "520c2cfa-f7ec-49ca-8cf5-8cfe259c91ec",
+                            "id": "a80921cc-6126-4898-a003-fae167e7ffeb",
                             "ord": "a0"
                           },
                           {
@@ -1069,16 +1111,16 @@
                                 "props": {
                                   "name": "arrow-right"
                                 },
-                                "id": "fde4424d-0ae8-4d30-8ecb-bc59c9dead14",
+                                "id": "843c97bf-ff5b-4995-8eff-4761516cb2ef",
                                 "ord": "a0"
                               }
                             ],
                             "part": "next",
-                            "id": "8ad50db2-8c3e-421c-814a-38706172e63f",
+                            "id": "0f1d6176-932f-4198-bfc8-9b3dc2fc429d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0fb75f1b-b7b0-43bd-be37-c9bfd41e52f6",
+                        "id": "250e1c28-5982-4cb2-9b8d-2483604717fc",
                         "ord": "a1"
                       }
                     ],
@@ -1086,7 +1128,7 @@
                       "kind": "visible",
                       "ref": "commerce.featured"
                     },
-                    "id": "ea087327-cb8c-4b3c-a512-ec64d5313b29",
+                    "id": "852a51ae-add7-4f0d-9baa-0c4a839c0c0e",
                     "ord": "a0"
                   },
                   {
@@ -1121,7 +1163,7 @@
                                       "kind": "value",
                                       "ref": "image"
                                     },
-                                    "id": "c1418d49-6e5f-41cd-843c-242c350fd1c9",
+                                    "id": "f33ec8d9-c6a2-4eb6-935a-9a381fc5fa0d",
                                     "ord": "a0"
                                   },
                                   {
@@ -1138,7 +1180,7 @@
                                           "kind": "value",
                                           "ref": "title"
                                         },
-                                        "id": "343e63b3-ac66-4319-a24e-cfc4734a1740",
+                                        "id": "fffd29f9-f058-41e9-932d-07af3dc2a22d",
                                         "ord": "a0"
                                       },
                                       {
@@ -1150,7 +1192,7 @@
                                           "kind": "value",
                                           "ref": "price"
                                         },
-                                        "id": "d175c923-67f5-4a8a-99a9-de4c0a25be25",
+                                        "id": "866d63ab-6d75-4ff2-b39a-a4e5f79edbd4",
                                         "ord": "a1"
                                       },
                                       {
@@ -1162,11 +1204,11 @@
                                           "kind": "visible",
                                           "ref": "soldOut"
                                         },
-                                        "id": "5c75f380-ace4-4b8c-8556-18c101e88386",
+                                        "id": "d8849a32-1741-466a-b3d0-83d47487ea99",
                                         "ord": "a2"
                                       }
                                     ],
-                                    "id": "57a8a27f-9f9d-42c8-9ab9-abf1b67f2049",
+                                    "id": "d18a456e-fbae-4525-a79a-0f0f8a872bfc",
                                     "ord": "a1"
                                   }
                                 ],
@@ -1175,7 +1217,7 @@
                                   "ref": "url",
                                   "attr": "href"
                                 },
-                                "id": "7af965db-d6dd-4928-865b-c855c4ad571d",
+                                "id": "faf76534-18e8-4ad3-8aab-f1193881236b",
                                 "ord": "a0"
                               }
                             ],
@@ -1184,27 +1226,27 @@
                               "ref": "commerce.featured",
                               "omitWhenEmpty": true
                             },
-                            "id": "5b26d72e-50cf-4eb2-adc6-d57b84bfbd0d",
+                            "id": "90a5e63e-bb63-4b6a-b674-a793ceeedd16",
                             "ord": "a0"
                           }
                         ],
                         "part": "track",
-                        "id": "6da35b96-234e-4f5c-90a0-deaf147ab224",
+                        "id": "38e6f3e7-25b2-4496-b7e5-e29ab7e4d4ec",
                         "ord": "a0"
                       }
                     ],
-                    "id": "a7bb6a24-dc8e-46b0-bdb8-f0ca4b844dc2",
+                    "id": "3899bc93-afb4-4b53-9a47-d9edc2c745d2",
                     "ord": "a1"
                   }
                 ],
-                "id": "d416dbde-1fd9-4a2b-89da-f62e10d9d33c",
+                "id": "21169f3e-6e3b-45ab-a9e4-a3a3bdd3b5d3",
                 "ord": "a0"
               }
             ],
             "behavior": {
               "type": "scroll-strip"
             },
-            "id": "9e299968-56c3-4301-9e6f-ad7784d3112d",
+            "id": "7023a161-cf55-49ce-9ffc-0d4ad3d45f7c",
             "ord": "a2"
           },
           {
@@ -1221,7 +1263,7 @@
                   "alt": "A close-up of woven natural fibre",
                   "loading": "lazy"
                 },
-                "id": "2a7da250-10c3-45bd-ab95-5f70c3cf35a4",
+                "id": "938ab8f1-54ac-4fab-bf0a-04cb14884c5b",
                 "ord": "a0"
               },
               {
@@ -1239,7 +1281,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-semibold leading-tight text-base-content @3xl:text-4xl",
                         "children": ["Made from what grows back"],
-                        "id": "2e3cef13-6e96-4324-a3ea-0c64e876ef25",
+                        "id": "1eb85eea-05b1-4ae3-a517-1ff706bcd9f4",
                         "ord": "a0"
                       },
                       {
@@ -1249,7 +1291,7 @@
                         "children": [
                           "Nothing here starts life in an oil well. Organic cotton, fast-growing bamboo, beeswax, seagrass and sand-into-glass: materials a field or a forest makes more of every year, chosen because they do the job and leave less behind."
                         ],
-                        "id": "f03d97d9-293e-4ed9-9997-4639512e82f9",
+                        "id": "5ab4f9ec-e961-47e1-8925-0d116c7757c6",
                         "ord": "a1"
                       },
                       {
@@ -1260,19 +1302,19 @@
                           "href": "/journal"
                         },
                         "children": ["How we choose materials"],
-                        "id": "e5cc7660-d838-47b9-9c3a-174185a5f575",
+                        "id": "a48dc426-7923-4380-8198-7dcf56f0f50a",
                         "ord": "a2"
                       }
                     ],
-                    "id": "044543a8-d2b7-4575-a584-29e34fde0170",
+                    "id": "5dcff671-51a1-46a2-b29c-588dfdbd3f7f",
                     "ord": "a0"
                   }
                 ],
-                "id": "9e5d6788-45c4-4ea3-bcfc-507512bfc82e",
+                "id": "f86cd2ba-47e5-42a0-b600-68112d447bbd",
                 "ord": "a1"
               }
             ],
-            "id": "9f4a054f-53b3-4433-a9fc-12da07a6dc19",
+            "id": "e9ef7f29-2799-4ee3-8319-6ab63e7002e3",
             "ord": "a3"
           },
           {
@@ -1295,7 +1337,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-semibold text-base-content",
                         "children": ["For the kitchen"],
-                        "id": "fafb0a47-c13d-4a40-b74f-8bcbd35cfeab",
+                        "id": "ae46f7ca-b2af-48b7-ae6e-94bc562d2fa7",
                         "ord": "a0"
                       },
                       {
@@ -1319,12 +1361,12 @@
                                 "props": {
                                   "name": "arrow-left"
                                 },
-                                "id": "9468faf8-4ebd-411c-9c0b-840509f178a1",
+                                "id": "e3097270-fbbf-47de-aefd-a1af58304bd2",
                                 "ord": "a0"
                               }
                             ],
                             "part": "prev",
-                            "id": "87771c34-83b5-4d26-be5b-bc49fa527b99",
+                            "id": "6f4be046-1711-4d3b-af27-bbe1f0612b30",
                             "ord": "a0"
                           },
                           {
@@ -1343,16 +1385,16 @@
                                 "props": {
                                   "name": "arrow-right"
                                 },
-                                "id": "2bd55fdd-b942-44bb-bf96-638de6901a84",
+                                "id": "1d045928-3c59-4bb5-835f-8ca2ddb608ad",
                                 "ord": "a0"
                               }
                             ],
                             "part": "next",
-                            "id": "e6443e24-0faa-419e-a77d-39e9902d0a05",
+                            "id": "80420766-a955-42bf-9cd0-935f183e29aa",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e1e18af8-252e-46e9-8672-b501f182b90b",
+                        "id": "6cc10c85-5c9b-4be8-8dcd-9013736603c1",
                         "ord": "a1"
                       }
                     ],
@@ -1360,7 +1402,7 @@
                       "kind": "visible",
                       "ref": "commerce.category.kitchen"
                     },
-                    "id": "0ead919a-1dd4-46fc-98ec-28813385cd57",
+                    "id": "3149f428-d7b1-47eb-915e-ac2e0aff8b2f",
                     "ord": "a0"
                   },
                   {
@@ -1395,7 +1437,7 @@
                                       "kind": "value",
                                       "ref": "image"
                                     },
-                                    "id": "158506c4-a358-45a5-8221-1967f35e5581",
+                                    "id": "e1b1d9d5-81f8-484d-abf0-8fef512a5893",
                                     "ord": "a0"
                                   },
                                   {
@@ -1412,7 +1454,7 @@
                                           "kind": "value",
                                           "ref": "title"
                                         },
-                                        "id": "238f1c93-7017-416e-ac9d-29a2fa207620",
+                                        "id": "59c3fa5b-f5a5-4b17-9a51-5d116cbddde9",
                                         "ord": "a0"
                                       },
                                       {
@@ -1424,7 +1466,7 @@
                                           "kind": "value",
                                           "ref": "price"
                                         },
-                                        "id": "3aad891e-81ce-486b-a66e-78d0dd9f6b96",
+                                        "id": "22f9a4ca-9401-43e2-87e2-e430e32407d3",
                                         "ord": "a1"
                                       },
                                       {
@@ -1436,11 +1478,11 @@
                                           "kind": "visible",
                                           "ref": "soldOut"
                                         },
-                                        "id": "a0d8043c-1065-4f6a-bfe7-2e19d0f95518",
+                                        "id": "98b6ea79-cc04-4bd8-a761-173062141908",
                                         "ord": "a2"
                                       }
                                     ],
-                                    "id": "b66e90eb-3ae0-4add-8a51-106f48dc5294",
+                                    "id": "01f77694-4576-4df5-a0f9-1e461a7c9bac",
                                     "ord": "a1"
                                   }
                                 ],
@@ -1449,7 +1491,7 @@
                                   "ref": "url",
                                   "attr": "href"
                                 },
-                                "id": "98117560-aaa4-45e5-b090-6986fed7c631",
+                                "id": "ad9c37a8-b6e4-4de0-bdfd-aa6dfbb2851c",
                                 "ord": "a0"
                               }
                             ],
@@ -1458,27 +1500,27 @@
                               "ref": "commerce.category.kitchen",
                               "omitWhenEmpty": true
                             },
-                            "id": "0b518292-dad9-4a53-989f-d57a7bed4749",
+                            "id": "b18d4e8c-b00e-4bb7-aeda-472463e36cce",
                             "ord": "a0"
                           }
                         ],
                         "part": "track",
-                        "id": "4d815203-44bf-4038-8746-681da96bf77b",
+                        "id": "cb7aeffb-e1bc-4f12-9159-1dec8566c507",
                         "ord": "a0"
                       }
                     ],
-                    "id": "9c365e60-1341-49f6-8606-fd04c42cb040",
+                    "id": "54872756-9f33-4cb6-bc9c-645af9c1d715",
                     "ord": "a1"
                   }
                 ],
-                "id": "31ea8d42-5b27-4b9d-ba19-54f6581b443a",
+                "id": "20c8b3ea-2b7e-44eb-bf5a-be476ab022a6",
                 "ord": "a0"
               }
             ],
             "behavior": {
               "type": "scroll-strip"
             },
-            "id": "91f90448-8299-48df-88f4-1cd5c68f076b",
+            "id": "48747283-059b-4605-ad35-ca643f7f7bdb",
             "ord": "a4"
           },
           {
@@ -1495,7 +1537,7 @@
                   "alt": "Neatly folded natural textiles",
                   "loading": "lazy"
                 },
-                "id": "ad15b7fd-3308-4730-99e0-a9e21b7f0aaa",
+                "id": "2ae6023e-fff5-4702-90bf-a3fd17d1884d",
                 "ord": "a0"
               },
               {
@@ -1513,7 +1555,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-semibold leading-tight text-base-content @3xl:text-4xl",
                         "children": ["Made to be kept, not replaced"],
-                        "id": "87eb93a1-8013-4bee-8752-6d0d140e114c",
+                        "id": "41e46219-586a-4f63-b518-e9cdf6806f4a",
                         "ord": "a0"
                       },
                       {
@@ -1523,7 +1565,7 @@
                         "children": [
                           "A dish towel that lasts ten years is cheaper and greener than ten that last one. We build for a long life and tell you plainly how to keep each thing going: wash it, oil it, refill it, and pass it on."
                         ],
-                        "id": "5e7375d1-db91-4999-a570-fca0ea77197a",
+                        "id": "3b1696f0-880f-404c-a4e6-452e5e7b1efd",
                         "ord": "a1"
                       },
                       {
@@ -1534,19 +1576,19 @@
                           "href": "/journal"
                         },
                         "children": ["Caring for your things"],
-                        "id": "16fed8e4-4d78-4b38-bd60-e5a04ce01f63",
+                        "id": "cd0ae6b6-8211-40b0-991d-4942f4608d06",
                         "ord": "a2"
                       }
                     ],
-                    "id": "0f1b160a-fe5c-4e66-9d3e-658e86c4d654",
+                    "id": "378ce781-bd2a-4b56-9e92-3d91bcb2a471",
                     "ord": "a0"
                   }
                 ],
-                "id": "01413ddd-1a66-4f59-97bc-214f83d63e72",
+                "id": "e7df4d07-f096-4bae-9dae-95b7330beda7",
                 "ord": "a1"
               }
             ],
-            "id": "2a146ce5-373d-4cf5-b1c3-71ec913dd3f9",
+            "id": "dd9759e2-a5e6-45ed-936d-ed063e65c740",
             "ord": "a5"
           },
           {
@@ -1569,7 +1611,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-semibold text-base-content",
                         "children": ["For clearing up"],
-                        "id": "26fbd39d-94bd-46e2-8af4-1869f442ff33",
+                        "id": "a16d695a-4f75-405d-8306-ce92c1c39881",
                         "ord": "a0"
                       },
                       {
@@ -1593,12 +1635,12 @@
                                 "props": {
                                   "name": "arrow-left"
                                 },
-                                "id": "303b6c3e-282c-4a4b-8f00-525f2a598634",
+                                "id": "37d3d79c-f82f-4275-bacc-d175700ac548",
                                 "ord": "a0"
                               }
                             ],
                             "part": "prev",
-                            "id": "6d83141c-5ceb-4a38-a0fd-ae861e10fb7b",
+                            "id": "ae5a08ff-c4e1-4342-addb-bc6855c855b0",
                             "ord": "a0"
                           },
                           {
@@ -1617,16 +1659,16 @@
                                 "props": {
                                   "name": "arrow-right"
                                 },
-                                "id": "8e4d7d47-9db7-4a89-a1e2-ceb4e52c6d83",
+                                "id": "2ece7d32-cb7a-4d4e-8ed9-47035921f7fe",
                                 "ord": "a0"
                               }
                             ],
                             "part": "next",
-                            "id": "69f4bfc0-f331-4d69-82ff-c99f66a1b452",
+                            "id": "8da13bcd-3677-472a-8204-7a914b79d4f9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7bba5611-001f-434c-8c45-0719e66107f7",
+                        "id": "c1a214e4-165f-49c7-9d20-756e80a1349f",
                         "ord": "a1"
                       }
                     ],
@@ -1634,7 +1676,7 @@
                       "kind": "visible",
                       "ref": "commerce.category.cleaning"
                     },
-                    "id": "8f362876-dc05-4b0c-9429-d082737c95b2",
+                    "id": "24b48c63-a2ea-4285-94c9-7e5f0e8d22bf",
                     "ord": "a0"
                   },
                   {
@@ -1669,7 +1711,7 @@
                                       "kind": "value",
                                       "ref": "image"
                                     },
-                                    "id": "9432918f-4f7a-40a1-a42f-2d60d4007523",
+                                    "id": "1a035624-9977-48df-a7e8-849c9d67aa4e",
                                     "ord": "a0"
                                   },
                                   {
@@ -1686,7 +1728,7 @@
                                           "kind": "value",
                                           "ref": "title"
                                         },
-                                        "id": "444cae80-513e-4eb6-9d24-0319b07fb920",
+                                        "id": "bc848f09-4605-4d66-a9e0-20fa5568e959",
                                         "ord": "a0"
                                       },
                                       {
@@ -1698,7 +1740,7 @@
                                           "kind": "value",
                                           "ref": "price"
                                         },
-                                        "id": "d7c3659f-69a1-44aa-9c4f-5f8517756fc2",
+                                        "id": "92d9c807-4178-4bfa-b013-696d8bcc3f23",
                                         "ord": "a1"
                                       },
                                       {
@@ -1710,11 +1752,11 @@
                                           "kind": "visible",
                                           "ref": "soldOut"
                                         },
-                                        "id": "72732294-7cf8-4720-989a-4aa85e9bf8c4",
+                                        "id": "a34fa337-07a5-4657-88e6-626dc65bfa41",
                                         "ord": "a2"
                                       }
                                     ],
-                                    "id": "5cb8e2f3-72ec-43fe-99f4-20f94dc69337",
+                                    "id": "78d83a9b-8f28-4bd2-aa5e-e2641545e009",
                                     "ord": "a1"
                                   }
                                 ],
@@ -1723,7 +1765,7 @@
                                   "ref": "url",
                                   "attr": "href"
                                 },
-                                "id": "176af641-592f-43b1-bcb6-dfaac7a6ed92",
+                                "id": "8dfff228-ce6d-420e-b7fa-608590a430fa",
                                 "ord": "a0"
                               }
                             ],
@@ -1732,27 +1774,27 @@
                               "ref": "commerce.category.cleaning",
                               "omitWhenEmpty": true
                             },
-                            "id": "b222ae36-e23f-45d2-b992-13fe47762e01",
+                            "id": "4d798749-83ef-46c9-bb84-d5a56188576b",
                             "ord": "a0"
                           }
                         ],
                         "part": "track",
-                        "id": "6c582761-6588-4093-a219-c927e1c7d923",
+                        "id": "bfbae821-2024-4c13-b355-9624989c2ae1",
                         "ord": "a0"
                       }
                     ],
-                    "id": "713b1b27-b918-4008-aef1-100d4ad798c0",
+                    "id": "9bb7f0fc-a845-4d25-b021-d6d3eb175af5",
                     "ord": "a1"
                   }
                 ],
-                "id": "fc76734f-f352-47ed-b131-2f4c53cf26bc",
+                "id": "c8a7db88-7ded-403a-b29f-05772de7ffe2",
                 "ord": "a0"
               }
             ],
             "behavior": {
               "type": "scroll-strip"
             },
-            "id": "e93bd233-eeb0-410c-a39e-51c997e83ea0",
+            "id": "551b9a83-0f46-4fbc-a39c-787932a29483",
             "ord": "a6"
           },
           {
@@ -1775,7 +1817,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
                         "children": ["Plainly put"],
-                        "id": "2b359ccf-92ae-49e0-92c1-f474b59a718c",
+                        "id": "3960b50a-9a58-422f-adc0-9d6c4cf10c80",
                         "ord": "a0"
                       },
                       {
@@ -1785,11 +1827,11 @@
                         "children": [
                           "No mystery materials, no throwaway design, and nothing you cannot refill, compost or hand down."
                         ],
-                        "id": "81cbf69b-d001-4401-975c-322de2948352",
+                        "id": "2d23e4f2-1e13-42f3-b6bb-61b22a94a307",
                         "ord": "a1"
                       }
                     ],
-                    "id": "370ff4bc-b81c-4fa7-95c2-5eb7ae50400e",
+                    "id": "0bb75c8a-78c2-417a-b8c3-26966f01a787",
                     "ord": "a0"
                   },
                   {
@@ -1807,7 +1849,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["From the earth"],
-                            "id": "7eff5294-7039-4281-9ce0-9ce410c2d2ca",
+                            "id": "88705a53-7b54-4439-af86-44bb0e9b6800",
                             "ord": "a0"
                           },
                           {
@@ -1817,11 +1859,11 @@
                             "children": [
                               "Cotton, linen, wood, glass, beeswax and stone: grown or dug, not drilled. Every material a thing is made from is on the label."
                             ],
-                            "id": "232d2944-fc1a-4f1d-a865-00265bc5dfd7",
+                            "id": "06893d28-e38f-4f3d-afc1-3266082ee658",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4d36ff4e-954c-4822-a03e-632a15aac16f",
+                        "id": "d260bd9f-31f5-4563-8a12-3ab7f751e0c0",
                         "ord": "a0"
                       },
                       {
@@ -1834,7 +1876,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Made to last"],
-                            "id": "320cdd6a-105e-492d-8e6b-46b9c361bafc",
+                            "id": "f05a5183-41b8-4bd8-89a3-76758f119645",
                             "ord": "a0"
                           },
                           {
@@ -1844,11 +1886,11 @@
                             "children": [
                               "These are things you buy once. Keep them well and most will outlive the shelf you bought them for, which is the cheapest, greenest thing they can do."
                             ],
-                            "id": "71c78a60-7d16-481f-b556-e71ae52730f6",
+                            "id": "e2350d72-bc22-42a9-a760-a25f7bb2c6cb",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e3b30f4f-b2d9-4033-8b00-6fd7b2da24ea",
+                        "id": "9ca2b833-0f13-41d8-bf13-11154ac30991",
                         "ord": "a1"
                       },
                       {
@@ -1861,7 +1903,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Kind at the end"],
-                            "id": "b2caa41b-b818-458a-80e1-6e2649cc34a1",
+                            "id": "39915845-edc3-49f4-b0ef-937e9d72955a",
                             "ord": "a0"
                           },
                           {
@@ -1871,23 +1913,23 @@
                             "children": [
                               "When something finally wears out it composts, recycles or refills. Nothing here is designed to spend a century in the ground."
                             ],
-                            "id": "01ecd729-ae6d-4634-8cb9-672631943797",
+                            "id": "6b84c124-5e38-46af-96e3-bf82eca94960",
                             "ord": "a1"
                           }
                         ],
-                        "id": "741b2a2c-29e6-4d0f-a05d-ea83f90097e8",
+                        "id": "ddccba63-eb27-402f-b499-48bc58498259",
                         "ord": "a2"
                       }
                     ],
-                    "id": "5016f49d-d1a6-465a-afb0-bd2183b0deb8",
+                    "id": "e143b52b-2230-4969-a2d2-995a570f4309",
                     "ord": "a1"
                   }
                 ],
-                "id": "97d237ac-e5a1-4e2c-be60-d868cf483dae",
+                "id": "78c3962b-553a-4205-a018-16c589ceb0b4",
                 "ord": "a0"
               }
             ],
-            "id": "217d4279-e310-48d7-85e7-9d67558ecf7a",
+            "id": "e7b9dd98-4fca-464b-83ef-2a2acd97e103",
             "ord": "a7"
           },
           {
@@ -1904,7 +1946,7 @@
                   "alt": "Fresh green leaves against soft light",
                   "loading": "lazy"
                 },
-                "id": "5a31a60b-3385-429a-b531-68f1e2b72431",
+                "id": "6603d79e-b4e2-43ad-8189-df747b45768d",
                 "ord": "a0"
               },
               {
@@ -1922,7 +1964,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-semibold leading-tight text-base-content @3xl:text-4xl",
                         "children": ["A gentler way to make things"],
-                        "id": "93ff43d8-bf9c-4a1c-a2bf-aba6ac66c70d",
+                        "id": "85ab548c-648d-4f74-bf5f-acf1a390ca4b",
                         "ord": "a0"
                       },
                       {
@@ -1932,7 +1974,7 @@
                         "children": [
                           "We measure what we make (the water, the carbon, the waste) and publish it, warts and all. A small shop, honest numbers, and a plan to do a little better every year."
                         ],
-                        "id": "c371209c-d669-497d-95b6-906e29e6e21f",
+                        "id": "efd0e3d0-ffbe-41aa-8051-cecd6f62a5f1",
                         "ord": "a1"
                       },
                       {
@@ -1943,19 +1985,19 @@
                           "href": "/journal"
                         },
                         "children": ["Read our first report"],
-                        "id": "fd9f62e8-3416-4776-ac07-1adfbc053f05",
+                        "id": "eddcbda9-01aa-4945-9f92-7e4f4c5355f6",
                         "ord": "a2"
                       }
                     ],
-                    "id": "71948548-cada-46cf-bc7f-55ae2ef8f38a",
+                    "id": "f722f43d-4fc9-4e05-9297-5b2c3dff76aa",
                     "ord": "a0"
                   }
                 ],
-                "id": "5dd60437-275c-4693-88af-6fea3af93b41",
+                "id": "d1ff3a7a-4fff-46ab-968b-3ac960045003",
                 "ord": "a1"
               }
             ],
-            "id": "db01538a-6010-4733-9cbc-7dce96dae56b",
+            "id": "c49d5ee4-bd99-40e9-8724-8a6a261d6634",
             "ord": "a8"
           },
           {
@@ -1978,7 +2020,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
                         "children": ["From the journal"],
-                        "id": "ca11504b-3de5-431f-8ed0-5ae91a57ec9a",
+                        "id": "4f64fe33-c42e-4b93-bc99-623bdc5af568",
                         "ord": "a0"
                       },
                       {
@@ -1988,11 +2030,11 @@
                         "children": [
                           "What we make things from, how to keep them, and how we are doing on the planet: written plainly."
                         ],
-                        "id": "2c7799f6-d682-4108-a4d4-bf0d0a3454f1",
+                        "id": "114418b7-2beb-4ef6-a906-c155afa3a080",
                         "ord": "a1"
                       }
                     ],
-                    "id": "a4e79955-617f-4b15-b475-9ffe658b0843",
+                    "id": "59237d62-2505-41f8-873c-99587b7889f6",
                     "ord": "a0"
                   },
                   {
@@ -2017,7 +2059,7 @@
                               "alt": "A close-up of natural linen weave",
                               "loading": "lazy"
                             },
-                            "id": "4f28e24b-b9e0-43ce-a2bb-38aa0129fe7f",
+                            "id": "2a4a5f8f-6ab5-4e7f-b8d4-86c9b7c80a62",
                             "ord": "a0"
                           },
                           {
@@ -2025,11 +2067,11 @@
                             "tag": "h3",
                             "class": "px-5 pb-5 text-xl font-semibold text-base-content",
                             "children": ["How we choose our materials"],
-                            "id": "50bce4b0-114e-49a4-88f6-f672cf140780",
+                            "id": "56c89fe2-046c-48e9-8b6d-37cb47cb44d6",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8bb770fc-0655-4d6c-a4da-9e9c9d86cf03",
+                        "id": "2e1b191c-e8a7-4d97-84a0-fab30755816b",
                         "ord": "a0"
                       },
                       {
@@ -2049,7 +2091,7 @@
                               "alt": "A beeswax wrap over a bowl",
                               "loading": "lazy"
                             },
-                            "id": "752bfccd-6e01-402e-882e-98d8926361fa",
+                            "id": "1df01db5-6d34-4916-9ce6-90fff93c3f81",
                             "ord": "a0"
                           },
                           {
@@ -2057,11 +2099,11 @@
                             "tag": "h3",
                             "class": "px-5 pb-5 text-xl font-semibold text-base-content",
                             "children": ["The life of a beeswax wrap"],
-                            "id": "cc86fa69-7bdb-419a-8f83-71e113284136",
+                            "id": "304edfca-0813-425d-9b75-ca9bb1fe616e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6e96df18-f47e-4e9e-94a8-77cf655e88f7",
+                        "id": "6b4879e4-e6c5-4299-9d7d-918b9ee72f20",
                         "ord": "a1"
                       },
                       {
@@ -2081,7 +2123,7 @@
                               "alt": "Green eucalyptus leaves in soft light",
                               "loading": "lazy"
                             },
-                            "id": "72c1ec68-e509-4fa4-815b-1733dfb23861",
+                            "id": "e2762d74-6b73-40ec-868f-d2666cbdc502",
                             "ord": "a0"
                           },
                           {
@@ -2089,23 +2131,23 @@
                             "tag": "h3",
                             "class": "px-5 pb-5 text-xl font-semibold text-base-content",
                             "children": ["Our first carbon report"],
-                            "id": "b48f908e-b765-4108-98ca-2716f684ad92",
+                            "id": "930b1fe2-6d1b-402b-9362-bb3f8726cfe4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "be1d43b8-ed3b-49ed-85a5-a048b29ca65e",
+                        "id": "c8e40757-67a0-41b5-a8b5-f51248b96d68",
                         "ord": "a2"
                       }
                     ],
-                    "id": "7e1dc7af-79c1-4800-98b5-c3168e8aa002",
+                    "id": "2533b863-049e-40ac-a568-c006dd4f6ba9",
                     "ord": "a1"
                   }
                 ],
-                "id": "4383d483-7a47-4dc2-832d-ee0fba652719",
+                "id": "b214f21f-4406-41af-8cde-43ed181b3e20",
                 "ord": "a0"
               }
             ],
-            "id": "1ad173aa-8ba3-4530-9850-b1f1ef9924e5",
+            "id": "cba44f2b-1100-4f5c-acea-2cc66ef7c368",
             "ord": "a9"
           }
         ]
@@ -2122,7 +2164,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "17d2f358-b713-4a0c-983a-d32177536487",
+        "id": "7feeaffc-cbcc-465a-aff7-3da66b6980b6",
         "children": [
           {
             "kind": "element",
@@ -2138,7 +2180,7 @@
                   "alt": "A close-up of woven natural fibre",
                   "loading": "lazy"
                 },
-                "id": "bbac9ca5-22d4-4368-a777-8dbde1f739d1",
+                "id": "4d2b8b6f-d16b-44ce-8e24-e95d83f83c6d",
                 "ord": "a0"
               },
               {
@@ -2156,7 +2198,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
                         "children": ["The whole shop"],
-                        "id": "4fdce1ce-701c-467e-ac79-34ca51974326",
+                        "id": "55ca43d9-b174-4c8d-8fe1-ea97b0073e37",
                         "ord": "a0"
                       },
                       {
@@ -2166,19 +2208,19 @@
                         "children": [
                           "Every everyday thing Fernwood Goods makes (for the kitchen, the clean-up, the cupboard and the bath) filtered and sorted however you like. Honest materials, made to be kept."
                         ],
-                        "id": "b8c74592-47db-49d3-8da8-9b7371fa54e3",
+                        "id": "d5592f72-f32c-4a28-b758-2fb13d32e31a",
                         "ord": "a1"
                       }
                     ],
-                    "id": "cd4df3b8-f088-4232-bae4-96bf529b3618",
+                    "id": "75e6be14-c373-4e1f-8a8e-c86f319bf5d0",
                     "ord": "a0"
                   }
                 ],
-                "id": "c4eb279b-db5b-4699-8507-bef315ee0423",
+                "id": "b30b2c32-21e8-467b-8286-86f29286dcaa",
                 "ord": "a1"
               }
             ],
-            "id": "d2c9a67f-8192-4a94-8a45-4ab655943222",
+            "id": "ef3e0cfe-0f38-4ae6-870e-830305a4826f",
             "ord": "a0"
           },
           {
@@ -2186,7 +2228,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "d633d9f6-e253-4087-83f0-6061fe7f4071",
+            "id": "57ffdd3d-f5df-4256-b70b-b2c40b36f401",
             "ord": "a1"
           }
         ]
@@ -2203,7 +2245,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "81966540-f8d8-4b68-8baa-930d023c9986",
+        "id": "305171ba-f194-4355-b15f-300297de7af2",
         "children": [
           {
             "kind": "element",
@@ -2220,7 +2262,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The collections"],
-                    "id": "ea319562-b1d0-4659-8884-28985cf3c351",
+                    "id": "4487a18b-d3ad-4f0d-abdf-288cf53d8c36",
                     "ord": "a0"
                   },
                   {
@@ -2230,15 +2272,15 @@
                     "children": [
                       "Small groups of everyday things gathered the way a home actually uses them: the kitchen, the clean-up, the cupboard, the table and the bath. Start where you are replacing plastic, and work outward from there."
                     ],
-                    "id": "68090ab1-ceb9-4a19-9fe3-093c3212df51",
+                    "id": "2aac06eb-f154-4162-8c0a-e72dbdfcb10d",
                     "ord": "a1"
                   }
                 ],
-                "id": "83750f1b-d937-402c-a3bc-e5566ec03b5d",
+                "id": "81fdc8c1-0fc1-43c6-a7ce-1e26b2ae6f2f",
                 "ord": "a0"
               }
             ],
-            "id": "418b9072-1f72-4efe-a4be-3d73bb6e2344",
+            "id": "39b94c57-2157-46e1-8400-527bf65c9565",
             "ord": "a0"
           },
           {
@@ -2246,7 +2288,7 @@
             "component": "commerce.collections",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "e10bd45e-4fa9-4e02-b298-e9dff2550d37",
+            "id": "0154169d-59cc-4d4c-9584-802758003fba",
             "ord": "a1"
           }
         ]
@@ -2263,7 +2305,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "106f9132-c9e9-4124-a8aa-3e985b3cd74d",
+        "id": "029197c2-ebe0-4ed1-87e3-1fe1f48692bd",
         "children": [
           {
             "kind": "element",
@@ -2280,7 +2322,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-5xl",
                     "children": ["Your cart"],
-                    "id": "92e21e66-5e40-4bea-976a-0c5601d7560f",
+                    "id": "f8832280-cd37-4413-a0ac-04c144dbded3",
                     "ord": "a0"
                   },
                   {
@@ -2290,15 +2332,15 @@
                     "children": [
                       "Everything ships in plastic-free packaging on carbon-neutral delivery, and you have thirty days to return anything unused for a full refund. Take your time deciding. These are things to keep."
                     ],
-                    "id": "284ebde2-015a-46b9-ab5c-c1b7305ddb3e",
+                    "id": "2a28850c-7b22-46cf-941a-a0951aff688a",
                     "ord": "a1"
                   }
                 ],
-                "id": "80f09b56-6493-4136-befc-a6a9fe6b6034",
+                "id": "79cb4660-0500-405c-8169-2153ee2fa1fa",
                 "ord": "a0"
               }
             ],
-            "id": "629ececd-2462-444d-901c-1e76e850f262",
+            "id": "78d55ea7-fbc5-4172-a9b0-0fa898913691",
             "ord": "a0"
           },
           {
@@ -2306,7 +2348,7 @@
             "component": "commerce.cart",
             "class": "mx-auto w-full max-w-4xl px-6 py-10",
             "locked": "host",
-            "id": "5be5f282-6bce-43dd-a5fc-c457337b6458",
+            "id": "8f36e9ea-b825-4990-8c79-19fe2ab35238",
             "ord": "a1"
           }
         ]
@@ -2323,7 +2365,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "dea0ce0c-ac2b-4c10-b4ec-bc1c342035fe",
+        "id": "e709bf86-da41-4295-b8a4-218b74dac87f",
         "children": [
           {
             "kind": "element",
@@ -2340,7 +2382,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Search the shop"],
-                    "id": "c356b6cf-b6ed-4198-b66b-2ec45997e6f2",
+                    "id": "1eb9a9e7-d756-426a-bfe5-7c02909475e3",
                     "ord": "a0"
                   },
                   {
@@ -2350,15 +2392,15 @@
                     "children": [
                       "Looking for something in particular: a material, a room, or a plastic thing you want to swap out? Search the whole shop and the journal below by name, by material or by what it is for."
                     ],
-                    "id": "3c59d107-f412-4ab4-a1ff-3b0522ec5071",
+                    "id": "d6e24963-bac6-4189-969b-873a3a47d4b4",
                     "ord": "a1"
                   }
                 ],
-                "id": "dd2e0def-3c3f-4214-ae64-143423de54ba",
+                "id": "1bbb4039-cb4e-4bf6-882d-59d6545cfb72",
                 "ord": "a0"
               }
             ],
-            "id": "f97954cb-5077-485f-bb76-e6a402711690",
+            "id": "3a12f12a-9636-4df4-8574-4c2e58e36dbb",
             "ord": "a0"
           },
           {
@@ -2366,7 +2408,7 @@
             "component": "commerce.search",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "2092b5f4-91ba-4f28-82b1-3a6850d94536",
+            "id": "a4b6247b-301d-415a-a098-91dd568f2d6c",
             "ord": "a1"
           }
         ]
@@ -2383,7 +2425,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "a9ff6c27-c106-4909-a5d2-eb6e11a55a77",
+        "id": "89bd1dc8-2d25-49af-bda5-0ca4857d518b",
         "children": [
           {
             "kind": "element",
@@ -2400,7 +2442,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The Fernwood journal"],
-                    "id": "fe281e58-6f52-4a2a-a0ad-eb94383b731c",
+                    "id": "66efce02-b5ad-470d-b30f-2b4415f73605",
                     "ord": "a0"
                   },
                   {
@@ -2410,15 +2452,15 @@
                     "children": [
                       "Notes from the shop, written plainly: what we make things from, how to keep them going for years, and how we are doing on the planet, warts and all."
                     ],
-                    "id": "91a3ccd1-08fb-4385-a675-e25533fdec2b",
+                    "id": "4b1c0a36-abec-4641-a682-9eecc7a652aa",
                     "ord": "a1"
                   }
                 ],
-                "id": "083b6118-d6cd-45fa-9272-44cd36e331ac",
+                "id": "efe13db9-8c64-4941-a832-5db579f07475",
                 "ord": "a0"
               }
             ],
-            "id": "6e8d3032-28a6-4b7b-aea6-ba0e21d7436a",
+            "id": "21a0a643-88ca-4b44-a57c-e5c2a9af25ca",
             "ord": "a0"
           },
           {
@@ -2456,7 +2498,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "6111eace-ed3a-4580-9633-e339f7766eaf",
+                            "id": "93537b2f-83ba-4935-8284-a822f055df1b",
                             "ord": "a0"
                           },
                           {
@@ -2468,7 +2510,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "2c80e818-23d2-45bd-a16c-30dc23fb71e2",
+                            "id": "69fc6549-588f-49bd-85c5-2e31763c7320",
                             "ord": "a1"
                           },
                           {
@@ -2480,7 +2522,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "067be447-cc4f-47df-805f-fdbe266ba03c",
+                            "id": "705865c4-b049-4369-b521-7ad8b15ef3ae",
                             "ord": "a2"
                           },
                           {
@@ -2492,7 +2534,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "d5b54fd5-6e9b-448f-b022-cffa11ef1374",
+                            "id": "b6df972a-cc4a-47ff-af6c-4b6fe6185a7c",
                             "ord": "a3"
                           }
                         ],
@@ -2501,7 +2543,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "f8eaac02-b9bd-4264-b0d5-fd788c15f97c",
+                        "id": "7c268a6e-5a1a-43b2-b5a4-7440dc228839",
                         "ord": "a0"
                       }
                     ],
@@ -2510,7 +2552,7 @@
                       "ref": "cms.blog_post",
                       "omitWhenEmpty": true
                     },
-                    "id": "ce53bb7c-1abb-43b0-b043-818dd1682aa3",
+                    "id": "b6bfc016-52e2-4d4c-809c-59b472b02a9e",
                     "ord": "a0"
                   },
                   {
@@ -2523,15 +2565,15 @@
                       "ref": "cms.blog_post",
                       "negate": true
                     },
-                    "id": "e0ac4930-8c1f-40c0-8037-2776ca185791",
+                    "id": "557d1a17-9940-49d3-a4ce-8c126b29468e",
                     "ord": "a1"
                   }
                 ],
-                "id": "b3c7ceed-a2b1-4aa7-bc68-de98deb61f93",
+                "id": "9b96abe5-0ad4-449a-98db-02e119693140",
                 "ord": "a0"
               }
             ],
-            "id": "6e06af82-65ba-4c50-b36e-3d6e0478019e",
+            "id": "3360a834-5b20-4a56-a5c2-a099ca6907fb",
             "ord": "a1"
           }
         ]
@@ -2548,7 +2590,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "1cb16320-f007-42fb-ba23-0b2ce499ff32",
+        "id": "746f0c21-61bd-4b3a-97f2-d72dc8c12314",
         "children": [
           {
             "kind": "element",
@@ -2565,7 +2607,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-semibold tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["About Fernwood Goods"],
-                    "id": "76d43567-87aa-42e4-8490-72a3d5b0a27a",
+                    "id": "7928141c-1986-4ce9-8811-7d439322fbda",
                     "ord": "a0"
                   },
                   {
@@ -2575,7 +2617,7 @@
                     "children": [
                       "Fernwood Goods is a small shop of everyday housewares (the towels, jars, brushes, baskets and bowls a home runs on) made from materials the earth makes more of. We started it because the ordinary things in most kitchens are quietly made of plastic and built to be thrown away, and we thought the useful stuff could be honest stuff instead."
                     ],
-                    "id": "90057bfb-5b3f-43ac-bf7e-facc05e64c58",
+                    "id": "1625e518-3407-4a25-bb5d-7daa2e4f78b8",
                     "ord": "a1"
                   },
                   {
@@ -2585,15 +2627,15 @@
                     "children": [
                       "So every item here earns its place twice: it has to work as well as the thing it replaces, and it has to be made from something you can name, cotton, linen, wood, glass, beeswax, stone. We tell you what each thing is made of, where it came from, and how to keep it going for years. That is the whole idea: everyday things, honestly made."
                     ],
-                    "id": "05a516db-a160-4c35-8b9c-5662825cd94a",
+                    "id": "530f45ee-f302-42bf-96bb-4a235b764a86",
                     "ord": "a2"
                   }
                 ],
-                "id": "87bd43e6-7c17-4e17-a24e-75750d11256b",
+                "id": "edbc54be-ec27-40cc-9319-324bed9e832e",
                 "ord": "a0"
               }
             ],
-            "id": "427e5a79-2cea-44d7-8b73-0a287bf70ef4",
+            "id": "51e62e47-da4e-4973-b264-697d3fd62b03",
             "ord": "a0"
           }
         ]
@@ -2610,7 +2652,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "23b57d0d-c910-4be4-a37d-4cdc48553bbb",
+        "id": "b9a4d2fc-8dc9-4430-bf30-5de60f7e2983",
         "children": [
           {
             "kind": "element",
@@ -2632,7 +2674,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Say hello"],
-                        "id": "ee6d50df-8cfb-4128-80a4-fe907f8bcbba",
+                        "id": "3bf9133f-97b8-4fde-9795-68e84f20fc28",
                         "ord": "a0"
                       },
                       {
@@ -2642,11 +2684,11 @@
                         "children": [
                           "A real person reads every message and replies, usually the same day. Ask us what something is made of, how to care for it, or what to buy for a home that is trying to use less plastic. We are happy to help."
                         ],
-                        "id": "602ce1b8-e600-4744-a413-94a4eb8ecfbc",
+                        "id": "a005cca0-9f1d-4583-b0f7-b74205a7aec5",
                         "ord": "a1"
                       }
                     ],
-                    "id": "36c51e44-623d-4839-9821-d0768cc97918",
+                    "id": "28a90916-c232-4d96-8a6d-a8853dadf42f",
                     "ord": "a0"
                   },
                   {
@@ -2659,7 +2701,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "486bec4c-a681-437d-8b9a-ac221e192366",
+                        "id": "55da57d2-06de-4108-b318-7c355cf99b07",
                         "ord": "a0"
                       },
                       {
@@ -2675,7 +2717,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "0f2dd0b4-7d17-4f4a-ac91-0c3849507e3a",
+                            "id": "ef05a3c8-8912-4682-946f-3eb5adf33a8a",
                             "ord": "a0"
                           }
                         ],
@@ -2684,7 +2726,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "fed3d6b4-ae3b-42f1-9426-2deb564ab836",
+                        "id": "b42c053f-9978-47bf-b144-11ed45302a35",
                         "ord": "a1"
                       }
                     ],
@@ -2692,7 +2734,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "6c986d54-e44a-4e3a-b099-0f3cfe65568f",
+                    "id": "840c31e5-881b-40be-8643-6531f0031fca",
                     "ord": "a1"
                   },
                   {
@@ -2705,7 +2747,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "8707a1c8-7b72-487c-8311-7cf2d9c89fdc",
+                        "id": "e72a696e-92d8-4aa7-91b8-56bbbdaed5c6",
                         "ord": "a0"
                       },
                       {
@@ -2721,7 +2763,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "84aea05b-30fa-4190-bfe3-60bf6579155a",
+                            "id": "8f4b97fa-11e0-4dbf-84eb-416bbbdc2ed1",
                             "ord": "a0"
                           }
                         ],
@@ -2730,7 +2772,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "63249ea1-ae85-4650-88f7-c4bdce702d46",
+                        "id": "efd96c00-9fe3-48cc-b764-2c6ae699c8b0",
                         "ord": "a1"
                       }
                     ],
@@ -2738,7 +2780,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "9bb25c2f-6043-4dd6-b9c8-38601a7c00a3",
+                    "id": "a5a48d06-2f1f-4628-83cc-e5ce9b4672d8",
                     "ord": "a2"
                   },
                   {
@@ -2751,7 +2793,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Visit us"],
-                        "id": "ef4f65a4-19c4-45f9-b0a0-390672bc24a8",
+                        "id": "7f222e45-99c0-47dc-94db-f7b1fad74123",
                         "ord": "a0"
                       },
                       {
@@ -2763,7 +2805,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "38308eb7-c9b0-4d04-9b68-c661ef0054e6",
+                        "id": "feaabb03-f48f-4a7a-ac5f-e05ce7b6240e",
                         "ord": "a1"
                       }
                     ],
@@ -2771,7 +2813,7 @@
                       "kind": "visible",
                       "ref": "site.identity.address"
                     },
-                    "id": "fef6514b-8c69-43fb-9d20-3953ee8ee9f6",
+                    "id": "83841742-cd91-4495-a2e3-bf4ce205ec92",
                     "ord": "a3"
                   },
                   {
@@ -2789,7 +2831,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "5a9b8fa7-9075-44a7-a414-dc39b9dad5b2",
+                            "id": "aa06c0ae-8a2c-4cfa-aae7-d22b3a3e3cc3",
                             "ord": "a0"
                           },
                           {
@@ -2801,11 +2843,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "b184eb4a-5f90-465b-8207-81f4f37e7d16",
+                            "id": "98416a9f-b225-43e7-8da2-a3aab9b757f5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "df0a9cd1-6d7f-4cf8-bc74-be31d99b87f2",
+                        "id": "b9a555b6-8b88-4cf5-a402-23480a036495",
                         "ord": "a0"
                       },
                       {
@@ -2818,7 +2860,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "a7e92ebc-bb3c-4667-a142-d69516b4d4f0",
+                            "id": "05bc296d-ba3c-40e6-ba3f-c206f4875514",
                             "ord": "a0"
                           },
                           {
@@ -2830,11 +2872,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "0572ebe9-3281-454e-a13f-f771d777e066",
+                            "id": "cdd1b7f4-c6b8-4127-8be2-50a362403b9c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d401d2bd-5f89-4eca-97bd-e955e55ee8b7",
+                        "id": "882d2a53-26c4-416a-9287-5adeaa70e13d",
                         "ord": "a1"
                       },
                       {
@@ -2847,7 +2889,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "30b64827-c485-4f2e-ae46-ee90859cc282",
+                            "id": "31390e56-7ad5-4dd3-890a-ad7c62d58b9d",
                             "ord": "a0"
                           },
                           {
@@ -2857,11 +2899,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "1892fd5c-e220-48cf-b9ad-7ffbd97e4adc",
+                            "id": "1d1ccd7e-7ae8-488d-8a1c-9dfc2808f6bc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c389a370-34f3-4e78-bd92-2b37125a7d87",
+                        "id": "b7002cc7-260a-4853-a109-0eb17d1e100b",
                         "ord": "a2"
                       },
                       {
@@ -2877,11 +2919,11 @@
                               "type": "submit"
                             },
                             "children": ["Email the shop"],
-                            "id": "92d9eb77-9baf-4d28-a146-56c79c97e6fa",
+                            "id": "a8af1275-cbbe-4f43-9bcb-3458a54977ed",
                             "ord": "a0"
                           }
                         ],
-                        "id": "f63b31c8-0272-4272-89a1-20a9e7e50ec3",
+                        "id": "627b5b8a-971d-4a0e-948f-997094533ec7",
                         "ord": "a3"
                       }
                     ],
@@ -2892,15 +2934,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "d6d58d40-8f42-42b1-9e8d-bc6ae19c6618",
+                    "id": "0b33bf8d-2ffe-47cb-8a53-cef7edf3d56c",
                     "ord": "a4"
                   }
                 ],
-                "id": "2cfce3f9-91b8-4442-823d-c282e23cd442",
+                "id": "c4e8b993-de26-4f38-a62d-3ce3e0797036",
                 "ord": "a0"
               }
             ],
-            "id": "a85f1dc9-3690-43b5-867b-5a6119313e17",
+            "id": "a51b979e-5653-4188-adfe-a67974c902b3",
             "ord": "a0"
           }
         ]
@@ -2940,7 +2982,7 @@
                       "kind": "value",
                       "ref": "image"
                     },
-                    "id": "b4d5e47c-7a67-4887-b3e7-2fe0bea46f75",
+                    "id": "52405086-6977-459e-8e69-baa7672d730e",
                     "ord": "a0"
                   },
                   {
@@ -2958,7 +3000,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-widest text-base-content",
                             "children": ["Fernwood Goods"],
-                            "id": "6c9e3361-1eac-4176-a4f6-7ff836ebc258",
+                            "id": "32e5b9ca-e0e4-48db-96ce-cd5e383d9dbd",
                             "ord": "a0"
                           },
                           {
@@ -2970,7 +3012,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "cdb4eeeb-cbc8-4d9c-a5ca-0ea76fef0e18",
+                            "id": "20f60c66-8b87-465d-b2f0-680e0da1797b",
                             "ord": "a1"
                           },
                           {
@@ -2987,7 +3029,7 @@
                                   "kind": "value",
                                   "ref": "price"
                                 },
-                                "id": "6447bc9c-7bc7-4c3d-b5b7-44c1aebbfe82",
+                                "id": "1299ef3b-37da-42f2-901e-b93271d053e4",
                                 "ord": "a0"
                               },
                               {
@@ -3003,7 +3045,7 @@
                                       "kind": "value",
                                       "ref": "compareAtPrice"
                                     },
-                                    "id": "a424399a-1173-49cc-ac89-07eb874061df",
+                                    "id": "ef61332a-4b67-45a6-8046-c57b8b1dd75a",
                                     "ord": "a0"
                                   }
                                 ],
@@ -3011,11 +3053,11 @@
                                   "kind": "visible",
                                   "ref": "compareAtPrice"
                                 },
-                                "id": "67b8c6e7-05eb-4394-9a26-0515307e3541",
+                                "id": "59ac0084-9724-47cd-bc9a-859283095818",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "4f698311-8c86-43eb-bac9-c4448dc0c75f",
+                            "id": "2ddf82d2-c300-4651-a77d-5c70f8674c57",
                             "ord": "a2"
                           },
                           {
@@ -3027,11 +3069,11 @@
                               "kind": "visible",
                               "ref": "lowStock"
                             },
-                            "id": "388a0ebc-88ba-40c0-817a-45c64dc32076",
+                            "id": "4be042fd-588e-4e53-80ac-ac62cb339d50",
                             "ord": "a3"
                           }
                         ],
-                        "id": "0a25dd50-d216-484d-ad96-cca96ae909e7",
+                        "id": "b7f5675e-d90c-486e-a8e0-aacc55ebaaf2",
                         "ord": "a0"
                       },
                       {
@@ -3044,7 +3086,7 @@
                             "tag": "li",
                             "class": "rounded-full bg-base-200 px-3 py-1 text-sm font-medium text-base-content",
                             "children": ["From the earth"],
-                            "id": "da393aa2-ef59-41da-bc0b-83c68448ace5",
+                            "id": "c884cd70-4776-4d65-ab58-f5341a566dc1",
                             "ord": "a0"
                           },
                           {
@@ -3052,7 +3094,7 @@
                             "tag": "li",
                             "class": "rounded-full bg-base-200 px-3 py-1 text-sm font-medium text-base-content",
                             "children": ["Plastic-free"],
-                            "id": "13f3986a-3699-41df-b81c-198e3ed9e4f8",
+                            "id": "72f612db-56c9-46a1-97ff-1afa2919905b",
                             "ord": "a1"
                           },
                           {
@@ -3060,11 +3102,11 @@
                             "tag": "li",
                             "class": "rounded-full bg-base-200 px-3 py-1 text-sm font-medium text-base-content",
                             "children": ["Made to be kept"],
-                            "id": "1f11a717-2699-4129-a744-a000b88f8700",
+                            "id": "baa30689-ef35-42e6-969b-078a36e141da",
                             "ord": "a2"
                           }
                         ],
-                        "id": "beaed3db-c533-46c4-813e-1f66706171ff",
+                        "id": "970c5cf6-ed79-4624-a515-6aef76fd5ab1",
                         "ord": "a1"
                       },
                       {
@@ -3076,7 +3118,7 @@
                           "kind": "value",
                           "ref": "description"
                         },
-                        "id": "5a452f45-6646-4036-88ae-4a1604f2cdee",
+                        "id": "724613f4-81c9-43f3-b372-70c5b1e4b793",
                         "ord": "a2"
                       },
                       {
@@ -3097,7 +3139,7 @@
                                 "tag": "legend",
                                 "class": "text-base font-medium text-base-content",
                                 "children": ["Choose yours"],
-                                "id": "c24fa7c8-b597-40e0-a8c5-ebf544f4f3dd",
+                                "id": "fa027446-db3a-4a64-8fe4-466f6ee4d391",
                                 "ord": "a0"
                               },
                               {
@@ -3124,7 +3166,7 @@
                                           "ref": "id",
                                           "attr": "value"
                                         },
-                                        "id": "d47e5913-0e1c-4202-ac87-6c98e8142dee",
+                                        "id": "0dc428b8-8e44-4738-bde6-a0a8cb082ad2",
                                         "ord": "a0"
                                       },
                                       {
@@ -3135,7 +3177,7 @@
                                           "kind": "value",
                                           "ref": "label"
                                         },
-                                        "id": "ecb7ceac-d284-41dd-b541-cd5fa0e94c74",
+                                        "id": "477336dc-54d7-4c01-a95e-d993a0376fcb",
                                         "ord": "a1"
                                       }
                                     ],
@@ -3144,7 +3186,7 @@
                                       "ref": "soldOut",
                                       "negate": true
                                     },
-                                    "id": "b21470f9-6f4f-4f41-861e-ad1430a597d3",
+                                    "id": "d76739a1-7a72-4259-83eb-949dca695c4c",
                                     "ord": "a0"
                                   },
                                   {
@@ -3161,7 +3203,7 @@
                                           "name": "variantId",
                                           "disabled": true
                                         },
-                                        "id": "ba52de00-4648-4942-a9a5-f6b6596accbf",
+                                        "id": "64193ea2-9f48-4676-8665-1d689a9ad6f9",
                                         "ord": "a0"
                                       },
                                       {
@@ -3172,7 +3214,7 @@
                                           "kind": "value",
                                           "ref": "label"
                                         },
-                                        "id": "87415c64-a5e2-48bb-8510-b33424201e40",
+                                        "id": "a7ca79af-ae00-45d9-819d-99f9d836af6e",
                                         "ord": "a1"
                                       }
                                     ],
@@ -3180,7 +3222,7 @@
                                       "kind": "visible",
                                       "ref": "soldOut"
                                     },
-                                    "id": "ed851bda-0eaa-4b06-b2ac-920365cc3b9b",
+                                    "id": "67019e00-60b1-4078-9fe8-b7e04564e1ba",
                                     "ord": "a1"
                                   }
                                 ],
@@ -3188,7 +3230,7 @@
                                   "kind": "collection",
                                   "ref": "versions"
                                 },
-                                "id": "a7b2cdef-6172-4c17-b6e1-709826877ed9",
+                                "id": "b0285382-860a-448b-9d6a-4bccbd78f0b5",
                                 "ord": "a1"
                               }
                             ],
@@ -3196,7 +3238,7 @@
                               "kind": "visible",
                               "ref": "versions"
                             },
-                            "id": "01a5265c-f95e-4bb0-b362-9472913752c9",
+                            "id": "c80e5c23-27d3-4ee7-a395-6958f0154c8e",
                             "ord": "a0"
                           },
                           {
@@ -3214,7 +3256,7 @@
                                   "kind": "value",
                                   "ref": "variantId"
                                 },
-                                "id": "3af660be-5c0d-4d96-93ed-a5a72cb0012e",
+                                "id": "452e82a6-2685-4a8d-ae3c-b7e2faa3e2c1",
                                 "ord": "a0"
                               }
                             ],
@@ -3223,8 +3265,205 @@
                               "ref": "versions",
                               "negate": true
                             },
-                            "id": "3e2096d3-80b8-415c-a1f1-219025adf5cd",
+                            "id": "23cde55d-10c5-47b3-8625-2fe4967b394b",
                             "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "fieldset",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "legend",
+                                "class": "text-base font-medium text-base-content",
+                                "children": ["How often"],
+                                "id": "eb29fdfe-e17a-4ab6-9ca5-bb92aed94fcc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "label",
+                                "class": "flex items-center gap-2 text-base text-base-content",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "input",
+                                    "class": "radio",
+                                    "attrs": {
+                                      "type": "radio",
+                                      "name": "repeat",
+                                      "value": "",
+                                      "checked": "checked"
+                                    },
+                                    "id": "60262ca9-fbb5-425b-b601-c3b695f2d049",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": ["Buy once"],
+                                    "id": "b2027bc1-9108-44f4-8e94-89173de55389",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "7fd1f618-46ce-4456-87c0-5b5df4c6c6b0",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "label",
+                                    "class": "flex items-center gap-2 text-base text-base-content",
+                                    "children": [
+                                      {
+                                        "kind": "element",
+                                        "tag": "input",
+                                        "class": "radio",
+                                        "attrs": {
+                                          "type": "radio",
+                                          "name": "repeat"
+                                        },
+                                        "data": {
+                                          "kind": "value",
+                                          "ref": "key",
+                                          "attr": "value"
+                                        },
+                                        "id": "453183ce-0d32-493e-8dc2-92475b2f94cb",
+                                        "ord": "a0"
+                                      },
+                                      {
+                                        "kind": "element",
+                                        "tag": "span",
+                                        "children": [""],
+                                        "data": {
+                                          "kind": "value",
+                                          "ref": "label"
+                                        },
+                                        "id": "3064619e-1cb1-417d-97e8-7abeb3ad2a9f",
+                                        "ord": "a1"
+                                      }
+                                    ],
+                                    "id": "6191b76d-19e1-4c7a-8895-9c2fb56b8255",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "collection",
+                                  "ref": "repeat.choices"
+                                },
+                                "id": "74099a90-808d-4445-a032-402fef3ba1cc",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base text-base-content",
+                                "children": [""],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "repeat.note"
+                                },
+                                "id": "bdb391e2-4d9a-4071-ab81-ecf5ddcc19e1",
+                                "ord": "a3"
+                              }
+                            ],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "repeat.shown"
+                            },
+                            "id": "55bd11e5-9adb-4457-9446-c2b834067f4b",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "fieldset",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "legend",
+                                "class": "text-base font-medium text-base-content",
+                                "children": ["Your old part"],
+                                "id": "382e3199-f744-475a-918c-cd525796c490",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "label",
+                                "class": "flex items-center gap-2 text-base text-base-content",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "input",
+                                    "class": "radio",
+                                    "attrs": {
+                                      "type": "radio",
+                                      "name": "coreFirst",
+                                      "value": "",
+                                      "checked": "checked"
+                                    },
+                                    "id": "9e9f1566-d0bc-4d63-84fd-7780b31b1e53",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "coreChoice.pay"
+                                    },
+                                    "id": "8b19f2f0-3fcb-4474-a795-03cb08f70eea",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "144f2e5f-d7ed-4013-b467-68ee30b22c03",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "label",
+                                "class": "flex items-center gap-2 text-base text-base-content",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "input",
+                                    "class": "radio",
+                                    "attrs": {
+                                      "type": "radio",
+                                      "name": "coreFirst",
+                                      "value": "1"
+                                    },
+                                    "id": "f97b2454-8214-492c-bd5c-b666f4efbffb",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "coreChoice.first"
+                                    },
+                                    "id": "178ed73d-9551-4df5-b1c1-d21149196417",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "900ccb93-a9e6-4d44-9fec-9731ce2fb14c",
+                                "ord": "a2"
+                              }
+                            ],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "coreChoice.shown"
+                            },
+                            "id": "d736c935-f5fa-4938-9328-d0a3d9ec5218",
+                            "ord": "a3"
                           },
                           {
                             "kind": "element",
@@ -3236,7 +3475,7 @@
                                 "tag": "span",
                                 "class": "font-medium",
                                 "children": ["Quantity"],
-                                "id": "11061e1d-8bcf-46e8-855d-8a51ec399509",
+                                "id": "a0fc16f9-a1bc-41b8-bee9-3cfccf5a41d9",
                                 "ord": "a0"
                               },
                               {
@@ -3250,12 +3489,12 @@
                                   "min": "1",
                                   "step": "1"
                                 },
-                                "id": "e6742d9a-3ffa-4fdc-8304-d0c28166c40b",
+                                "id": "f45f3691-dffe-4638-ab0e-8b587c095abe",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "70d56587-1663-4ff1-89be-7f57b27de07b",
-                            "ord": "a2"
+                            "id": "7c9aca61-a7f6-4945-9239-87f0b5e81d68",
+                            "ord": "a4"
                           },
                           {
                             "kind": "component",
@@ -3265,8 +3504,8 @@
                               "type": "submit"
                             },
                             "children": ["Add to cart"],
-                            "id": "f7aad043-5024-415a-8a78-5693cdbda1ac",
-                            "ord": "a3"
+                            "id": "ddb3f17e-a85f-405e-8847-7819d071a025",
+                            "ord": "a5"
                           },
                           {
                             "kind": "element",
@@ -3276,8 +3515,8 @@
                               "data-sui-part": "status",
                               "aria-live": "polite"
                             },
-                            "id": "36cb1b09-ab68-462f-b3be-9ca06f6999fc",
-                            "ord": "a4"
+                            "id": "3f7ba1a1-8cf7-4fb4-ba16-3f7608131643",
+                            "ord": "a6"
                           }
                         ],
                         "behavior": {
@@ -3287,7 +3526,7 @@
                           "kind": "action",
                           "ref": "add-to-cart"
                         },
-                        "id": "ad98e928-741c-487c-86b3-a16d18203df5",
+                        "id": "05682c05-3afb-483a-ae7b-8b7bd6acf4d5",
                         "ord": "a3"
                       },
                       {
@@ -3309,7 +3548,7 @@
                                   "kind": "value",
                                   "ref": "label"
                                 },
-                                "id": "6155917b-da8a-4304-b321-90010377bb57",
+                                "id": "26dd5992-6f33-4a6c-850f-229442a2ca7b",
                                 "ord": "a0"
                               },
                               {
@@ -3321,7 +3560,7 @@
                                   "kind": "visible",
                                   "ref": "value"
                                 },
-                                "id": "871dd53b-bef3-4800-a051-eee9c13cb40f",
+                                "id": "ab85d54c-c33d-4070-a7de-655999035330",
                                 "ord": "a1"
                               },
                               {
@@ -3338,7 +3577,7 @@
                                       "kind": "value",
                                       "ref": "label"
                                     },
-                                    "id": "ea97e06b-ca53-4459-ab3c-ca8309061ee2",
+                                    "id": "02e30fd7-3e87-4714-82f9-d04965529e6e",
                                     "ord": "a0"
                                   },
                                   {
@@ -3350,7 +3589,7 @@
                                       "kind": "value",
                                       "ref": "value"
                                     },
-                                    "id": "53e510a7-f556-4c13-821b-bd3d3a14c469",
+                                    "id": "60eced45-1382-4dc5-9aed-b087826146a1",
                                     "ord": "a1"
                                   }
                                 ],
@@ -3358,7 +3597,7 @@
                                   "kind": "collection",
                                   "ref": "items"
                                 },
-                                "id": "a89c55c5-1452-4f7f-89de-52fc389a7f90",
+                                "id": "f57ee16e-0e8a-43cf-bcc5-489f4be4384b",
                                 "ord": "a2"
                               }
                             ],
@@ -3366,7 +3605,7 @@
                               "kind": "collection",
                               "ref": "attributeSections"
                             },
-                            "id": "b21123cc-b3fa-47c4-8f4d-8f04d3f1c575",
+                            "id": "382cb18a-2c9e-40cc-a277-d36f942ac2a8",
                             "ord": "a0"
                           }
                         ],
@@ -3374,7 +3613,7 @@
                           "kind": "visible",
                           "ref": "attributeSections"
                         },
-                        "id": "8bb503c4-6b34-474f-b285-b0ff2f5fd51c",
+                        "id": "dbb17ce3-1209-4a05-a672-c5d935a4f2bd",
                         "ord": "a4"
                       },
                       {
@@ -3390,7 +3629,7 @@
                               "href": "/shipping-policy"
                             },
                             "children": ["Shipping & delivery"],
-                            "id": "eb765431-58d1-4ab2-9723-f85581aed298",
+                            "id": "86385e83-2aa3-4016-a5b2-4d150002177a",
                             "ord": "a0"
                           },
                           {
@@ -3401,19 +3640,19 @@
                               "href": "/returns-policy"
                             },
                             "children": ["Returns & refunds"],
-                            "id": "d5bbd9d0-3ee7-409c-a713-591c94f72b63",
+                            "id": "70a24241-97a1-4987-af5c-ad4bb348028f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d5086b47-a905-4d49-9b60-9a31d9c7ca46",
+                        "id": "5c6e8638-6448-48e7-9a9a-03e49c9d69b8",
                         "ord": "a5"
                       }
                     ],
-                    "id": "f81b3194-5aba-43b0-ba7d-5c7bcd22b390",
+                    "id": "ccfe005d-4dd9-4066-8e87-5dc192564e75",
                     "ord": "a1"
                   }
                 ],
-                "id": "5d2455f6-cebf-4811-b3d4-718eb21a47d5",
+                "id": "a6f69143-ba1c-4c0f-abeb-cb1fb3d44a0a",
                 "ord": "a0"
               }
             ],
@@ -3421,7 +3660,7 @@
               "kind": "collection",
               "ref": "product"
             },
-            "id": "d4cb70b1-db9c-4783-9af5-479e0c82774c",
+            "id": "972f4f72-3f00-4cd7-8539-6672d8e7b7ef",
             "ord": "a0"
           },
           {
@@ -3444,7 +3683,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-semibold text-base-content",
                         "children": ["You may also like"],
-                        "id": "4041d57f-a487-4880-afb3-37619aa30f2d",
+                        "id": "47cc3ddb-9075-4990-b086-38074d9eb74f",
                         "ord": "a0"
                       },
                       {
@@ -3468,12 +3707,12 @@
                                 "props": {
                                   "name": "arrow-left"
                                 },
-                                "id": "a5969354-b944-4cea-8d27-0218db7f0528",
+                                "id": "8910a964-d334-41b0-91cd-a80647f915af",
                                 "ord": "a0"
                               }
                             ],
                             "part": "prev",
-                            "id": "a53f2aa7-fb5d-4654-9d95-e720d5fecc9f",
+                            "id": "601448e3-a235-451d-8637-233f58ac0548",
                             "ord": "a0"
                           },
                           {
@@ -3492,16 +3731,16 @@
                                 "props": {
                                   "name": "arrow-right"
                                 },
-                                "id": "12de3384-6278-4512-a2e9-f5ea486eb83e",
+                                "id": "58de9a65-bbef-4dde-80c8-5d6087698ef8",
                                 "ord": "a0"
                               }
                             ],
                             "part": "next",
-                            "id": "30874c87-3a3c-4306-81bc-6a740429b089",
+                            "id": "bde33dde-3346-4714-b1dd-aacc30034cfb",
                             "ord": "a1"
                           }
                         ],
-                        "id": "679876bf-9fd0-4547-8aa7-ba4e7025816b",
+                        "id": "a9bd44ff-bacd-4540-bcc5-8d54f5efc871",
                         "ord": "a1"
                       }
                     ],
@@ -3509,7 +3748,7 @@
                       "kind": "visible",
                       "ref": "commerce.related"
                     },
-                    "id": "3069712d-79df-4ecb-a0e2-adb862b46e5a",
+                    "id": "b91eb3c0-b38f-4024-a79f-d833fa3209bb",
                     "ord": "a0"
                   },
                   {
@@ -3544,7 +3783,7 @@
                                       "kind": "value",
                                       "ref": "image"
                                     },
-                                    "id": "c0fb6db4-02f7-4105-aa23-2d62f11be74e",
+                                    "id": "6ff3b54a-e1a8-48cf-8e01-26a77bbb87bd",
                                     "ord": "a0"
                                   },
                                   {
@@ -3561,7 +3800,7 @@
                                           "kind": "value",
                                           "ref": "title"
                                         },
-                                        "id": "4dd2862e-cf5b-4710-ab6e-8859e01bf02f",
+                                        "id": "a26378a3-2e0e-4395-a42b-86bb00f9e3bb",
                                         "ord": "a0"
                                       },
                                       {
@@ -3573,7 +3812,7 @@
                                           "kind": "value",
                                           "ref": "price"
                                         },
-                                        "id": "09b44e92-0cf6-4f9f-81e8-f0c0d11887f1",
+                                        "id": "72476e79-d84f-4463-a53e-350163490159",
                                         "ord": "a1"
                                       },
                                       {
@@ -3585,11 +3824,11 @@
                                           "kind": "visible",
                                           "ref": "soldOut"
                                         },
-                                        "id": "b4e9fcfd-a4db-424a-86b8-b3b5c559e940",
+                                        "id": "5fef7279-fe78-4ec9-9543-bb76cd666ea7",
                                         "ord": "a2"
                                       }
                                     ],
-                                    "id": "c9da58eb-6a35-4b91-a58f-e6fe033daa00",
+                                    "id": "259c515c-f83b-46fc-80f5-5bcd18b0e6b3",
                                     "ord": "a1"
                                   }
                                 ],
@@ -3598,7 +3837,7 @@
                                   "ref": "url",
                                   "attr": "href"
                                 },
-                                "id": "831f3d97-f5ae-4ae8-8501-af534d045341",
+                                "id": "621710d2-a961-4d5f-8589-acebbb952c94",
                                 "ord": "a0"
                               }
                             ],
@@ -3607,31 +3846,31 @@
                               "ref": "commerce.related",
                               "omitWhenEmpty": true
                             },
-                            "id": "103f5e09-c828-464c-a5e7-abe438746a1b",
+                            "id": "405fb76a-8497-4cd4-8fcf-45db8152202e",
                             "ord": "a0"
                           }
                         ],
                         "part": "track",
-                        "id": "4c81f227-f7ea-48ad-b261-e35a0f762f1b",
+                        "id": "631d6461-077f-4078-8706-638f1f8a71f8",
                         "ord": "a0"
                       }
                     ],
-                    "id": "c1c7f561-2764-4388-a830-ebf1a1a32b7e",
+                    "id": "f7a5bad0-89ac-4f6f-9436-5d6b99cae2df",
                     "ord": "a1"
                   }
                 ],
-                "id": "3c3093aa-9533-4601-a3d6-b5494281508d",
+                "id": "7f16c20c-f39a-4aa2-adb3-9b4b15b9db23",
                 "ord": "a0"
               }
             ],
             "behavior": {
               "type": "scroll-strip"
             },
-            "id": "2265ff70-63f0-41b8-8005-14bd657f85c2",
+            "id": "00abde07-657d-4a92-8313-10f14da64f11",
             "ord": "a1"
           }
         ],
-        "id": "abedc14d-dc6e-44c3-ba49-1ca4244b9c76"
+        "id": "d011d7a8-4a63-445d-a143-16400a3fd24b"
       }
     }
   ],

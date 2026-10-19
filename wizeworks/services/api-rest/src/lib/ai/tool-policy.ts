@@ -11,6 +11,7 @@ import { withTenant, type TenantContext } from '@wizeworks/db';
 import { badRequest } from '@wizeworks/api-core/errors';
 
 import { TOOL_CATALOG, isKnownTool } from './tool-catalog.js';
+import { toolTitle } from './tool-titles.js';
 import type { ToolPolicyDto } from './types.js';
 
 /** The catalog merged with this SITE's effective policy — each tool tagged with
@@ -40,6 +41,7 @@ export async function listToolPolicies(
     const explicit = byName.has(t.name);
     return {
       name: t.name,
+      title: toolTitle(t.name) ?? t.name,
       description: t.description,
       scope: t.scope,
       module: t.module,
@@ -93,6 +95,7 @@ export async function setToolPolicy(
   const entry = TOOL_CATALOG.find((t) => t.name === toolName)!;
   return {
     name: entry.name,
+    title: toolTitle(entry.name) ?? entry.name,
     description: entry.description,
     scope: entry.scope,
     module: entry.module,

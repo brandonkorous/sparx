@@ -369,9 +369,6 @@ export function ProductChannelsSurface({ ctx }: { ctx: SurfaceContext }) {
           ) : (
             <>
               <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  {product.title}
-                </Heading>
                 <Text className="text-sm">
                   Every place this product is offered, and whether each one is live.
                 </Text>

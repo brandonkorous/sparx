@@ -17,7 +17,7 @@ explains what we can take back and how long you have." The link went to
 "Refund Policy" at `/refund-policy`; the footer links it correctly. A return's own page
 had the same link.
 
-(Issue numbers 197 to 209 belong to a second agent working the same persona.)
+(Issue numbers 198 to 209 belong to a second agent working the same persona.)
 
 ## What should have happened
 

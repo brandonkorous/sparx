@@ -931,7 +931,10 @@ export const ROUTES: readonly AppRoute[] = [
 
   /* ── Reporting ────────────────────────────────────────────────────────── */
   { path: '/analytics', surface: 'analytics.dashboards.list' },
-  { path: '/analytics/:id', surface: 'analytics.dashboard.view' },
+  // `:key`, not `:id`: a built-in dashboard is named by a word (`traffic`), and an
+  // `:id` refuses words, so the pane's own address opened "Broken link" on a reload
+  // or a pasted link (sparx persona issue 313).
+  { path: '/analytics/:key', surface: 'analytics.dashboard.view' },
 
   /* ── Partner programme ────────────────────────────────────────────────── */
   { path: '/partner/referrals', surface: 'partner.referrals.list' },

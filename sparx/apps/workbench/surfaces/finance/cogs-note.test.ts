@@ -49,6 +49,19 @@ describe('costOfGoodsNote', () => {
     expect(note.detail).toContain('actually cost you');
   });
 
+  it('keeps a measured figure but says what it leaves out (issue 271)', () => {
+    // Gillett: $1,100.00 of cost over $17,623.40 of sales, "You kept 93.8%",
+    // while 560 things (3,677 units) had no cost and counted as free.
+    const note = costOfGoodsNote(110_000, 560, 3677);
+    expect(note.partial).toBe(true);
+    expect(note.detail).toContain('actually cost you');
+    expect(note.detail).toContain('560 things on your shelves, 3,677 units');
+  });
+
+  it('is not partial when every thing on the shelves has a cost', () => {
+    expect(costOfGoodsNote(110_000, 0, 0).partial).toBe(false);
+  });
+
   it('reads naturally for a single item', () => {
     expect(costOfGoodsNote(0, 1, 1).detail).toContain('1 thing on your shelves, 1 unit');
   });

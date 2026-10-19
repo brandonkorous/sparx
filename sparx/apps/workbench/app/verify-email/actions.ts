@@ -4,7 +4,7 @@
 // 157). Runs through Better Auth in this workbench process, the same as the
 // invitation flow's resend, and comes back to /verify-email on this console.
 
-import { auth, getSession } from '@wizeworks/auth';
+import { auth, authEmailsCanLeave, getSession } from '@wizeworks/auth';
 
 export interface SendLinkResult {
   ok: boolean;
@@ -21,6 +21,14 @@ export async function sendConfirmLink(): Promise<SendLinkResult> {
     return { ok: false, error: 'You are signed out. Sign in again, then ask for a new link.' };
   }
   if (session.user.emailVerified) return { ok: true, email: session.user.email };
+  // A send Better Auth would swallow is refused here, so nobody is told a link
+  // is on its way when it cannot leave this machine (sparx persona issue 337).
+  if (!authEmailsCanLeave()) {
+    return {
+      ok: false,
+      error: 'Email cannot be sent from here right now, so no link went. Nothing changed.',
+    };
+  }
   try {
     await auth.api.sendVerificationEmail({
       body: { email: session.user.email, callbackURL: LANDING },

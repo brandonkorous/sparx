@@ -33,11 +33,11 @@ import {
   Button,
   Card,
   Input,
-  Table,
   Text,
   Timestamp,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   Ban,
   ClipboardCheck,
@@ -432,12 +432,12 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                           </span>
                         </span>
                       </td>
-                      <td className="text-right whitespace-nowrap tabular-nums">
+                      <td data-label="Take" className="text-right whitespace-nowrap tabular-nums">
                         {line.pickedQuantity > 0 && line.pickedQuantity < line.quantity
                           ? `${String(line.pickedQuantity)}/${String(line.quantity)}`
                           : line.quantity}
                       </td>
-                      <td className="hidden whitespace-nowrap @lg:table-cell">
+                      <td data-label="For" className="hidden whitespace-nowrap @lg:table-cell">
                         {line.orderNumber}
                       </td>
                       <td className="whitespace-nowrap">

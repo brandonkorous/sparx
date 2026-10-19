@@ -17,7 +17,8 @@
 // never works"; what is true is that nothing has been measured, and the surface
 // says so and offers to fix it.
 
-import { Badge, Card, Heading, Table, Text } from '@wizeworks/silicaui-react';
+import { Badge, Card, Heading, Text } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { Target, TrendingDown } from 'lucide-react';
 import { actionLabel } from './automations-catalog';
@@ -203,9 +204,9 @@ function StepTable({ steps }: { steps: StepDropOff[] }) {
                       ) : null}
                     </span>
                   </td>
-                  <td>{step.reached.toLocaleString()}</td>
-                  <td>{step.completed.toLocaleString()}</td>
-                  <td>
+                  <td data-label="Reached it">{step.reached.toLocaleString()}</td>
+                  <td data-label="Finished it">{step.completed.toLocaleString()}</td>
+                  <td data-label="Skipped">
                     {step.gated > 0 ? (
                       <Badge color="warning" variant="soft" size="sm">
                         {step.gated.toLocaleString()}
@@ -214,7 +215,7 @@ function StepTable({ steps }: { steps: StepDropOff[] }) {
                       '—'
                     )}
                   </td>
-                  <td>
+                  <td data-label="Failed">
                     {step.failed > 0 ? (
                       <Badge color="error" variant="soft" size="sm">
                         {step.failed.toLocaleString()}
@@ -223,7 +224,7 @@ function StepTable({ steps }: { steps: StepDropOff[] }) {
                       '—'
                     )}
                   </td>
-                  <td>
+                  <td data-label="Stopped here">
                     {/* The last step has no successor, so everybody who reached it
                         "stopped" there — which is where a rule is meant to end. */}
                     {last ? (

@@ -9,18 +9,12 @@
 // those sort the list and sit on the right where the eye lands.
 
 import { useMemo, useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Select,
-  Table,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, SearchInput, Select } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Plus, Users } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { SavedViewsMenu, viewFilterValue, viewFilters } from './saved-views-menu';
@@ -115,7 +109,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
     setSortBy((view?.sort?.field ?? 'lastOrderAt') as CustomerSort);
   };
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useCustomers({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useCustomers({
     q: search,
     lifecycleStage: stage === 'all' ? undefined : stage,
     type: type === 'all' ? undefined : type,
@@ -259,21 +253,14 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
         {isError ? (
-          <EmptyState
+          <PaneLoadError
+            error={error}
             icon={<Users className="size-6" aria-hidden />}
             title="Could not load your customers"
             description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
-            actions={
-              <Button
-                size="sm"
-                color="module"
-                onClick={() => {
-                  void refetch();
-                }}
-              >
-                Try again
-              </Button>
-            }
+            onRetry={() => {
+              void refetch();
+            }}
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -348,7 +335,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                         only the typed one, so the two wholesale buyers of Loom
                         and Larder showed a dash while the retail shopper who had
                         typed the name showed it (issue 883). */}
-                    <td className="hidden @md:table-cell">
+                    <td data-label="Company" className="hidden @md:table-cell">
                       {row.company ?? row.b2bAccount?.companyName ?? '—'}
                     </td>
                     <td>
@@ -357,7 +344,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </Badge>
                     </td>
                     {scored ? (
-                      <td className="text-right">
+                      <td data-label="Score" className="text-right">
                         {/* The band, not a bare number: a business owner acts on
                             "Hot" and never on 61-versus-64. The figure rides
                             along for whoever does want to compare two.
@@ -380,10 +367,16 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                         )}
                       </td>
                     ) : null}
-                    <td className="text-right font-mono text-sm tabular-nums">
+                    <td
+                      data-label="Orders come to"
+                      className="text-right font-mono text-sm tabular-nums"
+                    >
                       {formatMoney(row.totalOrdered)}
                     </td>
-                    <td className="hidden text-right text-sm @lg:table-cell">
+                    <td
+                      data-label="Last order"
+                      className="hidden text-right text-sm @lg:table-cell"
+                    >
                       {shortDate(row.lastOrderAt)}
                     </td>
                   </tr>

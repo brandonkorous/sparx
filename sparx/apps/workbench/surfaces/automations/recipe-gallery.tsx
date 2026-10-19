@@ -33,6 +33,7 @@ import {
 import { Settings2, Sparkles } from 'lucide-react';
 import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneLoadError } from '../../components/pane-load-error';
 import { ModuleScope, type WorkbenchModule } from '../../components/module-scope';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -207,7 +208,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [state, setState] = useState('all');
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAutomations({
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useAutomations({
     status: 'all',
     origin: 'system',
   });
@@ -315,21 +316,14 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
           </Text>
 
           {isError ? (
-            <EmptyState
+            <PaneLoadError
+              error={error}
               icon={<Sparkles className="size-6" aria-hidden />}
               title="Could not load your recipes"
               description="Something went wrong reaching the server. Whatever you have switched on is unaffected and still running. Try again in a moment."
-              actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    void refetch();
-                  }}
-                >
-                  Try again
-                </Button>
-              }
+              onRetry={() => {
+                void refetch();
+              }}
             />
           ) : isPending ? (
             <p className="text-sm" role="status">

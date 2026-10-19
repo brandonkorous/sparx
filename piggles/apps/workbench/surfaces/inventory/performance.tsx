@@ -241,6 +241,9 @@ function SellThroughCard({
                       variantName={row.variantName}
                       code={row.sku}
                     />
+                    {/* Below @lg the Where column is gone; without this a part kept in two
+                        places read as the same row twice (sparx persona issue 305). */}
+                    <span className="truncate text-sm @lg:hidden">{row.warehouseCode}</span>
                   </span>
                 </td>
                 <td className="hidden max-w-32 truncate @lg:table-cell">{row.warehouseCode}</td>

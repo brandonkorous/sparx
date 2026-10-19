@@ -42,10 +42,10 @@ import {
   StatTitle,
   StatValue,
   Stats,
-  Table,
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { BarChart3, Boxes, CalendarClock, Clock, Coins, MapPin } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -408,13 +408,16 @@ function AgeingCard({
                     {agingBucketLabel(bucket.bucket)}
                   </Badge>
                 </td>
-                <td className="text-right font-medium whitespace-nowrap tabular-nums">
+                <td
+                  data-label="Value held"
+                  className="text-right font-medium whitespace-nowrap tabular-nums"
+                >
                   {formatCents(bucket.costCents, currency)}
                 </td>
-                <td className="hidden text-right tabular-nums @lg:table-cell">
+                <td data-label="Units" className="hidden text-right tabular-nums @lg:table-cell">
                   {NUMBER.format(bucket.units)}
                 </td>
-                <td className="hidden @xl:table-cell">
+                <td data-label="Share" className="hidden @xl:table-cell">
                   <div className="bg-base-200 h-2 w-full max-w-40 overflow-hidden rounded-full">
                     <div
                       className={`bg-module h-full rounded-full ${barWidthClass(
@@ -485,11 +488,19 @@ function DeadStockCard({
                   <span className="truncate font-mono text-sm">{item.sku ?? 'No code'}</span>
                 </span>
               </td>
-              <td className="hidden max-w-40 truncate @lg:table-cell">{item.warehouseCode}</td>
-              <td className="text-right font-medium whitespace-nowrap tabular-nums">
+              <td data-label="Where" className="hidden max-w-40 truncate @lg:table-cell">
+                {item.warehouseCode}
+              </td>
+              <td
+                data-label="Value"
+                className="text-right font-medium whitespace-nowrap tabular-nums"
+              >
                 {formatCents(item.costCents, currency)}
               </td>
-              <td className="hidden text-right whitespace-nowrap @xl:table-cell">
+              <td
+                data-label="Last sold"
+                className="hidden text-right whitespace-nowrap @xl:table-cell"
+              >
                 {item.lastSaleAt ? (
                   <Timestamp value={item.lastSaleAt} format="relative" />
                 ) : (
@@ -677,8 +688,10 @@ function ShrinkageCard({
                     </span>
                     {item.variantSku ? <span className="text-sm">{item.variantSku}</span> : null}
                   </td>
-                  <td className="text-right tabular-nums">{NUMBER.format(item.units)}</td>
-                  <td className="text-right tabular-nums">
+                  <td data-label="Units" className="text-right tabular-nums">
+                    {NUMBER.format(item.units)}
+                  </td>
+                  <td data-label="Cost to you" className="text-right tabular-nums">
                     {formatCents(item.valueCents, currency)}
                   </td>
                 </tr>
@@ -794,11 +807,16 @@ function AsOfCard({ locationId }: { locationId: string }) {
                         <span className="truncate font-mono text-sm">{row.sku ?? 'No code'}</span>
                       </span>
                     </td>
-                    <td className="hidden max-w-32 truncate @lg:table-cell">{row.warehouseCode}</td>
-                    <td className="hidden text-right tabular-nums @md:table-cell">
+                    <td data-label="Where" className="hidden max-w-32 truncate @lg:table-cell">
+                      {row.warehouseCode}
+                    </td>
+                    <td
+                      data-label="Units"
+                      className="hidden text-right tabular-nums @md:table-cell"
+                    >
                       {NUMBER.format(row.units)}
                     </td>
-                    <td className="text-right font-medium tabular-nums">
+                    <td data-label="Value" className="text-right font-medium tabular-nums">
                       {formatCents(row.valueCents, report.data.currency)}
                     </td>
                   </tr>

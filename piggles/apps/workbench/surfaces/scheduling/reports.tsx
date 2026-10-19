@@ -136,7 +136,10 @@ function useTokenColorMap(tokens: readonly string[]): {
 // outcome has zero and drops out — semantic color, not position, is the point.
 const OUTCOME_DEFS = [
   { key: 'completed', label: 'Turned up and finished', tone: 'success' },
-  { key: 'confirmed', label: 'Confirmed, still to come', tone: 'info' },
+  // "Still to come" was false for a booking whose time had passed without anyone
+  // marking it done, which in a window ending today is most of them (sparx
+  // persona issue 308).
+  { key: 'confirmed', label: 'Confirmed, not yet marked done', tone: 'info' },
   { key: 'inProgress', label: 'Happening now', tone: 'module' },
   { key: 'requested', label: 'Waiting for you to confirm', tone: 'warning' },
   { key: 'cancelled', label: 'Canceled', tone: 'neutral' },
@@ -296,7 +299,8 @@ function UtilisationFigure({ utilisation }: { utilisation: Utilisation }) {
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
         <span className="text-module text-5xl leading-none font-semibold tabular-nums">
-          {utilisation.pct}%
+          {/* "0%" beside "3.5 hrs booked" read as nothing booked (issue 308). */}
+          {utilisation.pct === 0 && utilisation.bookedMinutes > 0 ? 'under 1' : utilisation.pct}%
         </span>
         <span className="text-lg">of your open time was booked</span>
       </div>
@@ -438,8 +442,9 @@ function KpiCard({
 
         <Stat>
           <StatTitle>Didn&rsquo;t turn up</StatTitle>
+          {/* Nothing finished means nothing measured: a dash, never "0%" (issue 308). */}
           <StatValue className={`text-2xl tabular-nums ${NO_SHOW_INK[noShowTone(noShowRatePct)]}`}>
-            {noShowRatePct}%
+            {totals.completed + totals.noShow === 0 ? '—' : `${noShowRatePct}%`}
           </StatValue>
           <StatDesc>
             {totals.completed + totals.noShow === 0
@@ -607,7 +612,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
 
           <Panel
             title="How bookings turned out"
-            description="Every booking in the window, split by where it ended up: done, still to come, canceled, or a no-show."
+            description="Every booking in the window, split by where it ended up: done, not yet marked done, canceled, or a no-show."
           >
             {totals.all === 0 ? (
               <Text className="text-sm">No bookings in this period to break down.</Text>

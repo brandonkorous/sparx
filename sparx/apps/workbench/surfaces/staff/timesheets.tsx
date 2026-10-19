@@ -29,10 +29,10 @@ import {
   Checkbox,
   EmptyState,
   Heading,
-  Table,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import {
   CalendarDays,
   ChevronLeft,
@@ -123,9 +123,11 @@ function PersonRow({
             this screen before approving anything. */}
         {stateBadge === null ? null : <div className="mt-1 @md:hidden">{stateBadge}</div>}
       </td>
-      <td className="tabular-nums">{formatMinutes(row.totalMinutes)}</td>
+      <td className="tabular-nums" data-label="Logged">
+        {formatMinutes(row.totalMinutes)}
+      </td>
       <td className="hidden @md:table-cell">{stateBadge}</td>
-      <td className="text-right">
+      <td className="text-right" data-label="Cost">
         {unpriced ? (
           // NOT a number. This person's hours cannot be costed, and the only
           // honest cell is the reason why.

@@ -571,7 +571,7 @@ function Nothing({
   return (
     <div className="flex flex-wrap items-center gap-3">
       {icon}
-      <Text className="min-w-0 flex-1">{line}</Text>
+      <Text className="min-w-0 flex-1 basis-48">{line}</Text>
       <Button size="sm" variant="outline" color="module" onClick={onAction}>
         {actionLabel}
       </Button>

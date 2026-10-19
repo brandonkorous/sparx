@@ -19,6 +19,7 @@ import { paymentTermsLabel } from '../../lib/payment-terms';
 import { ModuleScope } from '../../components/module-scope';
 import { AddressBlock, CollectedBy } from './order-detail-blocks';
 import { OrderAddressForm } from './order-detail-address-form';
+import { ResendConfirmation } from './resend-confirmation';
 import { customerName, formatDateTime, formatMoney, type Order } from './data';
 import type { OrderFacts } from './order-detail-facts';
 
@@ -83,6 +84,9 @@ export function BuyerSection({ order }: { order: Order }) {
             <a href={`mailto:${order.customer.email}`} className="link text-base break-all">
               {order.customer.email}
             </a>
+          ) : null}
+          {order.customer?.email ? (
+            <ResendConfirmation orderId={order.id} orderNumber={order.orderNumber} />
           ) : null}
           {order.customer?.b2bAccount ? (
             <Text className="text-base">

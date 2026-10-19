@@ -491,7 +491,7 @@ function LineItems({ order }: { order: DropshipOrder }) {
             key={`${sku}:${String(index)}`}
             className="border-base-300 flex flex-wrap items-center gap-2 border-b py-2 last:border-b-0"
           >
-            <span className="flex min-w-0 flex-1 flex-col">
+            <span className="flex min-w-0 flex-1 basis-48 flex-col">
               {name ? <span className="truncate font-medium">{name}</span> : null}
               <span className="truncate font-mono text-sm">{sku}</span>
             </span>

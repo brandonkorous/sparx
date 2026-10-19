@@ -6,7 +6,7 @@
 **Surface:** workbench › Reports (revenue), B2B reports, landing-page revenue, fill rate, GL reconciliation; the pick list, pack bench and packing slip
 **Filed:** 2026-10-01
 **Fixed:** 2026-10-01
-**Confirmed by:** `pnpm check:cancelled-in-sql`: 0 of 419 queries (red on one broken line, proved). Dev database: 11 cancelled orders that the revenue report counted before. On screen: **not checked** (Doty has no orders yet; re-check on the Reports screen after his first orders in act 6)
+**Confirmed by:** sparx as Doty, 2026-10-17 (Reports)
 **Blocked on:** —
 
 ## What happened
@@ -39,6 +39,10 @@ A cancelled order is not a sale. A cancelled pick list or box gives its units ba
 - New guard `scripts/check-cancelled-in-sql.mjs` (`pnpm check:cancelled-in-sql`),
   in pre-push and CI: reads every raw SQL template (419) and fails on `'canceled'`.
   Proved red by restoring one broken line.
+
+## Confirmed by
+
+sparx as Doty, 2026-10-17, Reports, last 30 days: "Orders 28 placed in this period". Gillett has 33 orders, all in the period; the 4 canceled ($23,384.68) and the 1 held for approval are not counted. Revenue $15,504 after refunds.
 
 ## Rating effect
 

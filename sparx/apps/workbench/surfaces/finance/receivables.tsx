@@ -33,9 +33,9 @@ import {
   Heading,
   Progress,
   SearchInput,
-  Table,
   Text,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { ArrowDown, ArrowUp, CheckCircle2, ReceiptText } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -106,8 +106,10 @@ function ReceivableRow({
           {late.label}
         </Badge>
       </td>
-      <td className="hidden text-sm whitespace-nowrap @2xl:table-cell">{formatDay(item.dueAt)}</td>
-      <td className="text-right font-medium tabular-nums">
+      <td className="hidden text-sm whitespace-nowrap @2xl:table-cell" data-label="Due">
+        {formatDay(item.dueAt)}
+      </td>
+      <td className="text-right font-medium tabular-nums" data-label="Balance">
         {formatMoney(item.balance, item.currency)}
       </td>
     </tr>

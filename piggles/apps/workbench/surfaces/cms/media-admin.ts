@@ -22,6 +22,7 @@ import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { focalFromWire } from './focal-point';
+import { formatShopDateTime } from '../../lib/shop-clock';
 
 /* ── What a file is, in the terms this surface groups by ─────────────────── */
 
@@ -516,10 +517,8 @@ export function durationLabel(durationSec: number | null): string | null {
 
 /** Medium date and time. */
 export function formatDateTime(value: string | null | undefined): string {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-  return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  // On the shop's clock, not this computer's (sparx persona issue 333).
+  return formatShopDateTime(value);
 }
 
 /**

@@ -72,8 +72,11 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  1.5.3 puts every band's gutter inside its 6xl box (piggles persona issue 950). The
  *  committed bundles were bumped one patch each in place, from 1.5.1 or from 1.5.2 where
  *  an earlier fix had bumped them by hand, so this is the highest of those and a regen
- *  never ships a version older than the one already published. */
-const BUNDLE_VERSION = '1.5.3';
+ *  never ships a version older than the one already published.
+ *
+ *  1.5.4 puts the live cart button (`site.cart-button`) in the header bar of every
+ *  selling design, from the composite's `ensureCartButton` (sparx persona issue 325). */
+const BUNDLE_VERSION = '1.5.4';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

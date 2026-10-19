@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-signal',
-  version: '1.5.3',
+  version: '1.5.6',
   name: 'Signal',
   summary:
     'A complete starter in the Signal look, tuned for software, apps, and subscriptions: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.',

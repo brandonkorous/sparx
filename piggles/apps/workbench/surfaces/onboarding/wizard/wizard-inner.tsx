@@ -18,6 +18,7 @@ import type {
 } from '../../../lib/onboarding/types';
 import { SCRATCH } from './step-blueprint';
 import { useSlugCheck } from './use-slug-check';
+import { addressAfterNameChange } from './address-follow';
 import { useStartingPoint } from './use-starting-point';
 import { ctaLabelFor, stepOrder, type Initial } from './wizard-steps';
 import { WizardBody } from './wizard-body';
@@ -73,6 +74,12 @@ export function WizardInner({
   const slug = story.name;
   const setSlug = model.dispatch.setName;
   const [siteName, setSiteName] = useState(initial.siteName);
+  // The address follows the name while it is still the placeholder (sparx issue 295).
+  function changeCompanyName(next: string) {
+    const address = addressAfterNameChange(slug, companyName, next);
+    setCompanyName(next);
+    if (address !== null) setSlug(address);
+  }
   const [attemptedWorkspace, setAttemptedWorkspace] = useState(false);
 
   const [pendingDomain, setPendingDomain] = useState<PendingDomain | null>(null);
@@ -202,7 +209,7 @@ export function WizardInner({
           slug={slug}
           effectiveSlug={slugState.normalized || initial.slug}
           siteName={siteName}
-          onCompanyName={setCompanyName}
+          onCompanyName={changeCompanyName}
           onSlug={setSlug}
           onSiteName={setSiteName}
           slugCheck={slugState.check}

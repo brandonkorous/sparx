@@ -1,29 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { costOfGoodsNote } from './cogs-note';
 
-/**
- * "COST OF THE GOODS: $0.00", ON A SHOP THAT SEWS EVERYTHING IT SELLS.
- *
- * Money -> What you kept, 2026-09-16:
- *
- *     You lost $1,432.70
- *     Money in                $726.00
- *     Cost of the goods         $0.00   "What the stock you sold actually cost
- *                                        you, from your inventory records."
- *
- * Her inventory records hold no costs at all. Measured the same day: 68 items,
- * 375 units, **zero** with a cost. So the sum is zero and the screen prints it
- * with the confidence of a measurement, which tells a clothes maker that the
- * clothes she sells cost her nothing to make.
- *
- * The platform already says this out loud, two screens away, on the costing
- * page: "68 things on your shelves, 375 units in all, have never had a cost
- * recorded, so they count as nothing in every figure about what your stock is
- * worth." The screen she actually reads said $0.00.
- *
- * A real $0.00 exists as well, on a business that sells its time, so the two are
- * told apart by the STOCK rather than by the sum.
- */
+// "Cost of the goods: $0.00" on a shop whose 68 things had no cost: a gap shown as
+// a figure (issue 545). A real $0.00 exists too, on a business that sells its
+// time, so the two are told apart by the stock rather than by the sum.
 describe('costOfGoodsNote', () => {
   it('says nothing is measured when the shelves have no costs', () => {
     const note = costOfGoodsNote(0, 68, 375);
@@ -47,6 +27,19 @@ describe('costOfGoodsNote', () => {
     const note = costOfGoodsNote(40_000, 12, 30);
     expect(note.unmeasured).toBe(false);
     expect(note.detail).toContain('actually cost you');
+  });
+
+  it('keeps a measured figure but says what it leaves out (issue 271)', () => {
+    // Gillett: $1,100.00 of cost over $17,623.40 of sales, "You kept 93.8%",
+    // while 560 things (3,677 units) had no cost and counted as free.
+    const note = costOfGoodsNote(110_000, 560, 3677);
+    expect(note.partial).toBe(true);
+    expect(note.detail).toContain('actually cost you');
+    expect(note.detail).toContain('560 things on your shelves, 3,677 units');
+  });
+
+  it('is not partial when every thing on the shelves has a cost', () => {
+    expect(costOfGoodsNote(110_000, 0, 0).partial).toBe(false);
   });
 
   it('reads naturally for a single item', () => {

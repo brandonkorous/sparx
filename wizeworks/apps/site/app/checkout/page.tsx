@@ -34,6 +34,7 @@ export default async function CheckoutPage() {
         paymentMode={site.commerce.paymentMode}
         shopName={site.name}
         collectAt={site.contact.address}
+        shopContact={site.contact}
       />
     </div>
   );

@@ -34,12 +34,12 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
-  Table,
   Text,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
 } from '@wizeworks/silicaui-react';
+import { Table } from '../../components/table';
 import { Grid3x3, QrCode, Search } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -240,7 +240,7 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     ) : null}
                   </span>
                 </td>
-                <td className="hidden max-w-40 truncate @lg:table-cell">
+                <td data-label="Location" className="hidden max-w-40 truncate @lg:table-cell">
                   {bin.warehouseName ?? '—'}
                 </td>
                 <td>
@@ -267,11 +267,16 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     ) : null}
                   </span>
                 </td>
-                <td className="hidden text-right tabular-nums @xl:table-cell">{bin.itemCount}</td>
-                <td className="text-right font-medium whitespace-nowrap tabular-nums">
+                <td data-label="Items" className="hidden text-right tabular-nums @xl:table-cell">
+                  {bin.itemCount}
+                </td>
+                <td
+                  data-label="Units"
+                  className="text-right font-medium whitespace-nowrap tabular-nums"
+                >
                   {NUMBER.format(bin.unitCount)}
                 </td>
-                <td className="hidden @2xl:table-cell">
+                <td data-label="How full" className="hidden @2xl:table-cell">
                   {fullness === null ? (
                     <Text className="text-sm">—</Text>
                   ) : (

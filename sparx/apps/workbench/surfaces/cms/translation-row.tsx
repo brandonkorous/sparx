@@ -98,7 +98,7 @@ export function TranslationRow({
           `product.updatedAt` and was headed "Changed", which on a translations
           screen says one thing and means another: a Spanish translation saved
           today sat beside a date from a week earlier. */}
-      <td className="hidden text-sm whitespace-nowrap @4xl:table-cell">
+      <td className="hidden text-sm whitespace-nowrap @4xl:table-cell" data-label="Last translated">
         {translatedAt === null ? '—' : formatDate(translatedAt)}
       </td>
 
