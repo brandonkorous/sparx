@@ -51,7 +51,9 @@ Commerce tests pass in both consoles. Lint and format clean.
 P01 as Doty, 2026-10-19. O-000001 (the counter card) read "Marks $600.00 as given back. You
 hand the money over yourself" in the row and in the confirm, and the server recorded it with
 no gateway call (`{"settledBy": "hand"}`). O-000037 (paid online) read "back to the card" and
-went through Stripe test. Piggles not seen on screen; its test passes.
+went through Stripe test. Piggles, as Thistle & Rye: O-000001 (paid by hand) read "Marks $33.00 as
+given back. You hand the money over yourself, so nothing is sent anywhere", from the API's
+`byGateway`.
 
 ## Rating effect
 

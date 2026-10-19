@@ -51,8 +51,9 @@ Test, red first: `collected-chart-option.test.ts` in both consoles (2). Finance 
 P01 as Doty, 2026-10-19. The collected job was run once the way its cron calls it (`POST
 /internal/invoicing/collected-rollup`, 12 businesses). Owed to you then read "Billed and
 collected, the last 30 days · $2,633.44 came in against $14,901.12 billed", with bars on Oct 2,
-Oct 3, Oct 6, Oct 9, Oct 11 and Oct 13: the stored days, $513.84 + $2,119.60 collected. Piggles
-not seen on screen; its test passes.
+Oct 3, Oct 6, Oct 9, Oct 11 and Oct 13: the stored days, $513.84 + $2,119.60 collected. Piggles, as Thistle & Rye: Owed to you read
+"Billed and collected, the last 30 days · Nothing was billed or paid on an invoice in the last 30
+days."
 
 ## Rating effect
 
