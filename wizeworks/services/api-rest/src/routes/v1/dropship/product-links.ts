@@ -37,11 +37,12 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant } from '@wizeworks/db';
+import type { Prisma } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { badRequest, conflict, notFound } from '@wizeworks/api-core/errors';
 import { variantService } from '@wizeworks/commerce';
-import { getVendor } from '@wizeworks/dropship';
+import { getVendor, handVersionsOf, handVersionsToStore } from '@wizeworks/dropship';
 import { toCommerceContext } from '../../../lib/commerce-context.js';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
 
@@ -53,6 +54,18 @@ const LinkBody = z.object({
   supplier_id: z.string().uuid(),
   supplier_sku: z.string().trim().min(1, 'Give their code for this product.').max(255),
   cost_cents: z.number().int().min(0).max(100_000_000),
+  // Each version's own code and price, for a product that comes in more than
+  // one (sparx persona issue 362). Without it every version takes the one above.
+  versions: z
+    .array(
+      z.object({
+        variant_id: z.string().uuid(),
+        supplier_sku: z.string().trim().min(1, 'Give their code for each version.').max(255),
+        cost_cents: z.number().int().min(0).max(100_000_000),
+      })
+    )
+    .min(1)
+    .optional(),
 });
 
 /** A supplier the owner points products at by hand: one with no product list
@@ -131,6 +144,14 @@ async function readProductDropship(tenantId: string, productId: string) {
       ? metadata.dropshipSupplierId
       : null;
 
+  const versionCodes = new Map(
+    result.links.flatMap((link) =>
+      handVersionsOf(link.dropshipProduct.variants).map(
+        (v) => [v.variantId, v.supplierSku] as const
+      )
+    )
+  );
+
   return {
     stampedSupplierId,
     links: result.links.map((link) => {
@@ -182,6 +203,9 @@ async function readProductDropship(tenantId: string, productId: string) {
       costCents: v.costCents,
       currency: v.currency,
       dropshipSourceId: v.dropshipSourceId,
+      // The supplier's own code for this version, when the owner gave one per
+      // version (sparx persona issue 362); null when one code covers them all.
+      supplierSku: versionCodes.get(v.id) ?? null,
     })),
   };
 }
@@ -227,7 +251,7 @@ const dropshipProductLinkRoutes: FastifyPluginAsync = (app) => {
         }),
         tx.productVariant.findMany({
           where: { productId: body.product_id, deletedAt: null },
-          select: { id: true },
+          select: { id: true, sku: true, title: true },
         }),
       ])
     );
@@ -247,6 +271,31 @@ const dropshipProductLinkRoutes: FastifyPluginAsync = (app) => {
       );
     }
 
+    // Each version's code and price, for every version on sale: a version left
+    // out would be sent with another one's code.
+    const versions = body.versions?.map((v) => ({
+      variantId: v.variant_id,
+      supplierSku: v.supplier_sku,
+      costPriceCents: v.cost_cents,
+    }));
+    if (versions) {
+      const ours = new Set(variants.map((v) => v.id));
+      const named = new Set(versions.map((v) => v.variantId));
+      if (versions.some((v) => !ours.has(v.variantId)) || variants.some((v) => !named.has(v.id))) {
+        throw badRequest(
+          `Give their code and price for each version of ${product.title}, and only its own.`,
+          'VERSIONS_DO_NOT_MATCH'
+        );
+      }
+    }
+    const titleOf = (variantId: string) => {
+      const variant = variants.find((v) => v.id === variantId);
+      return variant?.title ?? variant?.sku ?? product.title;
+    };
+    const stored = (versions
+      ? handVersionsToStore(versions, titleOf)
+      : []) as unknown as Prisma.InputJsonValue;
+
     await withTenant({ tenantId }, async (tx) => {
       // Their item for this product. Keyed on our product id: they have no list,
       // so there is no id of theirs to key it on.
@@ -264,8 +313,9 @@ const dropshipProductLinkRoutes: FastifyPluginAsync = (app) => {
           supplierProductId: product.id,
           title: product.title,
           costPriceCents: body.cost_cents,
+          variants: stored,
         },
-        update: { title: product.title, costPriceCents: body.cost_cents },
+        update: { title: product.title, costPriceCents: body.cost_cents, variants: stored },
       });
       await tx.dropshipProductLink.upsert({
         where: {
@@ -286,12 +336,14 @@ const dropshipProductLinkRoutes: FastifyPluginAsync = (app) => {
       });
     });
 
-    // Every version of the product ships from them, at their price.
+    // Every version of the product ships from them, each at its own price when
+    // the versions were priced one by one.
     const ctx = toCommerceContext(request);
     for (const variant of variants) {
+      const own = versions?.find((v) => v.variantId === variant.id);
       await variantService.update(ctx, variant.id, {
         dropshipSourceId: supplier.id,
-        costCents: body.cost_cents,
+        costCents: own?.costPriceCents ?? body.cost_cents,
       });
     }
 

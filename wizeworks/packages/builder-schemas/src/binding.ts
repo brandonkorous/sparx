@@ -875,6 +875,10 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('number', 'Invoice number'),
       text('total', 'Total'),
       text('balance', 'Balance due'),
+      // Money that came in, and what a returned core took off: a credit is not
+      // a payment (sparx persona issue 361). `credited` is empty when none.
+      text('paid', 'Paid'),
+      text('credited', 'Core deposits taken off'),
       text('dueDate', 'Due date'),
       text('daysUntilDue', 'Days until due'),
       text('overdueDays', 'Days overdue'),
@@ -921,6 +925,10 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('trackingNumber', 'Tracking number'),
       text('trackingUrl', 'Tracking link'),
       text('shippedAt', 'Shipped date'),
+      // What is IN this parcel (sparx persona issue 358). The order's items are
+      // every line ordered, so a part shipment told the customer all of it had
+      // gone: "Shipped: 6 injectors" for a box of 2.
+      lineItems(),
     ],
   },
   {
@@ -977,6 +985,24 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('replacementCarrier', 'Replacement carrier'),
       text('replacementTracking', 'Replacement tracking number'),
       text('replacementTrackingUrl', 'Replacement tracking link'),
+    ],
+  },
+  {
+    // One refund (sparx persona issue 350): its own amount, carried on
+    // `order.refunded` and overlaid through the send's snapshot. The order's
+    // `refundTotal` is every refund so far, so the second refund on an order read
+    // as the two together. `toACard` / `byHand` read "yes" or are blank, exactly
+    // one filled, so the email says how long a card refund takes and never says
+    // it of cash (issue 352).
+    key: 'refund',
+    label: 'Refund',
+    module: 'commerce',
+    cardinality: 'object',
+    recordType: 'order',
+    fields: [
+      text('amount', 'Refund amount'),
+      text('toACard', 'Went back to a card'),
+      text('byHand', 'Given back by hand'),
     ],
   },
   {

@@ -62,7 +62,10 @@ P01 on screen, 2026-10-09: Cores owed lists only O-000003, Brynn's send-first in
 waiting on its old part; the account orders whose parts have not gone out are gone. On
 O-000008 (six injectors, "To send") the badge reads "6 cores due once handed over".
 
-Not checked: a part-sent line on screen (covered by tests). Piggles not opened.
+A part-sent line, on screen 2026-10-19: O-000008 had 2 of 6 injectors picked, packed and sent.
+Cores owed read "O-000008 · 2 of 6 · $300.00 off INV-000003" (the invoice is still open), and
+the order read "2 of 6 sent so far · 2 cores still owed · 4 cores due once handed over". The
+check found [355] to [359]. Piggles not opened.
 
 ## Rating effect
 

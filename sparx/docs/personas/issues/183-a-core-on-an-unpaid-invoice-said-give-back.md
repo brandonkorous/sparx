@@ -86,8 +86,12 @@ column. On O-000008's own page, "Core came back" read "A usable core takes its $
 deposit off invoice INV-000003, which still has $4,075.60 to pay. No money goes back",
 button "Take $900.00 off INV-000003". Cancelled: the parts have not gone out yet.
 
-Not checked: a split (part off the invoice, part back) on screen; covered by the tests.
-Piggles screens not opened; their tests pass.
+A split, on screen 2026-10-19: Dana paid $600.00 by check on INV-000015, leaving $220.00, and
+her 2 old injectors came back on O-000018 ($300.00 of deposits). The dialog read "Invoice
+INV-000015 still has $220.00 to pay, so $220.00 comes off it and $80.00 goes back", button "Take
+$220.00 off INV-000015, give back $80.00"; after it, INV-000015 read paid, a $220.00 credit sat
+on it, and an $80.00 refund was recorded: "it was paid by hand, so give it back the same way".
+Her receipt found [361]. Piggles screens not opened; their tests pass.
 
 ## Rating effect
 

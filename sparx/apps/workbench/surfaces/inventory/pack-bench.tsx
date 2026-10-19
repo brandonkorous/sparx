@@ -47,6 +47,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { plural } from './data';
 import { ScanInput, playScanFeedback } from './scan-input';
+import { EMPTY_BOX_WORDS, nobodyFound } from './pack-bench-words';
 import {
   formatWeight,
   openPackingSlip,
@@ -416,7 +417,7 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
           <EmptyState
             icon={<Box className="size-6" aria-hidden />}
             title="Empty so far"
-            description="Scan the first item, or type a quantity against a line below."
+            description={EMPTY_BOX_WORDS}
           />
         ) : (
           <Table size="sm">
@@ -509,10 +510,7 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
                           finished with "1 line came up short". */}
                       {line.shortWhilePicking > 0 ? (
                         <span className="text-sm">
-                          Nobody could find{' '}
-                          {line.shortWhilePicking === line.remaining
-                            ? 'it'
-                            : `${String(line.shortWhilePicking)} of these`}{' '}
+                          Nobody could find {nobodyFound(line.shortWhilePicking, line.remaining)}{' '}
                           while picking. It is still held for this order.
                         </span>
                       ) : null}
@@ -629,7 +627,7 @@ function SealedActions({
           {plural(box.unitCount, 'unit', 'units')}
           {box.weightGrams ? `, ${formatWeight(box.weightGrams)}` : ''}
           {box.fulfillmentId
-            ? '. Buy a label from the order when you are ready.'
+            ? '. Send it from the order: say who took it when it goes.'
             : '. Nothing has been told to ship it yet.'}
         </AlertDescription>
         <AlertActions>

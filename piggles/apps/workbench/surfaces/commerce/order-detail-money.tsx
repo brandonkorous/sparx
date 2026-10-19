@@ -45,7 +45,7 @@ function PaymentRow({
   // Offered only on money the shop took itself, and only while the order is
   // still counting on it. See payment-undo.ts for why a gateway row gets no
   // action at all (issue 875).
-  const takeable = canTakeOff({ status: payment.status, byHand: paidByHand(payment.processor) });
+  const takeable = canTakeOff({ status: payment.status, byHand: paidByHand(payment) });
   return (
     <li className={ROW}>
       <div className="flex min-w-0 flex-col gap-0.5">

@@ -59,7 +59,7 @@ export function orderFacts(
   // Whether a refund has anywhere to go. Money the business took by hand never
   // passed through a gateway, so "back to the card it was paid with" is a
   // promise about a card that does not exist — she hands the notes back.
-  const toACard = !(payments.data ?? []).some((payment) => paidByHand(payment.processor));
+  const toACard = !(payments.data ?? []).some((payment) => paidByHand(payment));
 
   return {
     paid: paymentState(order),

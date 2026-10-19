@@ -130,7 +130,11 @@ P01, 2026-10-11, as Doty in the workbench, Renée and Teodora on the site:
   Cleaning and Oiling Kit (88-0008) yourself now", and in the database the link and its item
   gone, the version's supplier cleared, its cost ($18.00) kept. The tank still ships from S&B.
 
-Not checked: a product with several versions at different costs; Piggles on screen.
+A product with several versions at different costs, 2026-10-19: one code and one price for
+the whole product sent S&B the wrong version's code ([362], fixed). After the fix the 75-5094
+intake ships from S&B at $250.00 (Oiled) and $262.00 (Dry), and Renée's Dry filter (O-000040)
+went to S&B as "their code 75-5094D · 1 × $262.00". Not checked: Piggles on screen (its form has the same
+fix, tested).
 
 ## Rating effect
 

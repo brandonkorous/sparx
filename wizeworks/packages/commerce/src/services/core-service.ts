@@ -19,6 +19,7 @@
 
 import {
   coresOutstanding,
+  unitsHandedOver,
   coresOwed,
   KeepCoreDepositsInput,
   ListCoresOwedInput,
@@ -67,7 +68,12 @@ const LINE_SELECT = {
   coresKept: true,
   // When the part was handed over: a deposit core is owed from then, never from
   // the order date (sparx persona issue 184).
-  fulfillmentItems: { select: { fulfillment: { select: { shippedAt: true, createdAt: true } } } },
+  fulfillmentItems: {
+    select: {
+      quantity: true,
+      fulfillment: { select: { shippedAt: true, createdAt: true, status: true } },
+    },
+  },
   order: {
     select: {
       id: true,
@@ -163,9 +169,11 @@ export async function openInvoiceForLine(
 /** When the customer was first given this part: the earliest fulfillment that
  *  carried it. Null while it is still on the shelf. */
 function handedOverAt(line: CoreLine): Date | null {
-  const dates = line.fulfillmentItems.map(
-    (item) => item.fulfillment.shippedAt ?? item.fulfillment.createdAt
-  );
+  // Only a delivery that went: a box sealed at the bench is not in the
+  // customer's hands yet (sparx persona issue 359).
+  const dates = line.fulfillmentItems
+    .filter((item) => unitsHandedOver([item]) > 0)
+    .map((item) => item.fulfillment.shippedAt ?? item.fulfillment.createdAt);
   if (dates.length === 0) return null;
   return new Date(Math.min(...dates.map((d) => d.getTime())));
 }
@@ -182,7 +190,10 @@ function toOwed(
 ): CoreOwed {
   // What is owed NOW: one core per part handed over (issue 184). A send-first line
   // owes its old part from the order, before anything goes.
-  const owed = coresOutstanding(line);
+  const owed = coresOutstanding({
+    ...line,
+    quantityHandedOver: unitsHandedOver(line.fulfillmentItems),
+  });
   const since = line.coreFirst ? line.order.placedAt : (handedOverAt(line) ?? line.order.placedAt);
   const core = toCents(line.coreCharge);
   const customer = line.order.customer;

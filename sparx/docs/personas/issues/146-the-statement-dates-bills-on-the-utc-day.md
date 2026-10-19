@@ -59,8 +59,10 @@ Statement, this month so far. INV-000014, raised at 04:11 UTC on Oct 4 (10:11pm 
 in Denver), reads "Oct 3, 2026"; 4459, raised at 05:14 UTC on Oct 7, reads "Oct 6,
 2026". Both printed the UTC day before. Totals unchanged: owed at the end $8,096.40.
 
-Not checked on screen: the print page, the site's statement, and Piggles. They print
-the same rows.
+The other copies, 2026-10-19, Oct 1 to Oct 19: the print page ("Print or save as PDF") and
+Renée's statement on the Gillett site both read "Oct 3, 2026 · Invoice issued · INV-000014" and
+"Oct 6, 2026 · Invoice issued · 4459". The emailed statement lists the open invoices with their
+due dates and links to the site's copy. Not checked: Piggles.
 
 ## Rating effect
 

@@ -121,9 +121,14 @@ Denver. The stored day (`rollup_finance_daily_profit`, Gillett's site) holds 150
 cents under 2026-10-01, rewritten that morning. Before the fix those six orders were
 filed under Oct 2.
 
-Not checked on screen: Selling › Reports and Invoicing's collected chart (their stored
-days rewrite on the nightly run, which has not run since), and Piggles. Found on the way:
-the chart's key was red over green bars ([224], fixed).
+Found on the way: the chart's key was red over green bars ([224], fixed).
+
+The stored days, 2026-10-19: `rollup_commerce_daily_revenue` holds O-000001 to O-000006 (placed
+the evening of Oct 1 in Denver) under 2026-10-01, and the six orders of Oct 2 under 2026-10-02.
+The collected days, built by running the collected job the way its cron calls it, put the
+$500.00 and $13.84 payments under 2026-10-06 and $2,119.60 under 2026-10-09, each its Denver
+day. "Invoicing's collected chart" no longer existed in the console; it is now "Billed and
+collected" on Owed to you ([360]). Not checked: Piggles on screen.
 
 ## Rating effect
 

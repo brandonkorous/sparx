@@ -40,6 +40,7 @@ import {
 } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishInventoryEvent } from '../events';
+import { stillShort } from './still-short';
 
 // ─── Shapes ────────────────────────────────────────────────────────────────────
 
@@ -491,7 +492,7 @@ export async function loadPackageDetail(
       scannedQuantity: number;
       ordered: number;
       packedElsewhere: number;
-      shortWhilePicking: number;
+      walkShorts: number[] | null;
     }[]
   >`
     SELECT pl.id                            AS "id",
@@ -503,7 +504,7 @@ export async function loadPackageDetail(
            COALESCE(pl.scanned_quantity, 0) AS "scannedQuantity",
            oi.quantity                      AS "ordered",
            COALESCE(other.units, 0)::int    AS "packedElsewhere",
-           COALESCE(short.units, 0)::int    AS "shortWhilePicking"
+           short.walks                      AS "walkShorts"
       FROM order_items oi
       LEFT JOIN inventory_shipment_package_lines pl
              ON pl.order_item_id = oi.id AND pl.package_id = ${packageId}::uuid
@@ -515,10 +516,10 @@ export async function loadPackageDetail(
            AND xp.status <> 'cancelled'
            AND xp.id <> ${packageId}::uuid
       ) other ON TRUE
-      -- What a picker could not find. Summed across every walk that has touched
-      -- this line, because an order can be picked more than once.
+      -- What each walk over this line could not find, newest first. An order can
+      -- be picked more than once; stillShort reads them (sparx persona issue 355).
       LEFT JOIN LATERAL (
-        SELECT SUM(pll.short_quantity) AS units
+        SELECT array_agg(pll.short_quantity::int ORDER BY pll.created_at DESC) AS walks
           FROM inventory_pick_list_lines pll
          WHERE pll.tenant_id = ${tenantId}::uuid
            AND pll.order_item_id = oi.id
@@ -535,7 +536,7 @@ export async function loadPackageDetail(
       sku: l.sku,
       name: l.name,
       remaining: l.ordered - l.packedElsewhere - l.quantity,
-      shortWhilePicking: l.shortWhilePicking,
+      shortWhilePicking: stillShort(l.walkShorts),
     }))
     .filter((l) => l.remaining > 0);
 

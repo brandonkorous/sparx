@@ -13,6 +13,7 @@ import {
   FieldStatus,
   Input,
   Select,
+  Text,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { faTruck } from '@fortawesome/pro-solid-svg-icons';
@@ -25,6 +26,7 @@ import {
   type ProductDropship,
 } from './products-data';
 import { useShipFromSupplier } from './product-dropship-link-data';
+import { startingRows, typedCents, versionsToSend, type VersionRow } from './dropship-versions';
 
 const MONEY = /^\d+(\.\d{1,2})?$/;
 
@@ -59,15 +61,25 @@ function useShipForm({ data, suppliers, link }: ShipFormProps) {
     centsToTyped(link ? link.source.costPriceCents : (first?.costCents ?? null))
   );
   const [touched, setTouched] = useState(false);
+  // More than one version: a code and a price for each (sparx persona issue 362).
+  const many = data.variants.length > 1;
+  const [rows, setRows] = useState(() =>
+    startingRows(data.variants, link ? link.source.costPriceCents : null)
+  );
+  const perVersion = many ? versionsToSend(rows) : null;
   const costCents = toCents(cost);
   const problem =
     supplierId === ''
       ? 'Choose who ships it.'
-      : code.trim() === ''
-        ? 'Give their code for it.'
-        : costCents === null
-          ? 'Say what they charge you, like 1100.00.'
-          : null;
+      : perVersion
+        ? 'problem' in perVersion
+          ? perVersion.problem
+          : null
+        : code.trim() === ''
+          ? 'Give their code for it.'
+          : costCents === null
+            ? 'Say what they charge you, like 1100.00.'
+            : null;
   const onePrice = new Set(data.variants.map((v) => v.priceCents)).size === 1;
   const margin = costCents !== null && first && onePrice ? first.priceCents - costCents : null;
   return {
@@ -83,6 +95,10 @@ function useShipForm({ data, suppliers, link }: ShipFormProps) {
     costCents,
     problem,
     margin,
+    many,
+    rows,
+    setRows,
+    perVersion,
   };
 }
 
@@ -137,6 +153,76 @@ function CodeAndCost({ form }: { form: ShipForm }) {
   );
 }
 
+/** A code and a price for each version, with what each sale leaves the
+ *  business (sparx persona issue 362). */
+function VersionFields({
+  form,
+  variants,
+}: {
+  form: ShipForm;
+  variants: ProductDropship['variants'];
+}) {
+  const set = (variantId: string, patch: Partial<VersionRow>) => {
+    form.setRows(
+      form.rows.map((row) => (row.variantId === variantId ? { ...row, ...patch } : row))
+    );
+  };
+  return (
+    <div className="flex flex-col gap-3">
+      <Text className="text-sm">
+        It comes in {form.rows.length} versions. Give their code and price for each.
+      </Text>
+      {form.rows.map((row) => {
+        const variant = variants.find((v) => v.id === row.variantId);
+        const cents = typedCents(row.cost);
+        const margin = variant && cents !== null ? variant.priceCents - cents : null;
+        return (
+          <div key={row.variantId} className="grid gap-3 @md:grid-cols-2">
+            <Field>
+              <FieldLabel>Their code for {row.label}</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color={form.touched && row.code.trim() === '' ? 'error' : 'module'}
+                    value={row.code}
+                    spellCheck={false}
+                    onChange={(event) => {
+                      set(row.variantId, { code: event.target.value });
+                    }}
+                  />
+                }
+              />
+            </Field>
+            <Field>
+              <FieldLabel>What they charge you for {row.label}</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color={form.touched && cents === null ? 'error' : 'module'}
+                    value={row.cost}
+                    inputMode="decimal"
+                    placeholder="0.00"
+                    onChange={(event) => {
+                      set(row.variantId, { cost: event.target.value });
+                    }}
+                  />
+                }
+              />
+              <FieldDescription>
+                {margin === null || !variant
+                  ? 'For one, before shipping.'
+                  : margin > 0
+                    ? `You sell it for ${formatCents(variant.priceCents, variant.currency)}, so you make ${formatCents(margin, variant.currency)} on each.`
+                    : `You sell it for ${formatCents(variant.priceCents, variant.currency)}, so you would lose money on each.`}
+              </FieldDescription>
+            </Field>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function SupplierPicker({ form, props }: { form: ShipForm; props: ShipFormProps }) {
   if (props.link) return null;
   return (
@@ -164,12 +250,21 @@ function useSubmit(form: ShipForm, props: ShipFormProps) {
   const name = suppliers.find((s) => s.id === form.supplierId)?.name ?? 'Your supplier';
   const submit = () => {
     form.setTouched(true);
-    if (form.problem || form.costCents === null) return;
-    const input = {
-      supplierId: form.supplierId,
-      supplierSku: form.code,
-      costCents: form.costCents,
-    };
+    if (form.problem) return;
+    const versions =
+      form.perVersion && 'versions' in form.perVersion ? form.perVersion.versions : null;
+    const head = versions?.[0];
+    const input = head
+      ? {
+          supplierId: form.supplierId,
+          supplierSku: head.supplierSku,
+          costCents: head.costCents,
+          versions,
+        }
+      : form.costCents === null
+        ? null
+        : { supplierId: form.supplierId, supplierSku: form.code, costCents: form.costCents };
+    if (!input) return;
     ship.mutate(input, {
       onSuccess: () => {
         toast.add({
@@ -199,7 +294,11 @@ export function ShipFromSupplierForm(props: ShipFormProps) {
   return (
     <div className="flex flex-col gap-3">
       <SupplierPicker form={form} props={props} />
-      <CodeAndCost form={form} />
+      {form.many ? (
+        <VersionFields form={form} variants={props.data.variants} />
+      ) : (
+        <CodeAndCost form={form} />
+      )}
       {form.touched && form.problem ? (
         <FieldStatus status="error">{form.problem}</FieldStatus>
       ) : null}

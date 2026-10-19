@@ -45,6 +45,7 @@ import { useReceivables, type Receivable } from './receivables-data';
 import { bucketTone, lateness } from './receivables-words';
 import { formatMoney, formatMoneyCompact, formatDay } from './format';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { CollectedCard } from './collected-card';
 
 // The aging facets — same bucket keys the summary bars use, so clicking a chip
 // narrows the table to exactly that band.
@@ -260,12 +261,13 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
             Loading…
           </p>
         ) : allPaidUp ? (
-          <div className="flex h-full items-center justify-center p-8">
+          <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-8">
             <EmptyState
               icon={<CheckCircle2 className="size-6" aria-hidden />}
               title="You're all paid up"
               description="Every invoice you've sent has been paid. When something is invoiced but still owed, it'll show here: sorted by how late it is."
             />
+            <CollectedCard />
           </div>
         ) : (
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
@@ -366,6 +368,10 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
               />
               {rows.length > 0 ? <RowOpenHint what="an invoice to open it" /> : null}
             </div>
+
+            {/* Is the money coming in as fast as it is billed (sparx persona
+                issue 360)? After the records, which are the work. */}
+            <CollectedCard />
           </div>
         )}
       </div>

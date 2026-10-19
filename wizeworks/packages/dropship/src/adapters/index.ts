@@ -8,6 +8,7 @@ import { SpocketAdapter } from './spocket.js';
 import { PrintifyAdapter } from './printify.js';
 import { PrintfulAdapter } from './printful.js';
 import { DirectAdapter } from './direct.js';
+import type { FeedDeps } from '../feed-fetch.js';
 
 export { CsvAdapter } from './csv.js';
 export type { CsvCredentials, CsvColumnMapping } from './csv.js';
@@ -29,10 +30,16 @@ export type { DirectCredentials } from './direct.js';
 
 /** Construct the right adapter for a given supplier type.
  *  Throws if the type has no registered adapter. */
-export function createAdapter(type: string, credentials: Credentials): SupplierAdapter {
+/** `deps.resolveHost` lets a CSV feed's address be checked before it is fetched
+ *  (sparx persona issue 363); without it a feed named by host is refused. */
+export function createAdapter(
+  type: string,
+  credentials: Credentials,
+  deps: FeedDeps = {}
+): SupplierAdapter {
   switch (type) {
     case 'csv':
-      return new CsvAdapter(credentials);
+      return new CsvAdapter(credentials, deps);
     case 'dsers':
       return new DsersAdapter(credentials);
     case 'spocket':

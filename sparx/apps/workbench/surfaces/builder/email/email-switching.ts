@@ -19,6 +19,16 @@ export function withCreatedEmail<T extends Row>(list: readonly T[] | undefined, 
   return [...(list ?? []).filter((email) => email.id !== created.id), created];
 }
 
+/** The email a link names. Every link spells it `emailId`: the search entry
+ *  (`/builder/email-designs?emailId=`), the routes, the Piggles designer. This
+ *  designer read only `id`, so Doty's search result "Fleet winter readiness,
+ *  November 2026 · Email design" opened the Welcome email, the first in the list
+ *  (sparx persona issue 354). `id` is still read, for a pane saved before. */
+export function linkedEmailId(params: Readonly<Record<string, unknown>>): string | undefined {
+  const named = params.emailId ?? params.id;
+  return typeof named === 'string' && named !== '' ? named : undefined;
+}
+
 /** The email to show: the active one while it is in the list, else the one the
  *  link names, else the first. */
 export function emailToShow(

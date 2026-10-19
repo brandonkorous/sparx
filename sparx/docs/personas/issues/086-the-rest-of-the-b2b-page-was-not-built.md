@@ -6,7 +6,7 @@
 **Surface:** sparx.works /b2b; site › product page, cart, account › Wholesale account (quotes, orders, fleet, service); workbench › Invoicing › quote editor; workbench › Wholesale › account; workbench › Sell › product trade pricing; workbench › Scheduling › booking; workbench › search box
 **Filed:** 2026-10-02
 **Fixed:** 2026-10-02 to 2026-10-03
-**Confirmed by:** sparx as Doty, Renée and Marcus, 2026-10-02 to 2026-10-18 (20 not checked: see below)
+**Confirmed by:** sparx as Doty, Renée and Marcus, 2026-10-02 to 2026-10-19
 **Blocked on:** —
 
 ## What happened
@@ -515,8 +515,11 @@ In progress, on screen, 2026-10-02 evening, as Doty, Renée and Marcus:
     smooth scrolling.
   - **26:** New service: an empty name, "What is included, what to bring, anything a
     customer should know." and nothing from a salon.
-  - **20:** not reachable on screen: the two cores owed today are Brynn's, a retail
-    buyer with no company.
+  - **20:** not reachable on screen then: the two cores owed were Brynn's, a retail
+    buyer with no company. Seen 2026-10-19, once trade parts had gone out: Cores owed
+    read "O-000008 · Renée Castañeda · Wasatch Front Utility Contractors, LLC" and
+    "O-000018 · Dana Whitcomb-Nguyen · Salt Lake County Public Works Department, Fleet
+    Management Division".
   - **37:** signed in on the site as Renée, the shop's list for "90343" reads "Your
     price: $20.23" beside $22.99 struck through: Fleet's 12% off $22.99 is $20.2312.
   - **17, 19:** shown by 33 above (Marcus found by name; a person already on the

@@ -10,8 +10,9 @@
 import type { Logger } from 'pino';
 import { withTenant } from '@wizeworks/db';
 import { createPublisher, publishEvent } from '@wizeworks/events';
-import { createAdapter } from '@wizeworks/dropship';
+import { createAdapter, handVersionsOf, supplierLineFor } from '@wizeworks/dropship';
 import type { Order, OrderLineItem, ShippingAddress } from '@wizeworks/dropship';
+import { feedDeps } from '../feed-host.js';
 import { supplierOrderEmail, type SupplierOrderLine } from './supplier-order-email.js';
 import { shipToOf } from './ship-to.js';
 
@@ -55,6 +56,7 @@ export async function handleOrderRoute(
       unitPriceCents: number;
       name: string;
       productId: string | null;
+      variantId: string | null;
       costCents: number | null;
     }[]
   >();
@@ -69,6 +71,7 @@ export async function handleOrderRoute(
       unitPriceCents: item.variant?.costCents ?? Number(item.unitPrice) * 100,
       name: item.name,
       productId: item.productId,
+      variantId: item.variant?.id ?? null,
       costCents: item.variant?.costCents ?? null,
     });
     bySupplier.set(supplierId, bucket);
@@ -136,7 +139,11 @@ export async function handleOrderRoute(
     };
 
     try {
-      const adapter = createAdapter(supplier.type, supplier.credentials as Record<string, string>);
+      const adapter = createAdapter(
+        supplier.type,
+        supplier.credentials as Record<string, string>,
+        feedDeps
+      );
 
       if (adapter.orderRecipient) {
         await emailOrderToSupplier({
@@ -256,6 +263,7 @@ async function emailOrderToSupplier(args: {
     quantity: number;
     name: string;
     productId: string | null;
+    variantId: string | null;
     costCents: number | null;
   }[];
   publisher: ReturnType<typeof createPublisher>;
@@ -280,7 +288,7 @@ async function emailOrderToSupplier(args: {
         select: {
           productId: true,
           supplierSku: true,
-          dropshipProduct: { select: { costPriceCents: true } },
+          dropshipProduct: { select: { costPriceCents: true, variants: true } },
         },
       }),
       tx.tenantBusiness.findUnique({ where: { tenantId }, select: { businessName: true } }),
@@ -291,11 +299,23 @@ async function emailOrderToSupplier(args: {
 
   const lines: SupplierOrderLine[] = args.lines.map((line) => {
     const link = line.productId ? linkOf.get(line.productId) : undefined;
+    // The version that was bought, at that version's code and price (sparx
+    // persona issue 362), else the product's one code and price.
+    const theirs = supplierLineFor(
+      line,
+      link
+        ? {
+            supplierSku: link.supplierSku,
+            costPriceCents: link.dropshipProduct.costPriceCents,
+            versions: handVersionsOf(link.dropshipProduct.variants),
+          }
+        : undefined
+    );
     return {
       title: line.name,
-      supplierSku: link?.supplierSku ?? line.sku,
+      supplierSku: theirs.supplierSku,
       quantity: line.quantity,
-      unitCostCents: link?.dropshipProduct.costPriceCents ?? line.costCents,
+      unitCostCents: theirs.unitCostCents,
     };
   });
 

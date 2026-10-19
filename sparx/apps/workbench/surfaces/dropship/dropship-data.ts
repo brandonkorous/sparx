@@ -189,7 +189,10 @@ export function supplierState(
         detail:
           type === 'direct'
             ? 'Working normally. When someone buys a product they ship, we email them the order from your business.'
-            : 'Working normally. Its catalog can be synced and orders can be routed to it.',
+            : type === 'csv'
+              ? // Orders do not go to a feed: they wait for the owner (sparx persona issue 364).
+                'Working normally. Its products are read from its feed. Orders for them wait for you to place them yourself.'
+              : 'Working normally. Its catalog can be synced and orders can be routed to it.',
       };
     case 'connecting':
       return {

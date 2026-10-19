@@ -271,7 +271,8 @@ const invoicingReceipt = (): BuilderNode =>
       'We’ve received your payment in full for invoice {{invoice.number}}. Here’s a summary for your records:'
     ),
     lineItems('invoice.items'),
-    para('Total paid: {{invoice.total}}'),
+    para('Total paid: {{invoice.paid}}'),
+    conditional('invoice.credited', [para('Core deposits taken off: {{invoice.credited}}')]),
   ]);
 
 const chatSatisfaction = (): BuilderNode =>
@@ -347,11 +348,16 @@ const orderRefunded = (): BuilderNode =>
   body([
     heading('Your refund is on the way'),
     para(
-      'Hi {{customer.firstName ?? "there"}}: we’ve processed a refund of {{order.refundTotal}} for order {{order.number}}.'
+      'Hi {{customer.firstName ?? "there"}}: we’ve processed a refund of {{refund.amount}} for order {{order.number}}.'
     ),
-    para(
-      'Refunds are returned to your original payment method and usually take 5–10 business days to appear.'
-    ),
+    conditional('refund.toACard', [
+      para(
+        'Refunds are returned to your original payment method and usually take 5–10 business days to appear.'
+      ),
+    ]),
+    conditional('refund.byHand', [
+      para('{{site.name}} gives this back to you the same way you paid them.'),
+    ]),
     button('View order details', '{{order.statusUrl}}'),
   ]);
 
@@ -882,8 +888,8 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     type: 'transactional',
     category: 'order',
     subject: 'Your refund for {{order.number}} is on the way',
-    preheader: '{{order.refundTotal}} is being returned to you.',
-    sources: ['customer', 'order', 'tenant'],
+    preheader: '{{refund.amount}} is being returned to you.',
+    sources: ['customer', 'order', 'refund', 'tenant'],
     refs: ['customerId', 'orderId'],
     tree: orderRefunded(),
   },

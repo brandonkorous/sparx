@@ -8,7 +8,7 @@
 // their owning module wires the engine.
 
 import type { ResolvedFields, TenantCtx } from '../engine-types';
-import { refundSource } from './refund-source';
+import { refundAmount, refundGoesTo, refundSource } from './refund-source';
 import { PROPERTY_FIELD, registerResolver, registerScanner, type ScannedRow } from './registry';
 
 const MS_PER_DAY = 86_400_000;
@@ -434,9 +434,19 @@ export function installBuiltinResolvers(): void {
     const refundId = str(p.refundId);
     fields['refund.id'] = refundId;
     const row = refundId
-      ? await ctx.tx.orderRefund.findUnique({ where: { id: refundId }, select: { metadata: true } })
+      ? await ctx.tx.orderRefund.findUnique({
+          where: { id: refundId },
+          select: { metadata: true, amount: true, currency: true },
+        })
       : null;
     fields['refund.source'] = refundSource(row?.metadata);
+    // This refund's money, not the order's running `refundTotal` (issue 350).
+    fields['refund.amount'] = refundAmount(row?.amount, row?.currency);
+    // The 'yes'-or-empty pair the email picks its closing line on: exactly one is
+    // filled, so a cash refund is never told it takes days at the bank (issue 352).
+    const goesTo = refundGoesTo(row?.metadata);
+    fields['refund.toACard'] = goesTo === 'card' ? 'yes' : '';
+    fields['refund.byHand'] = goesTo === 'hand' ? 'yes' : '';
     return fields;
   });
   for (const ev of FULFILLMENT_EVENTS) {

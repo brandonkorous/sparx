@@ -190,6 +190,9 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     // appended, computed from the code at each commit that shipped them.
     // e67dc14ad (2026-07-26) through 5e402a0a8 (2026-08-24), until 851aa54d6 (2026-09-16):
     'b757b2d42f047fac502317749e8598b9c5f4702477b012d80d94a4208dd4e071',
+    // 851aa54d6 (2026-09-16) until 2026-10-19, when "Total paid" stopped counting a
+    // returned core's credit (sparx persona issue 361):
+    'cae51a3876bcdb5e9e0d8ddcde2c07c74c440326c516e2a368b6e4a536fa5148',
   ]),
   'chat-satisfaction': new Set([
     '44ef6343f808e6d01e02f6cd1bc4a570ac6c169afa4fa84a0868ab039fe26481',
@@ -245,6 +248,9 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     'f6486c6a8f3934f29692f623682713d89f86027511b2799be52f8143e3533827',
     // 62b77fb02 (2026-08-11) through 5e402a0a8 (2026-08-24), until 851aa54d6 (2026-09-16):
     'db101f76cda9bcd87fb2f32549647c5888bb981d9ef2b458659ba2bae614bed8',
+    // 851aa54d6 (2026-09-16) until 2026-10-19, when the item table became the
+    // parcel's own lines (sparx persona issue 358):
+    '237b84a487b93c8287f20439d8afa769520be8890a1bb48d521ee17e5c7cadf8',
   ]),
   'order-delivered': new Set([
     '92833d0d5e436a08bf2fa8aea7036704d1e7892b8936e34a63865e1085a0ba23',
@@ -290,6 +296,12 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     '7b6cf0daadd0c9f274ac0f5c69d6b3d290ebfd68b268035db3a745aab2934130',
     // 5151ec196 (2026-08-07) through 5e402a0a8 (2026-08-24), until 851aa54d6 (2026-09-16):
     '21f6c12e7f7d6867979323b23742bb91c5269648ed049021c2f37fb68a88858a',
+    // 851aa54d6 (2026-09-16) until 2026-10-19, when the refund amount became the
+    // refund's own (sparx persona issue 350):
+    '4a862c2f5f6d745a59ab3d572c8b8f0b99a946e18fc217a782c77cdd0c7becce',
+    // 2026-10-19, the refund's own amount (issue 350), before its closing line
+    // said card or by hand (issue 352). Never released; on dev rows refreshed to it.
+    '5ff6baf2c61e04b03ff80ea5eb8689d74dd9db9089e518943d1d0b9e17838d0e',
   ]),
   'payment-failed': new Set([
     '58d0a758e8855642c53cf4816d0334d347d13364b73793297b8e1911803d83f9',

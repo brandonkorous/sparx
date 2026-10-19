@@ -13,6 +13,7 @@ import { amountDue, customerName, formatMoney, paidIn, type Order } from './data
 import { deliveryPlan } from './order-types';
 import { refundNote } from './refund-note';
 import { OrderLineCore } from './order-cores';
+import { sentSoFarWords } from './packed-box';
 
 type OrderItem = NonNullable<Order['items']>[number];
 
@@ -30,11 +31,7 @@ function LineRow({ item, currency, buyer }: { item: OrderItem; currency: string;
           {item.quantity} × {formatMoney(item.unitPrice, currency)}
           {item.discountAmount > 0 ? ` · ${formatMoney(item.discountAmount, currency)} off` : ''}
         </span>
-        {partlySent ? (
-          <span className="text-sm">
-            {item.quantityFulfilled} of {item.quantity} sent so far
-          </span>
-        ) : null}
+        {partlySent ? <span className="text-sm">{sentSoFarWords(item)}</span> : null}
         {item.quantityRefunded > 0 ? (
           <span className="text-sm">{item.quantityRefunded} refunded</span>
         ) : null}

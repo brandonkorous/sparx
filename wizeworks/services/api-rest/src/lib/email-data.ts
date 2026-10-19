@@ -30,6 +30,8 @@ import {
 } from '@wizeworks/commerce';
 import { carrierLabel, typedCarrierOf } from '@wizeworks/commerce-schemas';
 import { dueOnCollectionCents } from './collection-balance.js';
+import { firstText, money, qty } from './email-format.js';
+import { invoiceItemRows, invoiceMoneyIn, parcelItemRows } from './email-item-rows.js';
 import { billingDocumentMail, businessTimeZone, daysPastDue } from '@wizeworks/crm';
 import { EMAIL_FRAME_TOKENS } from '@wizeworks/email/silica';
 import { ALL_MODULES, listEnabledModules, type ModuleSlug } from '@wizeworks/modules';
@@ -263,14 +265,6 @@ export async function resolveEmailFooterLinks(
   return links;
 }
 
-/** Decimal-dollar money (orders / quotes / invoices) → `$1,234.50`. */
-function money(amount: unknown): string {
-  if (amount == null) return '';
-  const n = Number(amount);
-  if (!Number.isFinite(n)) return '';
-  return `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-
 /** Money that HIDES a zero. A `$0.00` shipping / tax / discount line is noise on a
  *  receipt, and an empty string makes the cost-summary row self-drop (same
  *  `hideWhenEmpty` mechanism as any optional row) — so free shipping and a
@@ -291,20 +285,6 @@ function moneyPositive(amount: unknown): string {
 function moneyCents(cents: number | null | undefined): string {
   if (cents == null) return '';
   return money(cents / 100);
-}
-
-/** Decimal | Int quantity → a clean string (drops a trailing `.000`). */
-function qty(value: unknown): string {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return '';
-  return Number.isInteger(n) ? String(n) : String(n);
-}
-
-/** First non-empty string of the candidates (`''` if none) — a line-item's `name`
- *  falls back to its `description`. */
-function firstText(...vals: (string | null | undefined)[]): string {
-  for (const v of vals) if (v) return v;
-  return '';
 }
 
 function dateLabel(d: Date | null | undefined): string {
@@ -709,6 +689,21 @@ async function resolveShipping(
         trackingUrl: true,
         shippedAt: true,
         metadata: true,
+        items: {
+          select: {
+            quantity: true,
+            orderItem: {
+              select: {
+                name: true,
+                description: true,
+                quantity: true,
+                unitPrice: true,
+                lineSubtotal: true,
+                coreCharge: true,
+              },
+            },
+          },
+        },
       },
     })
   );
@@ -725,6 +720,10 @@ async function resolveShipping(
     // the CTA always resolves to something useful (docs/93 §3).
     trackingUrl: f.trackingUrl ?? site.link('/account/orders'),
     shippedAt: dateLabel(f.shippedAt),
+    // What is in THIS parcel, at this parcel's quantity (sparx persona issue 358):
+    // the line's money is its share of the line, so a part shipment never prints
+    // the whole line's total.
+    items: f.items.flatMap((row) => parcelItemRows(row.quantity, row.orderItem)),
   };
 }
 
@@ -1127,8 +1126,15 @@ async function resolveInvoice(
           companyId: true,
           lines: {
             orderBy: { sortOrder: 'asc' },
-            select: { description: true, quantity: true, unitPrice: true, lineSubtotal: true },
+            select: {
+              description: true,
+              quantity: true,
+              unitPrice: true,
+              lineSubtotal: true,
+              coreCharge: true,
+            },
           },
+          payments: { select: { kind: true, amount: true } },
         },
       }),
       businessTimeZone(tx, ctx.tenantId),
@@ -1146,10 +1152,16 @@ async function resolveInvoice(
     id: ref.billingDocumentId,
     companyId: doc.companyId,
   });
+  const moneyIn = invoiceMoneyIn(doc.payments);
   return {
     number: doc.number ?? '',
     total: money(doc.total),
     balance: money(doc.balance),
+    // What came in, apart from what a returned core took off: "Total paid
+    // $1,320.00" counted Dana's $220.00 core credit as money (sparx persona
+    // issue 361). `credited` is empty when nothing was, so its row drops.
+    paid: money(moneyIn.paidCents / 100),
+    credited: moneyPositive(moneyIn.creditedCents / 100),
     dueDate: dateLabel(doc.dueAt),
     daysUntilDue,
     overdueDays: String(overdueDays),
@@ -1161,12 +1173,7 @@ async function resolveInvoice(
     payUrl: doc.companyId
       ? site.link(`/account/b2b/${doc.companyId}/invoices`)
       : site.link('/account'),
-    items: doc.lines.map((l) => ({
-      description: l.description,
-      quantity: qty(l.quantity),
-      unitPrice: money(l.unitPrice),
-      lineTotal: money(l.lineSubtotal), // before tax: see the order items above
-    })),
+    items: doc.lines.flatMap((l) => invoiceItemRows(l)),
   };
 }
 

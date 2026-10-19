@@ -368,7 +368,14 @@ const invoicingReceipt = (): SectionNode[] => [
   detailPanel(
     [
       { label: 'Invoice', value: '{{invoice.number}}' },
-      { label: 'Total paid', value: '{{invoice.total}}', emphasize: true },
+      // The money that came in. A returned core's credit is named apart and
+      // drops when there is none (sparx persona issue 361).
+      { label: 'Total paid', value: '{{invoice.paid}}', emphasize: true },
+      {
+        label: 'Core deposits taken off',
+        value: '{{invoice.credited}}',
+        ref: 'invoice.credited',
+      },
     ],
     { status: { label: '✓ Paid', role: 'success' } }
   ),
@@ -467,7 +474,8 @@ const shippingConfirmation = (): SectionNode[] => [
   when('shipping.trackingNumber', [
     button('Track your package', '{{shipping.trackingUrl}}', 'center'),
   ]),
-  ...itemsTable('order.items', { thumbnails: true }),
+  // This parcel's lines, not the order's (sparx persona issue 358).
+  ...itemsTable('shipping.items', { thumbnails: true }),
 ];
 
 // ── Commerce: order lifecycle (docs/implementation/transactional-email §4 P1) ─
@@ -560,17 +568,23 @@ const orderRefunded = (): SectionNode[] => [
   detailPanel(
     [
       { label: 'Order', value: '{{order.number}}' },
-      // The amount coming back is the one fact the recipient opened the email for.
-      { label: 'Refund amount', value: '{{order.refundTotal}}', emphasize: true },
+      // The amount coming back is the one fact the recipient opened the email for:
+      // THIS refund's, not the order's running total (sparx persona issue 350).
+      { label: 'Refund amount', value: '{{refund.amount}}', emphasize: true },
       { label: 'Order total', value: '{{order.total}}' },
     ],
     { status: { label: '✓ Refunded', role: 'success' } }
   ),
-  copyBlock([
-    button('View order details', '{{order.statusUrl}}', 'center'),
+  copyBlock([button('View order details', '{{order.statusUrl}}', 'center')]),
+  // Exactly one of the pair is filled: a card refund takes days at the bank, and
+  // money taken by hand never went near one (sparx persona issue 352).
+  copyWhen('refund.toACard', [
     para(
       'Refunds are returned to your original payment method and usually take 5–10 business days to appear.'
     ),
+  ]),
+  copyWhen('refund.byHand', [
+    para('{{site.name}} gives this back to you the same way you paid them.'),
   ]),
 ];
 

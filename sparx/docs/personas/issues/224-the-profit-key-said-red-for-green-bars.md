@@ -55,9 +55,9 @@ Finance tests 102 pass in each; lint clean.
 ## Confirmed by
 
 P01 on screen, 2026-10-11, as Doty: Finance › Profit, This month. The key reads
-"■ What you kept" in green and "■ Sales" in blue, over green bars. Not checked: the
-light theme (the theme button did not change it on one click; the color is the theme's
-own success token in both), and Piggles on screen.
+"■ What you kept" in green and "■ Sales" in blue, over green bars. In the light theme, 2026-10-19:
+the key reads "■ What you kept" in green and "■ Sales" in blue, over green bars, the same as
+dark. Not checked: Piggles on screen.
 
 ## Rating effect
 

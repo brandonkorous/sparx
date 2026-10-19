@@ -117,9 +117,13 @@ words too, so the guard's exception list is empty.
 - sparx, Doty: a board address that does not exist says "That dashboard is no longer
   here" with the shared words, a warning glyph and no "Try again"; "Show my dashboards"
   is offered.
-- The other causes (5xx, 403) could not be produced on screen: the console's data layer
-  keeps its own copy of `fetch`, so a page-side fake does not reach it, and stopping the
-  API is not this run's to do. They are proven by the tests above.
+- The other causes, on screen 2026-10-19, produced in the browser's network layer (which a
+  page-side fake could not reach): Dashboards answered 500 read "Could not load your
+  dashboards · Something went wrong at our end, not yours. Nothing you have recorded has
+  changed. Trying again may work, and if it keeps failing the fault is ours to fix." with
+  "Try again"; answered 403, "Your account is not allowed to open this. Nothing has been
+  changed. The business owner can change what you can open under Team.", with no "Try
+  again".
 
 ## Rating effect
 

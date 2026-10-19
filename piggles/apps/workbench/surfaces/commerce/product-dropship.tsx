@@ -161,7 +161,7 @@ function SupplierCard({
       description={
         link.supplier.catalogSync
           ? `They hold the stock and post it to your customer. Their code for this product is ${link.supplierSku}.`
-          : `They ship it to your customer when we email them the order${link.supplier.ordersTo ? `, at ${link.supplier.ordersTo}` : ''}. Their code for this product is ${link.supplierSku}.`
+          : `They ship it to your customer when we email them the order${link.supplier.ordersTo ? `, at ${link.supplier.ordersTo}` : ''}. ${theirCodes(link.supplierSku, data.variants)}`
       }
       action={
         <Badge color={state.tone} variant="soft">
@@ -181,7 +181,7 @@ function SupplierCard({
         <div className="border-base-300 flex flex-wrap items-baseline justify-between gap-2 border-b pb-3">
           <Text className="text-sm">They charge you</Text>
           <Text as="span" className="text-lg font-semibold">
-            {formatCents(link.source.costPriceCents)}
+            {chargeWords(link.source.costPriceCents, data.variants)}
           </Text>
         </div>
         {link.source.msrpCents !== null ? (
@@ -294,6 +294,32 @@ function SupplierCard({
       )}
     </FormSection>
   );
+}
+
+/** What they charge: one price, or the range when each version has its own
+ *  (sparx persona issue 362). */
+function chargeWords(
+  productCents: number,
+  variants: readonly { costCents: number | null; supplierSku?: string | null }[]
+): string {
+  const own = variants
+    .filter((v) => v.supplierSku && v.costCents !== null)
+    .map((v) => v.costCents ?? 0);
+  if (own.length === 0) return formatCents(productCents);
+  const low = Math.min(...own);
+  const high = Math.max(...own);
+  return low === high ? formatCents(low) : `${formatCents(low)} to ${formatCents(high)}`;
+}
+
+/** Their code, or each version's when the owner gave one per version (sparx
+ *  persona issue 362): one code for two versions sent the wrong part. */
+function theirCodes(
+  productCode: string,
+  variants: readonly { sku: string; title: string | null; supplierSku?: string | null }[]
+): string {
+  const own = variants.filter((v) => v.supplierSku);
+  if (own.length === 0) return `Their code for this product is ${productCode}.`;
+  return `Their codes: ${own.map((v) => `${v.supplierSku ?? ''} for ${v.title ?? v.sku}`).join(', ')}.`;
 }
 
 export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {

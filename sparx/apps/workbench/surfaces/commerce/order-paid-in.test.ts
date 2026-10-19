@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
 
-import { amountDue, paidIn, type Order } from './data';
+import { amountDue, leftToRefund, paidIn, type Order } from './data';
 
 const o33 = {
   status: 'delivered',
@@ -43,5 +43,31 @@ describe('the order money block', () => {
     );
     expect(pane).toContain('amount={paidIn(order)}');
     expect(pane).not.toContain('label="Paid so far" amount={order.amountPaid}');
+  });
+});
+
+// Sparx persona issue 349. Renee paid $108.44 for O-000036 and got $93.44 back
+// on a return. The order keeps $15.00 as paid, already net of that refund, and
+// the order page took the $93.44 off a second time: no "Refund" button for the
+// $15.00 still held, and O-000001 would have offered $450.00 of the $600.00.
+describe('leftToRefund', () => {
+  it('is what is still held after a return', () => {
+    expect(leftToRefund({ amountPaid: 15, refundTotal: 93.44 })).toBe(15);
+  });
+
+  it('is all of it when nothing was given back', () => {
+    expect(leftToRefund({ amountPaid: 273.44, refundTotal: 0 })).toBe(273.44);
+  });
+
+  it('is nothing on an order refunded in full', () => {
+    expect(leftToRefund({ amountPaid: 0, refundTotal: 640.96 })).toBe(0);
+  });
+
+  it('is what the order page offers', () => {
+    const pane = readFileSync(
+      fileURLToPath(new URL('./order-detail.tsx', import.meta.url)),
+      'utf8'
+    );
+    expect(pane).toContain('const refundableAmount = leftToRefund(order);');
   });
 });

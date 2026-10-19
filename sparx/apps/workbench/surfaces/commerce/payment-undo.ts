@@ -37,7 +37,7 @@
 export interface TakeOffFacts {
   /** The payment's own state, as the API spells it. */
   readonly status: string;
-  /** `paidByHand(payment.processor)` — nobody charged it, so nothing reverses it. */
+  /** `paidByHand(payment)` — nobody charged it, so nothing reverses it. */
   readonly byHand: boolean;
 }
 

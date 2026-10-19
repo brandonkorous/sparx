@@ -58,8 +58,9 @@ P01, 2026-10-18. The seed sync the release runs (`/internal/cron/reconcile-seeds
 on the event worker) gave Gillett's copy the new condition. Renée Castañeda's O-000036 ($108.44
 by card) was shipped, returned and refunded $93.44 by Doty; her outbox then held "Your return
 for O-000036 is approved", "We’ve received your return" and one refund email, "Your refund for
-O-000036 is complete". Not checked on screen: a refund made on the order page still sends "on
-the way" (the second seed test covers it).
+O-000036 is complete". On 2026-10-19 the other half: Doty refunded O-000036's last $15.00 on
+the order page and Renée got one email, "Your refund for O-000036 is on the way". Its amount
+was wrong, [350].
 
 ## Rating effect
 

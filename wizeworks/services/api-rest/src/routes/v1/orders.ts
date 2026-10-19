@@ -54,6 +54,7 @@ import { withTenant } from '@wizeworks/db';
 import { requireOrderAccess, toOrderContext } from '../../lib/order-context.js';
 import { sendTenantEmailByKey } from '../../lib/tenant-email.js';
 import { refundOrderThroughGateway } from '../../lib/order-refund.js';
+import { withByGateway } from '../../lib/payment-rows.js';
 import { reachableSiteIds } from '../../lib/property.js';
 import {
   defaultOwningSite,
@@ -249,7 +250,9 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     const { id } = PathId.parse(request.params);
     await orderService.get(toOrderContext(request), id);
     const rows = await orderPaymentsService.listForOrder(toOrderContext(request), id);
-    return ok(rows);
+    // Each row says whether a gateway took it, so the consoles word a refund the
+    // way the server will carry it out (sparx persona issue 353).
+    return ok(withByGateway(rows));
   });
 
   app.post('/v1/orders/:id/payments', async (request, reply) => {

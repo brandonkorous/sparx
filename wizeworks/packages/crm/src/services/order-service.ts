@@ -25,6 +25,7 @@ import {
   OWING_PAYMENT_STATUSES,
   UpdateOrderInput,
 } from '@wizeworks/crm-schemas';
+import { unitsHandedOver } from '@wizeworks/commerce-schemas';
 import { afterCommit, nameSearchClauses, withTenant } from '@wizeworks/db';
 import type { Order, OrderItem, Prisma, TxClient } from '@wizeworks/db';
 
@@ -142,7 +143,10 @@ async function oneWithAccount<T extends { customer: PlainOrderCustomer | null }>
 }
 
 export interface OrderWithItems extends Order {
-  items: OrderItem[];
+  /** `quantityHandedOver` is set by `get`: the units in deliveries that have
+   *  gone, where `quantityFulfilled` also counts a box still on the pack bench
+   *  (sparx persona issue 359). */
+  items: (OrderItem & { quantityHandedOver?: number })[];
   customer: OrderCustomerSummary;
   /** Of `refundTotal`, how much went back as returned core deposits. Set by
    *  `get`; a write path hands its order back without it. */
@@ -299,11 +303,27 @@ export async function get(ctx: ServiceContext, orderId: string): Promise<OrderWi
   // not resolve the buyer's name on their own order at all. Joining it makes the
   // order detail self-sufficient across all three order lenses.
   const order = await withTenant(ctx, async (tx) => {
-    const found = await tx.order.findUnique({
+    const row = await tx.order.findUnique({
       where: { id: orderId },
-      include: { items: true, customer: { select: ORDER_CUSTOMER_SELECT } },
+      include: {
+        items: {
+          include: {
+            fulfillmentItems: {
+              select: { quantity: true, fulfillment: { select: { status: true } } },
+            },
+          },
+        },
+        customer: { select: ORDER_CUSTOMER_SELECT },
+      },
     });
-    if (!found) return null;
+    if (!row) return null;
+    const found = {
+      ...row,
+      items: row.items.map(({ fulfillmentItems, ...item }) => ({
+        ...item,
+        quantityHandedOver: unitsHandedOver(fulfillmentItems),
+      })),
+    };
     const [withAccount, deposits] = await Promise.all([
       oneWithAccount(tx, found),
       depositsReturnedFor(tx, [found.id]),

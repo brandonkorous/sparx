@@ -268,6 +268,15 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     trackingNumber: '1Z999AA10123456784',
     trackingUrl: '#',
     shippedAt: 'Jun 13, 2026',
+    items: [
+      {
+        name: 'House Blend: Whole bean, 12 oz',
+        quantity: '2',
+        unitPrice: '$18.00',
+        lineTotal: '$36.00',
+        imageUrl: SAMPLE_ITEM_IMG,
+      },
+    ],
   },
   // The Scheduling booking every booking email is about. This was `appointment` —
   // the B2B-only source retired 2026-07-14 (binding.ts) — so the five shipped booking
@@ -326,6 +335,7 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     replacement: 'Marlow Knit: Oat · L',
     deniedReason: 'It came back outside the 30-day window.',
   },
+  refund: { amount: '$36.00', toACard: 'yes', byHand: '' },
   // The business's own team turned it down, so the canvas shows the "ask your
   // account manager" line and not the colleague one (exactly one is ever filled).
   approval: {
@@ -380,6 +390,8 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     number: 'INV-204',
     total: '$1,250.00',
     balance: '$1,250.00',
+    paid: '$1,250.00',
+    credited: '',
     dueDate: 'Jun 30, 2026',
     daysUntilDue: '5',
     overdueDays: '0',

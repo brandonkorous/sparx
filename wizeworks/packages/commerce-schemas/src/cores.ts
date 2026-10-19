@@ -166,6 +166,10 @@ export function coresOwed(line: {
 export function coresOutstanding(line: {
   quantity: number;
   quantityFulfilled: number;
+  /** Units in deliveries that have LEFT (`unitsHandedOver`). A box sealed at
+   *  the pack bench counts in `quantityFulfilled` before it goes anywhere
+   *  (sparx persona issue 359). Read in its place when given. */
+  quantityHandedOver?: number;
   quantityRefunded: number;
   coresReturned: number;
   coresKept: number;
@@ -173,7 +177,25 @@ export function coresOutstanding(line: {
 }): number {
   const owed = coresOwed(line);
   if (line.coreFirst) return owed;
-  const handedOver = Math.min(line.quantity, line.quantityFulfilled);
+  const handedOver = Math.min(line.quantity, line.quantityHandedOver ?? line.quantityFulfilled);
   const settled = line.coresReturned + line.coresKept + Math.min(line.quantityRefunded, handedOver);
   return Math.min(owed, Math.max(0, handedOver - settled));
+}
+
+/**
+ * How many of a line the customer has been given: the units in its deliveries
+ * that have gone (`shipped`) or been handed over (`delivered`).
+ *
+ * A box sealed at the pack bench is a delivery from the moment it is sealed, and
+ * its units count as fulfilled then, but it is still on the bench. Wasatch's
+ * O-000008 read "2 cores still owed" for two injectors nobody had sent yet
+ * (sparx persona issue 359): an old part is owed once the new one has arrived
+ * with the customer, issue 184's rule.
+ */
+export function unitsHandedOver(
+  deliveries: readonly { quantity: number; fulfillment: { status: string } }[]
+): number {
+  return deliveries
+    .filter((row) => row.fulfillment.status === 'shipped' || row.fulfillment.status === 'delivered')
+    .reduce((sum, row) => sum + row.quantity, 0);
 }

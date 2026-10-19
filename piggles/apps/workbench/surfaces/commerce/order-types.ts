@@ -54,6 +54,10 @@ export interface OrderItem {
   discountAmount: number;
   lineTotal: number;
   quantityFulfilled: number;
+  /** Of `quantityFulfilled`, the units in deliveries that have gone. A box
+   *  sealed at the pack bench counts as fulfilled before it leaves (sparx
+   *  persona issue 359). Sent by the order detail. */
+  quantityHandedOver?: number;
   quantityRefunded: number;
   /** Refundable core deposit per unit on a rebuilt part, or null (issue 051). */
   coreCharge: number | null;
@@ -128,6 +132,10 @@ export interface OrderPayment {
   /** The GATEWAY's reference for this charge. Null on anything taken by hand —
    *  what a person wrote down about a cheque lives in `metadata.note`. */
   processorRef: string | null;
+  /** True when a gateway took this payment, so a refund goes back through it;
+   *  false when the money was taken by hand. The server's answer
+   *  (`takenByGateway`), sent with each row (sparx persona issue 353). */
+  byGateway?: boolean;
   metadata?: Record<string, unknown> | null;
   amount: number;
   currency: string;

@@ -99,7 +99,10 @@ export const COMMERCE_REFUND_CRM_NOTE: SystemAutomationSpec = {
   actions: [
     {
       type: 'crm.add_note',
-      config: { note: 'Refund issued: {{order.number}} · ${{order.refundTotal}}' },
+      // This refund's own amount (sparx persona issue 350): `order.refundTotal` is
+      // every refund so far, so each core deposit given back on a return logged
+      // the running total again.
+      config: { note: 'Refund issued: {{order.number}} · {{refund.amount}}' },
     },
   ],
   locked: false,
