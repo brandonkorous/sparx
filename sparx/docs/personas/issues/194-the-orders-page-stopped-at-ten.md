@@ -50,8 +50,10 @@ P01 on screen, 2026-10-09: the Orders page (Renée, 8 orders), the wholesale acc
 Orders page, and Returns all load and list as before, with no pager since each fits on
 one page.
 
-Not checked on screen: a list longer than 20 with the pager showing. No Gillett buyer
-has one yet; the words and the guard are covered by the test.
+A list longer than 20, on screen 2026-10-19: Renée placed O-000038 and O-000039 on account
+(a Stanadyne additive each), her 20th and 21st orders. Her Orders page read "1 to 20 of 21"
+under "Previous" and "Next"; Next showed O-000007 alone, "21 to 21 of 21". Wasatch's invoice
+list (18 rows) still fits, with no pager.
 
 ## Rating effect
 

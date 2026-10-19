@@ -106,8 +106,10 @@ After, in a 360px frame (no window resize), on the home page and on /account:
 - At 1300px: logo, the six bar links, "Renée" and "Get in touch". "Wholesale" is in the
   Menu only, as it was before the fix (the bar had six links then too).
 
-Not checked here: the 400px ghost button on the home page body (listed above, still
-open).
+The 400px ghost button, 2026-10-19: the home page at 360, 375, 400 and 414px scrolls nothing
+sideways (page width equals window width at each), and no element ends past the edge. At
+400px the two ghost buttons, "Contact us" and "Read the journal", end at 340px and 182px.
+What changed it between Oct 16 and Oct 19 was not traced.
 
 ## Rating effect
 
