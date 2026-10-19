@@ -271,7 +271,8 @@ const invoicingReceipt = (): BuilderNode =>
       'We’ve received your payment in full for invoice {{invoice.number}}. Here’s a summary for your records:'
     ),
     lineItems('invoice.items'),
-    para('Total paid: {{invoice.total}}'),
+    para('Total paid: {{invoice.paid}}'),
+    conditional('invoice.credited', [para('Core deposits taken off: {{invoice.credited}}')]),
   ]);
 
 const chatSatisfaction = (): BuilderNode =>

@@ -31,7 +31,7 @@ import {
 import { carrierLabel, typedCarrierOf } from '@wizeworks/commerce-schemas';
 import { dueOnCollectionCents } from './collection-balance.js';
 import { firstText, money, qty } from './email-format.js';
-import { parcelItemRows } from './email-parcel-items.js';
+import { invoiceItemRows, invoiceMoneyIn, parcelItemRows } from './email-item-rows.js';
 import { billingDocumentMail, businessTimeZone, daysPastDue } from '@wizeworks/crm';
 import { EMAIL_FRAME_TOKENS } from '@wizeworks/email/silica';
 import { ALL_MODULES, listEnabledModules, type ModuleSlug } from '@wizeworks/modules';
@@ -1126,8 +1126,15 @@ async function resolveInvoice(
           companyId: true,
           lines: {
             orderBy: { sortOrder: 'asc' },
-            select: { description: true, quantity: true, unitPrice: true, lineSubtotal: true },
+            select: {
+              description: true,
+              quantity: true,
+              unitPrice: true,
+              lineSubtotal: true,
+              coreCharge: true,
+            },
           },
+          payments: { select: { kind: true, amount: true } },
         },
       }),
       businessTimeZone(tx, ctx.tenantId),
@@ -1145,10 +1152,16 @@ async function resolveInvoice(
     id: ref.billingDocumentId,
     companyId: doc.companyId,
   });
+  const moneyIn = invoiceMoneyIn(doc.payments);
   return {
     number: doc.number ?? '',
     total: money(doc.total),
     balance: money(doc.balance),
+    // What came in, apart from what a returned core took off: "Total paid
+    // $1,320.00" counted Dana's $220.00 core credit as money (sparx persona
+    // issue 361). `credited` is empty when nothing was, so its row drops.
+    paid: money(moneyIn.paidCents / 100),
+    credited: moneyPositive(moneyIn.creditedCents / 100),
     dueDate: dateLabel(doc.dueAt),
     daysUntilDue,
     overdueDays: String(overdueDays),
@@ -1160,12 +1173,7 @@ async function resolveInvoice(
     payUrl: doc.companyId
       ? site.link(`/account/b2b/${doc.companyId}/invoices`)
       : site.link('/account'),
-    items: doc.lines.map((l) => ({
-      description: l.description,
-      quantity: qty(l.quantity),
-      unitPrice: money(l.unitPrice),
-      lineTotal: money(l.lineSubtotal), // before tax: see the order items above
-    })),
+    items: doc.lines.flatMap((l) => invoiceItemRows(l)),
   };
 }
 

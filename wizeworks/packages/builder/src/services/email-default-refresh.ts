@@ -190,6 +190,9 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     // appended, computed from the code at each commit that shipped them.
     // e67dc14ad (2026-07-26) through 5e402a0a8 (2026-08-24), until 851aa54d6 (2026-09-16):
     'b757b2d42f047fac502317749e8598b9c5f4702477b012d80d94a4208dd4e071',
+    // 851aa54d6 (2026-09-16) until 2026-10-19, when "Total paid" stopped counting a
+    // returned core's credit (sparx persona issue 361):
+    'cae51a3876bcdb5e9e0d8ddcde2c07c74c440326c516e2a368b6e4a536fa5148',
   ]),
   'chat-satisfaction': new Set([
     '44ef6343f808e6d01e02f6cd1bc4a570ac6c169afa4fa84a0868ab039fe26481',

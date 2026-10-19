@@ -875,6 +875,10 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('number', 'Invoice number'),
       text('total', 'Total'),
       text('balance', 'Balance due'),
+      // Money that came in, and what a returned core took off: a credit is not
+      // a payment (sparx persona issue 361). `credited` is empty when none.
+      text('paid', 'Paid'),
+      text('credited', 'Core deposits taken off'),
       text('dueDate', 'Due date'),
       text('daysUntilDue', 'Days until due'),
       text('overdueDays', 'Days overdue'),

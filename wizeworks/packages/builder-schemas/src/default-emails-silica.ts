@@ -368,7 +368,14 @@ const invoicingReceipt = (): SectionNode[] => [
   detailPanel(
     [
       { label: 'Invoice', value: '{{invoice.number}}' },
-      { label: 'Total paid', value: '{{invoice.total}}', emphasize: true },
+      // The money that came in. A returned core's credit is named apart and
+      // drops when there is none (sparx persona issue 361).
+      { label: 'Total paid', value: '{{invoice.paid}}', emphasize: true },
+      {
+        label: 'Core deposits taken off',
+        value: '{{invoice.credited}}',
+        ref: 'invoice.credited',
+      },
     ],
     { status: { label: '✓ Paid', role: 'success' } }
   ),

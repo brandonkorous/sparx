@@ -390,6 +390,8 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     number: 'INV-204',
     total: '$1,250.00',
     balance: '$1,250.00',
+    paid: '$1,250.00',
+    credited: '',
     dueDate: 'Jun 30, 2026',
     daysUntilDue: '5',
     overdueDays: '0',
