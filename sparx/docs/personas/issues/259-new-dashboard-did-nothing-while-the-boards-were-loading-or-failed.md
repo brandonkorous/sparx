@@ -55,10 +55,9 @@ then green. Piggles CRM tests 95 of 95 green. Scoped type checks of both files a
 
 - On screen, sparx as Doty: on the "Monday numbers" board, board menu › Another board
   still opens "A new board". Canceled.
-- The loading and load-error states themselves were not seen on screen. They cannot be
-  forced from the screen without stopping the API, which this run does not do. The fix
-  is proven by the tests and by reading the code: the dialog is now drawn in those
-  states.
+- The loading and load-error states, on screen 2026-10-19, forced in the browser's own
+  network layer (the boards request held back, then answered 500): in both, "New
+  dashboard" opened "A new board". The API was not stopped.
 
 ## Rating effect
 
