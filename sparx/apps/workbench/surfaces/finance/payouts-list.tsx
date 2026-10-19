@@ -22,7 +22,7 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { usePayouts, type Payout } from './payouts-data';
-import { formatMoney, formatDate, methodLabel, payoutState } from './format';
+import { formatMoney, formatDay, methodLabel, payoutState } from './format';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 const STATUS_FILTERS = [
@@ -36,6 +36,10 @@ const PROCESSOR_FILTERS = [
   { value: 'stripe', label: 'Card' },
   { value: 'paypal', label: 'PayPal' },
   { value: 'square', label: 'Square' },
+  // Every gateway that settles to a bank, as the API lists them (sparx persona issue 342).
+  { value: 'stripe_direct', label: 'Your own Stripe' },
+  { value: 'authorize_net', label: 'Authorize.net' },
+  { value: 'first_pay', label: '1stPayGateway' },
   { value: 'sparx_pay', label: 'sparx Pay' },
 ] as const;
 
@@ -68,7 +72,7 @@ function PayoutRow({
         onOpen(event);
       }}
     >
-      <td className="align-top font-medium whitespace-nowrap">{formatDate(payout.arrivalDate)}</td>
+      <td className="align-top font-medium whitespace-nowrap">{formatDay(payout.arrivalDate)}</td>
       <td className="hidden align-top whitespace-nowrap @lg:table-cell">
         {methodLabel(payout.processor)} sales
       </td>
