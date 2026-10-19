@@ -921,14 +921,23 @@ import mode.caddy
 # web app. It is Cloud's /_wizelens/mcp and nothing else: `/` and `/mcp` both
 # land there (the bare host is what the docs hand out; `/mcp` is the path most
 # MCP clients try first), and every other path is a 404, so this name never
-# serves Cloud's sign-in or dashboard. Auth is the read key in the
-# Authorization header, checked by Cloud itself.
+# serves Cloud's sign-in or dashboard. Auth is a read key, or an OAuth token
+# from signing in at app.wizelens.com, checked by Cloud itself.
+#
+# OAUTH DISCOVERY passes through unchanged: an MCP client that gets a 401 reads
+# /.well-known/oauth-protected-resource[/mcp] here, then the authorization
+# server's metadata. Cloud answers both for this name because it runs with
+# WIZELENS_CLOUD_MCP_URL=https://mcp.wizelens.com.
 {$SX_SCHEME:https}://mcp.wizelens.com {
 	import tls_policy
 	import security_headers
 	@mcp path / /mcp
 	handle @mcp {
 		rewrite * /_wizelens/mcp
+		import wizelens_cloud
+	}
+	@oauth path /.well-known/oauth-protected-resource /.well-known/oauth-protected-resource/* /.well-known/oauth-authorization-server /.well-known/oauth-authorization-server/*
+	handle @oauth {
 		import wizelens_cloud
 	}
 	handle {
