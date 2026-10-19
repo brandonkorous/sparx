@@ -102,8 +102,15 @@ P01 on screen, 2026-10-11, with S&B Filters (issue 171):
   tracking" minutes before the email went; it says "We are emailing your customer the
   tracking".
 
-Not checked: the "I placed it with" half (an order waiting for the owner: a CSV supplier, or a
-supplier with no address or cost), because no such supplier order exists in Gillett.
+The "I placed it with" half, on screen 2026-10-19. Doty connected Bluffdale Bolt Co. as a CSV
+feed (served on this machine; the feed guard of [363] allows only loopback outside production),
+imported its Exhaust Manifold Bolt Kit and put it on sale at $34.95. Renée bought one on account
+(O-000041). Supplier orders read "Waiting to be sent"; the order, "Send this order to the
+supplier yourself, then record it here as placed." Doty typed their order number BB-88213 and
+pressed "I placed it with Bluffdale Bolt Co." ("Sent to supplier"), then UPS and
+1Z999AA10123456787 and "It shipped": "Recorded as shipped. We are emailing your customer the
+tracking." O-000041 read fulfilled, and Renée got "Your order O-000041 has shipped" with that
+tracking number and the bolt kit. Found on the way: [363], [364].
 
 ## Rating effect
 

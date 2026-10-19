@@ -28,6 +28,7 @@ import type { PricingRule, SupplierAdapter, SupplierType } from '@wizeworks/drop
 import { applyPricingRule } from '@wizeworks/dropship';
 import { plainTextOrNull } from '@wizeworks/commerce-schemas';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
+import { feedDeps } from '../../../lib/feed-host.js';
 
 const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
@@ -753,7 +754,11 @@ function runPublishReconcile(
   tenantId: string,
   userId: string | null
 ): Promise<ReconcileSummary> {
-  const adapter = createAdapter(supplier.type, supplier.credentials as Record<string, string>);
+  const adapter = createAdapter(
+    supplier.type,
+    supplier.credentials as Record<string, string>,
+    feedDeps
+  );
   return reconcileSupplierPublishes(
     adapter,
     {
@@ -837,7 +842,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     // Validate connection inline (fails fast with 400 rather than waiting for worker).
     let connectionOk = false;
     try {
-      const adapter = createAdapter(body.type, body.credentials);
+      const adapter = createAdapter(body.type, body.credentials, feedDeps);
       connectionOk = await adapter.authenticate(body.credentials);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Adapter authentication failed';
@@ -933,7 +938,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     let newStatus: string | undefined;
     if (mergedCreds) {
       try {
-        const adapter = createAdapter(existing.type, mergedCreds);
+        const adapter = createAdapter(existing.type, mergedCreds, feedDeps);
         const ok2 = await adapter.authenticate(mergedCreds);
         newStatus = ok2 ? 'active' : 'error';
       } catch {

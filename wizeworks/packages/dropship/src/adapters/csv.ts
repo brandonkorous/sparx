@@ -18,6 +18,7 @@
 //   mapCostColumn       — header for cost price, e.g. "15.99" → 1599 cents
 //   map*Column (rest)   — optional per-attribute header names
 
+import { FeedAddressError, fetchFeed, type FeedDeps } from '../feed-fetch.js';
 import type {
   Credentials,
   InventoryMap,
@@ -221,8 +222,11 @@ function rowsToProducts(
 export class CsvAdapter implements SupplierAdapter {
   private readonly creds: CsvCredentials;
 
-  constructor(credentials: Credentials) {
+  private readonly deps: FeedDeps;
+
+  constructor(credentials: Credentials, deps: FeedDeps = {}) {
     this.creds = credentials as unknown as CsvCredentials;
+    this.deps = deps;
   }
 
   async authenticate(_credentials: Credentials): Promise<boolean> {
@@ -232,12 +236,16 @@ export class CsvAdapter implements SupplierAdapter {
       return false;
     }
     try {
-      const res = await fetch(this.creds.csvUrl, {
-        method: 'HEAD',
-        signal: AbortSignal.timeout(10_000),
-      });
+      // Every fetch of a typed feed address goes through fetchFeed (issue 363).
+      const res = await fetchFeed(
+        this.creds.csvUrl,
+        { method: 'HEAD', signal: AbortSignal.timeout(10_000) },
+        this.deps
+      );
       return res.ok;
-    } catch {
+    } catch (err) {
+      // A refused address says why, so the owner can fix it (issue 363).
+      if (err instanceof FeedAddressError) throw err;
       return false;
     }
   }
@@ -250,7 +258,7 @@ export class CsvAdapter implements SupplierAdapter {
         'CSV column mapping is incomplete: Product ID, Title, SKU, and Cost price columns are all required.'
       );
     }
-    const res = await fetch(csvUrl, { signal: AbortSignal.timeout(60_000) });
+    const res = await fetchFeed(csvUrl, { signal: AbortSignal.timeout(60_000) }, this.deps);
     if (!res.ok) throw new Error(`CSV fetch failed: ${res.status} ${res.statusText}`);
     const text = await res.text();
     const rows = parseCsv(text, delimiter);
@@ -279,7 +287,7 @@ export class CsvAdapter implements SupplierAdapter {
     const mapping = toColumnMapping(this.creds);
     if (!mapping.sku || !mapping.inventory) return {};
     try {
-      const res = await fetch(csvUrl, { signal: AbortSignal.timeout(60_000) });
+      const res = await fetchFeed(csvUrl, { signal: AbortSignal.timeout(60_000) }, this.deps);
       if (!res.ok) return {};
       const text = await res.text();
       const rows = parseCsv(text, delimiter);

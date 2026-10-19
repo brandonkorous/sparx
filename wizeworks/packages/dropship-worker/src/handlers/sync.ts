@@ -7,6 +7,7 @@ import type { Prisma } from '@prisma/client';
 import { withTenant } from '@wizeworks/db';
 import { createPublisher, indexEntity, publishEvent, type Publisher } from '@wizeworks/events';
 import { createAdapter } from '@wizeworks/dropship';
+import { feedDeps } from '../feed-host.js';
 
 export interface SyncStartedPayload {
   supplierId: string;
@@ -49,7 +50,11 @@ export async function handleSyncStarted(
 
   let adapter: ReturnType<typeof createAdapter>;
   try {
-    adapter = createAdapter(supplier.type, supplier.credentials as Record<string, string>);
+    adapter = createAdapter(
+      supplier.type,
+      supplier.credentials as Record<string, string>,
+      feedDeps
+    );
   } catch (err: unknown) {
     const errMsg = err instanceof Error ? err.message : String(err);
     log.error({ supplierId, type: supplier.type, err: errMsg }, 'no adapter for type');

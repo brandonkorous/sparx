@@ -21,6 +21,16 @@ export type {
 
 export { applyPricingRule } from './types.js';
 export {
+  checkFeedAddress,
+  fetchFeed,
+  FeedAddressError,
+  isIpLiteral,
+  isLoopback,
+  isPrivateAddress,
+  type FeedDeps,
+  type ResolveHost,
+} from './feed-fetch.js';
+export {
   handVersionsOf,
   handVersionsToStore,
   supplierLineFor,

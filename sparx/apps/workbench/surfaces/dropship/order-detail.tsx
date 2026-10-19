@@ -350,7 +350,8 @@ function RecordProgress({
       // persona issue 171).
       description={
         notPlacedYet
-          ? `This order has not gone to ${who}. Send it to them, then say so here. When you say it shipped, your customer's order is marked shipped and they are sent the tracking.`
+          ? // The name leads, so one ending in a period never reads "Co.." (issue 364).
+            `${who} does not have this order yet. Send it to them, then say so here. When you say it shipped, your customer's order is marked shipped and they are sent the tracking.`
           : `When ${who} tells you it has shipped, record it here. Your customer's order is marked shipped and they are sent the tracking.`
       }
     >

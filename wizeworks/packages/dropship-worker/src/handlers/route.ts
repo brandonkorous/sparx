@@ -12,6 +12,7 @@ import { withTenant } from '@wizeworks/db';
 import { createPublisher, publishEvent } from '@wizeworks/events';
 import { createAdapter, handVersionsOf, supplierLineFor } from '@wizeworks/dropship';
 import type { Order, OrderLineItem, ShippingAddress } from '@wizeworks/dropship';
+import { feedDeps } from '../feed-host.js';
 import { supplierOrderEmail, type SupplierOrderLine } from './supplier-order-email.js';
 import { shipToOf } from './ship-to.js';
 
@@ -138,7 +139,11 @@ export async function handleOrderRoute(
     };
 
     try {
-      const adapter = createAdapter(supplier.type, supplier.credentials as Record<string, string>);
+      const adapter = createAdapter(
+        supplier.type,
+        supplier.credentials as Record<string, string>,
+        feedDeps
+      );
 
       if (adapter.orderRecipient) {
         await emailOrderToSupplier({
