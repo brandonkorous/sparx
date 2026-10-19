@@ -32,6 +32,7 @@ let line: Line;
 /** When the part was handed over: the fulfillment that carried it. Null while it
  *  is still on the shelf. */
 let handedOverAt: Date | null;
+let boxStatus: string;
 let invoice: { id: string; balance: number; number: string } | null;
 let payment: { id: string; processor: string; processorRef: string; currency: string } | null;
 let amountPaid: number;
@@ -53,8 +54,15 @@ function row() {
     coreFirst: false,
     coreHoldReleasedAt: null,
     ...line,
+    // The box that carried the handed-over units; only one that has left counts
+    // (sparx persona issue 359).
     fulfillmentItems: handedOverAt
-      ? [{ fulfillment: { shippedAt: handedOverAt, createdAt: handedOverAt } }]
+      ? [
+          {
+            quantity: line.quantityFulfilled,
+            fulfillment: { shippedAt: handedOverAt, createdAt: handedOverAt, status: boxStatus },
+          },
+        ]
       : [],
     order: {
       id: ORDER,
@@ -149,6 +157,7 @@ beforeEach(() => {
     coreCharge: 150,
   };
   handedOverAt = new Date(Date.now() - 5 * 86_400_000);
+  boxStatus = 'shipped';
   invoice = null;
   payment = { id: 'pay-1', processor: 'stripe', processorRef: 'pi_123', currency: 'USD' };
   amountPaid = 1460.3;
@@ -205,6 +214,11 @@ describe('listOwed', () => {
     line.quantityFulfilled = 2;
     const [owed] = await listOwed(CTX);
     expect(owed).toMatchObject({ coresOwed: 2, owedCents: 30_000 });
+  });
+
+  it('owes nothing for a box that is sealed but has not left (sparx persona issue 359)', async () => {
+    boxStatus = 'packed';
+    expect(await listOwed(CTX)).toEqual([]);
   });
 
   it('counts the days out from the handover, not from the order', async () => {
