@@ -27,7 +27,7 @@ export interface ReaperTick {
 
 /** One pass over every business that sells: release the holds whose time is up. */
 export async function runReservationReaperTick(logger: FastifyBaseLogger): Promise<ReaperTick> {
-  return withAdvisoryTickLock(
+  return withAdvisoryTickLock<ReaperTick>(
     ADVISORY_LOCKS.RESERVATION_REAPER,
     { acquired: false, released: 0 },
     async () => {
