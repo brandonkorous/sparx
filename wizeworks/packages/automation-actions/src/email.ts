@@ -143,7 +143,7 @@ function campaignModuleFor(effect: EffectInput): string | null {
  * what needs doing.
  */
 export function recordLinkFor(fields: EffectInput['fields']): RecordLink | null {
-  const candidates: ReadonlyArray<readonly [string, string, string, string?]> = [
+  const candidates: readonly (readonly [string, string, string, string?])[] = [
     ['return.id', 'commerce.return.detail', 'Open the return'],
     ['order.id', 'commerce.order.detail', 'Open the order'],
     ['variant.id', 'inventory.stock.item', 'Open the stock item', 'variantId'],
