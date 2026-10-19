@@ -18,6 +18,9 @@ export interface ShipFromSupplierInput {
   supplierSku: string;
   /** What the supplier charges for one, in cents. */
   costCents: number;
+  /** Each version's own code and price, for a product with more than one
+   *  (sparx persona issue 362). */
+  versions?: { variantId: string; supplierSku: string; costCents: number }[];
 }
 
 /** Suppliers a product can be pointed at by hand: connected, and with no
@@ -57,6 +60,15 @@ export function useShipFromSupplier(productId: string) {
         supplier_id: input.supplierId,
         supplier_sku: input.supplierSku.trim(),
         cost_cents: input.costCents,
+        ...(input.versions
+          ? {
+              versions: input.versions.map((v) => ({
+                variant_id: v.variantId,
+                supplier_sku: v.supplierSku,
+                cost_cents: v.costCents,
+              })),
+            }
+          : {}),
       }),
     onSuccess: settle,
   });

@@ -21,6 +21,12 @@ export type {
 
 export { applyPricingRule } from './types.js';
 export {
+  handVersionsOf,
+  handVersionsToStore,
+  supplierLineFor,
+  type HandVersion,
+} from './hand-versions.js';
+export {
   createAdapter,
   CsvAdapter,
   DsersAdapter,

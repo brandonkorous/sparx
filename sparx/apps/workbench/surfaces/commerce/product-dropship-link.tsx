@@ -37,6 +37,7 @@ import {
   useShipFromSupplier,
   useStopSupplierShipping,
 } from './product-dropship-link-data';
+import { startingRows, typedCents, versionsToSend, type VersionRow } from './dropship-versions';
 
 const MONEY = /^\d+(\.\d{1,2})?$/;
 
@@ -78,17 +79,27 @@ function ShipFromSupplierForm({
     centsToTyped(link ? link.source.costPriceCents : (first?.costCents ?? null))
   );
   const [touched, setTouched] = useState(false);
+  // More than one version: a code and a price for each (sparx persona issue 362).
+  const many = data.variants.length > 1;
+  const [rows, setRows] = useState(() =>
+    startingRows(data.variants, link ? link.source.costPriceCents : null)
+  );
+  const perVersion = many ? versionsToSend(rows) : null;
 
   const costCents = toCents(cost);
   const supplierName = suppliers.find((s) => s.id === supplierId)?.name ?? link?.supplier.name;
   const problem =
     supplierId === ''
       ? 'Choose who ships it.'
-      : code.trim() === ''
-        ? 'Give their code for it.'
-        : costCents === null
-          ? 'Say what they charge you, like 1100.00.'
-          : null;
+      : perVersion
+        ? 'problem' in perVersion
+          ? perVersion.problem
+          : null
+        : code.trim() === ''
+          ? 'Give their code for it.'
+          : costCents === null
+            ? 'Say what they charge you, like 1100.00.'
+            : null;
   // What one sale leaves the business, when every version sells at one price.
   const prices = new Set(data.variants.map((v) => v.priceCents));
   const margin =
@@ -96,29 +107,34 @@ function ShipFromSupplierForm({
 
   const submit = () => {
     setTouched(true);
-    if (problem || costCents === null) return;
-    ship.mutate(
-      { supplierId, supplierSku: code, costCents },
-      {
-        onSuccess: () => {
-          toast.add({
-            title: link ? 'Saved' : `${supplierName ?? 'Your supplier'} ships ${product.title} now`,
-            description: link
-              ? undefined
-              : 'When someone buys it, we email them the order from your business.',
-            type: 'success',
-          });
-          onDone?.();
-        },
-        onError: (error) => {
-          toast.add({
-            title: 'Could not save that',
-            description: productErrorMessage(error, 'Nothing was changed.'),
-            type: 'error',
-          });
-        },
-      }
-    );
+    if (problem) return;
+    const versions = perVersion && 'versions' in perVersion ? perVersion.versions : null;
+    const head = versions?.[0];
+    const input = head
+      ? { supplierId, supplierSku: head.supplierSku, costCents: head.costCents, versions: versions }
+      : costCents === null
+        ? null
+        : { supplierId, supplierSku: code, costCents };
+    if (!input) return;
+    ship.mutate(input, {
+      onSuccess: () => {
+        toast.add({
+          title: link ? 'Saved' : `${supplierName ?? 'Your supplier'} ships ${product.title} now`,
+          description: link
+            ? undefined
+            : 'When someone buys it, we email them the order from your business.',
+          type: 'success',
+        });
+        onDone?.();
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not save that',
+          description: productErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
   };
 
   return (
@@ -138,7 +154,17 @@ function ShipFromSupplierForm({
           />
         </Field>
       )}
-      <div className="grid gap-3 @md:grid-cols-2">
+      {many ? (
+        <VersionFields
+          rows={rows}
+          variants={data.variants}
+          touched={touched}
+          onChange={(next) => {
+            setRows(next);
+          }}
+        />
+      ) : null}
+      <div className={many ? 'hidden' : 'grid gap-3 @md:grid-cols-2'}>
         <Field>
           <FieldLabel>Their code for it</FieldLabel>
           <FieldControl
@@ -197,6 +223,78 @@ function ShipFromSupplierForm({
           )}
         </Button>
       </div>
+    </div>
+  );
+}
+
+/** A code and a price for each version, with what each sale leaves the
+ *  business (sparx persona issue 362). */
+function VersionFields({
+  rows,
+  variants,
+  touched,
+  onChange,
+}: {
+  rows: VersionRow[];
+  variants: ProductDropship['variants'];
+  touched: boolean;
+  onChange: (rows: VersionRow[]) => void;
+}) {
+  const set = (variantId: string, patch: Partial<VersionRow>) => {
+    onChange(rows.map((row) => (row.variantId === variantId ? { ...row, ...patch } : row)));
+  };
+  return (
+    <div className="flex flex-col gap-3">
+      <Text className="text-sm">
+        It comes in {rows.length} versions. Give their code and price for each.
+      </Text>
+      {rows.map((row) => {
+        const variant = variants.find((v) => v.id === row.variantId);
+        const cents = typedCents(row.cost);
+        const margin = variant && cents !== null ? variant.priceCents - cents : null;
+        return (
+          <div key={row.variantId} className="grid gap-3 @md:grid-cols-2">
+            <Field>
+              <FieldLabel>Their code for {row.label}</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color={touched && row.code.trim() === '' ? 'error' : 'module'}
+                    value={row.code}
+                    spellCheck={false}
+                    onChange={(event) => {
+                      set(row.variantId, { code: event.target.value });
+                    }}
+                  />
+                }
+              />
+            </Field>
+            <Field>
+              <FieldLabel>What they charge you for {row.label}</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color={touched && cents === null ? 'error' : 'module'}
+                    value={row.cost}
+                    inputMode="decimal"
+                    placeholder="0.00"
+                    onChange={(event) => {
+                      set(row.variantId, { cost: event.target.value });
+                    }}
+                  />
+                }
+              />
+              <FieldDescription>
+                {margin === null || !variant
+                  ? 'For one, before shipping.'
+                  : margin > 0
+                    ? `You sell it for ${formatCents(variant.priceCents, variant.currency)}, so you make ${formatCents(margin, variant.currency)} on each.`
+                    : `You sell it for ${formatCents(variant.priceCents, variant.currency)}, so you would lose money on each.`}
+              </FieldDescription>
+            </Field>
+          </div>
+        );
+      })}
     </div>
   );
 }
