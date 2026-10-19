@@ -245,6 +245,9 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     'f6486c6a8f3934f29692f623682713d89f86027511b2799be52f8143e3533827',
     // 62b77fb02 (2026-08-11) through 5e402a0a8 (2026-08-24), until 851aa54d6 (2026-09-16):
     'db101f76cda9bcd87fb2f32549647c5888bb981d9ef2b458659ba2bae614bed8',
+    // 851aa54d6 (2026-09-16) until 2026-10-19, when the item table became the
+    // parcel's own lines (sparx persona issue 358):
+    '237b84a487b93c8287f20439d8afa769520be8890a1bb48d521ee17e5c7cadf8',
   ]),
   'order-delivered': new Set([
     '92833d0d5e436a08bf2fa8aea7036704d1e7892b8936e34a63865e1085a0ba23',

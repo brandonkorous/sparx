@@ -54,6 +54,10 @@ export interface OrderItem {
   discountAmount: number;
   lineTotal: number;
   quantityFulfilled: number;
+  /** Of `quantityFulfilled`, the units in deliveries that have gone. A box
+   *  sealed at the pack bench counts as fulfilled before it leaves (sparx
+   *  persona issue 359). Sent by the order detail. */
+  quantityHandedOver?: number;
   quantityRefunded: number;
   /** Refundable core deposit per unit on a rebuilt part, or null (issue 051). */
   coreCharge: number | null;

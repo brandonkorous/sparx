@@ -18,6 +18,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { orderErrorMessage, useRecordFulfillment, type DeliveryPlan, type Order } from './data';
 import { CARRIERS, carrierChosen, serviceFor } from './carriers';
+import { handoverSends } from './packed-box';
 import { whatCanShipNow, type ShipNow } from './order-ship-gate';
 
 interface HandoverForm {
@@ -159,7 +160,16 @@ function NotReady({ plan, why }: { plan: DeliveryPlan; why: string }) {
   );
 }
 
-export function RecordHandover({ order, plan }: { order: Order; plan: DeliveryPlan }) {
+export function RecordHandover({
+  order,
+  plan,
+  packedBoxWaiting,
+}: {
+  order: Order;
+  plan: DeliveryPlan;
+  /** A box sealed at the bench is waiting on this order (sparx persona issue 357). */
+  packedBoxWaiting: boolean;
+}) {
   const shipNow = whatCanShipNow(order);
   const form = useHandoverForm(plan);
   const { submit, busy } = useHandoverSubmit(order, plan, shipNow, form);
@@ -175,6 +185,13 @@ export function RecordHandover({ order, plan }: { order: Order; plan: DeliveryPl
           {why}
         </Text>
       ))}
+      {/* What this sends, before it is pressed: "all of it" was the units nobody
+          could find, under a box that was packed and waiting (issue 357). */}
+      {plan.collected ? null : (
+        <Text className="w-full">
+          {handoverSends(shipNow.lines, order.items ?? [], packedBoxWaiting)}
+        </Text>
+      )}
       {plan.collected ? null : <PostedFields form={form} />}
       <label className="flex min-w-[10rem] flex-1 flex-col gap-1.5">
         <span className="text-base font-medium">Anything to note (optional)</span>

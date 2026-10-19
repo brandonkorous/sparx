@@ -921,6 +921,10 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('trackingNumber', 'Tracking number'),
       text('trackingUrl', 'Tracking link'),
       text('shippedAt', 'Shipped date'),
+      // What is IN this parcel (sparx persona issue 358). The order's items are
+      // every line ordered, so a part shipment told the customer all of it had
+      // gone: "Shipped: 6 injectors" for a box of 2.
+      lineItems(),
     ],
   },
   {

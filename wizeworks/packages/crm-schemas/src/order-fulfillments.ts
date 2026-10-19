@@ -53,6 +53,11 @@ export type CreateFulfillmentInput = z.infer<typeof CreateFulfillmentInput>;
 export const UpdateFulfillmentInput = z.object({
   fulfillmentId: Uuid,
   status: FulfillmentStatus.optional(),
+  // Who took it, for a box packed at the bench and sent afterwards: the bench
+  // seals it with no carrier (sparx persona issue 357).
+  carrier: Carrier.nullish(),
+  carrierOther: z.string().max(63).optional(), // when carrier === 'other'
+  service: z.string().max(63).nullish(),
   trackingNumber: z.string().max(127).nullable().optional(),
   trackingUrl: z.string().url().max(2048).nullable().optional(),
   shippedAt: z.string().datetime().nullable().optional(),

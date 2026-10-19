@@ -157,6 +157,37 @@ export function useUpdateTracking(id: string) {
   });
 }
 
+/**
+ * Sending a box packed at the bench (sparx persona issue 357). The bench seals it
+ * as a delivery with no carrier, and nothing could send it afterwards: it sat
+ * "Being packed" for good. This says who took it, and the customer is told then.
+ */
+export function useSendPackedBox(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      fulfillmentId,
+      carrier,
+      courier,
+      trackingNumber,
+    }: {
+      fulfillmentId: string;
+      carrier: string;
+      courier: string;
+      trackingNumber: string;
+    }) =>
+      api.patch<OrderFulfillment>(`/v1/orders/${id}/fulfillments/${fulfillmentId}`, {
+        status: 'shipped',
+        carrier,
+        ...(carrier === 'other' ? { carrierOther: courier.trim() } : {}),
+        trackingNumber: trackingNumber.trim() || null,
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
+    },
+  });
+}
+
 /** The server refuses to cancel a delivered or refunded order with a sentence
  *  saying so — which is worth showing verbatim rather than replacing with a
  *  guess. */

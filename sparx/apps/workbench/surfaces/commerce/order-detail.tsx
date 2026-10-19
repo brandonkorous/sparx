@@ -51,6 +51,8 @@ import { RecordHandover } from './record-handover';
 import { OrderLineCore } from './order-cores';
 import { shipHoldLabel, whatCanShipNow } from './order-ship-gate';
 import { refundWords } from './refund-words';
+import { boxIsWaiting, sentSoFarWords } from './packed-box';
+import { SendPackedBox } from './send-packed-box';
 import { HeldOrderSignOff } from '../b2b/held-order-sign-off';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -853,9 +855,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                             : ''}
                         </span>
                         {partlySent ? (
-                          <span className="text-sm">
-                            {item.quantityFulfilled} of {item.quantity} sent so far
-                          </span>
+                          <span className="text-sm">{sentSoFarWords(item)}</span>
                         ) : null}
                         {item.quantityRefunded > 0 ? (
                           <span className="text-sm">{item.quantityRefunded} refunded</span>
@@ -1163,7 +1163,12 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                                refunded one is refused by the server anyway — a control
                                whose only job is to return an error is worse than none. */
               !stillToFulfil ? null : canShipNow ? (
-                <RecordHandover order={order} plan={plan} shipNow={shipNow} />
+                <RecordHandover
+                  order={order}
+                  plan={plan}
+                  shipNow={shipNow}
+                  packedBoxWaiting={(fulfillments.data ?? []).some(boxIsWaiting)}
+                />
               ) : (
                 <Alert color="warning" className="mt-4">
                   <AlertContent>
@@ -1216,7 +1221,17 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                           ? `Sent ${formatDateTime(shipment.shippedAt)}`
                           : `Created ${formatDateTime(shipment.createdAt)}`}
                     </span>
-                    <TrackingEditor orderId={order.id} shipment={shipment} />
+                    {/* A box sealed at the bench has not gone: it is sent from
+                        here, by saying who took it (sparx persona issue 357). */}
+                    {boxIsWaiting(shipment) ? (
+                      <SendPackedBox
+                        orderId={order.id}
+                        fulfillmentId={shipment.id}
+                        chosenDelivery={plan.description}
+                      />
+                    ) : (
+                      <TrackingEditor orderId={order.id} shipment={shipment} />
+                    )}
                   </div>
                   <Badge color={fulfillmentTone(shipment.status)} variant="soft" size="sm">
                     {shipmentStatusLabel(shipment)}

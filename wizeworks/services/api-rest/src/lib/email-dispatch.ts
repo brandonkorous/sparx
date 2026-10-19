@@ -17,7 +17,7 @@ import { publish } from '@wizeworks/api-core/pubsub';
 import { emailService } from '@wizeworks/builder';
 import { UNSUBSCRIBE_PLACEHOLDER } from '@wizeworks/email/silica';
 import type { RawEmailSendPayload } from '@wizeworks/events';
-import type { EmailRecipientRef } from './email-data.js';
+import { recipientRef } from './email-recipient-ref.js';
 import { buildFrom, loadSenderIdentity, renderBuilderEmailDoc } from './tenant-email.js';
 import { personalizeUnsubscribe, unsubscribeUrl } from './email-unsubscribe.js';
 import { addRecordLink, type RecordLink } from './record-link.js';
@@ -61,10 +61,6 @@ export interface TickResult {
   acquired: boolean;
   processed: number;
   errors: number;
-}
-
-function strOrNull(v: unknown): string | null {
-  return typeof v === 'string' && v.length > 0 ? v : null;
 }
 
 /** Record a terminal failure on a send the tick already marked 'sent' (an
@@ -208,22 +204,7 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
           // compliance gate — a marketing send needs a postal address on file — lives
           // where that address is read.
           const marketing = payload.defer.emailType === 'marketing';
-          const refs = (dispatch.entityRefs as Record<string, unknown> | null) ?? {};
-          const ref: EmailRecipientRef = {
-            email: to,
-            customerId: customerId ?? strOrNull(refs.customerId),
-            orderId: strOrNull(refs.orderId),
-            cartId: strOrNull(refs.cartId),
-            quoteId: strOrNull(refs.quoteId),
-            billingDocumentId: strOrNull(refs.billingDocumentId),
-            // `b2bAccountId` is the pre-rename key (docs/144 §11). Sends queued
-            // before the rename still carry it, and a queued email that silently
-            // loses its account is one whose credit line and portal link go
-            // blank — so both are read, new name first.
-            companyId: strOrNull(refs.companyId) ?? strOrNull(refs.b2bAccountId),
-            subscriptionId: strOrNull(refs.subscriptionId),
-            returnId: strOrNull(refs.returnId),
-          };
+          const ref = recipientRef(to, customerId, dispatch.entityRefs);
           // Render via the shared core (docs/93 §2): resolve this recipient's data
           // (overlaying the trigger-time snapshot), interpolate the subject/preheader
           // — the send's optional override, else the email's own (tenant-editable)

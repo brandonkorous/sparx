@@ -62,8 +62,11 @@ P01 on screen, 2026-10-09, on one browser at the Gillett site:
   "Your cart is empty". The site dropped the stored cart.
 - Brynn signed out: the browser held no cart. Renée signed in again and got her own cart.
 
-Not checked: two tabs open at once with different buyers (one browser shares one sign-in,
-so this cannot happen).
+Two tabs at once, on screen 2026-10-19 (one browser, so one sign-in between them): tab A had
+Renée signed in on the DEF caps page at her fleet price, $87.12. In tab B she signed out and
+Marisol Vega signed in. Back in tab A, still showing $87.12, "Add to cart" put the caps in
+Marisol's cart at her own price, 1 × $99.00, and both tabs' carts read the same; nothing went
+into Renée's cart. Removed after.
 
 ## Rating effect
 

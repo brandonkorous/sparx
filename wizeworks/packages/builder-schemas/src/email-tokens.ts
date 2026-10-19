@@ -268,6 +268,15 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     trackingNumber: '1Z999AA10123456784',
     trackingUrl: '#',
     shippedAt: 'Jun 13, 2026',
+    items: [
+      {
+        name: 'House Blend: Whole bean, 12 oz',
+        quantity: '2',
+        unitPrice: '$18.00',
+        lineTotal: '$36.00',
+        imageUrl: SAMPLE_ITEM_IMG,
+      },
+    ],
   },
   // The Scheduling booking every booking email is about. This was `appointment` —
   // the B2B-only source retired 2026-07-14 (binding.ts) — so the five shipped booking

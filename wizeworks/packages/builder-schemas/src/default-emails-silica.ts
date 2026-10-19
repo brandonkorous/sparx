@@ -467,7 +467,8 @@ const shippingConfirmation = (): SectionNode[] => [
   when('shipping.trackingNumber', [
     button('Track your package', '{{shipping.trackingUrl}}', 'center'),
   ]),
-  ...itemsTable('order.items', { thumbnails: true }),
+  // This parcel's lines, not the order's (sparx persona issue 358).
+  ...itemsTable('shipping.items', { thumbnails: true }),
 ];
 
 // ── Commerce: order lifecycle (docs/implementation/transactional-email §4 P1) ─

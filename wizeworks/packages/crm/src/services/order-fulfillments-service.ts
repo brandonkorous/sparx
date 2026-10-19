@@ -22,6 +22,7 @@ import { writeAuditLog } from '../audit';
 import { publishPlatformEvent } from '../consumers/platform-bus';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
+import { leftTheBuilding } from './fulfillment-transitions';
 import { closeWhenOrderMovesOn } from './task-service';
 
 /**
@@ -229,6 +230,7 @@ export async function updateFulfillment(
 ): Promise<OrderFulfillment> {
   const input = UpdateFulfillmentInput.parse(rawInput);
   const wasDelivered = { value: false };
+  const wentOut = { value: false };
   const buyer: { identity: OrderIdentity | null } = { identity: null };
   const fulfillment = await withTenant(ctx, async (tx) => {
     const before = await tx.orderFulfillment.findUnique({
@@ -257,13 +259,22 @@ export async function updateFulfillment(
       where: { id: input.fulfillmentId },
       data: {
         ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(input.carrier !== undefined ? { carrier: input.carrier } : {}),
+        ...(input.service !== undefined ? { service: input.service } : {}),
         ...(input.trackingNumber !== undefined ? { trackingNumber: input.trackingNumber } : {}),
         ...(input.trackingUrl !== undefined ? { trackingUrl: input.trackingUrl } : {}),
         shippedAt: nextShippedAt,
         deliveredAt: nextDeliveredAt,
         ...(input.notes !== undefined ? { notes: input.notes } : {}),
-        ...(input.metadata !== undefined
-          ? { metadata: input.metadata as Prisma.InputJsonValue }
+        ...(input.metadata !== undefined || (input.carrier === 'other' && input.carrierOther)
+          ? {
+              metadata: {
+                ...((input.metadata ?? before.metadata ?? {}) as Record<string, unknown>),
+                ...(input.carrier === 'other' && input.carrierOther
+                  ? { carrierOther: input.carrierOther }
+                  : {}),
+              },
+            }
           : {}),
       },
     });
@@ -271,7 +282,10 @@ export async function updateFulfillment(
     await promoteOrderOnFulfillment(tx, before.orderId);
 
     wasDelivered.value = before.status !== 'delivered' && updated.status === 'delivered';
-    if (wasDelivered.value) buyer.identity = await orderIdentity(tx, before.orderId);
+    wentOut.value = leftTheBuilding(before.status, updated.status);
+    if (wasDelivered.value || wentOut.value) {
+      buyer.identity = await orderIdentity(tx, before.orderId);
+    }
 
     await writeAuditLog({
       tx,
@@ -295,6 +309,26 @@ export async function updateFulfillment(
 
     return updated;
   });
+
+  // A box packed at the bench is a delivery from the moment it is sealed, but
+  // it has not gone anywhere: it goes when somebody says who took it. That is
+  // the moment the customer is told, the same as a delivery made already sent
+  // (sparx persona issue 357).
+  if (wentOut.value) {
+    await afterCommit('publish order.fulfilled', () =>
+      publishPlatformEvent({
+        id: crypto.randomUUID(),
+        topic: 'order.fulfilled',
+        tenantId: ctx.tenantId,
+        occurredAt: fulfillment.shippedAt ?? new Date(),
+        payload: {
+          orderId: fulfillment.orderId,
+          fulfillmentId: fulfillment.id,
+          ...buyer.identity,
+        },
+      })
+    );
+  }
 
   if (wasDelivered.value) {
     await afterCommit('publish order.delivered', () =>

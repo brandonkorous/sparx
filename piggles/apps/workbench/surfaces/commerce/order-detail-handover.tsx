@@ -13,6 +13,8 @@ import { Icon } from '@piggles/ui';
 
 import { SubSection } from './order-detail-blocks';
 import { RecordHandover } from './record-handover';
+import { boxIsWaiting } from './packed-box';
+import { SendPackedBox } from './send-packed-box';
 import type { useOrderFulfillments } from './data';
 import {
   formatDateTime,
@@ -161,7 +163,15 @@ function TrackingEditor({ orderId, shipment }: { orderId: string; shipment: Ship
   );
 }
 
-function ShipmentRow({ orderId, shipment }: { orderId: string; shipment: Shipment }) {
+function ShipmentRow({
+  orderId,
+  shipment,
+  chosenDelivery,
+}: {
+  orderId: string;
+  shipment: Shipment;
+  chosenDelivery: string | null;
+}) {
   return (
     <li className={ROW}>
       <div className="flex min-w-0 flex-col gap-0.5">
@@ -171,7 +181,17 @@ function ShipmentRow({ orderId, shipment }: { orderId: string; shipment: Shipmen
             it is asking somebody to write into a drawer that does not open. */}
         {shipment.notes ? <span className="text-sm">{shipment.notes}</span> : null}
         <span className="text-sm">{whenItMoved(shipment)}</span>
-        <TrackingEditor orderId={orderId} shipment={shipment} />
+        {/* A box sealed at the bench has not gone: it is sent from here, by
+            saying who took it (sparx persona issue 357). */}
+        {boxIsWaiting(shipment) ? (
+          <SendPackedBox
+            orderId={orderId}
+            fulfillmentId={shipment.id}
+            chosenDelivery={chosenDelivery}
+          />
+        ) : (
+          <TrackingEditor orderId={orderId} shipment={shipment} />
+        )}
       </div>
       <Badge color={fulfillmentTone(shipment.status)} variant="soft" size="sm">
         {shipmentStatusLabel(shipment)}
@@ -212,12 +232,23 @@ export function HandoverSection({
       footer={
         /* Only while something is still owed — the server refuses a handover on
            a cancelled or refunded order anyway. */
-        stillToFulfil ? <RecordHandover order={order} plan={plan} /> : null
+        stillToFulfil ? (
+          <RecordHandover
+            order={order}
+            plan={plan}
+            packedBoxWaiting={(fulfillments.data ?? []).some(boxIsWaiting)}
+          />
+        ) : null
       }
     >
       <ul className="flex flex-col">
         {(fulfillments.data ?? []).map((shipment) => (
-          <ShipmentRow key={shipment.id} orderId={order.id} shipment={shipment} />
+          <ShipmentRow
+            key={shipment.id}
+            orderId={order.id}
+            shipment={shipment}
+            chosenDelivery={plan.description}
+          />
         ))}
       </ul>
     </SubSection>

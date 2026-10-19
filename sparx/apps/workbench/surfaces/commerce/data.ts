@@ -95,6 +95,10 @@ export interface OrderItem {
   discountAmount: number;
   lineTotal: number;
   quantityFulfilled: number;
+  /** Of `quantityFulfilled`, the units in deliveries that have gone. A box
+   *  sealed at the pack bench counts as fulfilled before it leaves (sparx
+   *  persona issue 359). Sent by the order detail. */
+  quantityHandedOver?: number;
   quantityRefunded: number;
   /** Refundable core deposit per unit on a rebuilt part, or null (issue 051). */
   coreCharge: number | null;
@@ -534,6 +538,37 @@ export function useUpdateTracking(id: string) {
         // Empty clears it. `null` is what the schema takes for "there is no
         // number", and it is a real answer — a number typed by mistake should be
         // removable, not merely replaceable.
+        trackingNumber: trackingNumber.trim() || null,
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
+    },
+  });
+}
+
+/**
+ * Sending a box packed at the bench (sparx persona issue 357). The bench seals it
+ * as a delivery with no carrier, and nothing could send it afterwards: it sat
+ * "Being packed" for good. This says who took it, and the customer is told then.
+ */
+export function useSendPackedBox(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      fulfillmentId,
+      carrier,
+      courier,
+      trackingNumber,
+    }: {
+      fulfillmentId: string;
+      carrier: string;
+      courier: string;
+      trackingNumber: string;
+    }) =>
+      api.patch<OrderFulfillment>(`/v1/orders/${id}/fulfillments/${fulfillmentId}`, {
+        status: 'shipped',
+        carrier,
+        ...(carrier === 'other' ? { carrierOther: courier.trim() } : {}),
         trackingNumber: trackingNumber.trim() || null,
       }),
     onSuccess: () => {

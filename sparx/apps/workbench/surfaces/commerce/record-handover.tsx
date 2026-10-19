@@ -25,6 +25,7 @@ import { Button, Input, NativeSelect, Text, useToast } from '@wizeworks/silicaui
 import { orderErrorMessage, useRecordFulfillment, type DeliveryPlan, type Order } from './data';
 import { CARRIERS, carrierChosen, serviceFor } from './carriers';
 import type { ShipNow } from './order-ship-gate';
+import { handoverSends } from './packed-box';
 
 /**
  * Everything that may go now, at the quantity that may go (order-ship-gate.ts).
@@ -39,10 +40,13 @@ export function RecordHandover({
   order,
   plan,
   shipNow,
+  packedBoxWaiting,
 }: {
   order: Order;
   plan: DeliveryPlan;
   shipNow: ShipNow;
+  /** A box sealed at the bench is waiting on this order (sparx persona issue 357). */
+  packedBoxWaiting: boolean;
 }) {
   const record = useRecordFulfillment(order.id);
   const toast = useToast();
@@ -122,6 +126,11 @@ export function RecordHandover({
           {why}
         </Text>
       ))}
+      {/* What this sends, before it is pressed: "all of it" was the units nobody
+          could find, under a box that was packed and waiting (issue 357). */}
+      {plan.collected ? null : (
+        <Text className="w-full">{handoverSends(lines, order.items ?? [], packedBoxWaiting)}</Text>
+      )}
       {plan.collected ? null : (
         <>
           <label className="flex min-w-[9rem] flex-1 flex-col gap-1.5">
