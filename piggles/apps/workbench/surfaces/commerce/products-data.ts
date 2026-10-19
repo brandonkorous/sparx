@@ -3036,6 +3036,9 @@ export interface ProductDropshipVariant {
   currency: string;
   /** Sourcing is variant-grain even though the LINK is product-grain. */
   dropshipSourceId: string | null;
+  /** The supplier's code for this version, when the owner gave one per version
+   *  (sparx persona issue 362); null when one code covers them all. */
+  supplierSku?: string | null;
 }
 
 export interface ProductDropship {

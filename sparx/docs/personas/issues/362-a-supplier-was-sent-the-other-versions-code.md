@@ -3,7 +3,7 @@
 **Status:** fixed
 **Severity:** major
 **Found by:** P01 · Gillett Diesel Service · checking issue 171's open half (a product with several versions at different costs), as Doty
-**Surface:** workbench › a product › Dropshipping, "Have a supplier ship this"; `PUT /v1/dropship/product-links`; the order email to a supplier (`dropship-worker/src/handlers/route.ts`)
+**Surface:** workbench › a product › Dropshipping, "Have a supplier ship this", in both consoles; `PUT /v1/dropship/product-links`; the order email to a supplier (`dropship-worker/src/handlers/route.ts`)
 **Filed:** 2026-10-19
 **Fixed:** 2026-10-19
 **Confirmed by:** P01 on screen as Doty and in the dev outbox, 2026-10-19
@@ -44,7 +44,7 @@ them onto every version, and the order email read the link's code for every line
 - `PUT /v1/dropship/product-links` takes `versions` (every version on sale, each once) and prices
   each version on its own; the GET gives each version's code back.
 - The order email uses `supplierLineFor` for each line.
-- The form, with more than one version: "It comes in 2 versions. Give their code and price for
+- Both consoles' form, with more than one version: "It comes in 2 versions. Give their code and price for
   each.", a code and a price per version with its margin (`dropship-versions.ts`). The panel
   reads "Their codes: …" and "They charge you $250.00 to $262.00".
 
@@ -57,7 +57,8 @@ dropship, dropship-worker and api-rest `tsc` clean. Lint and format clean.
 P01, 2026-10-19. As Doty, S&B Filters set to ship the 75-5094 intake: 75-5094 at $250.00 and
 75-5094D at $262.00. The panel read "Their codes: 75-5094 for 75-5094, 75-5094D for 75-5094D",
 "They charge you $250.00 to $262.00", and a margin per version. Renée bought the Dry filter on
-account (O-000040); S&B's email read "their code 75-5094D · 1 × $262.00".
+account (O-000040); S&B's email read "their code 75-5094D · 1 × $262.00". Piggles not seen on
+screen; its form test passes.
 
 ## Rating effect
 
