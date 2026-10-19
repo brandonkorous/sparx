@@ -38,6 +38,7 @@
 
 import fastifyRateLimit from '@fastify/rate-limit';
 import { ApiError } from '@wizeworks/api-core/errors';
+import { isInClusterCaller } from '@wizeworks/client-ip';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import { isWizeLensPath } from '../lib/wizelens.js';
@@ -49,7 +50,19 @@ const rateLimitPlugin: FastifyPluginAsync = async (app) => {
     timeWindow: '1 minute',
     // /health is liveness — never rate limit, would flap pods unhealthy.
     // /_wizelens is the local profiler's dashboard (development only).
-    allowList: (request) => request.url === '/health' || isWizeLensPath(request.url),
+    //
+    // An in-cluster caller with no forwarded chain is one of our pods filling a
+    // shared cache (see isInClusterCaller). On 2026-10-18 WizeLens showed one
+    // scanner probing `/.env` paths on one tenant site. Each probe missed the
+    // site's cache, every miss was keyed on the site POD, and the pod's 600 a
+    // minute ran out: about 2,650 cache reads answered 429 in 75 minutes, so
+    // page bodies, headers and posts failed for every visitor of every site that
+    // pod served. The scanner itself stays limited: the site's uncached reads
+    // (site-by-host, actions, the /api/sparx proxy) forward its chain.
+    allowList: (request) =>
+      request.url === '/health' ||
+      isWizeLensPath(request.url) ||
+      isInClusterCaller(request.headers['x-forwarded-for'], request.socket.remoteAddress),
     // `context.after` is the time LEFT until the window resets, not the window.
     // It used to sit after "per", so one limit read as "600 requests per 1
     // second" and "600 requests per 29 seconds" — a different, wrong window on

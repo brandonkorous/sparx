@@ -8,7 +8,13 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Fastify from 'fastify';
 import { describe, expect, it } from 'vitest';
-import { CLOUDFLARE_RANGES, TRUSTED_PROXIES, clientIpFromChain, isTrustedHop } from './index.js';
+import {
+  CLOUDFLARE_RANGES,
+  TRUSTED_PROXIES,
+  clientIpFromChain,
+  isInClusterCaller,
+  isTrustedHop,
+} from './index.js';
 
 const CADDY = '10.0.0.5'; // the ingress pod
 const WEB_POD = '10.0.1.7'; // a server-rendered app calling in-cluster
@@ -97,6 +103,29 @@ describe('clientIpFromChain', () => {
   it('unwraps an IPv4-mapped IPv6 hop', () => {
     expect(isTrustedHop('::ffff:10.0.0.5')).toBe(true);
     expect(clientIpFromChain(`${VISITOR}, ::ffff:104.16.0.5`)).toBe(VISITOR);
+  });
+});
+
+describe('isInClusterCaller', () => {
+  it('is a pod reading on its own behalf: a private peer and no chain', () => {
+    expect(isInClusterCaller(undefined, WEB_POD)).toBe(true);
+    expect(isInClusterCaller('', `::ffff:${WEB_POD}`)).toBe(true);
+    expect(isInClusterCaller(undefined, '127.0.0.1')).toBe(true);
+  });
+
+  it('is never a request that came through Caddy, which always writes a chain', () => {
+    expect(isInClusterCaller(VISITOR, CADDY)).toBe(false);
+    // A visitor who writes a private address cannot pass as a pod.
+    expect(isInClusterCaller(`${WEB_POD}, ${VISITOR}`, CADDY)).toBe(false);
+    // An app forwarding its visitor's chain is limited as that visitor.
+    expect(isInClusterCaller([VISITOR], WEB_POD)).toBe(false);
+  });
+
+  it('is never an outside peer, an edge, or no peer at all', () => {
+    expect(isInClusterCaller(undefined, VISITOR)).toBe(false);
+    expect(isInClusterCaller(undefined, EDGE)).toBe(false);
+    expect(isInClusterCaller(undefined, undefined)).toBe(false);
+    expect(isInClusterCaller(undefined, 'not-an-ip')).toBe(false);
   });
 });
 

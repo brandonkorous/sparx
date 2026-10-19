@@ -20,6 +20,7 @@
 import Fastify from 'fastify';
 import { createErrorsPlugin } from '@wizeworks/api-core/errors-plugin';
 import { describe, expect, it } from 'vitest';
+import { TRUSTED_PROXIES } from '@wizeworks/client-ip';
 import rateLimitPlugin from './rate-limit.js';
 
 interface Envelope {
@@ -27,9 +28,14 @@ interface Envelope {
   error: { code: string; message: string; details?: { retry_after_seconds?: number } };
 }
 
-/** The real plugin behind the real error handler, with a tiny budget. */
+const CADDY = '10.0.0.5';
+const SITE_POD = '10.0.1.7';
+const VISITOR = '9.9.9.9';
+
+/** The real plugin behind the real error handler, with a tiny budget, trusting
+ *  proxies the way app.ts does. */
 async function server(max: number) {
-  const app = Fastify();
+  const app = Fastify({ trustProxy: TRUSTED_PROXIES });
   await app.register(createErrorsPlugin());
   await app.register(rateLimitPlugin);
   app.get('/v1/thing', { config: { rateLimit: { max, timeWindow: '1 minute' } } }, () => ({
@@ -39,12 +45,22 @@ async function server(max: number) {
   return app;
 }
 
+/** One request from an outside visitor, as Caddy hands it on. */
+function visit(app: Awaited<ReturnType<typeof server>>) {
+  return app.inject({
+    method: 'GET',
+    url: '/v1/thing',
+    remoteAddress: CADDY,
+    headers: { 'x-forwarded-for': VISITOR },
+  });
+}
+
 describe('a rate-limited request', () => {
   it('is a 429, not a 500', async () => {
     const app = await server(1);
-    expect((await app.inject({ method: 'GET', url: '/v1/thing' })).statusCode).toBe(200);
+    expect((await visit(app)).statusCode).toBe(200);
 
-    const limited = await app.inject({ method: 'GET', url: '/v1/thing' });
+    const limited = await visit(app);
     expect(limited.statusCode).toBe(429);
     await app.close();
   });
@@ -53,8 +69,8 @@ describe('a rate-limited request', () => {
     // The remedy has to be in the body. It was in a header nobody reads, and
     // the body said the server had broken.
     const app = await server(1);
-    await app.inject({ method: 'GET', url: '/v1/thing' });
-    const limited = await app.inject({ method: 'GET', url: '/v1/thing' });
+    await visit(app);
+    const limited = await visit(app);
 
     const body = limited.json<Envelope>();
     expect(body.error.code).toBe('RATE_LIMITED');
@@ -69,8 +85,8 @@ describe('a rate-limited request', () => {
     // The countdown used to follow "per", so a one-minute limit read as
     // "1 requests per 59 seconds" and changed on every request.
     const app = await server(1);
-    await app.inject({ method: 'GET', url: '/v1/thing' });
-    const limited = await app.inject({ method: 'GET', url: '/v1/thing' });
+    await visit(app);
+    const limited = await visit(app);
 
     const { message } = limited.json<Envelope>().error;
     expect(message).toMatch(/Try again in \d+ (second|minute)s?\.$/);
@@ -80,11 +96,35 @@ describe('a rate-limited request', () => {
 
   it('still carries the retry-after header it always did', async () => {
     const app = await server(1);
-    await app.inject({ method: 'GET', url: '/v1/thing' });
-    const limited = await app.inject({ method: 'GET', url: '/v1/thing' });
+    await visit(app);
+    const limited = await visit(app);
 
     expect(limited.headers['retry-after']).toBeDefined();
     expect(String(limited.headers['x-ratelimit-remaining'])).toBe('0');
+    await app.close();
+  });
+
+  it('never limits a pod filling its cache, so one scanner cannot starve a site', async () => {
+    // 2026-10-18: a scanner's cache misses were all keyed on the site pod, and
+    // the pod's budget ran out for every visitor of every site it served.
+    const app = await server(1);
+    for (let i = 0; i < 5; i += 1) {
+      const res = await app.inject({ method: 'GET', url: '/v1/thing', remoteAddress: SITE_POD });
+      expect(res.statusCode).toBe(200);
+    }
+    await app.close();
+  });
+
+  it('still limits the visitor whose chain a pod forwards', async () => {
+    const app = await server(1);
+    const forwarded = {
+      method: 'GET' as const,
+      url: '/v1/thing',
+      remoteAddress: SITE_POD,
+      headers: { 'x-forwarded-for': VISITOR },
+    };
+    expect((await app.inject(forwarded)).statusCode).toBe(200);
+    expect((await app.inject(forwarded)).statusCode).toBe(429);
     await app.close();
   });
 
