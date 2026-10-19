@@ -13,8 +13,26 @@
 // DIFFERENT question and got a different answer for the same shop (persona
 // issues 223, then 303).
 
-/** The processors that hold a charge somewhere else. */
-export const GATEWAY_PROCESSORS: ReadonlySet<string> = new Set(['stripe', 'paypal']);
+import { gatewayCatalogTemplate } from './catalog';
+
+/**
+ * The processors that hold a charge somewhere else.
+ *
+ * Checkout writes the gateway's CATALOG ID as the processor ("sparx_pay",
+ * "stripe_direct", "square", ...), so the list is every catalog gateway that can
+ * refund, read from the catalog. It held only the two older names below, so every
+ * card paid through sparx Pay read as money handed over at the counter: its
+ * refund told the owner to hand the money over himself, and nothing went back to
+ * the card (sparx persona issue 339). "stripe" and "paypal" stay for payments
+ * written before checkout used the catalog id.
+ */
+export const GATEWAY_PROCESSORS: ReadonlySet<string> = new Set([
+  'stripe',
+  'paypal',
+  ...gatewayCatalogTemplate()
+    .filter((gateway) => gateway.capabilities.refunds)
+    .map((gateway) => gateway.id),
+]);
 
 /**
  * True when this payment can be reversed by calling a gateway.

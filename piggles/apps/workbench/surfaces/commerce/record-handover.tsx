@@ -17,7 +17,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { orderErrorMessage, useRecordFulfillment, type DeliveryPlan, type Order } from './data';
-import { CARRIERS, serviceFor } from './carriers';
+import { CARRIERS, carrierChosen, serviceFor } from './carriers';
 import { whatCanShipNow, type ShipNow } from './order-ship-gate';
 
 interface HandoverForm {
@@ -32,8 +32,9 @@ interface HandoverForm {
   setNote: (next: string) => void;
 }
 
-function useHandoverForm(): HandoverForm {
-  const [carrier, setCarrier] = useState<string>('usps');
+function useHandoverForm(plan: DeliveryPlan): HandoverForm {
+  // Starts on the carrier the shopper chose (sparx persona issue 340).
+  const [carrier, setCarrier] = useState<string>(() => carrierChosen(plan.description));
   const [courier, setCourier] = useState('');
   const [tracking, setTracking] = useState('');
   const [note, setNote] = useState('');
@@ -160,7 +161,7 @@ function NotReady({ plan, why }: { plan: DeliveryPlan; why: string }) {
 
 export function RecordHandover({ order, plan }: { order: Order; plan: DeliveryPlan }) {
   const shipNow = whatCanShipNow(order);
-  const form = useHandoverForm();
+  const form = useHandoverForm(plan);
   const { submit, busy } = useHandoverSubmit(order, plan, shipNow, form);
   if (shipNow.refusal !== null) return <NotReady plan={plan} why={shipNow.refusal} />;
 

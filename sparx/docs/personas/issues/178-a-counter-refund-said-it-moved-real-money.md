@@ -93,10 +93,18 @@ refunded. The injector went back on sale: on hand 1 → 2.
 The other side, as Brynn on the Gillett site: "Refunded · We gave your money back to you."
 and "Refunded to you $750.00 · Given back to you October 9, 2026".
 
-Not checked: a gateway-paid return on screen. No business this run can sign in to has
-one (Gillett takes payment by hand; the only Stripe-paid returns belong to the
-`wizeworks` tenant). The gateway words are covered by the unit tests only. The Piggles
-screens were not opened; their tests pass.
+A gateway-paid return was not checked then: no business this run could sign in to took
+cards. The Piggles screens were not opened; their tests pass.
+
+**The gateway side, 2026-10-18.** Gillett now takes cards through sparx Pay (act 9).
+Checking it found issue 339: every sparx Pay payment read as taken by hand, so Marisol
+Vega's card return (O-000034) said "You hand the money over yourself". After 339's fix,
+as Doty: "Settle the return by refunding the customer. This moves real money and cannot
+be undone."; the dialog "Marisol Vega gets this back the way they paid", button "Give
+back $640.96"; settled "Given back $640.96 · Back to how they paid", Stripe test refund
+`re_3URpYdFY8gqB2fvj1M7EtLD2`. Dana Whitcomb's O-000035 the same, refund
+`re_3URqObFY8gqB2fvj1n7GGuSr`. As each of them on the site: "Refunded · Your money has
+gone back." and "Refunded to you $640.96". The same check found issues 338, 340 and 341.
 
 ## Rating effect
 

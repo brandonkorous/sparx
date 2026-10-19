@@ -23,7 +23,7 @@
 import { useState } from 'react';
 import { Button, Input, NativeSelect, Text, useToast } from '@wizeworks/silicaui-react';
 import { orderErrorMessage, useRecordFulfillment, type DeliveryPlan, type Order } from './data';
-import { CARRIERS, serviceFor } from './carriers';
+import { CARRIERS, carrierChosen, serviceFor } from './carriers';
 import type { ShipNow } from './order-ship-gate';
 
 /**
@@ -46,7 +46,8 @@ export function RecordHandover({
 }) {
   const record = useRecordFulfillment(order.id);
   const toast = useToast();
-  const [carrier, setCarrier] = useState<string>('usps');
+  // Starts on the carrier the shopper chose (sparx persona issue 340).
+  const [carrier, setCarrier] = useState<string>(() => carrierChosen(plan.description));
   const [tracking, setTracking] = useState('');
   const [note, setNote] = useState('');
   // "Another courier" asks which: the customer reads this name, not "Another

@@ -38,3 +38,16 @@ export function serviceFor(chosen: string | null | undefined, carrier: string): 
   if (name === '' || carrier === 'other') return undefined;
   return service.toLowerCase().split(/\s+/).includes(name) ? service : undefined;
 }
+
+/** The carrier a handover starts on: the one the shopper's chosen delivery names
+ *  ("UPS Ground" is UPS), else USPS. It always started on USPS, so a parcel the
+ *  shopper chose UPS for was recorded as USPS by anybody who did not change it,
+ *  and her page and email said so (sparx persona issue 340). */
+export function carrierChosen(chosen: string | null | undefined): CarrierValue {
+  const words = (chosen ?? '').toLowerCase().split(/\s+/);
+  return (
+    CARRIER_CODES.find(
+      (code) => code !== 'other' && words.includes(carrierLabel(code).toLowerCase())
+    ) ?? 'usps'
+  );
+}
