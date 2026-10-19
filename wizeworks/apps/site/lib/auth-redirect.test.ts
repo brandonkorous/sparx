@@ -34,4 +34,18 @@ describe('signedInDestination', () => {
     );
     expect(panel).toContain('signedInDestination(status,');
   });
+
+  // Marisol signed in and the button said "Signing in…" for good (sparx persona
+  // issue 338). The form sent her on from two places and then reloaded the page
+  // it was on: `router.push`, `router.refresh`, and the signed-in effect's
+  // `router.replace`. The reload of the sign-in page finished last and won. One
+  // place moves anybody on, the effect, and nothing reloads the page under it.
+  it('the sign-in form moves a person on from one place only', () => {
+    const panel = readFileSync(
+      fileURLToPath(new URL('../components/auth-panel.tsx', import.meta.url)),
+      'utf8'
+    );
+    expect(panel.match(/router\.(push|replace)\(/g)).toEqual(['router.replace(']);
+    expect(panel).not.toMatch(/router\.refresh\(/);
+  });
 });

@@ -219,6 +219,8 @@ export default function OrderDetailPage() {
             turned down never was; the timeline below says who it is waiting on
             (sparx persona issue 087). */}
         {orderedWord(order.status)} {formatDate(order.placedAt)} · {paymentLine(order)}
+        {/* The same words as the trade order page (sparx persona issue 348). */}
+        {order.poNumber ? ` · Your PO number ${order.poNumber}` : ''}
       </p>
 
       {/* Approved, but the card held for it could not be charged, so it is

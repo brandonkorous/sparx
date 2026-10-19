@@ -77,6 +77,12 @@ export {
 } from './customer-email-confirm';
 
 export {
+  CustomerPasswordResetEmail,
+  customerPasswordResetSubject,
+  type CustomerPasswordResetEmailProps,
+} from './customer-password-reset';
+
+export {
   GatedDeliveryEmail,
   gatedDeliverySubject,
   type GatedDeliveryEmailProps,

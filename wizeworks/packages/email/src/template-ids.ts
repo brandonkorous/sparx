@@ -38,6 +38,7 @@ export const TEMPLATE_IDS = [
   'form-submission-notification',
   'form-submission-confirmation',
   'customer-email-confirm',
+  'customer-password-reset',
   'gated-delivery',
   'tool-result',
   'billing-receipt',

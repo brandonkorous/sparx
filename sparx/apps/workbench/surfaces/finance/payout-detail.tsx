@@ -16,7 +16,7 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { usePayout, type PayoutSale } from './payouts-data';
-import { channelLabel, formatMoney, formatDate, methodLabel, payoutState } from './format';
+import { channelLabel, formatMoney, formatDay, methodLabel, payoutState } from './format';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -30,7 +30,7 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = usePayout(id);
 
   useEffect(() => {
-    if (data) ctx.setTitle(`Deposit · ${formatDate(data.arrivalDate)}`);
+    if (data) ctx.setTitle(`Deposit · ${formatDay(data.arrivalDate)}`);
   }, [data, ctx]);
 
   const openOrder = (sale: PayoutSale, event: { shiftKey: boolean; altKey: boolean }) => {
@@ -86,7 +86,7 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     {formatMoney(data.amount, data.currency)}
                   </Heading>
                   <Text className="mt-1">
-                    {methodLabel(data.processor)} sales · arriving {formatDate(data.arrivalDate)}
+                    {methodLabel(data.processor)} sales · arriving {formatDay(data.arrivalDate)}
                   </Text>
                 </div>
                 {state ? (

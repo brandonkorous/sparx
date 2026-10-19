@@ -6,7 +6,7 @@
 **Surface:** sparx.works /b2b; site › product page, cart, account › Wholesale account (quotes, orders, fleet, service); workbench › Invoicing › quote editor; workbench › Wholesale › account; workbench › Sell › product trade pricing; workbench › Scheduling › booking; workbench › search box
 **Filed:** 2026-10-02
 **Fixed:** 2026-10-02 to 2026-10-03
-**Confirmed by:** sparx as Doty, Renée and Marcus, 2026-10-02 to 2026-10-18 (11 and 20 not checked: see below)
+**Confirmed by:** sparx as Doty, Renée and Marcus, 2026-10-02 to 2026-10-18 (20 not checked: see below)
 **Blocked on:** —
 
 ## What happened
@@ -521,7 +521,14 @@ In progress, on screen, 2026-10-02 evening, as Doty, Renée and Marcus:
     price: $20.23" beside $22.99 struck through: Fleet's 12% off $22.99 is $20.2312.
   - **17, 19:** shown by 33 above (Marcus found by name; a person already on the
     account is listed as such and cannot be picked twice).
-  - **11:** not checked. It needs a card payment (Stripe is not set up).
+  - **11, 2026-10-18:** once Gillett took cards (act 9), Renée paid for O-000036 ($108.44, a
+    Banks DEF cap) by Stripe test card and gave the PO number WUD-PO-4471 at checkout
+    ("Pay by card" offered beside "Bill to my account"). Doty's order page: "Trade account:
+    Wasatch Front Utility Contractors, LLC · 30 days to pay · Their PO number: WUD-PO-4471".
+    Her wholesale order page: "Placed October 18, 2026 by Renée Castañeda · Your PO number
+    WUD-PO-4471". Her own Orders page left it out ([348], fixed: it now reads the same). On
+    the way: her reset email said "Set your sparx password" ([345]) and its page said it
+    worked for 1.5 seconds ([346]).
   - **22, 23, 24, 2026-10-18:** the API was restarted four times (a saved file under
     `tsx watch`, about 15 seconds down each time) with Renée signed in on the site
     and Doty in the console, both watched every 3 seconds.

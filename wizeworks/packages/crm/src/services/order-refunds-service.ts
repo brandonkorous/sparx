@@ -17,6 +17,7 @@ import { publishPlatformEvent } from '../consumers/platform-bus';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { recomputeOrderPaymentRollup } from './order-payments-service';
+import { refundCoversWhatIsLeft } from './refund-covers';
 import { closeWhenOrderMovesOn } from './task-service';
 
 export async function listForOrder(ctx: ServiceContext, orderId: string): Promise<OrderRefund[]> {
@@ -132,7 +133,9 @@ export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Prom
     // total; otherwise leave it alone (paymentStatus will reflect partial
     // refund via the rollup below). A canceled order stays canceled: that is
     // what happened to it, and the rollup says the money went back.
-    const fullyRefunded = Number(input.amount) >= Number(order.total) - Number(order.refundTotal);
+    // In cents: in dollars the last $150.00 of a $640.96 order fell short of
+    // 150.00000000000006 (sparx persona issue 341).
+    const fullyRefunded = refundCoversWhatIsLeft(input.amount, order.total, order.refundTotal);
     if (fullyRefunded && !cancelled) {
       await tx.order.update({
         where: { id: input.orderId },

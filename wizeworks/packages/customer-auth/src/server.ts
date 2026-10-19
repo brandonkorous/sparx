@@ -180,13 +180,20 @@ function createCustomerAuth() {
       // BA's own `url` points at api-rest's baseURL; we build the STORE url so the
       // link lands on the shopper's actual site (never a client-supplied
       // origin — a token-phishing vector). Tenant comes from the ambient store.
+      // In the shop's name, like the confirm link below: the staff template said
+      // "Set your sparx password" to a shop's customer (sparx persona issue 345).
       sendResetPassword: async ({ user, token }) => {
-        const base = await resolveStoreBaseUrl();
+        const [base, siteName] = await Promise.all([resolveStoreBaseUrl(), resolveStoreName()]);
         const resetUrl = `${base}/account/reset?token=${encodeURIComponent(token)}`;
         await publishCustomerAuthEmail({
-          template: 'password-reset',
+          template: 'customer-password-reset',
           to: user.email,
-          props: { resetUrl, expiresInMinutes: RESET_EXPIRES_MINUTES },
+          props: {
+            siteName,
+            name: user.name && user.name !== user.email ? user.name.split(' ')[0] : null,
+            resetUrl,
+            expiresInMinutes: RESET_EXPIRES_MINUTES,
+          },
         });
       },
     },

@@ -18,9 +18,11 @@ const logger: PublisherLogger = {
 };
 
 export interface PublishCustomerAuthEmailInput {
-  /** A link, never an OTP code. `password-reset` reuses the platform template;
-   *  `customer-email-confirm` is the shop's own (sparx persona issue 329). */
-  template: 'password-reset' | 'customer-email-confirm';
+  /** A link, never an OTP code. Both are the SHOP's own emails, to its own
+   *  customer: the confirm link (sparx persona issue 329) and the password reset,
+   *  which used the platform's staff template and arrived as "Set your sparx
+   *  password" (sparx persona issue 345). */
+  template: 'customer-password-reset' | 'customer-email-confirm';
   to: string;
   props: Record<string, unknown>;
 }
@@ -40,9 +42,9 @@ export async function publishCustomerAuthEmail(
     to: input.to,
     template: input.template,
     props: input.props,
-    // The confirm email is the SHOP's, to its own customer: from the business, with
-    // replies to it (sparx persona issue 329). The worker fills the From in.
-    ...(input.template === 'customer-email-confirm' ? { sendAs: 'tenant' as const } : {}),
+    // Both emails are the SHOP's, to its own customer: from the business, with
+    // replies to it (sparx persona issues 329 and 345). The worker fills the From in.
+    sendAs: 'tenant' as const,
   };
   await publishEvent(publisher, 'email.send', tenantId, null, payload, logger);
 }

@@ -21,12 +21,13 @@
 
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { type Prisma } from '@wizeworks/db';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { withRequestTenant } from '@wizeworks/api-core/db';
 import { notFound } from '@wizeworks/api-core/errors';
+import { GATEWAY_PROCESSORS } from '@wizeworks/payments';
 import { requireOrderAccess } from '../../../lib/order-context.js';
+import { leftToSettle } from '../../../lib/payout-net.js';
 import { resolveListScope } from '../../../lib/property.js';
 import {
   getConnectedPayout,
@@ -35,9 +36,11 @@ import {
   listConnectedPayouts,
 } from '../../../lib/stripe-payouts.js';
 
-// Processors whose captures settle to a bank on a schedule. A manual/check/wire
-// payment is money in hand, not a deposit that "arrives".
-const GATEWAY_PROCESSORS = ['stripe', 'paypal', 'square', 'sparx_pay'] as const;
+// Processors whose captures settle to a bank on a schedule: the gateways that hold
+// a charge, the one list in `@wizeworks/payments`. A manual/check/wire payment is
+// money in hand, not a deposit that "arrives". This was a private list of four, so
+// a shop on Your own Stripe, Authorize.net or 1stPayGateway saw no deposits at all
+// (sparx persona issue 342).
 const SETTLEMENT_DAYS = 2;
 const DAY_MS = 86_400_000;
 
@@ -45,7 +48,10 @@ const ListQuery = z.object({
   property: z.string().min(1).max(63).optional(),
   status: z.enum(['all', 'in_transit', 'paid']).optional(),
   // Restrict to one funding source — the processors that settle to a bank.
-  processor: z.enum(['all', ...GATEWAY_PROCESSORS]).optional(),
+  processor: z
+    .string()
+    .refine((value) => value === 'all' || GATEWAY_PROCESSORS.has(value))
+    .optional(),
   sort_by: z.enum(['arrivalDate', 'amount']).optional(),
   order: z.enum(['asc', 'desc']).optional(),
   take: z.coerce.number().int().min(1).max(120).optional(),
@@ -53,12 +59,6 @@ const ListQuery = z.object({
 });
 
 const PayoutId = z.object({ id: z.string().min(3).max(80) });
-
-function num(value: Prisma.Decimal | number | null | undefined): number {
-  if (value === null || value === undefined) return 0;
-  const n = typeof value === 'number' ? value : Number(value);
-  return Number.isFinite(n) ? n : 0;
-}
 
 /** UTC date (YYYY-MM-DD) the capture settles on. */
 function settlementDay(captured: Date): string {
@@ -108,6 +108,9 @@ async function loadCaptured(
         currency: true,
         capturedAt: true,
         createdAt: true,
+        // What was given back off this sale comes off what it sends to the bank
+        // (sparx persona issue 343).
+        refunds: { where: { status: 'completed' }, select: { amount: true } },
         order: {
           select: {
             id: true,
@@ -123,7 +126,18 @@ async function loadCaptured(
     })
   );
 
-  return rows.map((r) => {
+  // A sale given back in full sends nothing, so it is in no deposit.
+  const settling = rows
+    .map((r) => ({
+      row: r,
+      left: leftToSettle(
+        r.amount,
+        r.refunds.map((refund) => refund.amount)
+      ),
+    }))
+    .filter(({ left }) => left > 0);
+
+  return settling.map(({ row: r, left }) => {
     const c = r.order?.customer;
     const name = firstNonEmpty(
       [c?.firstName, c?.lastName].filter(Boolean).join(' '),
@@ -133,7 +147,7 @@ async function loadCaptured(
     return {
       id: r.id,
       processor: r.processor,
-      amount: num(r.amount),
+      amount: left,
       currency: r.currency,
       settledOn: settlementDay(r.capturedAt ?? r.createdAt),
       order: {

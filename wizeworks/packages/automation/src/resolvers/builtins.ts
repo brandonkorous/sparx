@@ -8,6 +8,7 @@
 // their owning module wires the engine.
 
 import type { ResolvedFields, TenantCtx } from '../engine-types';
+import { refundSource } from './refund-source';
 import { PROPERTY_FIELD, registerResolver, registerScanner, type ScannedRow } from './registry';
 
 const MS_PER_DAY = 86_400_000;
@@ -296,7 +297,6 @@ const ORDER_EVENTS = [
   'order.payment_failed',
   'payment.captured',
   'order.cancelled',
-  'order.refunded',
 ];
 // The two events that are about a PARCEL, not just an order. Both carry
 // `fulfillmentId` in their payload, and dropping it is not harmless: a shipping
@@ -425,6 +425,20 @@ export function installBuiltinResolvers(): void {
   for (const ev of ORDER_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateOrder(ctx, str(p.orderId ?? p.id)));
   }
+  // A refund carries what it came from. A return records its money as a refund row
+  // per thing given back, and sends its own email; `refund.source` lets the order
+  // refund email leave those to it (sparx persona issue 347). Read from the ROW:
+  // the payload carries only its id.
+  registerResolver('order.refunded', async (ctx, p) => {
+    const fields = await hydrateOrder(ctx, str(p.orderId ?? p.id));
+    const refundId = str(p.refundId);
+    fields['refund.id'] = refundId;
+    const row = refundId
+      ? await ctx.tx.orderRefund.findUnique({ where: { id: refundId }, select: { metadata: true } })
+      : null;
+    fields['refund.source'] = refundSource(row?.metadata);
+    return fields;
+  });
   for (const ev of FULFILLMENT_EVENTS) {
     registerResolver(ev, async (ctx, p) => {
       const fields = await hydrateOrder(ctx, str(p.orderId ?? p.id));

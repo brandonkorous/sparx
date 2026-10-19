@@ -624,6 +624,7 @@ export interface EmailSendPayload {
     | 'form-submission-notification'
     | 'form-submission-confirmation'
     | 'customer-email-confirm'
+    | 'customer-password-reset'
     | 'tool-result'
     | 'billing-receipt'
     | 'billing-payment-failed'

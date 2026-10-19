@@ -24,7 +24,11 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
   const redirectTo = signedInDestination('authenticated', params.get('redirect')) ?? '/account';
 
   // Already signed in: go on to where the link was taking them, never an empty
-  // form as if they were signed out (sparx persona issue 189).
+  // form as if they were signed out (sparx persona issue 189). This is also what
+  // moves somebody on right after they sign in here: a sign-in sets `status`, and
+  // this sends them on. It is the ONE place that does. The form used to push as
+  // well and then refresh, and the refresh of this page finished last and kept
+  // Marisol on "Signing in…" for good (sparx persona issue 338).
   const alreadyIn = signedInDestination(status, params.get('redirect'));
   useEffect(() => {
     if (alreadyIn) router.replace(alreadyIn);
@@ -61,10 +65,9 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
       // the confirm link (sparx persona issue 329): the notice below says so.
       if (outcome === 'confirm-email') {
         setBusy(false);
-        return;
       }
-      router.push(redirectTo);
-      router.refresh();
+      // Signed in: the effect above sends them on. The button stays busy until
+      // the next page is up.
     } catch (err) {
       const msg =
         err instanceof AccountError ? err.message : 'Something went wrong. Please try again.';
