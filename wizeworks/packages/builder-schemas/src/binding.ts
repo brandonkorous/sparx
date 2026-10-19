@@ -980,6 +980,24 @@ export const EMAIL_SOURCES: DataSource[] = [
     ],
   },
   {
+    // One refund (sparx persona issue 350): its own amount, carried on
+    // `order.refunded` and overlaid through the send's snapshot. The order's
+    // `refundTotal` is every refund so far, so the second refund on an order read
+    // as the two together. `toACard` / `byHand` read "yes" or are blank, exactly
+    // one filled, so the email says how long a card refund takes and never says
+    // it of cash (issue 352).
+    key: 'refund',
+    label: 'Refund',
+    module: 'commerce',
+    cardinality: 'object',
+    recordType: 'order',
+    fields: [
+      text('amount', 'Refund amount'),
+      text('toACard', 'Went back to a card'),
+      text('byHand', 'Given back by hand'),
+    ],
+  },
+  {
     // A wholesale order's sign-off: who decided it and why (sparx persona issue
     // 087). Like a return's denial reason, these are facts about the DECISION,
     // carried on `b2b.order.rejected` / `.approved` and overlaid through the

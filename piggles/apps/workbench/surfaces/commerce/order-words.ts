@@ -9,7 +9,7 @@
 // "usps". One list, so a new carrier is named once.
 import { carrierLabel, typedCarrierOf } from '@wizeworks/commerce-schemas';
 import { channelLabel as sharedChannelLabel } from '../../lib/console/channels';
-import type { Order, OrderFulfillment } from './order-types';
+import type { Order, OrderFulfillment, OrderPayment } from './order-types';
 
 /** Plain-word labels for a payment record's own status, which uses card-industry
  *  words nobody outside payments has met. */
@@ -26,12 +26,11 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
  *  send it back to. Drives the refund wording, which used to promise every
  *  refund went "back to the card it was paid with" — including a cash sale.
  *
- *  `card` counts: it means a card on the business's OWN reader, which nothing
- *  here charged and nothing here can credit. `stripe`/`paypal` are the gateways. */
-export function paidByHand(processor: string): boolean {
-  // `gift_card` counts: nothing here credits a card automatically, so putting
-  // the money back is an adjustment somebody makes on the card by hand.
-  return ['manual', 'card', 'check', 'ach', 'wire', 'gift_card'].includes(processor);
+ *  The server's answer, not a list of our own. This console's list had `card`
+ *  (a card on the business's own reader) and `ach`; the sparx console's did not,
+ *  and neither knew the server's gateways (sparx persona issue 353). */
+export function paidByHand(payment: Pick<OrderPayment, 'byGateway'>): boolean {
+  return payment.byGateway !== true;
 }
 
 export const FULFILLMENT_STATUS_LABELS: Record<string, string> = {

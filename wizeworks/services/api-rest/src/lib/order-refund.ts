@@ -142,5 +142,9 @@ export async function refundOrderThroughGateway(
     currency: input.currency ?? payment.currency,
     ...(input.reason ? { reason: input.reason } : {}),
     ...(gatewayRefundId ? { processorRef: gatewayRefundId } : {}),
+    // How it was settled, for whoever tells the customer: a card refund takes days
+    // to show at the bank, money taken by hand comes back the way it was paid
+    // (sparx persona issue 352).
+    metadata: { settledBy: chargeRef ? 'gateway' : 'hand' },
   });
 }

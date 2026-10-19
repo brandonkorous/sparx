@@ -290,6 +290,12 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     '7b6cf0daadd0c9f274ac0f5c69d6b3d290ebfd68b268035db3a745aab2934130',
     // 5151ec196 (2026-08-07) through 5e402a0a8 (2026-08-24), until 851aa54d6 (2026-09-16):
     '21f6c12e7f7d6867979323b23742bb91c5269648ed049021c2f37fb68a88858a',
+    // 851aa54d6 (2026-09-16) until 2026-10-19, when the refund amount became the
+    // refund's own (sparx persona issue 350):
+    '4a862c2f5f6d745a59ab3d572c8b8f0b99a946e18fc217a782c77cdd0c7becce',
+    // 2026-10-19, the refund's own amount (issue 350), before its closing line
+    // said card or by hand (issue 352). Never released; on dev rows refreshed to it.
+    '5ff6baf2c61e04b03ff80ea5eb8689d74dd9db9089e518943d1d0b9e17838d0e',
   ]),
   'payment-failed': new Set([
     '58d0a758e8855642c53cf4816d0334d347d13364b73793297b8e1911803d83f9',

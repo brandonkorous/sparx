@@ -560,17 +560,23 @@ const orderRefunded = (): SectionNode[] => [
   detailPanel(
     [
       { label: 'Order', value: '{{order.number}}' },
-      // The amount coming back is the one fact the recipient opened the email for.
-      { label: 'Refund amount', value: '{{order.refundTotal}}', emphasize: true },
+      // The amount coming back is the one fact the recipient opened the email for:
+      // THIS refund's, not the order's running total (sparx persona issue 350).
+      { label: 'Refund amount', value: '{{refund.amount}}', emphasize: true },
       { label: 'Order total', value: '{{order.total}}' },
     ],
     { status: { label: '✓ Refunded', role: 'success' } }
   ),
-  copyBlock([
-    button('View order details', '{{order.statusUrl}}', 'center'),
+  copyBlock([button('View order details', '{{order.statusUrl}}', 'center')]),
+  // Exactly one of the pair is filled: a card refund takes days at the bank, and
+  // money taken by hand never went near one (sparx persona issue 352).
+  copyWhen('refund.toACard', [
     para(
       'Refunds are returned to your original payment method and usually take 5–10 business days to appear.'
     ),
+  ]),
+  copyWhen('refund.byHand', [
+    para('{{site.name}} gives this back to you the same way you paid them.'),
   ]),
 ];
 

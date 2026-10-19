@@ -50,12 +50,14 @@ import { OrderAddressForm } from './order-address-form';
 import { RecordHandover } from './record-handover';
 import { OrderLineCore } from './order-cores';
 import { shipHoldLabel, whatCanShipNow } from './order-ship-gate';
+import { refundWords } from './refund-words';
 import { HeldOrderSignOff } from '../b2b/held-order-sign-off';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import {
   addressLines,
   amountDue,
+  leftToRefund,
   paidIn,
   channelLabel,
   customerName,
@@ -556,9 +558,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // Whether a refund has anywhere to go. Money the business took by hand never
   // passed through a gateway, so "back to the card it was paid with" is a
   // promise about a card that does not exist — she hands the notes back.
-  const refundGoesBackToACard = !(payments.data ?? []).some((payment) =>
-    paidByHand(payment.processor)
-  );
+  const refundGoesBackToACard = !(payments.data ?? []).some((payment) => paidByHand(payment));
   const items = order.items ?? [];
   const currency = order.currency;
   const site = sites?.find((candidate) => candidate.id === order.propertyId);
@@ -590,12 +590,15 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // no tracking number, and no warehouse walk that means anything.
   const plan = deliveryPlan(order);
 
-  // What is still refundable: money actually taken, less anything already given
-  // back. Rounded to cents so floating-point noise can't offer a $0.0000001 refund.
-  const refundableAmount = Math.max(
-    0,
-    Math.round((Number(order.amountPaid) - Number(order.refundTotal ?? 0)) * 100) / 100
-  );
+  // What is still refundable: the money the order holds now (`leftToRefund`).
+  const refundableAmount = leftToRefund(order);
+  // Where the money goes, said the same way in the row, the confirm and the
+  // toast (sparx persona issue 351).
+  const refundSays = refundWords({
+    amount: formatMoney(refundableAmount, order.currency),
+    orderNumber: order.orderNumber,
+    toACard: refundGoesBackToACard,
+  });
 
   /**
    * A payment written down by mistake, coming back off.
@@ -643,11 +646,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const onRefund = async () => {
     const ok = await confirm({
       title: `Refund ${formatMoney(refundableAmount, currency)} to ${customerName(order.customer)}?`,
-      description:
-        `This sends ${formatMoney(refundableAmount, currency)} back to the card used for order ` +
-        `${order.orderNumber}. The money leaves your account straight away and this cannot be ` +
-        `undone. Stock is NOT taken back in: if you expect the items returned, process a return ` +
-        `instead so the goods come back on the shelf.`,
+      description: refundSays.confirm,
       confirmLabel: `Refund ${formatMoney(refundableAmount, currency)}`,
       cancelLabel: 'Leave it as it is',
       color: 'danger',
@@ -662,7 +661,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         onSuccess: () => {
           toast.add({
             title: `Refunded ${formatMoney(refundableAmount, currency)}`,
-            description: `Order ${order.orderNumber}: the customer's card has been credited.`,
+            description: refundSays.done,
             type: 'success',
           });
         },
@@ -1116,7 +1115,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                         why a gateway row gets no action at all (issue 875). */}
                     {canTakeOff({
                       status: payment.status,
-                      byHand: paidByHand(payment.processor),
+                      byHand: paidByHand(payment),
                     }) ? (
                       <Button
                         size="sm"
@@ -1264,14 +1263,8 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <div className="flex min-w-0 flex-col gap-0.5">
                 <Text className="text-base font-medium">Refund this order</Text>
                 <Text className="text-sm">
-                  {/* Both halves branch. Fixing only the first left "The money leaves
-                      your account straight away" standing after "nothing is sent
-                      anywhere" — two sentences contradicting each other about a
-                      refund, which is not a place to be vague. */}
-                  {refundGoesBackToACard
-                    ? `Sends ${formatMoney(refundableAmount, currency)} back to the card it was paid with. The money leaves your account straight away and this cannot be undone.`
-                    : `Marks ${formatMoney(refundableAmount, currency)} as given back. You hand the money over yourself. Nothing is sent anywhere, and this cannot be undone.`}{' '}
-                  To give back only part of it, or to take stock back in, use a return instead.
+                  {refundSays.panel} To give back only part of it, or to take stock back in, use a
+                  return instead.
                 </Text>
               </div>
               <Button

@@ -326,6 +326,7 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     replacement: 'Marlow Knit: Oat · L',
     deniedReason: 'It came back outside the 30-day window.',
   },
+  refund: { amount: '$36.00', toACard: 'yes', byHand: '' },
   // The business's own team turned it down, so the canvas shows the "ask your
   // account manager" line and not the colleague one (exactly one is ever filled).
   approval: {

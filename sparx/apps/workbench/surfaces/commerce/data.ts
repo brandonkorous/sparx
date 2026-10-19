@@ -166,6 +166,10 @@ export interface OrderPayment {
   /** The GATEWAY's reference for this charge. Null on anything taken by hand:
    *  what a person wrote down about a cheque lives in `metadata.note`. */
   processorRef: string | null;
+  /** True when a gateway took this payment, so a refund goes back through it;
+   *  false when the money was taken by hand. The server's answer
+   *  (`takenByGateway`), sent with each row (sparx persona issue 353). */
+  byGateway?: boolean;
   /** The platform's own scratch space on a payment. Read it through
    *  `paymentNote()`, never by key at a call site. */
   metadata?: Record<string, unknown> | null;
@@ -852,11 +856,14 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
 
 /** True when the money never went through a gateway, so there is nothing to
  *  send it back to. Drives the refund wording, which used to promise every
- *  refund went "back to the card it was paid with" — including a cash sale. */
-export function paidByHand(processor: string): boolean {
-  // `gift_card` counts: nothing here credits a card automatically, so putting
-  // the money back is an adjustment somebody makes on the card by hand.
-  return ['manual', 'check', 'wire', 'gift_card'].includes(processor);
+ *  refund went "back to the card it was paid with" — including a cash sale.
+ *
+ *  The server's answer, not a list of our own: this console kept four processors
+ *  and missed `card` (a card on the shop's own reader) and `ach`, so O-000001's
+ *  refund read "Sends $600.00 back to the card" while the server only records
+ *  it (sparx persona issue 353). */
+export function paidByHand(payment: Pick<OrderPayment, 'byGateway'>): boolean {
+  return payment.byGateway !== true;
 }
 
 export const FULFILLMENT_STATUS_LABELS: Record<string, string> = {
@@ -945,6 +952,19 @@ export function amountDue(order: Order): number {
  */
 export function paidIn(order: Pick<Order, 'amountPaid' | 'refundTotal'>): number {
   return Math.round((order.amountPaid + order.refundTotal) * 100) / 100;
+}
+
+/**
+ * What can still be given back on this order: the money it holds now.
+ *
+ * That is `amountPaid` as it stands, because the order keeps it net of every
+ * refund. Taking `refundTotal` off as well counted each refund twice: after a
+ * $93.44 return on a $108.44 order, the order page offered no refund for the
+ * $15.00 still held (sparx persona issue 349). Rounded to cents so floating-point
+ * noise can't offer a $0.0000001 refund.
+ */
+export function leftToRefund(order: Pick<Order, 'amountPaid' | 'refundTotal'>): number {
+  return Math.max(0, Math.round(Number(order.amountPaid) * 100) / 100);
 }
 
 /**

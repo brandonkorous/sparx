@@ -128,6 +128,10 @@ export interface OrderPayment {
   /** The GATEWAY's reference for this charge. Null on anything taken by hand —
    *  what a person wrote down about a cheque lives in `metadata.note`. */
   processorRef: string | null;
+  /** True when a gateway took this payment, so a refund goes back through it;
+   *  false when the money was taken by hand. The server's answer
+   *  (`takenByGateway`), sent with each row (sparx persona issue 353). */
+  byGateway?: boolean;
   metadata?: Record<string, unknown> | null;
   amount: number;
   currency: string;
