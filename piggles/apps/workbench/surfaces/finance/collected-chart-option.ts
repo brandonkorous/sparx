@@ -29,8 +29,11 @@ export function everyDay(
 ): CollectedPoint[] {
   const byDay = new Map(points.map((point) => [point.bucket.slice(0, 10), point]));
   const start = Date.parse(`${from}T00:00:00Z`);
+  // A start that is not a day draws no axis rather than throwing in render.
+  if (Number.isNaN(start)) return [];
   return Array.from({ length: days }, (_, index) => {
-    const key = new Date(start + index * 86_400_000).toISOString().slice(0, 10);
+    const day = new Date(start + index * 86_400_000);
+    const key = Number.isNaN(day.getTime()) ? '' : day.toISOString().slice(0, 10);
     const found = byDay.get(key);
     return {
       bucket: key,

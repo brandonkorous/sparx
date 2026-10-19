@@ -26,6 +26,10 @@ describe('everyDay', () => {
     expect(days[0]).toEqual({ bucket: '2026-10-05', billedCents: 0, collectedCents: 0 });
     expect(days[4]?.collectedCents).toBe(211960);
   });
+
+  it('draws nothing, rather than throwing, from a start that is not a day', () => {
+    expect(everyDay([], 'not a day', 30)).toEqual([]);
+  });
 });
 
 describe('collectedChartOption', () => {
