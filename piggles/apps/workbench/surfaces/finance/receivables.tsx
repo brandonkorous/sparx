@@ -46,6 +46,7 @@ import { useReceivables, type Receivable } from './receivables-data';
 import { bucketTone, lateness } from './receivables-words';
 import { formatMoney, formatMoneyCompact, formatDay } from './format';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { CollectedCard } from './collected-card';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -254,6 +255,9 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
               title="You're all paid up"
               description="Every invoice you've sent has been paid. When something is invoiced but still owed, it'll show here: sorted by how late it is."
             />
+            <div className="w-full max-w-3xl px-4 pb-4">
+              <CollectedCard />
+            </div>
           </Card>
         ) : (
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
@@ -354,6 +358,10 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
               />
               {rows.length > 0 ? <RowOpenHint what="an invoice to open it" /> : null}
             </div>
+
+            {/* Is the money coming in as fast as it is billed (sparx persona
+                issue 360)? After the records, which are the work. */}
+            <CollectedCard />
           </div>
         )}
       </div>

@@ -53,7 +53,7 @@ Test, proved red:
 
 ## Confirmed by
 
-In the run history, 2026-10-06, on Gillett: after the change, "Chase overdue wholesale invoices" ran for Wasatch Front with the key dated 2026-10-06 (Denver's day; UTC was already Oct 7), and "Invoice overdue (7 days)" ran once for 4459, keyed 2026-10-06. Second check at 6pm Denver on Oct 7 still to read: not checked yet.
+In the run history, 2026-10-06, on Gillett: after the change, "Chase overdue wholesale invoices" ran for Wasatch Front with the key dated 2026-10-06 (Denver's day; UTC was already Oct 7), and "Invoice overdue (7 days)" ran once for 4459, keyed 2026-10-06. The later days, read on 2026-10-19: "Chase overdue wholesale invoices" ran once per account per Denver day, each key dated the Denver day it ran on: Oct 8 (6:09 pm Denver), Oct 16 (7:51 pm), Oct 17 (6:00 pm) and Oct 18 (6:01 pm). No key ran twice. There are no runs for Oct 9 to 15; whether the worker ran on those days was not checked.
 
 ## Rating effect
 
