@@ -95,8 +95,11 @@ so nothing an owner sees changes either way.
 P01 on screen, 2026-10-08: "Fleet winter readiness, November 2026" › "What was sent"
 reads "The design as it was when this went out, shown for one person it went to.",
 "Shown to seamus.omalley@omalleyranch.test" (the first person it went to), and the
-email opens "Hi Seamus,". Not driven on screen: republishing the design to watch the
-box keep the October version, since that would change Doty's real sent email's design.
+email opens "Hi Seamus,". Republishing, driven on screen 2026-10-19: Doty changed the
+design's headline to "Get your trucks ready for the deep freeze" and pressed "Save and
+publish"; the sent broadcast's "What was sent" still opened "Get your trucks ready before the
+first cold snap", the October email. The headline was then put back and published again, and
+the box read the same. (Opening the design from search found [354] on the way.)
 
 ## Rating effect
 

@@ -156,7 +156,7 @@ import {
   type EmailVersion,
   type SavedEmailBlock,
 } from './email-data';
-import { emailToShow, renameToCommit, withCreatedEmail } from './email-switching';
+import { emailToShow, linkedEmailId, renameToCommit, withCreatedEmail } from './email-switching';
 import { publishDescription } from './email-publish-words';
 import { PaneLoadError } from '../../../components/pane-load-error';
 import { ActionLabel } from '../../../components/action-label';
@@ -321,7 +321,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   // The email being edited. Starts unresolved; an effect settles it once the
   // catalog loads — to the deep-linked id, else the first email. `{id:'new'}`
   // deep-links into the "create one now" path instead.
-  const paramId = typeof ctx.params.id === 'string' ? ctx.params.id : undefined;
+  const paramId = linkedEmailId(ctx.params);
   const [activeId, setActiveId] = useState<string | null>(null);
   const openedNewRef = useRef(false);
 

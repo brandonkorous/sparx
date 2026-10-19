@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { emailToShow, renameToCommit, withCreatedEmail } from './email-switching';
+import { emailToShow, linkedEmailId, renameToCommit, withCreatedEmail } from './email-switching';
 
 /**
  * NAMING A NEW EMAIL RENAMED THE WELCOME EMAIL (sparx persona issue 153).
@@ -45,5 +45,30 @@ describe('the email to show', () => {
     expect(emailToShow([welcome, reminder], null, 'reminder')).toBe('reminder');
     expect(emailToShow([welcome, reminder], null, undefined)).toBe('welcome');
     expect(emailToShow([], null, undefined)).toBeNull();
+  });
+});
+
+// Sparx persona issue 354: the search result for a design opened the Welcome email.
+describe('linkedEmailId', () => {
+  it('reads the email a link names, as every link spells it', () => {
+    expect(linkedEmailId({ emailId: 'c8bb7462', site: 'primary' })).toBe('c8bb7462');
+  });
+
+  it('still reads a pane saved with id', () => {
+    expect(linkedEmailId({ id: 'c8bb7462' })).toBe('c8bb7462');
+    expect(linkedEmailId({ id: 'new' })).toBe('new');
+  });
+
+  it('is nothing when the link names none', () => {
+    expect(linkedEmailId({})).toBeUndefined();
+    expect(linkedEmailId({ emailId: '' })).toBeUndefined();
+  });
+
+  it('opens the design the search result names, not the first in the list', () => {
+    const emails = [
+      { id: 'welcome', name: 'Welcome' },
+      { id: 'c8bb7462', name: 'Fleet winter readiness, November 2026' },
+    ];
+    expect(emailToShow(emails, null, linkedEmailId({ emailId: 'c8bb7462' }))).toBe('c8bb7462');
   });
 });

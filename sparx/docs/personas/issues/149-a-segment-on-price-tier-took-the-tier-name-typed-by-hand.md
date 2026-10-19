@@ -51,7 +51,7 @@ Tests, proved red:
 
 P01 on screen, 2026-10-08, as Doty. In a new segment, "Wholesale account · Price tier" opens a list: Contract, Dealer, Fleet. Fleet matched 5 of 38; "any of" Fleet or Contract matched 6. "Fleet customers" was created with Renée Castañeda, Teodora Vukić-Hale and Marcus Oyelaran-Pike (Wasatch Front), Seamus O'Malley, Dana Whitcomb-Nguyen and Marisa Delacroix-Ward, which is every fleet. The Segments list reads "Price tier is Fleet or Price tier is Contract".
 
-Not checked on screen: renaming a tier with a segment on it. The test covers it.
+Renaming a tier with a segment on it, on screen, 2026-10-19, as Doty: Price tiers › Fleet renamed "Fleet accounts" and saved. "Fleet customers" then read "Value: Fleet accounts", and after "Update membership" still "6 of 40 match", the same six people; the Segments list read "Price tier is Fleet accounts or Price tier is Contract". Renamed back to "Fleet" after.
 
 ## Rating effect
 
