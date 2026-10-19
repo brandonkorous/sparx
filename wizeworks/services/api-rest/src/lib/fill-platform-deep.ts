@@ -10,7 +10,7 @@ import { fillPlatformName } from '@wizeworks/brand-core';
  */
 export function fillDeep<T>(value: T, brand: string): T {
   if (typeof value === 'string') return fillPlatformName(value, brand) as T;
-  if (Array.isArray(value)) return value.map((v) => fillDeep(v, brand)) as T;
+  if (Array.isArray(value)) return (value as unknown[]).map((v) => fillDeep(v, brand)) as T;
   if (value !== null && typeof value === 'object') {
     return Object.fromEntries(
       Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, fillDeep(v, brand)])

@@ -29,12 +29,18 @@ export interface ShopReach {
   email: { label: string; href: string } | null;
 }
 
+/** The text with its spaces off, or null when nothing is left. */
+function filled(value: string | null | undefined): string | null {
+  const text = value?.trim();
+  return text?.length ? text : null;
+}
+
 export function shopReach(
   contact: { phone?: string | null; email?: string | null } | null | undefined
 ): ShopReach {
-  const phoneLabel = contact?.phone?.trim() || null;
+  const phoneLabel = filled(contact?.phone);
   const phoneLink = telHref(phoneLabel);
-  const emailLabel = contact?.email?.trim() || null;
+  const emailLabel = filled(contact?.email);
   return {
     phone: phoneLabel && phoneLink ? { label: phoneLabel, href: phoneLink } : null,
     email: emailLabel ? { label: emailLabel, href: `mailto:${emailLabel}` } : null,

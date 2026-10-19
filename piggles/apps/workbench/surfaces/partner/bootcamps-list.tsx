@@ -30,7 +30,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useBootcamps, usePartnerProfile, type Bootcamp } from './data';
 import { bootcampState, formatDate, formatLabel } from './format';
-import { NotAPartner, PartnerLoadError, PartnerLoading, isNotAPartner } from './gate';
+import { NotAPartner, PartnerLoadError, PartnerLoading } from './gate';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {

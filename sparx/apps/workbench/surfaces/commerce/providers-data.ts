@@ -288,7 +288,7 @@ export interface SparxPayNeed {
 /** Stripe's requirement keys in the owner's words, matched on the key's last
  *  part so `individual.`, `company.` and `person_….` prefixes all read the same.
  *  First match wins, so the ID photo is not also read as "your date of birth". */
-const NEED_WORDS: ReadonlyArray<readonly [RegExp, string]> = [
+const NEED_WORDS: readonly (readonly [RegExp, string])[] = [
   [/verification.(additional_)?document$/, 'a photo of your ID'],
   [/^external_account$/, 'your bank account for payouts'],
   [/^tos_acceptance./, "your OK to Stripe's terms"],

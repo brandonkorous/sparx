@@ -51,7 +51,7 @@ export function startReservationReaperLoop(
   logger: FastifyBaseLogger,
   production: boolean
 ): () => void {
-  if (production) return () => {};
+  if (production) return () => undefined;
   let stopped = false;
   let timer: NodeJS.Timeout | null = null;
   const tick = async (): Promise<void> => {

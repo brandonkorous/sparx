@@ -2,7 +2,10 @@
 
 const DAY_MS = 86_400_000;
 
-type Order = { status: string; expectedArrivalAt: string | null };
+interface Order {
+  status: string;
+  expectedArrivalAt: string | null;
+}
 
 /** Whole days past the expected day for an order still coming; null when it is
  *  not late. The day is read in UTC, as the Expected field shows it. */

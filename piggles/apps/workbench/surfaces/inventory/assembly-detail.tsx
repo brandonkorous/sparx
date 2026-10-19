@@ -822,7 +822,7 @@ export function AssemblyDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
 /** The name of the chosen location, for a sentence about it. */
 function activeLocationName(
-  locations: ReadonlyArray<{ id: string; name: string }> | undefined,
+  locations: readonly { id: string; name: string }[] | undefined,
   id: string
 ): string {
   return locations?.find((l) => l.id === id)?.name ?? 'this location';

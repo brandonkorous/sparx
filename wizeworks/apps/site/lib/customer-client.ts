@@ -159,12 +159,12 @@ export interface AuthResult {
   confirmEmail: { email: string; sent?: boolean } | null;
 }
 
-type AuthBody = {
+interface AuthBody {
   customer: Customer | null;
   recognized?: boolean;
   cart?: CartHandoff | null;
   confirmEmail?: { email: string; sent?: boolean } | null;
-};
+}
 
 const authResult = (data: AuthBody): AuthResult => ({
   customer: data.customer,

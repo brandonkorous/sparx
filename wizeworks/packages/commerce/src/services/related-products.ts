@@ -80,7 +80,7 @@ type FitRow = Prisma.ProductFitmentGetPayload<{ select: typeof FIT_SELECT }>;
 
 function toEntries(rows: readonly FitRow[]): FitEntry[] {
   return rows
-    .filter((r) => r.nodeId === null || (r.node && r.node.deletedAt === null))
+    .filter((r) => r.nodeId === null || r.node?.deletedAt === null)
     .map((r) => ({
       domainId: r.domainId,
       nodeId: r.nodeId,
