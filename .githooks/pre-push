@@ -247,27 +247,43 @@ fi
 # A raised heap cap is a ceiling, not a reservation, but a higher ceiling makes
 # V8 collect later, so every process held far more than it needed.
 #
-# Now: the raised cap goes ONLY to lint and typecheck (CI's 6144), at 2
-# workspaces at once (worst case ~12 GB). Tests keep Node's default heap, run 2
-# workspaces at once, and each suite gets at most 4 workers (8 in all).
-# Override with PREPUSH_CONCURRENCY / VITEST_MAX_WORKERS if a box has room.
+# Now: the raised cap goes ONLY to lint and typecheck (CI's 6144). Tests keep
+# Node's default heap, run 2 workspaces at once, and each suite gets at most 4
+# workers (8 in all). Override with PREPUSH_CONCURRENCY / VITEST_MAX_WORKERS if
+# a box has room.
 #
-# Why lint and typecheck still need the raised cap: `@sparx/api-rest` is one
-# `tsc` program over 469 files and type-checks just under V8's DEFAULT ceiling
-# (~4 GB), so it is permanently on the edge. When it dies it does NOT look like
-# a memory problem — on Windows it is a bare `Segmentation fault` and
+# MEASURED peaks (2026-10-20, one process alone): typed eslint and tsc on the
+# three HEAVY workspaces below take 5–6 GB EACH; every other workspace takes
+# 2.5 GB or less. So lint and typecheck run the light workspaces 2 at a time
+# and the heavy ones strictly one at a time — two heavy ones side by side is
+# ~12 GB, and that pairing is what pushed a box under 8 GB free. Peak is now
+# ~6 GB. Add a workspace to HEAVY when it grows past ~3 GB.
+#
+# Why lint and typecheck still need the raised cap: `@wizeworks/api-rest` is
+# one `tsc` program over 469 files and type-checks just under V8's DEFAULT
+# ceiling (~4 GB), so it is permanently on the edge. When it dies it does NOT
+# look like a memory problem — on Windows it is a bare `Segmentation fault` and
 # `Exit status 3221225477` from whichever package happened to be running, and
 # CI hit the identical wall as `FATAL ERROR: Ineffective mark-compacts near
 # heap limit`.
 CONCURRENCY="${PREPUSH_CONCURRENCY:-2}"
 BIG_HEAP="${NODE_OPTIONS:---max-old-space-size=6144}"
+HEAVY="@wizeworks/api-rest @piggles/console @sparx/workbench"
+LIGHT_FILTERS=(); HEAVY_FILTERS=()
+for w in $HEAVY; do LIGHT_FILTERS+=(--filter "!$w"); HEAVY_FILTERS+=(--filter "$w"); done
+
+# Runs a script over the light workspaces 2 at a time, then the heavy ones alone.
+run_budgeted() {
+  NODE_OPTIONS="$BIG_HEAP" pnpm -r --workspace-concurrency="$CONCURRENCY" "${LIGHT_FILTERS[@]}" run "$1" \
+    && NODE_OPTIONS="$BIG_HEAP" pnpm -r --workspace-concurrency=1 "${HEAVY_FILTERS[@]}" run "$1"
+}
 
 step "pnpm -r run lint"
-NODE_OPTIONS="$BIG_HEAP" pnpm -r --workspace-concurrency="$CONCURRENCY" run lint || fail "eslint failed — fix errors above and commit"
+run_budgeted lint || fail "eslint failed — fix errors above and commit"
 ok "lint clean"
 
 step "pnpm -r run typecheck"
-NODE_OPTIONS="$BIG_HEAP" pnpm -r --workspace-concurrency="$CONCURRENCY" run typecheck || fail "tsc found type errors — fix errors above and commit"
+run_budgeted typecheck || fail "tsc found type errors — fix errors above and commit"
 ok "typecheck clean"
 
 # CI=true so this excludes the same DB-backed integration suites CI excludes
