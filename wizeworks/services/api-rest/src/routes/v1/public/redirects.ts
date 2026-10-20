@@ -12,11 +12,12 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { prisma, withTenant } from '@wizeworks/db';
+import { withTenant } from '@wizeworks/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { notFound } from '@wizeworks/api-core/errors';
 
 import { resolvePublicPropertyId } from '../../../lib/property.js';
+import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 
 const Query = z.object({
   tenant: z.string().min(1).max(63),
@@ -32,11 +33,13 @@ const publicRedirectRoutes: FastifyPluginAsync = (app) => {
 
     // Tenants table has no RLS; redirects do, so the chain walk runs inside
     // withTenant (mirrors the sitemap route's pattern).
-    const tenant = await prisma.tenant.findUnique({ where: { slug } });
-    if (!tenant) throw notFound('Tenant', slug);
-    const propertyId = await resolvePublicPropertyId(tenant.id, property);
+    // Cached slug → id (lib/tenant-slug). This runs on every page that would
+    // 404, which is most of what a scanner asks for, and it was the one public
+    // read still looking the tenant up uncached.
+    const tenantId = await requireTenantIdBySlug(slug);
+    const propertyId = await resolvePublicPropertyId(tenantId, property);
 
-    const result = await withTenant({ tenantId: tenant.id }, async (tx) => {
+    const result = await withTenant({ tenantId }, async (tx) => {
       let current = path;
       let firstStatus = 301;
       let firstId: string | null = null;
