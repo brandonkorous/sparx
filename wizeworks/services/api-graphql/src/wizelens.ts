@@ -11,7 +11,12 @@
 // in import order, so a later import would leave every query untraced.
 
 import { createRequire } from 'node:module';
-import { createWizeLens, instrumentGraphql, prismaExtension, wizelensFastify } from '@wizeworks/lens-node';
+import {
+  createWizeLens,
+  instrumentGraphql,
+  prismaExtension,
+  wizelensFastify,
+} from '@wizeworks/lens-node';
 import { env } from './env.js';
 
 const enabled = env.NODE_ENV === 'development' || process.env.WIZELENS_ENABLED === 'true';
@@ -34,7 +39,6 @@ function onWizeLensAuth(caller: { actorId: string; actorType: string; tenantId: 
   if (caller.actorType === 'user') wizelens.setUser(caller.actorId);
   wizelens.tag('tenant', caller.tenantId);
 }
-
 
 /** Fastify plugin. Register before every other plugin so its span wraps them all. */
 export const wizelensPlugin = wizelensFastify(wizelens);
