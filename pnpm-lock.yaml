@@ -108,11 +108,11 @@ importers:
         specifier: workspace:*
         version: link:../../../wizeworks/packages/events
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       '@wizeworks/lens-react':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3(react@19.2.6)
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4(react@19.2.6)
       '@wizeworks/links':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/links
@@ -190,11 +190,11 @@ importers:
         specifier: workspace:*
         version: link:../../../wizeworks/packages/legal
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       '@wizeworks/lens-react':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3(react@19.2.6)
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4(react@19.2.6)
       '@wizeworks/silicaui':
         specifier: 'catalog:'
         version: 0.60.2(tailwindcss@4.3.0)
@@ -302,11 +302,11 @@ importers:
         specifier: workspace:*
         version: link:../../../wizeworks/packages/email-sequences
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       '@wizeworks/lens-react':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3(react@19.2.6)
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4(react@19.2.6)
       '@wizeworks/links':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/links
@@ -527,11 +527,11 @@ importers:
         specifier: workspace:*
         version: link:../../../wizeworks/packages/commerce-schemas
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       '@wizeworks/lens-react':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3(react@19.2.6)
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4(react@19.2.6)
       '@wizeworks/silica-corrections':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/silica-corrections
@@ -603,11 +603,11 @@ importers:
         specifier: workspace:*
         version: link:../../../wizeworks/packages/legal
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       '@wizeworks/lens-react':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3(react@19.2.6)
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4(react@19.2.6)
       '@wizeworks/migration':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/migration
@@ -742,11 +742,11 @@ importers:
         specifier: workspace:*
         version: link:../../../wizeworks/packages/email-sequences
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       '@wizeworks/lens-react':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3(react@19.2.6)
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4(react@19.2.6)
       '@wizeworks/links':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/links
@@ -885,11 +885,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/forms
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       '@wizeworks/lens-react':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3(react@19.2.6)
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4(react@19.2.6)
       '@wizeworks/operator':
         specifier: workspace:*
         version: link:../../packages/operator
@@ -985,11 +985,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/commerce-schemas
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       '@wizeworks/lens-react':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3(react@19.2.6)
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4(react@19.2.6)
       '@wizeworks/section-template-react':
         specifier: workspace:*
         version: link:../../packages/section-template-react
@@ -3773,8 +3773,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/events
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       fastify:
         specifier: ^5.6.1
         version: 5.8.5
@@ -3870,8 +3870,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/inventory
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       '@wizeworks/links':
         specifier: workspace:*
         version: link:../../packages/links
@@ -4072,8 +4072,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/legal-templates
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       '@wizeworks/links':
         specifier: workspace:*
         version: link:../../packages/links
@@ -4367,8 +4367,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/client-ip
       '@wizeworks/lens-node':
-        specifier: 0.3.0-alpha.3
-        version: 0.3.0-alpha.3
+        specifier: 0.3.0-alpha.4
+        version: 0.3.0-alpha.4
       '@wizeworks/site-mcp':
         specifier: workspace:*
         version: link:../../packages/site-mcp
@@ -7079,20 +7079,23 @@ packages:
   '@vitest/utils@4.1.7':
     resolution: {integrity: sha512-T532WBu791cBxJlCl6SO+J14l81DQx6uQHm1bQbmCDY7nqlEIgkza/UFnSBNaUtSf41unldDFjdOBYEQC4b5Hw==}
 
-  '@wizeworks/lens-core@0.3.0-alpha.3':
-    resolution: {integrity: sha512-2Al4ht6sQ/yTbTYvFk+L3uhpfT8IyHM8/wHGIaX/5JjPy0Fcq2qqWrqFRRF0+Dh1lY3Zy56+BcRYeuol2/9A5w==}
+  '@wizeworks/lens-browser@0.3.0-alpha.4':
+    resolution: {integrity: sha512-YDILJES/tqVmYKeWZ6Wn4qdLOYabuKKftiS+zwBG1MSUoIcwPI80TgOwzlbuz/Ir0N2Ud8IuGiU+ohTxQMSaOw==}
 
-  '@wizeworks/lens-node@0.3.0-alpha.3':
-    resolution: {integrity: sha512-R3utQMJ2b6U4diMha22St6Uj5EEqHr+w2pDD432cf/88NinGc0sSyLSmqCqIe1x3yFHX/C8tzTRBqezkAFZZIA==}
+  '@wizeworks/lens-core@0.3.0-alpha.4':
+    resolution: {integrity: sha512-DBb4ulPzBFJaHGJHIKHkYgpY1VBC+ZBUoOEMIWxLmthLdI1o4lFamHWKvuAcdnN01Pl/GuXFIt9q879ahEXl3Q==}
+
+  '@wizeworks/lens-node@0.3.0-alpha.4':
+    resolution: {integrity: sha512-X14ieKVccEnF0mmyhSZWVYRv7sMvYQTA/gxnU2DlFtYHezWPXjSAumSDtNpEbkj/6ug83rj170LaPVvjUcGGmg==}
     engines: {node: '>=22.13'}
 
-  '@wizeworks/lens-react@0.3.0-alpha.3':
-    resolution: {integrity: sha512-XWl6NDDLHSg5z60DEPmxz20X+DGpJRJbS9MNXQY92BLot9fGX8fmTw+TTcbAat7G2kMB+DGSPdus1a7eERN+Nw==}
+  '@wizeworks/lens-react@0.3.0-alpha.4':
+    resolution: {integrity: sha512-k6uxedkDJRDQVWnbWYeaautkyQir0RCxw5JlGn2t8R0gJ2jt7Pq16dhEdwwiIqaftN3FUiD2z8dclCBVDtmJJA==}
     peerDependencies:
       react: '>=18'
 
-  '@wizeworks/lens-ui@0.3.0-alpha.3':
-    resolution: {integrity: sha512-nvcCRWPl1FPZN6Huayi7IajPVB5OgPCZLcRdRMngFuwfWrMIahmi9WS/ArY6En8ammpNc9czGsPxNElnMkqnSQ==}
+  '@wizeworks/lens-ui@0.3.0-alpha.4':
+    resolution: {integrity: sha512-soR+FUgv761IjqN5tJ8O1v2I774C9GxMaDvnzRIK0VUAwm3Ngnt0l1R0k5RD/KKwnRT58rFUmHRfPoqEnHGDNg==}
 
   '@wizeworks/silicaui-behaviors@0.60.2':
     resolution: {integrity: sha512-nD0vdaSttssXu9eUiMFLfXoGIFY28bV+B5/m0SPHQg5Pwk+YwTXpJ+TFWoycGojKk/eEBiN+PwgmDyhXz/c0XA==}
@@ -13310,9 +13313,13 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
-  '@wizeworks/lens-core@0.3.0-alpha.3': {}
+  '@wizeworks/lens-browser@0.3.0-alpha.4':
+    dependencies:
+      '@wizeworks/lens-core': 0.3.0-alpha.4
 
-  '@wizeworks/lens-node@0.3.0-alpha.3':
+  '@wizeworks/lens-core@0.3.0-alpha.4': {}
+
+  '@wizeworks/lens-node@0.3.0-alpha.4':
     dependencies:
       '@modelcontextprotocol/sdk': 1.32.1(zod@4.6.7)
       '@opentelemetry/api': 1.9.1
@@ -13321,19 +13328,20 @@ snapshots:
       '@opentelemetry/instrumentation-undici': 0.33.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/resources': 2.12.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/sdk-trace-base': 2.12.0(@opentelemetry/api@1.9.1)
-      '@wizeworks/lens-core': 0.3.0-alpha.3
-      '@wizeworks/lens-ui': 0.3.0-alpha.3
+      '@wizeworks/lens-core': 0.3.0-alpha.4
+      '@wizeworks/lens-ui': 0.3.0-alpha.4
       zod: 4.6.7
     transitivePeerDependencies:
       - '@cfworker/json-schema'
       - supports-color
 
-  '@wizeworks/lens-react@0.3.0-alpha.3(react@19.2.6)':
+  '@wizeworks/lens-react@0.3.0-alpha.4(react@19.2.6)':
     dependencies:
-      '@wizeworks/lens-core': 0.3.0-alpha.3
+      '@wizeworks/lens-browser': 0.3.0-alpha.4
+      '@wizeworks/lens-core': 0.3.0-alpha.4
       react: 19.2.6
 
-  '@wizeworks/lens-ui@0.3.0-alpha.3': {}
+  '@wizeworks/lens-ui@0.3.0-alpha.4': {}
 
   '@wizeworks/silicaui-behaviors@0.60.2': {}
 
