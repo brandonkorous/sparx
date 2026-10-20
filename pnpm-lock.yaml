@@ -1121,6 +1121,9 @@ importers:
 
   wizeworks/packages/app-kit:
     devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
       '@types/react':
         specifier: ^19.0.0
         version: 19.2.15

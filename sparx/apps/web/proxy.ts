@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { runningActionIds, staleFormActionRedirect } from '@wizeworks/app-kit/stale-form-action';
 import { newVisitorId } from '@wizeworks/attribution';
 import { SPARX_ATTR } from './lib/attribution-cookies';
 
@@ -9,7 +10,12 @@ import { SPARX_ATTR } from './lib/attribution-cookies';
 // referrer + UTMs. Scoped to `.sparx.works` in prod so app.sparx.works reads it
 // at signup; host-only on localhost / preview hosts where a registrable-domain
 // cookie won't set.
-export function proxy(request: NextRequest): NextResponse {
+export async function proxy(request: NextRequest): Promise<Response> {
+  // A server-action form posted from an older build answered 500; this sends it
+  // back to a fresh page. See @wizeworks/app-kit/stale-form-action.
+  const stale = await staleFormActionRedirect(request, runningActionIds());
+  if (stale) return stale;
+
   const response = NextResponse.next();
 
   if (!request.cookies.has(SPARX_ATTR.visitor)) {

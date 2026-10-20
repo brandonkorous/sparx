@@ -16,6 +16,10 @@
     "./forwarded-for": {
       "types": "./src/forwarded-for.ts",
       "default": "./src/forwarded-for.ts"
+    },
+    "./stale-form-action": {
+      "types": "./src/stale-form-action.ts",
+      "default": "./src/stale-form-action.ts"
     }
   },
   "files": [
@@ -31,6 +35,7 @@
     "react": "^19.0.0"
   },
   "devDependencies": {
+    "@types/node": "^25.9.1",
     "@types/react": "^19.0.0",
     "react": "^19.0.0",
     "typescript": "^6.0.3",
