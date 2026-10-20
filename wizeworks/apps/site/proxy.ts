@@ -42,6 +42,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 import { isCrawlablePath, siteIsDark } from './lib/dark-at-the-edge';
+import { isProbePath, probeNotFound } from './lib/probe-path';
 import { isLocalDevHost } from './lib/site-host';
 import { suspendedPage } from './lib/suspended';
 
@@ -114,6 +115,11 @@ function publicHost(req: NextRequest): string {
 }
 
 export async function proxy(req: NextRequest) {
+  // A hidden-file probe (`/.env`, `/.git/config`) answers 404 here, before any
+  // lookup: no tenant page can live there, and the render it used to reach cost
+  // about sixty queries per bot request. See lib/probe-path for what is NOT caught.
+  if (isProbePath(req.nextUrl.pathname)) return probeNotFound();
+
   const requestHeaders = new Headers(req.headers);
 
   // Site preview (every environment): mirror the draft token so the root layout
