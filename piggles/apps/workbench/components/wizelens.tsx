@@ -10,7 +10,7 @@
 //  - `apiUrl` is api-rest's browser-facing origin. Calls to it carry a
 //    `traceparent` too, so api-rest's part joins the click that caused it.
 
-import { WizeLensProvider } from '@wizeworks/lens-react';
+import { WizeLensProvider, WizeLensUser } from '@wizeworks/lens-react';
 import { useCallback, useSyncExternalStore } from 'react';
 
 const DEVELOPMENT = process.env.NODE_ENV === 'development';
@@ -41,4 +41,9 @@ export function WizeLens({ apiUrl }: { apiUrl?: string }) {
     [apiOrigin]
   );
   return <WizeLensProvider enabled={enabled} hud={DEVELOPMENT} propagateTo={propagateTo} />;
+}
+
+/** Names the signed-in user on this page's browser spans, so the Users page counts what they do, calls to api-rest included. */
+export function WizeLensSignedIn({ id, name }: { id: string; name: string | null }) {
+  return <WizeLensUser id={id} name={name} />;
 }

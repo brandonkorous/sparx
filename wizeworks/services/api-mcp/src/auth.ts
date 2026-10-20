@@ -24,6 +24,7 @@ import {
   type McpBusinessScope,
 } from '@wizeworks/auth';
 import { env } from './env.js';
+import { wizelens } from './wizelens.js';
 
 export type StaffRole = 'owner' | 'admin' | 'editor' | 'viewer' | 'api';
 
@@ -121,6 +122,9 @@ export async function authenticate(request: FastifyRequest): Promise<McpAuthCont
   }
 
   request.mcpAuth = auth;
+  // WizeLens: the user (not for API keys) on the Users page, and the tenant as a tag.
+  if (auth.source !== 'api_key') wizelens.setUser(auth.userId);
+  wizelens.tag('tenant', auth.tenantId);
   return auth;
 }
 

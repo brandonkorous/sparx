@@ -13,6 +13,15 @@ import { operatorAuth } from './server';
 import { loadOperatorCapabilities } from './capabilities';
 import type { OperatorCapability, OperatorIdentity } from '@wizeworks/operator';
 
+/** Set by an app's WizeLens setup (instrumentation.ts): the signed-in user, for its traces. A no-op when WizeLens is off. */
+interface TracedUser {
+  id: string;
+  name: string | null;
+  tenantId: string | null;
+}
+const noteUser = (user: TracedUser): void =>
+  (globalThis as { __wizelensUser?: (u: TracedUser) => void }).__wizelensUser?.(user);
+
 /** Where an operator who has not set up MFA yet is sent. Lives OUTSIDE the
  *  console segment so it is reachable without passing the gate it exists to
  *  satisfy — and it calls getOperatorSession(), never requireOperator(), or the
@@ -29,6 +38,7 @@ export async function getOperatorSession(): Promise<OperatorIdentity | null> {
     twoFactorEnabled?: boolean;
   };
   const capabilities = await loadOperatorCapabilities(user.id);
+  noteUser({ id: user.id, name: user.name?.trim() || null, tenantId: null });
   return {
     id: user.id,
     email: user.email,

@@ -83,6 +83,8 @@ export async function GET(): Promise<NextResponse> {
     tid: session.user.tenantId,
     role: session.user.role,
     ev: session.user.emailVerified,
+    // For traces only: api-rest's WizeLens shows the name on its Users page.
+    name: session.user.name?.trim() || undefined,
   })
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setSubject(session.user.id)

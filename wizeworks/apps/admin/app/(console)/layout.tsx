@@ -1,6 +1,7 @@
 import { ConfirmProvider, ModuleProvider } from '@wizeworks/ui';
 import { requireOperator } from '@wizeworks/operator-auth/next';
 import { ConsoleShell } from './_components/console-shell';
+import { WizeLensSignedIn } from '../wizelens';
 
 // The entire authenticated console renders per-request, never at build time:
 // requireOperator() reads the session cookie and constructs the operator Better
@@ -19,6 +20,7 @@ export default async function ConsoleLayout({ children }: { children: React.Reac
   const operator = await requireOperator();
   return (
     <ModuleProvider module="platform">
+      <WizeLensSignedIn id={operator.id} name={operator.name} />
       <ConfirmProvider>
         <ConsoleShell email={operator.email} capabilities={operator.capabilities}>
           {children}

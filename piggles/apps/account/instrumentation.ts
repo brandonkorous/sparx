@@ -23,6 +23,15 @@ export async function register() {
   try {
     const { registerWizeLens } = await import('@wizeworks/lens-node/next');
     const wizelens = registerWizeLens({ serviceName: 'piggles-account', enabled: true });
+    // The signed-in user, from the shared session code: the Users page, and a tenant tag.
+    (globalThis as { __wizelensUser?: unknown }).__wizelensUser = (user: {
+      id: string;
+      name: string | null;
+      tenantId: string | null;
+    }) => {
+      wizelens.setUser(user.id, user.name ? { name: user.name } : {});
+      if (user.tenantId) wizelens.tag('tenant', user.tenantId);
+    };
     const { prismaExtension } = await import('@wizeworks/lens-node');
     (globalThis as { __wizelensPrisma?: unknown }).__wizelensPrisma = prismaExtension(wizelens, {
       system: 'postgresql',
