@@ -28,6 +28,10 @@
 
 import crypto from 'node:crypto';
 
+/** Set by a service's WizeLens setup: who called, for its traces. A no-op when WizeLens is off. */
+const noteCaller = (caller: { actorId: string; actorType: string; tenantId: string }): void =>
+  (globalThis as { __wizelensAuth?: (c: typeof caller) => void }).__wizelensAuth?.(caller);
+
 import fastifyJwt from '@fastify/jwt';
 import { prisma } from '@wizeworks/db';
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
@@ -177,6 +181,7 @@ export function createAuthPlugin(options: AuthPluginOptions): FastifyPluginAsync
             ? { mode: 'selected', granted: [apiKey.propertyId] }
             : null,
         };
+        noteCaller(request.auth);
         return;
       }
 
@@ -204,6 +209,7 @@ export function createAuthPlugin(options: AuthPluginOptions): FastifyPluginAsync
         // expire, and a claim minted at sign-in cannot do that.
         propertyAccess: await loadMemberPropertyAccess(payload.tid, payload.sub),
       };
+      noteCaller(request.auth);
     });
   };
 

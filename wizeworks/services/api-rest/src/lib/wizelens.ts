@@ -1,4 +1,4 @@
-// WizeLens: request tracing (timeline, Prisma calls, outgoing fetches).
+// WizeLens: request tracing (timeline, Prisma and Redis calls, outgoing fetches, the signed-in user).
 //
 // On in development, with its dashboard at http://localhost:3100/_wizelens.
 // In production it runs only with WIZELENS_ENABLED=true (set in
@@ -11,7 +11,13 @@
 // `globalThis` before @wizeworks/db builds its client, and ES modules evaluate
 // in import order, so a later import would leave every query untraced.
 
-import { createWizeLens, prismaExtension, wizelensFastify } from '@wizeworks/lens-node';
+import { Redis } from 'ioredis';
+import {
+  createWizeLens,
+  instrumentIoRedis,
+  prismaExtension,
+  wizelensFastify,
+} from '@wizeworks/lens-node';
 import { env } from '../env.js';
 
 const development = env.NODE_ENV === 'development';
@@ -23,6 +29,15 @@ if (enabled) {
   (globalThis as { __wizelensPrisma?: unknown }).__wizelensPrisma = prismaExtension(wizelens, {
     system: 'postgresql',
   });
+  // Every Redis client (analytics cache, websocket fan-out): commands as `GET key:?`, never values.
+  instrumentIoRedis(wizelens, Redis);
+  (globalThis as { __wizelensAuth?: unknown }).__wizelensAuth = onWizeLensAuth;
+}
+
+/** The shared auth plugin (@wizeworks/api-core) calls this after it reads a caller: the signed-in user shows on WizeLens's Users page, and every request carries its tenant as a tag. */
+function onWizeLensAuth(caller: { actorId: string; actorType: string; tenantId: string }): void {
+  if (caller.actorType === 'user') wizelens.setUser(caller.actorId);
+  wizelens.tag('tenant', caller.tenantId);
 }
 
 /** Fastify plugin. Register before every other plugin so its span wraps them all. */
