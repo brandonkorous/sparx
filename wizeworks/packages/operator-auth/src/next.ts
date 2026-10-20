@@ -38,7 +38,7 @@ export async function getOperatorSession(): Promise<OperatorIdentity | null> {
     twoFactorEnabled?: boolean;
   };
   const capabilities = await loadOperatorCapabilities(user.id);
-  noteUser({ id: user.id, name: user.name?.trim() || null, tenantId: null });
+  noteUser({ id: user.id, name: user.name ?? null, tenantId: null });
   return {
     id: user.id,
     email: user.email,

@@ -62,7 +62,7 @@ export async function WorkbenchEntry({ address }: { address: string }) {
 
   return (
     <>
-      <WizeLensSignedIn id={session.user.id} name={session.user.name?.trim() || null} />
+      <WizeLensSignedIn id={session.user.id} name={session.user.name ?? null} />
       <WorkbenchShell
         userId={session.user.id}
         userName={displayName(session.user.name, session.user.email)}

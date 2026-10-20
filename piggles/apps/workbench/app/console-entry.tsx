@@ -61,7 +61,7 @@ export async function ConsoleEntry({ address }: { address: string }) {
 
   return (
     <>
-      <WizeLensSignedIn id={session.user.id} name={session.user.name?.trim() || null} />
+      <WizeLensSignedIn id={session.user.id} name={session.user.name ?? null} />
       <ConsoleShell
         notice={notice}
         userId={session.user.id}

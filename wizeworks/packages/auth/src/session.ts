@@ -95,7 +95,7 @@ export async function getSession(): Promise<SparxSession | null> {
     }
   }
 
-  noteUser({ id: user.id, name: user.name?.trim() || null, tenantId });
+  noteUser({ id: user.id, name: user.name ?? null, tenantId });
   return {
     user: { ...user, tenantId, role, homeTenantId: user.tenantId },
     session: {
