@@ -1,7 +1,0 @@
-{
-  "enabledPlugins": {
-    "supabase@claude-plugins-official": false,
-    "skill-creator@claude-plugins-official": false,
-    "sentry@claude-plugins-official": false
-  }
-}
