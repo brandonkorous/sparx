@@ -19,7 +19,16 @@ export async function register() {
   if (process.env.NEXT_RUNTIME !== 'nodejs' || !ENABLED) return;
   try {
     const { registerWizeLens } = await import('@wizeworks/lens-node/next');
-    registerWizeLens({ serviceName: 'admin', enabled: true });
+    const wizelens = registerWizeLens({ serviceName: 'admin', enabled: true });
+    // The signed-in user, from the shared session code: the Users page, and a tenant tag.
+    (globalThis as { __wizelensUser?: unknown }).__wizelensUser = (user: {
+      id: string;
+      name: string | null;
+      tenantId: string | null;
+    }) => {
+      wizelens.setUser(user.id, user.name ? { name: user.name } : {});
+      if (user.tenantId) wizelens.tag('tenant', user.tenantId);
+    };
   } catch (err) {
     console.warn('[wizelens] tracing did not start', err);
   }

@@ -28,16 +28,25 @@
 
 import crypto from 'node:crypto';
 
-/** Set by a service's WizeLens setup: who called, for its traces. A no-op when WizeLens is off. */
-const noteCaller = (caller: { actorId: string; actorType: string; tenantId: string }): void =>
-  (globalThis as { __wizelensAuth?: (c: typeof caller) => void }).__wizelensAuth?.(caller);
-
 import fastifyJwt from '@fastify/jwt';
 import { prisma } from '@wizeworks/db';
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 
 import { unauthorized, forbidden } from './errors.js';
+
+/** Who called, for a service's WizeLens setup to put on its traces. */
+interface TracedCaller {
+  actorId: string;
+  actorType: string;
+  tenantId: string;
+  /** The user's display name, from the token's `name` claim; null for API keys and older tokens. */
+  name?: string | null;
+}
+
+/** Set by a service's WizeLens setup: who called, for its traces. A no-op when WizeLens is off. */
+const noteCaller = (caller: TracedCaller): void =>
+  (globalThis as { __wizelensAuth?: (c: TracedCaller) => void }).__wizelensAuth?.(caller);
 
 const API_KEY_PUBLIC_PREFIX = 'sk_live_';
 const API_KEY_PREFIX_LEN = API_KEY_PUBLIC_PREFIX.length + 8;
@@ -109,6 +118,8 @@ interface InternalJwtPayload {
   // Email-verified flag (see AuthContext.emailVerified). Optional on the wire so
   // a token minted before this claim existed still verifies; absence → unverified.
   ev?: boolean;
+  // Display name, for traces only (WizeLens's Users page). Optional: older tokens have none.
+  name?: string;
   iat?: number;
   exp?: number;
 }
@@ -209,7 +220,7 @@ export function createAuthPlugin(options: AuthPluginOptions): FastifyPluginAsync
         // expire, and a claim minted at sign-in cannot do that.
         propertyAccess: await loadMemberPropertyAccess(payload.tid, payload.sub),
       };
-      noteCaller(request.auth);
+      noteCaller({ ...request.auth, name: payload.name ?? null });
     });
   };
 

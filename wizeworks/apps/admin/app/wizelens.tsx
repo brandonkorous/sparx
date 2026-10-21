@@ -8,7 +8,7 @@
 //    flag and can never post spans to a server that does not take them.
 //  - The HUD shows in development only. In production nothing is drawn.
 
-import { WizeLensProvider } from '@wizeworks/lens-react';
+import { WizeLensProvider, WizeLensUser } from '@wizeworks/lens-react';
 import { useSyncExternalStore } from 'react';
 
 const DEVELOPMENT = process.env.NODE_ENV === 'development';
@@ -26,4 +26,9 @@ export function serverTraces(): boolean {
 export function WizeLens() {
   const enabled = useSyncExternalStore(noSubscribe, serverTraces, () => false);
   return <WizeLensProvider enabled={enabled} hud={DEVELOPMENT} />;
+}
+
+/** Names the signed-in user on this page's browser spans, so the Users page counts what they do, calls to api-rest included. */
+export function WizeLensSignedIn({ id, name }: { id: string; name: string | null }) {
+  return <WizeLensUser id={id} name={name} />;
 }

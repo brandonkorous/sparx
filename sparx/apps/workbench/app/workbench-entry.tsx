@@ -4,6 +4,7 @@ import { getSession } from '@wizeworks/auth';
 import { ACTIVE_PROPERTY_COOKIE, readActiveSite } from '../lib/active-site-cookie';
 import { COMPACT_COOKIE, guessCompact } from '../lib/compact';
 import { WorkbenchShell } from '../components/workbench-shell';
+import { WizeLensSignedIn } from '../components/wizelens';
 
 // The one way into the workbench, shared by `/` and by every address under it.
 //
@@ -60,14 +61,17 @@ export async function WorkbenchEntry({ address }: { address: string }) {
   });
 
   return (
-    <WorkbenchShell
-      userId={session.user.id}
-      userName={displayName(session.user.name, session.user.email)}
-      userEmail={session.user.email}
-      initialSiteKey={initialSiteKey}
-      initialCompact={initialCompact}
-      arrivalAddress={address}
-    />
+    <>
+      <WizeLensSignedIn id={session.user.id} name={session.user.name ?? null} />
+      <WorkbenchShell
+        userId={session.user.id}
+        userName={displayName(session.user.name, session.user.email)}
+        userEmail={session.user.email}
+        initialSiteKey={initialSiteKey}
+        initialCompact={initialCompact}
+        arrivalAddress={address}
+      />
+    </>
   );
 }
 

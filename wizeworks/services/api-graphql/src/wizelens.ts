@@ -35,8 +35,14 @@ if (enabled) {
 }
 
 /** The shared auth plugin (@wizeworks/api-core) calls this after it reads a caller: the signed-in user shows on WizeLens's Users page, and every request carries its tenant as a tag. */
-function onWizeLensAuth(caller: { actorId: string; actorType: string; tenantId: string }): void {
-  if (caller.actorType === 'user') wizelens.setUser(caller.actorId);
+function onWizeLensAuth(caller: {
+  actorId: string;
+  actorType: string;
+  tenantId: string;
+  name?: string | null;
+}): void {
+  if (caller.actorType === 'user')
+    wizelens.setUser(caller.actorId, caller.name ? { name: caller.name } : {});
   wizelens.tag('tenant', caller.tenantId);
 }
 

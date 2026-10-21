@@ -5,6 +5,7 @@ import { ACTIVE_PROPERTY_COOKIE, readActiveSite } from '@/lib/active-site-cookie
 import { COMPACT_COOKIE, guessCompact } from '@/lib/compact';
 import { requireConsoleSession } from '@/lib/session';
 import { ConsoleShell } from '@/components/console-shell';
+import { WizeLensSignedIn } from '@/components/wizelens';
 
 // The one way into the console, shared by `/` and by every address under it.
 //
@@ -59,20 +60,23 @@ export async function ConsoleEntry({ address }: { address: string }) {
   const notice = await fetchHeaderNotice('console');
 
   return (
-    <ConsoleShell
-      notice={notice}
-      userId={session.user.id}
-      userName={displayName(session.user.name, session.user.email)}
-      userEmail={session.user.email}
-      initialSiteKey={initialSiteKey}
-      initialCompact={initialCompact}
-      arrivalAddress={address}
-      // Resolved on the SERVER and handed down. `PIGGLES_ACCOUNT_ORIGIN` is not
-      // a `NEXT_PUBLIC_` variable and the helper that reads it imports
-      // @wizeworks/db, so a client component asking this question would pull Prisma
-      // into the browser bundle to learn something the server already knew.
-      accountOrigin={accountOrigin()}
-    />
+    <>
+      <WizeLensSignedIn id={session.user.id} name={session.user.name ?? null} />
+      <ConsoleShell
+        notice={notice}
+        userId={session.user.id}
+        userName={displayName(session.user.name, session.user.email)}
+        userEmail={session.user.email}
+        initialSiteKey={initialSiteKey}
+        initialCompact={initialCompact}
+        arrivalAddress={address}
+        // Resolved on the SERVER and handed down. `PIGGLES_ACCOUNT_ORIGIN` is not
+        // a `NEXT_PUBLIC_` variable and the helper that reads it imports
+        // @wizeworks/db, so a client component asking this question would pull Prisma
+        // into the browser bundle to learn something the server already knew.
+        accountOrigin={accountOrigin()}
+      />
+    </>
   );
 }
 

@@ -3,6 +3,15 @@ import { redirect } from 'next/navigation';
 import { auth } from './server';
 import { authPrisma } from './prisma';
 
+/** Set by an app's WizeLens setup (instrumentation.ts): the signed-in user, for its traces. A no-op when WizeLens is off. */
+interface TracedUser {
+  id: string;
+  name: string | null;
+  tenantId: string | null;
+}
+const noteUser = (user: TracedUser): void =>
+  (globalThis as { __wizelensUser?: (u: TracedUser) => void }).__wizelensUser?.(user);
+
 // Server-side helper for Next.js server components / server actions.
 //
 // `getSession()` returns the session or null; `requireSession()` redirects to
@@ -86,6 +95,7 @@ export async function getSession(): Promise<SparxSession | null> {
     }
   }
 
+  noteUser({ id: user.id, name: user.name ?? null, tenantId });
   return {
     user: { ...user, tenantId, role, homeTenantId: user.tenantId },
     session: {

@@ -35,7 +35,7 @@
     "@wizeworks/funnels": "workspace:*",
     "@wizeworks/godaddy": "workspace:*",
     "@wizeworks/inventory": "workspace:*",
-    "@wizeworks/lens-node": "0.3.0-alpha.4",
+    "@wizeworks/lens-node": "0.3.0-alpha.6",
     "@wizeworks/links": "workspace:*",
     "@wizeworks/media": "workspace:*",
     "@wizeworks/registrar": "workspace:*",
