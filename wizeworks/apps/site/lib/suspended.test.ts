@@ -52,6 +52,12 @@ describe('a dark site asks a crawler to come back later', () => {
     expect(make().headers.get('cache-control')).toBe('no-store');
   });
 
+  it.each(answers)('%s tells WizeLens this 503 is meant, not a failure', (_name, make) => {
+    // Without the marker every dark page view counted as a server error, about
+    // 262 a day, and buried a real outage under a lapsed invoice.
+    expect(make().headers.get('x-wizelens-expected')).toBe('1');
+  });
+
   it('robots.txt leaves no rule behind for the crawler to hold', () => {
     // `Disallow: /` is a rule a crawler stores and obeys until it re-reads the
     // file, so it can outlast the outage — and while it is held, the crawler

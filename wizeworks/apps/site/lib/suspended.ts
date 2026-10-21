@@ -87,12 +87,21 @@ const RETRY_AFTER_SECONDS = '600';
  * stopping five minutes short of it. A dark answer is true for exactly as long
  * as the invoice is unpaid, which nothing downstream can predict, so nothing
  * downstream should keep a copy.
+ *
+ * `x-wizelens-expected` tells WizeLens this 503 is the answer we meant to give,
+ * not a server failure. Without it every dark page view counted as an error:
+ * about 262 a day, which made up almost all of the site's 5% error rate and
+ * would bury a real outage under a lapsed invoice. The status stays 503; only
+ * the error count leaves it out. Nothing here names the tenant or the reason.
  */
+const EXPECTED_HEADER = 'x-wizelens-expected';
+
 function darkHeaders(contentType: string): Record<string, string> {
   return {
     'content-type': contentType,
     'retry-after': RETRY_AFTER_SECONDS,
     'cache-control': 'no-store',
+    [EXPECTED_HEADER]: '1',
   };
 }
 
