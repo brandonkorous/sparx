@@ -130,3 +130,6 @@ videos/
 
 # A tool run with an unexpanded Windows variable writes its cache here
 /%SystemDrive%/
+
+# Claude Code personal settings: local to each checkout, never shared.
+.claude/settings.local.json
