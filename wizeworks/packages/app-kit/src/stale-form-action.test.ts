@@ -75,7 +75,16 @@ describe('staleFormActionRedirect', () => {
       known
     );
     expect(res?.status).toBe(303);
-    expect(res?.headers.get('location')).toBe('/signup?from=home-why');
+    expect(res?.headers.get('location')).toBe('https://getpiggles.com/signup?from=home-why');
+  });
+
+  it('gives a Location Next can parse without a base', async () => {
+    // Next's proxy adapter reads the Location as `new NextURL(location)` with no
+    // base. A bare path threw "Invalid URL" there and turned the redirect into
+    // the same 500 it was written to prevent.
+    const res = await staleFormActionRedirect(await post({ [`$ACTION_ID_${STALE}`]: '' }), known);
+    const location = res?.headers.get('location') ?? '';
+    expect(() => new URL(location)).not.toThrow();
   });
 
   it('sends back a bound action whose descriptor names an older build', async () => {
