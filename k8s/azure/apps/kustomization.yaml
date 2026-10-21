@@ -10,7 +10,8 @@
 #   1. images     → ghcr.io/brandonkorous/sparx/*, pulled from a registry rather
 #                   than read out of a local Docker daemon
 #   2. Postgres   → MANAGED (psql-sparx-prod-cus). No in-cluster StatefulSet.
-#   3. Redis      → dropped entirely
+#   3. Redis      → dropped entirely. api-rest's two replicas share socket.io
+#                   broadcasts over NATS instead (SOCKET_BUS_URL)
 #   4. storage    → Azure Disk via the `managed-csi` StorageClass
 #   5. resources  → the node is 16 GiB with a managed database beside it (it was
 #                   8 GiB until 2026-08-21), so the apps get more headroom than on
@@ -113,8 +114,16 @@ images:
     newTag: latest
 
 replicas:
+  # TWO, since 2026-10-21. With one, every release and every restart was a gap
+  # in which nothing answered: mcp-site logged ECONNREFUSED against api-rest
+  # during a single deploy. Two replicas and a one-at-a-time rollout (see the
+  # api-rest patch below) close that gap. What two replicas needed, all of it
+  # in this change: the socket bus (chat and the builder must reach sockets on
+  # the other replica), half the database pool each, and both pods on one node
+  # for the media disk. The background ticks were already safe — each one takes
+  # a Postgres advisory lock, so only one replica runs it at a time.
   - name: api-rest
-    count: 1
+    count: 2
   - name: admin
     count: 1
   - name: api-graphql
@@ -253,8 +262,9 @@ patches:
   # are the same price to the cent, but two nodes pay AKS's regressive memory
   # reservation twice (25% of the first 4 GB, 20% of the next 4), pay a second
   # DaemonSet tax, and split free memory into two pools — while buying no
-  # availability at all, since every Deployment here is `replicas: 1` and
-  # sku_tier is "Free". Reasoning in terraform/envs/azure/variables.tf.
+  # availability at all, since every Deployment here was `replicas: 1` and
+  # sku_tier is "Free". (api-rest now runs two, on the same node on purpose;
+  # that protects against a pod restarting, not a node going away.) Reasoning in terraform/envs/azure/variables.tf.
   #
   # NONE OF THE NUMBERS BELOW CHANGED WITH THE NODE, ON PURPOSE. They are
   # measured steady-state RSS (see the memory note further down), not a division
@@ -282,9 +292,9 @@ patches:
   # is a rule that deliberately selects whoever lied hardest about their size.
   #
   # api-rest requested 128Mi and used ~614Mi. It was the worst offender on the
-  # node by 150Mi, so it was first in line every time, and it is the ONE
-  # Deployment here running `strategy: Recreate` — its eviction is downtime, not
-  # a rolling replace. That is the eviction of 2026-08-08: the node tightened,
+  # node by 150Mi, so it was first in line every time, and it was then the ONE
+  # Deployment here running `strategy: Recreate` with one replica — its eviction
+  # was downtime, not a rolling replace. That is the eviction of 2026-08-08: the node tightened,
   # the kubelet picked the pod that serves every API request, and the expired
   # pull secret above then kept it down for twelve hours.
   #
@@ -302,8 +312,8 @@ patches:
   #      into "the surge pod waits for room." Pending is recoverable; eviction
   #      is an outage.
   #
-  # Rollouts still fit: api-rest is Recreate and the three workers are
-  # maxSurge 0, so only the RollingUpdate apps surge, they free their old pod's
+  # Rollouts still fit: api-rest and the three workers are maxSurge 0, so
+  # only the other RollingUpdate apps surge, they free their old pod's
   # request as each becomes ready, and the scheduler admits the rest in waves.
   # A release therefore takes longer under pressure instead of failing — well
   # inside the 15m `rollout status` timeout.
@@ -484,14 +494,44 @@ patches:
       metadata:
         name: api-rest
       spec:
+        # One pod at a time, and never a third. This was `Recreate`, which with
+        # one replica meant every release stopped the API before starting it
+        # again. Now maxUnavailable 1 stops ONE of the two old pods, starts its
+        # replacement, waits for it to be Ready, then does the other. The other
+        # pod serves the whole time.
+        #
+        # maxSurge 0, not 1: a surge pod would be a third copy of the biggest
+        # process here (~900Mi) on a node at ~85% of its memory requests. The
+        # rollout can always make progress without one, because each step frees
+        # exactly the request it then takes.
         strategy:
-          type: Recreate
-          rollingUpdate: null
+          type: RollingUpdate
+          rollingUpdate:
+            maxSurge: 0
+            maxUnavailable: 1
         template:
           spec:
             securityContext:
               fsGroup: 1000
               fsGroupChangePolicy: OnRootMismatch
+            # Both replicas on ONE node, for the same reason as media-worker
+            # below: the `sparx-media` disk is ReadWriteOnce, which attaches to
+            # one NODE (any number of pods on it may mount it). A replica on a
+            # second node would hang in ContainerCreating with a Multi-Attach
+            # error. The first replica matches its own selector, and the
+            # scheduler allows that when no other api-rest pod exists yet.
+            #
+            # Required, not preferred, for the reason media-worker gives: a
+            # Pending pod names the rule that holds it; a hung mount names
+            # nothing. Drop this with the media mount once Blob is the only
+            # store (see the note above).
+            affinity:
+              podAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  - labelSelector:
+                      matchLabels:
+                        app: api-rest
+                    topologyKey: kubernetes.io/hostname
             containers:
               - name: api-rest
                 env:
@@ -515,11 +555,14 @@ patches:
                   # there multiplies across all of them. The single-consumer workers are
                   # correctly served by 3.
                   #
-                  # 8 is deliberately modest: Postgres is B1ms (~35 max_connections) and
-                  # pools are lazy, so this adds at most 5 in-flight connections to a
-                  # budget nothing is currently exhausting.
+                  # The budget is 8 for api-rest as a whole: Postgres is B1ms (~35
+                  # usable connections), it has already run out once (2026-10-19
+                  # 07:00 UTC, in the CronJob burst), and the idle floor across the
+                  # platform is ~20. So with TWO replicas each gets 4, and the total
+                  # stays the 8 it was at one. Raising the replica count means
+                  # dividing this again, or the pool total grows with every pod.
                   - name: DB_CONNECTION_LIMIT
-                    value: '8'
+                    value: '4'
                 volumeMounts:
                   - name: media
                     mountPath: /media
@@ -529,11 +572,12 @@ patches:
                     # (see DB_CONNECTION_LIMIT above), and the node has ~420m
                     # of CPU left to give.
                     cpu: '50m'
-                    # measured 614Mi. This was 128Mi — a 486Mi understatement,
-                    # the widest on the node, on the one pod whose eviction is
-                    # an outage rather than a rolling replace. See the eviction
-                    # note above; this number is the fix for it.
-                    memory: '640Mi'
+                    # measured 888Mi (2026-10-21; it was 614Mi when this was set
+                    # to 640Mi). It started at 128Mi — a 486Mi understatement,
+                    # the widest on the node, which is what got it evicted. See
+                    # the eviction note above; an honest number is the fix, and
+                    # it is per replica, so two of them request twice this.
+                    memory: '960Mi'
                   limits:
                     memory: '1536Mi'
             volumes:

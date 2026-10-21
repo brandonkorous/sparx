@@ -208,13 +208,13 @@ async function main(): Promise<void> {
   const stopBlueprintBackfillReconcile = startBlueprintBackfillReconcileLoop(app.log);
 
   // Live Chat WebSocket server (docs/56, docs/69 A-2). Attaches socket.io to the
-  // Fastify HTTP server at /ws/chat; uses the Redis adapter when REDIS_URL is
-  // set (multi-replica fan-out) and the in-memory adapter otherwise.
+  // Fastify HTTP server at /ws/chat; uses the NATS socket bus when SOCKET_BUS_URL
+  // is set (multi-replica fan-out) and the in-memory adapter otherwise.
   const chatWs = await attachChatWebsocket(app.server, app.log);
 
   // Builder collaboration WebSocket (docs/126 Phase 4). A second socket.io server at
-  // /ws/builder — relays persisted ops to co-editors and carries presence. Same Redis
-  // fan-out story as chat.
+  // /ws/builder — relays persisted ops to co-editors and carries presence. Same socket
+  // bus fan-out story as chat.
   const builderWs = await attachBuilderWebsocket(app.server, app.log);
 
   const shutdown = (signal: NodeJS.Signals): void => {

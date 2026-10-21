@@ -7,12 +7,14 @@
 #               a StatefulSet for point-in-time restore, and it keeps 1-2 GiB
 #               free on an 8 GiB node.
 #
-#   Redis     → DROPPED. Its only job was fanning socket.io chat messages
-#               between api-rest replicas. At `replicas: 1` the in-memory adapter
-#               is correct — the app's own ConfigMap says so ("Unset → in-memory
-#               adapter, single-instance only"). Azure Cache for Redis Basic is
-#               ~$16/mo to solve a problem that does not exist yet. Add it back
-#               the same day api-rest goes to 2 replicas, and not before.
+#   Redis     → DROPPED, and it stays dropped now that api-rest runs two
+#               replicas (2026-10-21). Its only job here was fanning socket.io
+#               messages between those replicas, and the NATS server the event
+#               broker already runs does that job for nothing extra: see
+#               wizeworks/packages/socket-bus and SOCKET_BUS_URL in
+#               app-env-configmap.env. The note that used to sit here said "add
+#               Redis back the day api-rest goes to 2 replicas". That was written
+#               before NATS existed on this provider.
 #
 # Storage: `managed-csi` is Azure's StandardSSD class. NOT `managed-csi-premium`
 # — Premium costs roughly double for IOPS neither of these workloads needs, and

@@ -121,7 +121,8 @@ spec:
             storage: 40Gi
 ---
 # ---------------------------------------------------------------------------
-# Redis — chat socket.io adapter fan-out + BullMQ broker.
+# Redis — api-rest's analytics cache. (Socket.io fan-out moved to NATS,
+# SOCKET_BUS_URL, on 2026-10-21.)
 # AOF on, matching k8s/redis. Single replica, as in prod.
 # ---------------------------------------------------------------------------
 apiVersion: v1

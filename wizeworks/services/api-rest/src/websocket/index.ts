@@ -1,9 +1,9 @@
 // Live Chat — WebSocket server bootstrap (docs/56, docs/69 A-2).
 //
 // Attaches a socket.io server at path `/ws/chat` to the Fastify HTTP server.
-// When REDIS_URL is set the socket.io Redis adapter fans broadcasts out across
-// every api-rest replica (the k8s/redis StatefulSet is the backplane); unset,
-// the default in-memory adapter is correct for a single process (dev).
+// When SOCKET_BUS_URL is set, broadcasts fan out across every api-rest replica
+// over NATS (@wizeworks/socket-bus); unset, the default in-memory adapter is
+// correct for a single process (dev).
 //
 // Only the index.ts bootstrap calls this — createApp() (used by tests) never
 // loads socket.io, so the broadcaster stays null and REST stays self-contained.
@@ -23,6 +23,9 @@ import {
   type InterServerEvents,
   type ServerToClientEvents,
 } from './chat-protocol.js';
+
+/** Scopes chat's traffic on the socket bus, apart from the builder's. */
+const CHAT_BUS_KEY = 'sio-chat';
 
 export interface ChatWebsocketHandle {
   close(): Promise<void>;
@@ -46,24 +49,16 @@ export async function attachChatWebsocket(
     serveClient: false,
   });
 
-  let closeRedis: (() => Promise<void>) | null = null;
-  if (env.REDIS_URL) {
-    // Lazy-import so the Redis adapter is only pulled in when configured.
-    const [{ createAdapter }, { Redis }] = await Promise.all([
-      import('@socket.io/redis-adapter'),
-      import('ioredis'),
-    ]);
-    const pubClient = new Redis(env.REDIS_URL, { lazyConnect: false, maxRetriesPerRequest: null });
-    const subClient = pubClient.duplicate();
-    pubClient.on('error', (err) => log.error({ err }, 'chat redis pub error'));
-    subClient.on('error', (err) => log.error({ err }, 'chat redis sub error'));
-    io.adapter(createAdapter(pubClient, subClient));
-    closeRedis = async () => {
-      pubClient.disconnect();
-      subClient.disconnect();
-      await Promise.resolve();
-    };
-    log.info('chat websocket: redis adapter enabled');
+  let closeBus: (() => Promise<void>) | null = null;
+  if (env.SOCKET_BUS_URL) {
+    // Lazy-import so the NATS client is only pulled in when configured.
+    const { connectSocketBus, createSocketBusAdapter } = await import('@wizeworks/socket-bus');
+    const onError = (err: unknown, what: string) =>
+      log.error({ err }, `chat socket bus ${what} error`);
+    const bus = connectSocketBus(env.SOCKET_BUS_URL, 'api-rest chat', onError);
+    io.adapter(createSocketBusAdapter(bus, { key: CHAT_BUS_KEY, onError }));
+    closeBus = () => bus.close();
+    log.info('chat websocket: socket bus adapter enabled');
   } else {
     log.info('chat websocket: in-memory adapter (single instance)');
   }
@@ -89,7 +84,7 @@ export async function attachChatWebsocket(
     async close() {
       setChatBroadcaster(null);
       await io.close();
-      if (closeRedis) await closeRedis();
+      if (closeBus) await closeBus();
     },
   };
 }
