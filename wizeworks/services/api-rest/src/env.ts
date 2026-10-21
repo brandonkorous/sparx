@@ -78,11 +78,14 @@ const EnvSchema = z
     // resolves a topic per `EventType` (topic name == event type) — there is
     // no shared/fan-out topic to configure.
     GCP_PROJECT_ID: z.string().optional(),
-    // Optional: when set (e.g. redis://redis:6379), the Live Chat WebSocket
-    // server uses the socket.io Redis adapter so a message delivered to one
-    // api-rest replica fans out to chat sockets on every other replica. Unset
-    // (dev / single-instance) → the default in-memory adapter, which is correct
-    // for one process. Mirrors the GCP_PROJECT_ID Pub/Sub stub philosophy.
+    // Optional: when set (e.g. nats://nats:4222), the chat and builder WebSocket
+    // servers share broadcasts over NATS (@wizeworks/socket-bus), so a message
+    // delivered to one api-rest replica reaches sockets on every other replica.
+    // Unset (dev / single-instance) → the default in-memory adapter, which is
+    // correct for one process.
+    SOCKET_BUS_URL: z.string().optional(),
+    // Optional: the analytics cache (lib/analytics/cache.ts). Best-effort; unset
+    // simply means no cache. It no longer carries socket traffic (SOCKET_BUS_URL).
     REDIS_URL: z.string().optional(),
     // Google Search Console connector (docs/50 §7, docs/97 §4). Per-tenant OAuth:
     // each tenant authorizes THEIR Search Console; a nightly job ingests organic

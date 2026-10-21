@@ -1,9 +1,18 @@
 # 126 — Builder op protocol: granular edits, real collaboration, immutable publish
 
-Version: 1.9.0
+Version: 1.10.0
 Author: Brandon Korous
-Last Updated: 2026-07-22
+Last Updated: 2026-10-21
 
+> **1.10.0 — The relay moved from Redis to NATS (§4.2, §4.5).** api-rest now runs two
+> replicas, and Azure production never ran Redis, so the Redis backplane this doc
+> describes was never there: the agent relay was a no-op in production, and a second
+> replica would have split every room in two. Both servers (`/ws/chat`, `/ws/builder`)
+> and the api-mcp emitter now share one transport, `@wizeworks/socket-bus`: a socket.io
+> cluster adapter over plain NATS publish/subscribe on the server the event broker
+> already runs, selected by `SOCKET_BUS_URL`. Same room names, same `sio-builder` key,
+> same zero-forwarding-code shape. No new infrastructure, again.
+>
 > **1.9.0 — Draft versioning: the recovery net for last-write-wins (§4.6).** Every save
 > (human or agent) now seals a restorable DRAFT version — the draft counterpart of the
 > publish releases — so a content overwrite between two authors is a click of undo rather
@@ -379,7 +388,7 @@ Rejections surface to the author in plain language. `page.setSlug` collision is 
 
 ### 4.2 Presence and soft claim
 
-Reuse the **existing socket.io server with Redis adapter in `api-rest`** (docs/56 live chat, docs/96 product activity). A new `/builder` namespace, rooms keyed by `propertyId`. No new infrastructure.
+Reuse the **existing socket.io server in `api-rest`** and its cross-replica adapter (docs/56 live chat, docs/96 product activity) — since 1.10.0 the NATS socket bus (`@wizeworks/socket-bus`), not Redis. A new `/builder` namespace, rooms keyed by `propertyId`. No new infrastructure.
 
 - **Presence** — actor id, display name, assigned color, current selection `nodeId`
 - **Soft claim** — selecting a node claims its subtree for 30s, renewed on activity
@@ -466,18 +475,19 @@ page body or the frame relays a **reload hint**, not an op: the co-editor is off
 "reload to see it" (a refetch + `replaceState` remount), never a forced overwrite of their
 in-progress work. Creating/deleting/theming — the dominant agent pattern — fold in live.
 
-**Crossing api-mcp → the socket: the Redis emitter, not Pub/Sub.** The relay socket lives
-in api-rest; the MCP write runs in api-mcp. The transport is **`@socket.io/redis-emitter`
-into the socket.io Redis backplane api-rest's `/ws/builder` server already runs** — api-mcp
+**Crossing api-mcp → the socket: the socket bus emitter, not Pub/Sub.** The relay socket lives
+in api-rest; the MCP write runs in api-mcp. The transport is **the `@wizeworks/socket-bus`
+emitter into the NATS socket bus api-rest's `/ws/builder` server already runs** (until
+1.10.0 this was `@socket.io/redis-emitter` into a Redis backplane, which Azure never ran) — api-mcp
 emits `ops:relay` + a `builder:agentActivity` (presence pulse + reload hints) straight into
 the site's room, and api-rest fans it out with **zero forwarding code** (the adapter
 delivers it). Pub/Sub was the first pick and was reversed once it turned out api-rest has
 **no Pub/Sub ingress at all** (it consumes via an in-memory bus; only Cloud Run workers
 receive Pub/Sub, via push) — so Pub/Sub would have needed a new subscription + a subscriber
-role for api-rest, where the Redis path needs no new infra. The write's relay rides back
+role for api-rest, where the socket bus path needs no new infra. The write's relay rides back
 from the tool on a **non-enumerable side-channel** (`relay.ts`) so it never reaches the
 model, exactly as the REST route strips `relay` from its HTTP response. api-mcp already
-hydrates `REDIS_URL` from the shared ConfigMap, so there is no k8s or Terraform change.
+hydrates `SOCKET_BUS_URL` from the shared ConfigMap, so there is no k8s or Terraform change.
 
 **Humans get it too.** The workbench Save now sends the ops silica emitted since the last
 save (buffered, one idempotent batch id, `baseSeq` advisory) alongside the snapshot; the
@@ -663,7 +673,7 @@ Blocker 4 is the same bug class we have already hit: our own studio reads `docum
 
 The one architectural decision Phase 4 forced: **persistence stays on the HTTP sync PUT; the socket relays, it does not write.** There is one durable path (the PUT appends ops + snapshot in a transaction, Phase 2), and the socket is a fan-out over it — never a second writer of the same truth. Concretely:
 
-- **`/ws/builder`** is a second socket.io server beside `/ws/chat`, same staff-JWT handshake and same Redis adapter for cross-replica fan-out. The client also hands it the `propertyId`, verified against the tenant before the socket joins that site's room (`builder:<propertyId>`).
+- **`/ws/builder`** is a second socket.io server beside `/ws/chat`, same staff-JWT handshake and same socket bus adapter for cross-replica fan-out (own key, `sio-builder`). The client also hands it the `propertyId`, verified against the tenant before the socket joins that site's room (`builder:<propertyId>`).
 - **The write path broadcasts.** After `siteService.sync` appends a batch, the api-rest route hands the persisted `{ batchId, seq, ops }` to a `BuilderBroadcaster` (the same module-singleton pattern as the chat broadcaster) which emits `ops:relay` to the room. The service stays socket-agnostic; the route strips the relay payload from the HTTP response so the sender isn't shipped its own ops back over HTTP.
 - **Echo suppression is by `batchId`, not socket identity.** The originator is in the room and receives its own echo; it drops it because it minted that `batchId`. This keeps the HTTP path free of any socket coupling — it never needs to know which socket sent the save. Suppression is load-bearing, not an optimization: re-applying one's own `node.insert` would duplicate the node.
 - **Catch-up closes the load→join gap.** On connect the client asks `catchup(baseSeq)`; the server returns `opsSince(baseSeq)` and the client applies + `ackSeq`s. The load-time seq (a new `GET /v1/builder/site/seq`) seeds the client's `baseSeq` so this window is exactly "what landed between the HTTP load and the socket joining."
@@ -741,5 +751,5 @@ Engine phases 0–3 are the long pole and are largely mechanical. Phase 4 carrie
 - [127-site-read-path-remediation.md](127-site-read-path-remediation.md) — the parallel track
 - [118-builder-silicaui-html-migration.md](118-builder-silicaui-html-migration.md) — the cutover this completes
 - [55-blueprint-updates.md](55-blueprint-updates.md) — the node-id-keyed three-way merge that this design makes easier, not harder
-- [56-live-chat-module.md](56-live-chat-module.md), [96-realtime-product-activity.md](96-realtime-product-activity.md) — the socket.io + Redis transport being reused
+- [56-live-chat-module.md](56-live-chat-module.md), [96-realtime-product-activity.md](96-realtime-product-activity.md) — the socket.io transport being reused (cross-replica over NATS since 1.10.0)
 - [98-builder-customization-rebuild.md](98-builder-customization-rebuild.md) — composition model and layout invariants

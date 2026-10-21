@@ -2,10 +2,10 @@
 //
 // A silica write tool persists to the draft in THIS process (api-mcp), but the live
 // editor sockets live in api-rest. This bridges the two the cheap way: api-rest's
-// `/ws/builder` server runs the socket.io Redis adapter, so any process pointed at the
-// same Redis can emit into a site's room via `@socket.io/redis-emitter`, and api-rest
-// fans it out to the connected operators. No new infrastructure — it reuses the cluster
-// Redis the socket adapter already depends on.
+// `/ws/builder` server shares broadcasts over the NATS socket bus, so any process on
+// the same bus can emit into a site's room with the socket bus emitter, and api-rest
+// fans it out to the connected operators. No new infrastructure — it reuses the NATS
+// server the event broker and the socket adapter already run on.
 //
 // Two things get emitted per write:
 //   • `ops:relay` — the synthesized op batch (page.create / page.delete / theme.set…),
@@ -14,13 +14,19 @@
 //   • `builder:agentActivity` — a transient "an assistant is editing" signal plus the
 //     reload hints for changes with no live-appliable op (a body or frame REPLACE).
 //
-// The wire contract (event names, room naming, adapter key) is DUPLICATED from api-rest
-// here on purpose: services never import each other, the same way the socket client
-// redeclares the protocol. Keep in sync with wizeworks/services/api-rest/src/websocket/
-// builder-protocol.ts (`propertyRoom`) and builder-index.ts (`BUILDER_ADAPTER_KEY`).
+// The socket.io wire format and subject naming come from @wizeworks/socket-bus, which
+// api-rest's adapter uses too. The builder protocol (event names, room naming, adapter
+// key) is DUPLICATED from api-rest here on purpose: services never import each other,
+// the same way the socket client redeclares the protocol. Keep in sync with
+// wizeworks/services/api-rest/src/websocket/builder-protocol.ts (`propertyRoom`) and
+// builder-index.ts (`BUILDER_ADAPTER_KEY`).
 
-import { Emitter } from '@socket.io/redis-emitter';
-import { Redis } from 'ioredis';
+import {
+  connectSocketBus,
+  createSocketBusEmitter,
+  type SocketBus,
+  type SocketBusEmitter,
+} from '@wizeworks/socket-bus';
 
 import { env } from './env.js';
 import type { BuilderRelaySideChannel } from '@wizeworks/builder/mcp';
@@ -38,18 +44,19 @@ function builderRoom(propertyId: string): string {
  *  non-technical operator — "an assistant", not a tool name or key id. */
 const AGENT_ACTOR = { name: 'An AI assistant' } as const;
 
-let emitter: Emitter | null = null;
-let redis: Redis | null = null;
+let emitter: SocketBusEmitter | null = null;
+let bus: SocketBus | null = null;
 
-/** The shared emitter, or null when no Redis is configured (dev, or a single-process
- *  deploy) — callers no-op, and the write still persisted; only the LIVE relay is
- *  absent, and a co-editor picks the change up on their next load. */
-function getEmitter(): Emitter | null {
-  if (!env.REDIS_URL) return null;
+/** The shared emitter, or null when no socket bus is configured (dev, or a
+ *  single-process deploy) — callers no-op, and the write still persisted; only the
+ *  LIVE relay is absent, and a co-editor picks the change up on their next load. */
+function getEmitter(): SocketBusEmitter | null {
+  if (!env.SOCKET_BUS_URL) return null;
   if (!emitter) {
-    redis = new Redis(env.REDIS_URL, { lazyConnect: false, maxRetriesPerRequest: null });
-    redis.on('error', (err) => console.error('[api-mcp] builder relay redis error', err));
-    emitter = new Emitter(redis, { key: BUILDER_ADAPTER_KEY });
+    bus = connectSocketBus(env.SOCKET_BUS_URL, 'api-mcp builder relay', (err, what) =>
+      console.error(`[api-mcp] builder relay socket bus ${what} error`, err)
+    );
+    emitter = createSocketBusEmitter(bus, { key: BUILDER_ADAPTER_KEY });
   }
   return emitter;
 }
@@ -80,10 +87,10 @@ export function relayAgentWrite(side: BuilderRelaySideChannel): void {
 
 /** Tear the relay connection down on shutdown (mirrors the socket bootstraps). */
 export async function closeBuilderRelay(): Promise<void> {
-  if (redis) {
-    redis.disconnect();
-    redis = null;
+  if (bus) {
+    const closing = bus;
+    bus = null;
     emitter = null;
+    await closing.close();
   }
-  await Promise.resolve();
 }

@@ -1,0 +1,33 @@
+{
+  "name": "@wizeworks/socket-bus",
+  "version": "0.0.0",
+  "private": true,
+  "description": "socket.io broadcasts shared between processes over the NATS server the event broker already runs: a cluster adapter for every api-rest replica, and an emitter for a process with no sockets of its own (api-mcp). Replaces the Redis adapter, so running two api-rest replicas needs no Redis.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "nats": "^2.29.3",
+    "socket.io-adapter": "~2.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "25.9.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

@@ -50,7 +50,7 @@ labels:
 resources:
   - namespace.yaml
   # Typesense + the sparx-media volume. NOT Postgres (managed, psql-sparx-prod-cus)
-  # and NOT Redis (dropped entirely on this provider).
+  # and NOT Redis (dropped entirely on this provider; NATS carries its old job).
   - platform.yaml
   # Caddy + the ONE routing table + a `type: LoadBalancer` Service. Shared
   # verbatim with every other overlay — there is no Azure-specific ingress

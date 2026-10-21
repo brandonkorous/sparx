@@ -1,8 +1,15 @@
 # sparx Platform — Realtime Product Activity Channel
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-14
+**Last Updated:** 2026-10-21
+
+> **1.1 — Read "Redis adapter" below as "socket bus".** The cross-replica transport
+> for api-rest's socket.io servers is now `@wizeworks/socket-bus`: plain NATS
+> publish/subscribe on the event broker's server, selected by `SOCKET_BUS_URL`. Redis
+> no longer carries socket traffic anywhere. Room-size viewer counts (below) still
+> work: `fetchSockets` and room cardinality are answered across replicas by the
+> adapter, with no membership sets stored anywhere.
 
 ---
 
