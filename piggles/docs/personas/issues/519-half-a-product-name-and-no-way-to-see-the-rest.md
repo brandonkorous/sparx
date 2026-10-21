@@ -1,6 +1,6 @@
 # 519 — Half a product name, and no way to see the rest
 
-**Status:** fixed and proven
+**Status:** reverted 2026-10-21. The listener measured EVERY element under the pointer, not just clipped text. A scrolling pane body counts as "clipped" (its content is taller than it), so hovering anywhere put the whole pane's text in a giant tooltip. `ClippedTextReveal` and `clipped-text.ts` are deleted from `@wizeworks/app-kit` and unmounted from both workbenches. The original clipped-name problem is open again.
 **Severity:** major
 **Found by:** Devi, reading a purchase order she had placed
 **Surface:** both workbenches — 991 clipping spans, fixed once in `@wizeworks/app-kit`
