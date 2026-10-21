@@ -17,6 +17,12 @@
 // the build that is running now, with a form whose id exists. The visitor sees
 // a fresh form instead of an error; the bot gets a redirect, not a 500.
 //
+// The Location must be ABSOLUTE. Next's proxy adapter parses it with
+// `new NextURL(location)` and no base, so a bare path throws "Invalid URL" and
+// the post 500s anyway — which is what the first version of this did to every
+// stale post it caught (getpiggles.com/signup, 2026-10-21). The adapter turns a
+// same-origin absolute address back into a path before the browser sees it.
+//
 // ── WHAT IT TRUSTS ─────────────────────────────────────────────────────────
 //
 // The set of ids comes from `.next/server/server-reference-manifest.json`, the
@@ -114,8 +120,9 @@ export async function staleFormActionRedirect(
   if (ids.length === 0 || ids.every((id) => known.has(id))) return null;
 
   const url = new URL(req.url);
+  url.hash = '';
   return new Response(null, {
     status: 303,
-    headers: { location: `${url.pathname}${url.search}`, 'cache-control': 'no-store' },
+    headers: { location: url.href, 'cache-control': 'no-store' },
   });
 }
