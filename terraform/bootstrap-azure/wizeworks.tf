@@ -3,25 +3,16 @@
 #
 # wize.works is a co-tenant on this cluster like jotacular, kanNINJA and AGCONN:
 # its own namespace, its own repository (brandonkorous/wizeworks), its own
-# pipeline. It differs from all three in one way that shapes this whole file —
+# pipeline, and its own Key Vault.
 #
-#   IT HAS NO SECRETS, SO IT HAS NO KEY VAULT.
+# THE VAULT IS SMALL. The site is a static marketing build with no database and
+# no auth. Its one secret today is the WizeLens ingest key it traces with
+# (`wizelens-key-wizeworks-site`). Contact delivery, when it is switched on, adds
+# CONTACT_TO and one provider credential.
 #
-# The site is a static marketing build. No database, no object storage, no
-# analytics provider, no auth. `/api/contact` deliberately returns 503 rather
-# than delivering, because choosing a mail provider is a privacy decision that
-# has not been made. There is nothing for a vault to hold.
-#
-# That is a deliberate omission, not an unfinished one. AGCONN's own file makes
-# the argument: "an empty vault and an idle server both look configured and are
-# not." A vault here would be a name reserved, a resource to reason about, and a
-# grant to audit, all protecting nothing.
-#
-# WHEN THAT CHANGES — the day contact delivery is switched on — it needs
-# CONTACT_TO plus one provider credential. Add `kv-wizeworks-prod-cus` in
-# terraform/envs/azure/wizeworks.tf and a `Key Vault Secrets User` assignment
-# below, both modelled on AGCONN. Two secrets is still a thin case for a vault,
-# but it is the right shape once there is anything at all.
+# The vault itself is created in terraform/envs/azure/wizeworks.tf, applied by
+# the sparx release. This file only LOOKS IT UP and grants roles on it, so apply
+# this file after the release has created the vault.
 #
 # WHAT IS NOT HERE: the workloads. Terraform does not manage workloads in this
 # environment. The Deployment, Service and namespace are Kustomize YAML in the
@@ -110,6 +101,25 @@ locals {
   wizeworks_repo  = "brandonkorous/wizeworks"
 }
 
+variable "wizeworks_key_vault_name" {
+  description = <<-EOT
+    The vault terraform/envs/azure/wizeworks.tf creates. NAMED here rather than
+    referenced, because the two live in different Terraform states.
+
+    Keep in step with the variable of the same name over there.
+  EOT
+  type        = string
+  default     = "kv-wizeworks-prod-cus"
+}
+
+# The vault whose secrets this identity may read. A LOOKUP, not a resource — it
+# belongs to envs/azure and is created there.
+data "azurerm_key_vault" "wizeworks" {
+  count               = local.wizeworks_count
+  name                = var.wizeworks_key_vault_name
+  resource_group_name = "rg-${var.workload}-${var.environment}-${local.loc}"
+}
+
 # ---------------------------------------------------------------------------
 # Identity — its own app registration, for the same reason each tenant has one:
 # a federated credential's subject names the repository, so this identity can
@@ -155,7 +165,8 @@ resource "azuread_application_federated_identity_credential" "wizeworks_environm
 }
 
 # ---------------------------------------------------------------------------
-# Permissions — exactly ONE, which is the whole point of a site with no secrets.
+# Permissions — two for the pipeline (its own vault, the cluster) and one for
+# the human who loads the vault. Deliberately not more.
 #
 # SUBSCRIPTION SCOPE, matching every other tenant's, for the same reason: a role
 # assignment is validated against a scope that must already exist, so naming the
@@ -177,8 +188,25 @@ resource "azurerm_role_assignment" "wizeworks_gha_aks" {
   principal_id         = azuread_service_principal.wizeworks_gha[0].object_id
 }
 
-# NO Key Vault role assignment, because there is no vault. See the header.
-# NO `Key Vault Secrets Officer` for a human, for the same reason.
+# Read its OWN vault. Get and list, never write: a compromised workflow must not
+# be able to rewrite a credential the site then deploys.
+resource "azurerm_role_assignment" "wizeworks_gha_kv" {
+  count                = local.wizeworks_count
+  scope                = data.azurerm_key_vault.wizeworks[0].id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azuread_service_principal.wizeworks_gha[0].object_id
+}
+
+# The HUMAN loading the vault needs WRITE; subscription Owner does not grant it,
+# because Key Vault's data plane is its own RBAC surface. It lands on whoever
+# applies this file.
+resource "azurerm_role_assignment" "wizeworks_operator_kv" {
+  count                = local.wizeworks_count
+  scope                = data.azurerm_key_vault.wizeworks[0].id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
 # NO AcrPull: images come from GHCR, pulled anonymously from a public package.
 
 # ---------------------------------------------------------------------------
@@ -195,10 +223,11 @@ output "wizeworks_client_id" {
 }
 
 output "wizeworks_github_setup" {
-  description = "Repository VARIABLES (not secrets — these are public identifiers) to set on the wizeworks repo so its pipeline can authenticate. No AZURE_KEY_VAULT_NAME: the site holds no secrets."
+  description = "Repository VARIABLES (not secrets — these are public identifiers) to set on the wizeworks repo so its pipeline can authenticate and read its vault."
   value = var.wizeworks_enabled ? [
     "gh variable set AZURE_CLIENT_ID       -R ${local.wizeworks_repo} -b '${azuread_application.wizeworks_gha[0].client_id}'",
     "gh variable set AZURE_TENANT_ID       -R ${local.wizeworks_repo} -b '${data.azurerm_client_config.current.tenant_id}'",
     "gh variable set AZURE_SUBSCRIPTION_ID -R ${local.wizeworks_repo} -b '${var.subscription_id}'",
+    "gh variable set AZURE_KEY_VAULT_NAME  -R ${local.wizeworks_repo} -b '${var.wizeworks_key_vault_name}'",
   ] : []
 }
