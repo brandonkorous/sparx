@@ -300,13 +300,14 @@ resource "azurerm_kubernetes_cluster" "main" {
 # The USER pool: everything that is not a kube-system add-on. Sized and shaped
 # like the single node it replaces (the node_size description has the why), so
 # the apps see the same capacity they had, plus what the add-ons used to take.
+# Two of them since 2026-10-22: see the user_node_count description.
 # ---------------------------------------------------------------------------
 resource "azurerm_kubernetes_cluster_node_pool" "user" {
   name                  = "user"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.main.id
   mode                  = "User"
   vm_size               = var.node_size
-  node_count            = 1
+  node_count            = var.user_node_count
 
   # The same reasoning as the default pool above: ephemeral OS on the SKU's
   # whole local disk (D4ads_v7 = 220 GiB), free and fast for image pulls.

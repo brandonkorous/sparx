@@ -293,3 +293,21 @@ variable "media_upload_origins" {
   type        = list(string)
   default     = ["https://app.sparx.works"]
 }
+
+variable "user_node_count" {
+  description = <<-EOT
+    Nodes in the user pool. TWO since 2026-10-22, added by hand first and set
+    here to match, so an apply keeps it.
+
+    The node_size note below argues for one bigger node over two small ones, and
+    that still holds for the SIZE. But one D4 filled up: by 2026-10-22 the apps
+    requested 98% of its allocatable memory (13.4 of ~13.7 GiB), and a rolling
+    update starts the new pod before it stops the old one. AgConnect web and
+    RocketEase media-worker sat Pending for 40 minutes with "Insufficient
+    memory", the deploys timed out, and every later deploy would have done the
+    same. A second D4 (~$166/mo) is the headroom rollouts need; it still buys no
+    real availability while Deployments run one replica.
+  EOT
+  type        = number
+  default     = 2
+}
