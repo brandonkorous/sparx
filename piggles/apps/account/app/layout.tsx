@@ -3,6 +3,7 @@ import { Fredoka, Inter } from 'next/font/google';
 import { fetchHeaderNotice, marketingUrl, PRODUCT } from '@piggles/config';
 import { fetchFounderOffer, founderNotice } from '@piggles/config/pricing';
 import { HeaderNotice } from '@piggles/ui';
+import { ChunkReloadGuard } from '@wizeworks/app-kit';
 import { WizeLens } from '@/components/wizelens';
 import { THEME_SCRIPT } from '@/lib/theme';
 import './globals.css';
@@ -42,6 +43,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>
+        {/* A tab left open across a release reloads once instead of crashing. */}
+        <ChunkReloadGuard />
         {/* Tracing (WizeLens): on only when this page's server traces it; no HUD outside development. */}
         <WizeLens />
         <HeaderNotice notice={notice} />

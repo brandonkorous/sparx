@@ -17,7 +17,7 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@wizeworks/silicaui-react';
-import { isChunkLoadError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
+import { isStaleBuildError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
 import { reportCrash } from '../lib/analytics';
 
 export default function WorkbenchError({
@@ -31,7 +31,7 @@ export default function WorkbenchError({
   // reached us as a render throw, below where ChunkReloadGuard's window listener
   // would have caught it. reset() re-renders the same broken tree and can't
   // help; only a full reload fetches the new build.
-  const stale = isChunkLoadError(error);
+  const stale = isStaleBuildError(error);
   const [reloading, setReloading] = useState(stale);
 
   useEffect(() => {

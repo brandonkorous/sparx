@@ -9,7 +9,7 @@
 // exists to prevent.
 
 import { useEffect } from 'react';
-import { isChunkLoadError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
+import { isStaleBuildError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
 import { reportCrash } from '../lib/analytics';
 
 export default function GlobalError({
@@ -19,7 +19,7 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const stale = isChunkLoadError(error);
+  const stale = isStaleBuildError(error);
 
   useEffect(() => {
     console.error(error);

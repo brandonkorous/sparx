@@ -115,6 +115,36 @@ export function isChunkLoadError(input: unknown): boolean {
   return signalsOf(input).some((signal) => signal.length > 0 && CHUNK_ERROR_RE.test(signal));
 }
 
+// ── A SERVER ACTION FROM THE BUILD BEFORE ───────────────────────────────────
+//
+// The same deploy skew, through a different door. A hydrated page calls a server
+// action by the id its OWN build gave it. After a release that id is gone, the
+// server answers with `x-nextjs-action-not-found: 1`, and Next's client throws
+// `UnrecognizedActionError` (server-action-reducer.js). It does NOT reload: the
+// throw lands in `useActionState` and from there at the nearest error boundary.
+// On 2026-10-21 that was how an owner pressing "finish" on getpiggles.com
+// onboarding, in a tab opened before the release, met a crash screen.
+//
+// Matched by name and wording rather than `instanceof` (Next exports only the
+// `unstable_` predicate), so this module keeps importing nothing. Next sets the
+// name as a string literal, so minifying the bundle does not rename it.
+const STALE_ACTION_RE =
+  /^UnrecognizedActionError$|Server Action "[^"]*" was not found on the server/;
+
+/** True when `input` is a server-action call this build's server does not know. */
+export function isStaleActionError(input: unknown): boolean {
+  return signalsOf(input).some((signal) => STALE_ACTION_RE.test(signal));
+}
+
+/**
+ * True when `input` means the tab is running an older build than the server:
+ * a purged chunk, or a server action the new build no longer has. Both recover
+ * the same way — one budgeted reload — so every boundary and listener asks this.
+ */
+export function isStaleBuildError(input: unknown): boolean {
+  return isChunkLoadError(input) || isStaleActionError(input);
+}
+
 /**
  * Reload to fetch the current build — at most `MAX_ATTEMPTS` times per episode.
  *

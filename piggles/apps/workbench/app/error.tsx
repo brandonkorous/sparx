@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 import { faTriangleExclamation } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { Button } from '@wizeworks/silicaui-react';
-import { isChunkLoadError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
+import { isStaleBuildError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
 import { reportCrash } from '@/lib/analytics';
 import { productName } from '@/lib/product';
 
@@ -36,7 +36,7 @@ export default function ConsoleError({
   // reached us as a render throw, below where the crash listener's window
   // handler would have caught it. `reset()` re-renders the same broken tree and
   // cannot help; only a full reload fetches the new build.
-  const stale = isChunkLoadError(error);
+  const stale = isStaleBuildError(error);
   const [reloading, setReloading] = useState(stale);
 
   useEffect(() => {

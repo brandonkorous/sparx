@@ -6,8 +6,11 @@
 // as a plain multipart POST, and Next.js looks the id up in the CURRENT build.
 // An id from the build before a deploy is not there, and Next throws "Failed to
 // find Server Action" and answers 500 — its own source marks that branch as a
-// TODO. The fetch path (a hydrated page, `next-action` header) already answers
-// 404 and reloads, so only this one shape ever reaches the error page.
+// TODO. The fetch path (a hydrated page, `next-action` header) is answered with
+// `x-nextjs-action-not-found` instead, which the CLIENT turns into an
+// `UnrecognizedActionError` throw — it does not reload by itself. That half is
+// recovered in the browser, by `isStaleBuildError` in ./chunk-error and the
+// boundaries that ask it; this file owns only the no-JavaScript post.
 //
 // Two callers send it: a visitor whose page was open across a deploy, and a bot
 // replaying a form it scraped earlier. On 2026-10-20 a scanner did the second
