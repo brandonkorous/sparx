@@ -22,7 +22,7 @@
     "src"
   ],
   "scripts": {
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --maxWorkers=1 --passWithNoTests",
     "typecheck": "tsc --noEmit"
   }
 }

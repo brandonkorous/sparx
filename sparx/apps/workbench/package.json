@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf .turbo .next *.tsbuildinfo",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --maxWorkers=1 --passWithNoTests"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

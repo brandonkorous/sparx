@@ -10,7 +10,7 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --maxWorkers=1 --passWithNoTests"
   },
   "dependencies": {
     "@wizeworks/db": "workspace:*"

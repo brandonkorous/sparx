@@ -21,8 +21,8 @@
     "ops:repair-cross-brand-subdomains": "node --import tsx src/scripts/repair-cross-brand-subdomains.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest",
+    "test": "vitest run --maxWorkers=1 --passWithNoTests",
+    "test:watch": "vitest --maxWorkers=1",
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {

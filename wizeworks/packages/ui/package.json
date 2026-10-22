@@ -24,9 +24,9 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test": "vitest run --maxWorkers=1",
+    "test:watch": "vitest --maxWorkers=1",
+    "test:coverage": "vitest run --maxWorkers=1 --coverage",
     "clean": "rm -rf .turbo dist coverage *.tsbuildinfo"
   },
   "dependencies": {

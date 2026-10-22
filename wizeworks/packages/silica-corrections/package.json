@@ -22,7 +22,7 @@
     "clean": "rm -rf .turbo *.tsbuildinfo",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --maxWorkers=1 --passWithNoTests"
   },
   "dependencies": {
     "clsx": "^2.1.1",

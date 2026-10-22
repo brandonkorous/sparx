@@ -39,7 +39,7 @@
     "db:report:record-pages": "tsx scripts/report-record-page-collisions.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --maxWorkers=1",
     "clean": "rm -rf .turbo dist *.tsbuildinfo",
     "db:backfill:design-page-titles": "tsx scripts/backfill-design-page-titles.ts"
   },
