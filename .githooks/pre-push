@@ -238,52 +238,42 @@ fi
 # above has now guaranteed exist. CI runs the full turbo graph as the source of
 # truth. Avoids EPERM on locked Prisma DLLs when `next dev` is running locally.
 #
-# MEMORY BUDGET. This hook must fit on a dev machine that is also running an
-# editor, a browser and `next dev`. It used to take ALL of a 64 GB box and
-# crash it: an 8 GB heap cap was exported to every Node process, lint, typecheck
-# and test each ran 4 workspaces at once, and every `vitest run` starts
-# (CPU count - 1) workers by default — 31 on a 32-thread box, so 4 suites at
-# once was ~124 workers, each allowed to grow toward 8 GB before V8 collected.
-# A raised heap cap is a ceiling, not a reservation, but a higher ceiling makes
-# V8 collect later, so every process held far more than it needed.
+# MEMORY BUDGET: ONE THING AT A TIME. This hook runs on a dev machine that is
+# also running an editor, a browser and `next dev`, so it takes the least memory
+# it can, not what it guesses the box can spare. Every lint, typecheck and test
+# run is one workspace at a time, and each test run gets ONE vitest worker
+# (vitest otherwise starts CPU count - 1). Slower, and that is the trade:
+# 2026-10-22 a push running 2 at a time was killed for low memory mid-check.
 #
-# Now: the raised cap goes ONLY to lint and typecheck (CI's 6144). Tests keep
-# Node's default heap, run 2 workspaces at once, and each suite gets at most 4
-# workers (8 in all). Override with PREPUSH_CONCURRENCY / VITEST_MAX_WORKERS if
-# a box has room.
+# History: it once took ALL of a 64 GB box (an 8 GB heap cap on every process,
+# 4 workspaces at once, ~124 vitest workers). Then 2 at a time with 4 workers
+# each. Both guessed at spare room. Now nothing does.
 #
-# MEASURED peaks (2026-10-20, one process alone): typed eslint and tsc on the
-# three HEAVY workspaces below take 5–6 GB EACH; every other workspace takes
-# 2.5 GB or less. So lint and typecheck run the light workspaces 2 at a time
-# and the heavy ones strictly one at a time — two heavy ones side by side is
-# ~12 GB, and that pairing is what pushed a box under 8 GB free. Peak is now
-# ~6 GB. Add a workspace to HEAVY when it grows past ~3 GB.
-#
-# Why lint and typecheck still need the raised cap: `@wizeworks/api-rest` is
-# one `tsc` program over 469 files and type-checks just under V8's DEFAULT
-# ceiling (~4 GB), so it is permanently on the edge. When it dies it does NOT
-# look like a memory problem — on Windows it is a bare `Segmentation fault` and
-# `Exit status 3221225477` from whichever package happened to be running, and
-# CI hit the identical wall as `FATAL ERROR: Ineffective mark-compacts near
-# heap limit`.
-CONCURRENCY="${PREPUSH_CONCURRENCY:-2}"
-BIG_HEAP="${NODE_OPTIONS:---max-old-space-size=6144}"
-HEAVY="@wizeworks/api-rest @piggles/console @sparx/workbench"
+# The ONE raised heap cap is for the HEAVY workspaces, and only because they
+# cannot type-check without it. Measured 2026-10-20: typed eslint and tsc on
+# them take 5-6 GB each, every other workspace 2.5 GB or less. api-rest is one
+# tsc program over 469 files and crashes at V8's default ceiling (seen again
+# 2026-10-22), as does event-worker, which type-checks through it. On Windows
+# that death is a bare `Segmentation fault` / `Exit status 3221225477`, not an
+# out-of-memory message. A raised cap is a ceiling, not a reservation, so the
+# light workspaces keep Node's default. Add a workspace to HEAVY only when it
+# crashes without the cap. A NODE_OPTIONS you export yourself wins everywhere.
+HEAVY="@wizeworks/api-rest @wizeworks/event-worker @piggles/console @sparx/workbench"
+HEAVY_HEAP="${NODE_OPTIONS:---max-old-space-size=6144}"
 LIGHT_FILTERS=(); HEAVY_FILTERS=()
 for w in $HEAVY; do LIGHT_FILTERS+=(--filter "!$w"); HEAVY_FILTERS+=(--filter "$w"); done
 
-# Runs a script over the light workspaces 2 at a time, then the heavy ones alone.
-run_budgeted() {
-  NODE_OPTIONS="$BIG_HEAP" pnpm -r --workspace-concurrency="$CONCURRENCY" "${LIGHT_FILTERS[@]}" run "$1" \
-    && NODE_OPTIONS="$BIG_HEAP" pnpm -r --workspace-concurrency=1 "${HEAVY_FILTERS[@]}" run "$1"
+# Runs a script over every workspace, one at a time; the heavy ones get the cap.
+run_one_at_a_time() {
+  pnpm -r --workspace-concurrency=1 "${LIGHT_FILTERS[@]}" run "$1"     && NODE_OPTIONS="$HEAVY_HEAP" pnpm -r --workspace-concurrency=1 "${HEAVY_FILTERS[@]}" run "$1"
 }
 
 step "pnpm -r run lint"
-run_budgeted lint || fail "eslint failed — fix errors above and commit"
+run_one_at_a_time lint || fail "eslint failed — fix errors above and commit"
 ok "lint clean"
 
 step "pnpm -r run typecheck"
-run_budgeted typecheck || fail "tsc found type errors — fix errors above and commit"
+run_one_at_a_time typecheck || fail "tsc found type errors — fix errors above and commit"
 ok "typecheck clean"
 
 # CI=true so this excludes the same DB-backed integration suites CI excludes
@@ -291,7 +281,7 @@ ok "typecheck clean"
 # demand a running `pnpm db:up` on every push and fail for anyone who has not
 # got one — a check stricter than CI, which is how hooks get bypassed.
 step "pnpm -r run test"
-CI=true VITEST_MAX_WORKERS="${VITEST_MAX_WORKERS:-4}" pnpm -r --workspace-concurrency="$CONCURRENCY" run test || fail "tests failed — fix the failures above and commit"
+CI=true VITEST_MAX_WORKERS=1 pnpm -r --workspace-concurrency=1 run test || fail "tests failed — fix the failures above and commit"
 ok "tests clean"
 
 step "pnpm --filter @wizeworks/db db:rls-audit"
