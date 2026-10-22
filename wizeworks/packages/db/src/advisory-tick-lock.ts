@@ -39,13 +39,30 @@
 // inside the lock transaction, and Prisma aborts an interactive transaction that
 // overruns its timeout (default 5s — far too short for a batch tick). It defaults
 // generously; a tick with unusually heavy per-row work can raise it.
+//
+// That pinned connection is why every call first passes a per-process TickGate
+// (./tick-gate): N ticks pinning all N connections of a pool leaves none for the
+// work inside them, and every one of them times out.
 
 import { prisma } from './client';
+import { TickGate, tickSlots } from './tick-gate';
 
 /** The Prisma client this helper takes the lock on. `typeof prisma` so a
  *  dependency-injected client (the automation tick passes its own) is accepted
  *  with no extra import — it is the same PrismaClient type. */
 type LockClient = typeof prisma;
+
+/** One gate per pool: an injected client has a pool of its own. */
+const gates = new WeakMap<LockClient, TickGate>();
+
+function gateFor(client: LockClient): TickGate {
+  let gate = gates.get(client);
+  if (!gate) {
+    gate = new TickGate(tickSlots(process.env));
+    gates.set(client, gate);
+  }
+  return gate;
+}
 
 /**
  * Run `fn` while holding the transaction-scoped advisory lock `key`, or return
@@ -69,6 +86,16 @@ export async function withAdvisoryTickLock<T>(
   opts: { timeoutMs?: number; client?: LockClient } = {}
 ): Promise<T> {
   const client = opts.client ?? prisma;
+  return gateFor(client).run(() => lockAndRun(client, key, whenHeld, fn, opts.timeoutMs));
+}
+
+function lockAndRun<T>(
+  client: LockClient,
+  key: number,
+  whenHeld: T,
+  fn: () => Promise<T>,
+  timeoutMs: number | undefined
+): Promise<T> {
   return client.$transaction(
     async (lockTx) => {
       const [row] = await lockTx.$queryRaw<{ acquired: boolean }[]>`
@@ -84,6 +111,6 @@ export async function withAdvisoryTickLock<T>(
     // ceiling on the whole tick. 10 min covers the largest batch tick with room to
     // spare, and a tick that somehow ran longer SHOULD abort rather than pin a
     // connection indefinitely.
-    { maxWait: 5_000, timeout: opts.timeoutMs ?? 600_000 }
+    { maxWait: 5_000, timeout: timeoutMs ?? 600_000 }
   );
 }
