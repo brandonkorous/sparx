@@ -69,7 +69,7 @@
     "@wizeworks/inventory": "workspace:*",
     "@wizeworks/legal": "workspace:*",
     "@wizeworks/legal-templates": "workspace:*",
-    "@wizeworks/lens-node": "0.3.0-alpha.8",
+    "@wizeworks/lens-node": "0.3.0-alpha.9",
     "@wizeworks/links": "workspace:*",
     "@wizeworks/marketplace-schemas": "workspace:*",
     "@wizeworks/media": "workspace:*",
