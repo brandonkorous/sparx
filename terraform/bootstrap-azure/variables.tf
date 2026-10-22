@@ -98,3 +98,14 @@ variable "github_repository" {
   type        = string
   default     = "sparx"
 }
+
+variable "operator_object_id" {
+  description = <<-EOT
+    The Entra object id of the PERSON who loads the vaults and owns the app
+    registrations. Fixed here, not taken from whoever runs the apply: the
+    release applies this module now, and its identity is not that person.
+    An object id is a public identifier, not a credential.
+  EOT
+  type        = string
+  default     = "5847f785-1220-41ba-acac-3c5f09f2dabb"
+}

@@ -176,13 +176,13 @@ data "azurerm_key_vault" "agconn" {
 resource "azuread_application" "agconn_gha" {
   count        = local.agconn_count
   display_name = "gha-agconn-prod"
-  owners       = [data.azurerm_client_config.current.object_id]
+  owners       = local.app_owners
 }
 
 resource "azuread_service_principal" "agconn_gha" {
   count     = local.agconn_count
   client_id = azuread_application.agconn_gha[0].client_id
-  owners    = [data.azurerm_client_config.current.object_id]
+  owners    = local.app_owners
 }
 
 resource "azuread_application_federated_identity_credential" "agconn_branch" {
@@ -259,14 +259,13 @@ resource "azurerm_role_assignment" "agconn_gha_aks" {
 # Supabase, TERRAFORM GENERATES NOTHING FOR THIS VAULT. All ~45 values are loaded
 # by hand, so this is the grant that makes the vault usable at all.
 #
-# It lands on whoever APPLIES this file, which is the other half of why it belongs
-# in the bootstrap: applied by the release, the grant would have gone to the
-# pipeline's service principal rather than to a person.
+# It lands on var.operator_object_id, a fixed person, not on whoever applies
+# this file: the release's bootstrap job applies it now (see ci.tf).
 resource "azurerm_role_assignment" "agconn_operator_kv" {
   count                = local.agconn_count
   scope                = data.azurerm_key_vault.agconn[0].id
   role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = var.operator_object_id
 }
 
 # SPARX's release identity needs WRITE on AGCONN's vault for the day

@@ -50,3 +50,12 @@ output "service_principal_object_id" {
   description = "Object id of the Actions identity — needed to grant it anything beyond the roles this module already assigns."
   value       = azuread_service_principal.gha.object_id
 }
+
+output "bootstrap_setup" {
+  description = "One-time GitHub setup for the release's bootstrap job: its client id, and the `bootstrap` environment limited to main."
+  value = join("\n", [
+    "gh variable set BOOTSTRAP_AZURE_CLIENT_ID -R ${local.repo} -b '${azuread_application.bootstrap.client_id}'",
+    "gh api -X PUT repos/${local.repo}/environments/bootstrap -F 'deployment_branch_policy[protected_branches]=false' -F 'deployment_branch_policy[custom_branch_policies]=true'",
+    "gh api -X POST repos/${local.repo}/environments/bootstrap/deployment-branch-policies -f name=main -f type=branch",
+  ])
+}

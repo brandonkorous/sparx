@@ -146,13 +146,13 @@ data "azurerm_key_vault" "kanninja" {
 resource "azuread_application" "kanninja_gha" {
   count        = local.kanninja_count
   display_name = "gha-kanninja-prod"
-  owners       = [data.azurerm_client_config.current.object_id]
+  owners       = local.app_owners
 }
 
 resource "azuread_service_principal" "kanninja_gha" {
   count     = local.kanninja_count
   client_id = azuread_application.kanninja_gha[0].client_id
-  owners    = [data.azurerm_client_config.current.object_id]
+  owners    = local.app_owners
 }
 
 resource "azuread_application_federated_identity_credential" "kanninja_branch" {
@@ -224,7 +224,7 @@ resource "azurerm_role_assignment" "kanninja_operator_kv" {
   count                = local.kanninja_count
   scope                = data.azurerm_key_vault.kanninja[0].id
   role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = var.operator_object_id
 }
 
 # The SPARX release identity, which applies terraform/envs/azure and therefore
