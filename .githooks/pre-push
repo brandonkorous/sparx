@@ -249,23 +249,19 @@ fi
 # 4 workspaces at once, ~124 vitest workers). Then 2 at a time with 4 workers
 # each. Both guessed at spare room. Now nothing does.
 #
-# The ONE raised heap cap is for the HEAVY workspaces, and only because they
-# cannot type-check without it. Measured 2026-10-20: typed eslint and tsc on
-# them take 5-6 GB each, every other workspace 2.5 GB or less. api-rest is one
-# tsc program over 469 files and crashes at V8's default ceiling (seen again
-# 2026-10-22), as does event-worker, which type-checks through it. On Windows
-# that death is a bare `Segmentation fault` / `Exit status 3221225477`, not an
-# out-of-memory message. A raised cap is a ceiling, not a reservation, so the
-# light workspaces keep Node's default. Add a workspace to HEAVY only when it
-# crashes without the cap. A NODE_OPTIONS you export yourself wins everywhere.
-HEAVY="@wizeworks/api-rest @wizeworks/event-worker @piggles/console @sparx/workbench"
-HEAVY_HEAP="${NODE_OPTIONS:---max-old-space-size=6144}"
-LIGHT_FILTERS=(); HEAVY_FILTERS=()
-for w in $HEAVY; do LIGHT_FILTERS+=(--filter "!$w"); HEAVY_FILTERS+=(--filter "$w"); done
+# Lint and typecheck still get a raised heap CEILING (CI's 6144), on every
+# workspace. One at a time, that bounds the hook's peak at one process. It is a
+# limit, not a reservation. Node's default here is ~4 GB, and typed eslint and
+# tsc cross it on more workspaces than a hand list keeps up with: api-rest,
+# event-worker and automation-actions all died at the default on 2026-10-22.
+# On Windows that death can be a bare `Segmentation fault` /
+# `Exit status 3221225477`, not an out-of-memory message. Tests keep Node's
+# default. A NODE_OPTIONS you export yourself wins.
+CHECK_HEAP="${NODE_OPTIONS:---max-old-space-size=6144}"
 
-# Runs a script over every workspace, one at a time; the heavy ones get the cap.
+# Runs a script over every workspace, one at a time, under the raised ceiling.
 run_one_at_a_time() {
-  pnpm -r --workspace-concurrency=1 "${LIGHT_FILTERS[@]}" run "$1"     && NODE_OPTIONS="$HEAVY_HEAP" pnpm -r --workspace-concurrency=1 "${HEAVY_FILTERS[@]}" run "$1"
+  NODE_OPTIONS="$CHECK_HEAP" pnpm -r --workspace-concurrency=1 run "$1"
 }
 
 step "pnpm -r run lint"
