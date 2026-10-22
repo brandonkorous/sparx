@@ -20,8 +20,8 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest",
+    "test": "vitest run --maxWorkers=1 --passWithNoTests",
+    "test:watch": "vitest --maxWorkers=1",
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "devDependencies": {

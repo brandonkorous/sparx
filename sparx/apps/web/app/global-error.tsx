@@ -4,6 +4,7 @@
 // root layout itself throws, so it renders a complete self-contained document.
 
 import { useEffect } from 'react';
+import { useStaleBuildRecovery } from '@wizeworks/app-kit';
 
 export default function GlobalError({
   error,
@@ -12,6 +13,9 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // A tab left open across a release reloads once, via the shared budget.
+  const { stale } = useStaleBuildRecovery(error);
+
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -42,14 +46,22 @@ export default function GlobalError({
          */}
         <div style={{ maxWidth: '460px', textAlign: 'center' }}>
           <h1 style={{ fontSize: '26px', fontWeight: 600, margin: '0 0 10px' }}>
-            sparx hit an error
+            {stale ? 'A new version of sparx is ready' : 'sparx hit an error'}
           </h1>
           <p style={{ fontSize: '15px', lineHeight: 1.6, color: '#6b6b86', margin: '0 0 24px' }}>
-            Something unexpected happened while loading the page. Please try again in a moment.
+            {stale
+              ? 'This page was open while we shipped an update. Reloading to pick it up.'
+              : 'Something unexpected happened while loading the page. Please try again in a moment.'}
           </p>
           <button
             type="button"
-            onClick={reset}
+            onClick={
+              stale
+                ? () => {
+                    window.location.reload();
+                  }
+                : reset
+            }
             style={{
               background: '#e04631',
               color: '#fff',
@@ -61,7 +73,7 @@ export default function GlobalError({
               cursor: 'pointer',
             }}
           >
-            Try again
+            {stale ? 'Reload' : 'Try again'}
           </button>
           {error.digest ? (
             <p

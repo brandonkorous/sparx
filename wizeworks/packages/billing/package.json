@@ -16,7 +16,7 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --maxWorkers=1 --passWithNoTests",
     "provision-stripe": "tsx scripts/provision-stripe.ts",
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },

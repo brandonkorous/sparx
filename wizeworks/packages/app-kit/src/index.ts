@@ -6,5 +6,12 @@
 // four apps carrying four copies of the same stale-build detector, one of which
 // then drifted out of date without anyone noticing.
 
-export { isChunkLoadError, reloadOnceForStaleBuild } from './chunk-error';
+export {
+  isChunkLoadError,
+  isStaleActionError,
+  isStaleBuildError,
+  reloadOnceForStaleBuild,
+} from './chunk-error';
 export { ChunkReloadGuard } from './chunk-reload-guard';
+export { useStaleBuildRecovery } from './stale-build-recovery';
+export type { StaleBuildRecovery } from './stale-build-recovery';

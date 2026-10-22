@@ -16,7 +16,7 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --maxWorkers=1",
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {

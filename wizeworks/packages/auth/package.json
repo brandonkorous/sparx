@@ -42,7 +42,7 @@
     "typecheck": "tsc --noEmit",
     "verify": "tsx scripts/verify-signup.ts",
     "clean": "rm -rf .turbo dist *.tsbuildinfo",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --maxWorkers=1 --passWithNoTests"
   },
   "dependencies": {
     "@better-auth/passkey": "1.6.11",

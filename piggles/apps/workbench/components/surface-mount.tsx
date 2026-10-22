@@ -26,7 +26,7 @@ import { faExclamationTriangle } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { Button, ImperativeAlertDialogProvider } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../lib/confirm';
-import { isChunkLoadError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
+import { isStaleBuildError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
 import { productName } from '../lib/product';
 import { reportCrash } from '../lib/analytics';
 import { PaneModuleProvider } from './module-beta-notice';
@@ -69,12 +69,12 @@ export class PaneErrorBoundary extends Component<PaneErrorBoundaryProps, { error
     // the same dead import, so per-pane isolation has nothing left to isolate —
     // only a full reload fetches the new build. Shared cooldown with
     // ChunkReloadGuard and the route boundaries stops a broken build looping.
-    if (isChunkLoadError(error)) reloadOnceForStaleBuild();
+    if (isStaleBuildError(error)) reloadOnceForStaleBuild();
   }
 
   override render() {
     if (!this.state.error) return this.props.children;
-    const stale = isChunkLoadError(this.state.error);
+    const stale = isStaleBuildError(this.state.error);
 
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { isChunkLoadError, reloadOnceForStaleBuild } from './chunk-error';
+import { isStaleBuildError, reloadOnceForStaleBuild } from './chunk-error';
 
 // Catches the chunk-load failures a browser tab throws when it's left open
 // across a deploy and then client-navigates to a route whose JS/CSS chunk the
@@ -56,7 +56,7 @@ export function ChunkReloadGuard({ onUnhandled }: ChunkReloadGuardProps = {}): n
     }
 
     function handle(input: unknown, kind: 'error' | 'rejection'): void {
-      if (isChunkLoadError(input)) {
+      if (isStaleBuildError(input)) {
         reloadOnceForStaleBuild();
         return;
       }

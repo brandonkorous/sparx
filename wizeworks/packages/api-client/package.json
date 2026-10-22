@@ -13,7 +13,7 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --maxWorkers=1 --passWithNoTests",
     "gen": "tsx scripts/generate-types.ts"
   },
   "dependencies": {},

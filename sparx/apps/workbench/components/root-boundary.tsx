@@ -26,7 +26,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@wizeworks/silicaui-react';
-import { isChunkLoadError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
+import { isStaleBuildError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
 import { reportCrash } from '../lib/analytics';
 import { productName } from '../lib/product';
 
@@ -42,7 +42,7 @@ export class RootBoundary extends Component<{ children: ReactNode }, { failed: b
     // Best-effort: if PostHog's own provider is what threw, this no-ops. It
     // still earns its place for the other three.
     reportCrash(error, { boundary: 'root' });
-    if (isChunkLoadError(error)) reloadOnceForStaleBuild();
+    if (isStaleBuildError(error)) reloadOnceForStaleBuild();
   }
 
   override render() {

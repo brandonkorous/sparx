@@ -9,7 +9,7 @@
     "start": "next start --port 3002",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --maxWorkers=1 --passWithNoTests",
     "clean": "rm -rf .turbo .next *.tsbuildinfo"
   },
   "dependencies": {

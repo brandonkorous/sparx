@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { isChunkLoadError, reloadOnceForStaleBuild } from './chunk-error';
+import {
+  isChunkLoadError,
+  isStaleActionError,
+  isStaleBuildError,
+  reloadOnceForStaleBuild,
+} from './chunk-error';
 
 // The regression this file exists for: between the Next 16 upgrade and
 // 2026-07-27 the detector matched only webpack's wording, so every stale-build
@@ -121,6 +126,46 @@ describe('isChunkLoadError', () => {
     ])('does not treat %p as a stale build', (message) => {
       expect(isChunkLoadError(new Error(message))).toBe(false);
     });
+  });
+});
+
+// The crash on 2026-10-21: a getpiggles.com onboarding tab opened before a
+// release pressed "finish", Next threw UnrecognizedActionError, and nothing
+// recognised it, so the owner met a crash screen instead of a fresh page.
+describe('isStaleActionError', () => {
+  /** Built the way next/dist/esm/client/components/unrecognized-action-error.js builds it. */
+  function unrecognized(id: string): Error {
+    const error = new Error(
+      `Server Action "${id}" was not found on the server. \nRead more: https://nextjs.org/docs/messages/failed-to-find-server-action`
+    );
+    error.name = 'UnrecognizedActionError';
+    return error;
+  }
+
+  it('recognises the error Next throws for an action the server does not have', () => {
+    expect(isStaleActionError(unrecognized('6079e6af5fe744a7b130ae20b49d6e8262a177241b'))).toBe(
+      true
+    );
+  });
+
+  it('recognises it by name alone, and by wording alone', () => {
+    const named = new Error('');
+    named.name = 'UnrecognizedActionError';
+    expect(isStaleActionError(named)).toBe(true);
+    expect(isStaleActionError(unrecognized('abc').message)).toBe(true);
+  });
+
+  it('counts as a stale build, so every boundary reloads for it', () => {
+    expect(isStaleBuildError(unrecognized('abc'))).toBe(true);
+    expect(isStaleBuildError(new Error('Loading chunk 42 failed.'))).toBe(true);
+  });
+
+  it.each([
+    'Server Action failed',
+    'An error occurred in the Server Components render.',
+    'Failed to find Server Action',
+  ])('does not treat %p as a stale build', (message) => {
+    expect(isStaleBuildError(new Error(message))).toBe(false);
   });
 });
 

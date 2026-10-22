@@ -30,7 +30,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@wizeworks/silicaui-react';
-import { isChunkLoadError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
+import { isStaleBuildError, reloadOnceForStaleBuild } from '@wizeworks/app-kit';
 import { reportCrash } from '../lib/analytics';
 
 interface ChromeBoundaryProps {
@@ -86,7 +86,7 @@ export class ChromeBoundary extends Component<ChromeBoundaryProps, { failed: boo
     reportCrash(error, { boundary: 'chrome', region: this.props.region });
     // A release purged the chunk this region needed. Nothing local can recover
     // that; the shared cooldown keeps a genuinely broken build from looping.
-    if (isChunkLoadError(error)) reloadOnceForStaleBuild();
+    if (isStaleBuildError(error)) reloadOnceForStaleBuild();
   }
 
   override render() {
