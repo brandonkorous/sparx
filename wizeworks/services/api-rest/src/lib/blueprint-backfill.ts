@@ -26,9 +26,10 @@
 //
 // The GATE is coarse + per-module: run a module's slice only if the install's stored
 // id-map shows that module UN-materialized (no products / no content / no pages / no
-// emails). That single check makes install and every backfill path mutually exclusive
-// and idempotent — a re-activation or a blanket reconcile re-run is a no-op — without
-// per-artifact dedup. After running, the stored `result` is persisted and the WHOLE
+// emails) AND the design declares something for it (`offers`; without that half, a
+// design with nothing for a module held the gate open forever). That check makes
+// install and every backfill path mutually exclusive and idempotent — a re-activation
+// or a blanket reconcile re-run is a no-op — without per-artifact dedup. After running, the stored `result` is persisted and the WHOLE
 // baseline set re-captured, so the just-materialized rows carry real refIds (not the
 // install-time nulls) and a future blueprint UPDATE can three-way-merge them.
 
@@ -58,6 +59,12 @@ import { resolvePrimaryPropertyId } from './property.js';
  *  so they are absent here and backfill is a no-op for them. */
 interface SliceSpec {
   isMaterialized(result: InstallResult, sampleData: boolean): boolean;
+  /** Whether the DESIGN declares anything this slice would write, read with the same
+   *  fields `isMaterialized` counts. A design with no booking menu, or no articles,
+   *  can never make its module "materialized", so without this the reconcile re-ran
+   *  the slice every pass, forever, and logged a materialization each time. Seen in
+   *  production: five tenants, every 6 hours, on both pods. */
+  offers(blueprint: Blueprint, sampleData: boolean): boolean;
   run(env: SliceEnv): Promise<void>;
   /** Every row this slice writes is one of the design's EXAMPLES (issue 098), so an
    *  install that declined them has nothing here to backfill — ever. Saying so is
@@ -76,17 +83,31 @@ const MODULE_SLICE: Partial<Record<ModuleSlug, SliceSpec>> = {
       (sampleData && r.products.length > 0) ||
       Object.keys(r.categories).length > 0 ||
       Object.keys(r.collections).length > 0,
+    offers: (bp, sampleData) =>
+      (sampleData && (bp.commerce?.products.length ?? 0) > 0) ||
+      (bp.commerce?.categories.length ?? 0) > 0 ||
+      (bp.commerce?.collections.length ?? 0) > 0,
     run: installCommerceSlice,
   },
   cms: {
     isMaterialized: (r) => r.content.length > 0,
+    offers: (bp) => bp.content.length > 0,
     run: installContentSlice,
     examplesOnly: true,
   },
-  builder: { isMaterialized: (r) => r.pages.length > 0, run: installSiteSlice },
-  email: { isMaterialized: (r) => r.emails.length > 0, run: installEmailSlice },
+  builder: {
+    isMaterialized: (r) => r.pages.length > 0,
+    offers: (bp) => (bp.site?.pages.length ?? 0) > 0,
+    run: installSiteSlice,
+  },
+  email: {
+    isMaterialized: (r) => r.emails.length > 0,
+    offers: (bp) => bp.emails.length > 0,
+    run: installEmailSlice,
+  },
   scheduling: {
     isMaterialized: (r) => (r.scheduling?.services.length ?? 0) > 0,
+    offers: (bp) => (bp.scheduling?.services.length ?? 0) > 0,
     run: installSchedulingSlice,
     examplesOnly: true,
   },
@@ -129,16 +150,23 @@ export type BackfillOutcome =
         | 'already-materialized'
         /** The install was taken WITHOUT the design's examples (issue 098) and this
          *  module's slice is examples only, so there is nothing of it to bring. */
-        | 'examples-declined';
+        | 'examples-declined'
+        /** The design declares nothing for this module, or its slice ran and wrote
+         *  nothing the gate counts. Either way there is nothing to bring. */
+        | 'nothing-to-bring'
+        /** The catalog has no design under the install's key. Almost always a design
+         *  the catalog retired (the BuilderNode bundles removed for the silica-native
+         *  schema), and briefly the boot window before selfRegisterFirstPartyCatalog. */
+        | 'blueprint-missing';
     };
 
 /**
  * Materialize `module`'s blueprint slice on a tenant's primary-property install, unless
  * it is already there. Shared by the forward consumer and the reconcile pass.
  *
- * Throws (for redelivery / reconcile retry) only when the catalog can't yet resolve the
- * installed blueprint — the boot window before selfRegisterFirstPartyCatalog, same as
- * golden-blueprint-provisioning.
+ * A missing design is an outcome, not a throw. It used to throw so the reconcile would
+ * retry, but the reconcile re-scans every tenant each pass anyway, and a retired design
+ * never comes back: two tenants logged an error every 6 hours with nothing to fix.
  */
 export async function backfillInstallForModule(
   tenantId: string,
@@ -177,11 +205,8 @@ export async function backfillInstallForModule(
   }
 
   const blueprint = await resolveBlueprintManifest(tenantId, install.blueprintKey);
-  if (!blueprint) {
-    throw new Error(
-      `blueprint-backfill: catalog has no "${install.blueprintKey}" blueprint for tenant ${tenantId}`
-    );
-  }
+  if (!blueprint) return { backfilled: false, reason: 'blueprint-missing' };
+  if (!spec.offers(blueprint, sampleData)) return { backfilled: false, reason: 'nothing-to-bring' };
 
   const env = buildEnv(tenantId, propertyId, blueprint, result, sampleData);
   await spec.run(env);
@@ -203,6 +228,12 @@ export async function backfillInstallForModule(
     resolveBlueprintArtifacts(blueprint, env.result, env.assetMap, { sampleData })
   );
 
+  // The slice is the judge of what it wrote. Claiming a materialization the gate will
+  // not count is the log line that repeated every pass.
+  if (!spec.isMaterialized(env.result, sampleData)) {
+    return { backfilled: false, reason: 'nothing-to-bring' };
+  }
+
   logger.info(
     { tenantId, propertyId, module, installId: install.id },
     'blueprint-backfill: materialized module slice'
@@ -220,7 +251,15 @@ export function registerBlueprintBackfillConsumer(logger: FastifyBaseLogger): ()
     const slug = (event.payload as { module?: string } | null)?.module;
     if (!slug || !(slug in MODULE_SLICE)) return;
     try {
-      await backfillInstallForModule(event.tenantId, slug as ModuleSlug, logger);
+      const outcome = await backfillInstallForModule(event.tenantId, slug as ModuleSlug, logger);
+      // One owner just switched this module on, so a design the catalog cannot find is
+      // worth one line here. The reconcile picks it up if the catalog was still booting.
+      if (!outcome.backfilled && outcome.reason === 'blueprint-missing') {
+        logger.warn(
+          { tenantId: event.tenantId, module: slug },
+          'blueprint-backfill: the installed design is not in the catalog'
+        );
+      }
     } catch (err) {
       logger.error(
         { err, tenantId: event.tenantId, module: slug },
@@ -253,6 +292,7 @@ export async function reconcileBlueprintBackfill(
   const SKIPPED: BlueprintBackfillReconcileResult = { acquired: false, backfilled: 0 };
   return withAdvisoryTickLock(RECONCILE_LOCK_KEY, SKIPPED, async () => {
     let backfilled = 0;
+    const missing = new Set<string>();
     for (const module of BACKFILL_MODULES) {
       const rows = await prisma.$queryRaw<{ tenant_id: string }[]>`
         SELECT tenant_id FROM find_tenants_with_active_module(${module})
@@ -261,6 +301,7 @@ export async function reconcileBlueprintBackfill(
         try {
           const outcome = await backfillInstallForModule(tenant_id, module, logger);
           if (outcome.backfilled) backfilled += 1;
+          else if (outcome.reason === 'blueprint-missing') missing.add(tenant_id);
         } catch (err) {
           logger.error(
             { err, tenantId: tenant_id, module },
@@ -268,6 +309,14 @@ export async function reconcileBlueprintBackfill(
           );
         }
       }
+    }
+    // One line per pass, not one error per tenant and module: a retired design is a
+    // known state with nothing to fix, but it should stay visible.
+    if (missing.size > 0) {
+      logger.info(
+        { tenantIds: [...missing] },
+        'blueprint-backfill-reconcile: installs on a design the catalog no longer has'
+      );
     }
     return { acquired: true, backfilled };
   });
