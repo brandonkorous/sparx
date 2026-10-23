@@ -117,13 +117,13 @@ resource "azurerm_key_vault" "wizelens" {
 resource "azuread_application" "wizelens_gha" {
   count        = local.wizelens_count
   display_name = "gha-wizelens-prod"
-  owners       = [data.azurerm_client_config.current.object_id]
+  owners       = local.app_owners
 }
 
 resource "azuread_service_principal" "wizelens_gha" {
   count     = local.wizelens_count
   client_id = azuread_application.wizelens_gha[0].client_id
-  owners    = [data.azurerm_client_config.current.object_id]
+  owners    = local.app_owners
 }
 
 # Pushes to main: the deploy workflow's own context.
@@ -173,7 +173,7 @@ resource "azurerm_role_assignment" "wizelens_operator_kv" {
   count                = local.wizelens_count
   scope                = azurerm_key_vault.wizelens[0].id
   role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = var.operator_object_id
 }
 
 # sparx's release, which writes the generated database secrets from

@@ -129,13 +129,13 @@ data "azurerm_key_vault" "wizeworks" {
 resource "azuread_application" "wizeworks_gha" {
   count        = local.wizeworks_count
   display_name = "gha-wizeworks-prod"
-  owners       = [data.azurerm_client_config.current.object_id]
+  owners       = local.app_owners
 }
 
 resource "azuread_service_principal" "wizeworks_gha" {
   count     = local.wizeworks_count
   client_id = azuread_application.wizeworks_gha[0].client_id
-  owners    = [data.azurerm_client_config.current.object_id]
+  owners    = local.app_owners
 }
 
 resource "azuread_application_federated_identity_credential" "wizeworks_branch" {
@@ -198,13 +198,13 @@ resource "azurerm_role_assignment" "wizeworks_gha_kv" {
 }
 
 # The HUMAN loading the vault needs WRITE; subscription Owner does not grant it,
-# because Key Vault's data plane is its own RBAC surface. It lands on whoever
-# applies this file.
+# because Key Vault's data plane is its own RBAC surface. It lands on
+# var.operator_object_id, a fixed person, not on whoever applies this file.
 resource "azurerm_role_assignment" "wizeworks_operator_kv" {
   count                = local.wizeworks_count
   scope                = data.azurerm_key_vault.wizeworks[0].id
   role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = var.operator_object_id
 }
 
 # NO AcrPull: images come from GHCR, pulled anonymously from a public package.

@@ -1,46 +1,69 @@
 # Azure bootstrap
 
-**Version:** 1.0
+**Version:** 2.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-31
+**Last Updated:** 2026-10-22
 
-The one thing applied from a laptop. Everything else runs in GitHub Actions.
+The identities, the Terraform state backend, and every role grant the release
+itself is not allowed to make. **The release applies it** (the `bootstrap` job
+in `.github/workflows/release.yml`) on every commit to main. A laptop applies it
+once per subscription, and never again.
 
-## Why this exists
+## Why it is separate from `terraform/envs/azure`
 
-Actions cannot run Terraform against Azure until something has created a remote
-state backend (a CI runner is ephemeral — local state cannot be shared between
-runs) and an identity for it to authenticate as. Neither can be created by the
-pipeline that depends on them, so one manual apply is irreducible.
+`envs/azure` is applied by the release's `infrastructure` job, under an identity
+with subscription **Contributor** and nothing more. Contributor cannot grant
+roles and cannot create app registrations, which is what stops that pipeline
+raising its own rights. Everything that needs those two powers lives here.
 
-After this, running `az` or `kubectl` against the platform by hand — for anything
-other than **reading** state — is a gap in the automation, not a workflow.
+This module is applied by a **second** identity (`ci.tf`), which only the
+`bootstrap` job can assume:
+
+| Right                                    | Why                                                        |
+| ---------------------------------------- | ---------------------------------------------------------- |
+| Contributor (subscription)               | resource groups, the state account, the sparx vault        |
+| Storage Blob Data Contributor (tfstate)  | its own state                                              |
+| RBAC Administrator, **with a condition** | grant and remove only the roles in `local.bootstrap_roles` |
+| Graph `Application.ReadWrite.OwnedBy`    | create app registrations, change the ones it owns          |
+| Graph `Application.Read.All`             | read the apps and service principals it plans              |
+
+It cannot grant Owner, User Access Administrator or RBAC Administrator, so it
+cannot raise its own rights. It cannot change its own Graph permissions either:
+a change to them needs a person (below).
 
 ## What it creates
 
-| Resource                             | Purpose                                                                                            | Cost   |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------- | ------ |
-| `rg-sparx-prod-cus-tfstate`          | Holds state, separate from the workload                                                            | $0     |
-| `stsparxprodcustfstate`              | Terraform state, versioned, 30-day soft delete                                                     | <$1/mo |
-| App registration + service principal | The identity Actions assumes                                                                       | $0     |
-| 3 federated credentials              | OIDC trust for main / pull_request / environment                                                   | $0     |
-| 5 role assignments                   | Contributor, Blob Data Contributor, AKS User + RBAC Admin, plus blob access for the human operator | $0     |
+| Resource                         | Purpose                                                       |
+| -------------------------------- | ------------------------------------------------------------- |
+| `rg-sparx-prod-cus-tfstate`      | Holds state, separate from the workload                       |
+| `stsparxprodcustfstate`          | Terraform state for both roots, versioned, 30-day recovery    |
+| `kv-sparx-prod-cus`              | sparx's own secrets                                           |
+| `gha-sparx-prod-cus`             | The release identity (Contributor)                            |
+| `gha-sparx-prod-cus-bootstrap`   | The identity that applies this module                         |
+| One app registration per product | Each product's deploy identity, with its vault and AKS grants |
 
-The state resource group is deliberately separate from `rg-sparx-prod-cus`, so a
-`terraform destroy` of the workload can never take the state describing it.
+State lives at `tfstate/bootstrap-azure.tfstate`, beside `envs/azure.tfstate`.
 
 ## No stored credentials
 
 Authentication is **OIDC / workload identity federation**, not a client secret.
-GitHub mints a short-lived token per run; Entra trusts it for a specific
-repository and ref. Nothing secret is stored in GitHub — the three values the
-workflows need are ids, not credentials.
+GitHub mints a short-lived token per run; Entra trusts it for one repository and
+one context. Entra matches the `subject` **exactly**, so a pull request runs
+under a different subject and cannot assume either identity's apply path.
 
-Entra matches the credential `subject` **exactly** — no wildcards. That is the
-security property: a fork's pull-request run executes under a different subject
-and cannot assume this identity.
+The bootstrap identity trusts only `environment:bootstrap`, and that GitHub
+Environment is limited to `main` (`terraform output -raw bootstrap_setup`).
 
-## Apply
+## When a person must apply
+
+Only these, and the release fails loudly (a 403) if it meets one:
+
+1. **The first apply in a new subscription** (below).
+2. **A change to the bootstrap identity's own rights** in `ci.tf`: its Graph
+   permissions or its RBAC condition. Granting those needs Privileged Role
+   Administrator, which no pipeline holds.
+
+Apply from a checkout of main:
 
 ```bash
 cd terraform/bootstrap-azure
@@ -48,44 +71,37 @@ terraform init
 terraform apply -var="subscription_id=$(az account show --query id -o tsv)"
 ```
 
-Needs permission to create an App Registration in **Entra ID** — a tenant-level
-permission, separate from subscription RBAC. An authorization failure on
-`azuread_application` means that is missing.
+## First apply in a new subscription
 
-Then wire up the repository:
+The backend points at a storage account this module creates, so the very first
+apply runs on local state and then moves it:
 
 ```bash
-terraform output -raw gh_cli_commands   # copy-paste ready
+cd terraform/bootstrap-azure
+printf 'terraform {\n  backend "local" {}\n}\n' > local_override.tf   # git-ignored
+terraform init
+terraform apply -var="subscription_id=$(az account show --query id -o tsv)"
+rm local_override.tf
+terraform init -migrate-state
+terraform output -raw gh_cli_commands   # the release identity's variables
+terraform output -raw bootstrap_setup   # the bootstrap job's variable and environment
 ```
 
-## Then move the workload to remote state
-
-`terraform/envs/azure` currently uses a local backend. Once this exists, add to
-its `providers.tf`:
-
-```hcl
-backend "azurerm" {
-  resource_group_name  = "rg-sparx-prod-cus-tfstate"
-  storage_account_name = "stsparxprodcustfstate"
-  container_name       = "tfstate"
-  key                  = "envs/azure.tfstate"
-}
-```
-
-then `terraform init -migrate-state`. Get the exact values from
-`terraform output backend_config`.
-
-**Do this before any Actions workflow runs Terraform** — a workflow against local
-state would see an empty state and try to recreate the cluster and database that
-already exist.
+Needs **Privileged Role Administrator** (or Global Administrator) in Entra ID,
+for the Graph grants, and **Owner** on the subscription, for the RBAC
+Administrator grant.
 
 ## Note on permissions
 
-`Contributor` is granted at **subscription** scope because
-`terraform/envs/azure` creates its own resource group and AKS creates a second
-one for nodes — a group-scoped assignment could do neither. Contributor cannot
-grant roles, so this identity cannot escalate its own privileges.
+`Contributor` is granted at **subscription** scope because `envs/azure` creates
+its own resource group and AKS creates a second one for nodes; a group-scoped
+assignment could do neither.
 
 `Storage Blob Data Contributor` is separate and easy to miss: Contributor grants
 control-plane rights over the storage _account_ but not access to the _data_ in
-it. Without it, `terraform init` fails — before plan, with an unhelpful error.
+it. Without it, `terraform init` fails before plan, with an unhelpful error.
+
+`local.bootstrap_roles` must list every role a file here grants. A new grant of
+a role not in the list fails the release's apply with a 403; add the role to the
+list, and a person applies once (the condition is the bootstrap identity's own
+right).

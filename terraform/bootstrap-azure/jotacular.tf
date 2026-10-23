@@ -218,13 +218,13 @@ locals {
 resource "azuread_application" "jotacular_gha" {
   count        = local.jotacular_count
   display_name = "gha-jotacular-prod"
-  owners       = [data.azurerm_client_config.current.object_id]
+  owners       = local.app_owners
 }
 
 resource "azuread_service_principal" "jotacular_gha" {
   count     = local.jotacular_count
   client_id = azuread_application.jotacular_gha[0].client_id
-  owners    = [data.azurerm_client_config.current.object_id]
+  owners    = local.app_owners
 }
 
 resource "azuread_application_federated_identity_credential" "jotacular_branch" {
@@ -298,14 +298,13 @@ resource "azurerm_role_assignment" "jotacular_gha_aks" {
 # this, `az keyvault secret set` fails with a 403 that says nothing about a
 # missing role. Same trap as `operator_kv_secrets` on the sparx vault, same fix.
 #
-# This lands on whoever APPLIES this file, which is the other half of why it
-# belongs in the bootstrap: applied by the release, the grant would have gone to
-# the pipeline's service principal rather than to a person.
+# It lands on var.operator_object_id, a fixed person, not on whoever applies
+# this file: the release's bootstrap job applies it now (see ci.tf).
 resource "azurerm_role_assignment" "jotacular_operator_kv" {
   count                = local.jotacular_count
   scope                = data.azurerm_key_vault.jotacular[0].id
   role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = var.operator_object_id
 }
 
 # SPARX's release identity also needs WRITE on jotDOJO's vault, because six of

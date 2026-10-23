@@ -4,8 +4,9 @@
 # Separate from terraform/envs/azure/rocketease.tf because of WHO APPLIES IT, not
 # because of what it contains. This state creates directory objects — an app
 # registration is tenant-wide — and that needs Microsoft Graph rights the release
-# identity does not have. The environment state is applied by the release; this
-# one is applied by a human. Putting an `azuread` resource in the other file
+# identity does not have. The environment state is applied by the release's
+# infrastructure job; this one by its bootstrap job, under the identity in ci.tf.
+# Putting an `azuread` resource in the other file
 # fails with `Authorization_RequestDenied` no matter how the provider is
 # configured, which is how jotDOJO's identity ended up here.
 #
@@ -144,13 +145,13 @@ data "azurerm_key_vault" "rocketease" {
 resource "azuread_application" "rocketease_gha" {
   count        = local.rocketease_count
   display_name = "gha-rocketease-prod"
-  owners       = [data.azurerm_client_config.current.object_id]
+  owners       = local.app_owners
 }
 
 resource "azuread_service_principal" "rocketease_gha" {
   count     = local.rocketease_count
   client_id = azuread_application.rocketease_gha[0].client_id
-  owners    = [data.azurerm_client_config.current.object_id]
+  owners    = local.app_owners
 }
 
 resource "azuread_application_federated_identity_credential" "rocketease_branch" {
@@ -223,7 +224,7 @@ resource "azurerm_role_assignment" "rocketease_operator_kv" {
   count                = local.rocketease_count
   scope                = data.azurerm_key_vault.rocketease[0].id
   role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = var.operator_object_id
 }
 
 # The SPARX release identity, which applies terraform/envs/azure and therefore

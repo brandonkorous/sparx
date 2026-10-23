@@ -1043,6 +1043,104 @@ jobs:
                   } >> "$GITHUB_STEP_SUMMARY"
 
     # ---------------------------------------------------------------------------
+    # STAGE 1b — BOOTSTRAP. terraform/bootstrap-azure: the identities and role
+    # grants the infrastructure identity is not allowed to make (its README).
+    #
+    # Its OWN identity (terraform/bootstrap-azure/ci.tf), which only this job can
+    # assume: the subject is `environment:bootstrap`, and that environment is
+    # limited to main. No other job ever holds the power to grant a role.
+    #
+    # AFTER infrastructure, because its grants look up vaults envs/azure creates.
+    # Same guard as stage 1: an additive plan applies, a delete stops the release.
+    # ---------------------------------------------------------------------------
+    bootstrap:
+        needs: [target, infrastructure]
+        if: ${{ github.ref == 'refs/heads/main' && (github.event_name != 'workflow_dispatch' || inputs.infrastructure) }}
+        runs-on: ubuntu-latest
+        environment: bootstrap
+        env:
+            TERRAFORM_DIR: terraform/bootstrap-azure
+            ARM_USE_OIDC: "true"
+            ARM_CLIENT_ID: ${{ vars.BOOTSTRAP_AZURE_CLIENT_ID }}
+            ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+            ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+            TF_VAR_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+        steps:
+            - name: Require the bootstrap identity
+              run: |
+                  if [ -z "$ARM_CLIENT_ID" ]; then
+                    echo "::error::BOOTSTRAP_AZURE_CLIENT_ID is not set. See terraform/bootstrap-azure/README.md (terraform output -raw bootstrap_setup)."
+                    exit 1
+                  fi
+
+            - uses: actions/checkout@v4
+
+            - uses: hashicorp/setup-terraform@v3
+              with:
+                  terraform_version: "1.9.8"
+                  terraform_wrapper: false
+
+            - name: Terraform init
+              working-directory: ${{ env.TERRAFORM_DIR }}
+              run: terraform init -input=false
+
+            - name: Terraform plan
+              id: plan
+              working-directory: ${{ env.TERRAFORM_DIR }}
+              run: |
+                  set -euo pipefail
+                  terraform plan -input=false -lock-timeout=5m -detailed-exitcode -out=tfplan \
+                    && code=0 || code=$?
+
+                  case "$code" in
+                    0) echo 'changes=false' >> "$GITHUB_OUTPUT" ;;
+                    2) echo 'changes=true'  >> "$GITHUB_OUTPUT" ;;
+                    *) exit "$code" ;;
+                  esac
+
+                  terraform show -json tfplan > tfplan.json
+
+            # The same guard as stage 1. Here a delete is a lost identity or a
+            # revoked grant, and a replacement mints a new client id that every
+            # repository's AZURE_CLIENT_ID still points away from.
+            - name: Refuse a destructive plan
+              if: steps.plan.outputs.changes == 'true'
+              working-directory: ${{ env.TERRAFORM_DIR }}
+              run: |
+                  set -euo pipefail
+                  DESTRUCTIVE=$(jq -r '
+                    [ .resource_changes[]?
+                      | select(.change.actions | index("delete"))
+                      | "\(.change.actions | join("+"))\t\(.address)" ]
+                    | .[]' tfplan.json)
+
+                  {
+                    echo '### Bootstrap plan'
+                    echo ''
+                    terraform show -no-color tfplan | tail -c 60000 | sed 's/^/    /'
+                  } >> "$GITHUB_STEP_SUMMARY"
+
+                  if [ -z "$DESTRUCTIVE" ]; then
+                    echo 'Plan is additive — applying.'
+                    exit 0
+                  fi
+
+                  echo "$DESTRUCTIVE"
+                  if [ '${{ inputs.allow_infrastructure_destroy }}' = 'true' ]; then
+                    echo '::warning::Applying a bootstrap plan that DESTROYS the resources above — allow_infrastructure_destroy was set.'
+                    exit 0
+                  fi
+
+                  echo '::error::The bootstrap plan would DESTROY resources. Stopping. Re-run by hand with allow_infrastructure_destroy if that is wanted.'
+                  exit 1
+
+            - name: Terraform apply
+              if: steps.plan.outputs.changes == 'true'
+              working-directory: ${{ env.TERRAFORM_DIR }}
+              run: terraform apply -input=false -lock-timeout=5m -auto-approve tfplan
+
+    # ---------------------------------------------------------------------------
     # STAGE 2 — DATA. Schema, then rows.
     #
     # Everything here runs as an in-cluster Job, because psql-sparx-prod-cus has

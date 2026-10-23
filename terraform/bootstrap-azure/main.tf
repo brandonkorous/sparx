@@ -1,32 +1,26 @@
-# Azure bootstrap — the ONE thing applied from a laptop, ever.
+# Azure bootstrap — the identities, the state backend, and the vault grants.
 #
-# It exists to break a chicken-and-egg: GitHub Actions cannot run Terraform
-# against Azure until something has already created
-#   (a) a remote state backend — a CI runner is ephemeral, so local state cannot
-#       be shared between runs, and
-#   (b) an identity for Actions to authenticate as.
-# Neither can be created by the pipeline that depends on them.
-#
-# Everything else — terraform/envs/azure, image builds, cluster deploys, database
-# migrations — runs in Actions. If you find yourself running `az` or `kubectl`
-# against this platform by hand for anything other than READING state, that is a
-# gap in the automation, not a workflow.
+# The release applies it (the `bootstrap` job in .github/workflows/release.yml),
+# under the identity in ci.tf, against remote state. A laptop applies it only
+# ONCE per subscription, because nothing can grant the release's identity its
+# own rights; README.md has that first-run ritual.
 #
 # Authentication is OIDC (workload identity federation), NOT a client secret.
 # GitHub mints a short-lived token per run and Entra trusts it for a specific
-# repo + ref. There is no credential to store in GitHub, rotate, or leak — the
-# only things in repo secrets are ids, which are not sensitive.
-#
-#   cd terraform/bootstrap-azure
-#   terraform init
-#   terraform apply -var="subscription_id=$(az account show --query id -o tsv)"
-#
-# Requires permission to create an App Registration in Entra ID — a TENANT-level
-# permission, separate from subscription RBAC. If apply fails with an
-# authorization error on azuread_application, that is what is missing.
+# repo + environment. There is no credential to store, rotate, or leak.
 
 terraform {
   required_version = ">= 1.9.0"
+
+  # Remote, beside envs/azure's state. A NEW subscription has no account yet:
+  # README.md says how the first apply runs on local state and migrates here.
+  backend "azurerm" {
+    resource_group_name  = "rg-sparx-prod-cus-tfstate"
+    storage_account_name = "stsparxprodcustfstate"
+    container_name       = "tfstate"
+    key                  = "bootstrap-azure.tfstate"
+    use_azuread_auth     = true
+  }
 
   required_providers {
     azurerm = {
@@ -38,13 +32,6 @@ terraform {
       version = "~> 3.0"
     }
   }
-
-  # Deliberately LOCAL state. This describes only the bootstrap itself; putting
-  # it in the storage account it creates would be its own chicken-and-egg. It is
-  # also near-static — applied once, rarely touched.
-  #
-  # It contains no secrets: OIDC means there is no client secret to leak. Losing
-  # this file costs a `terraform import`, not an outage.
 }
 
 provider "azurerm" {
@@ -71,6 +58,10 @@ locals {
   suffix = "${var.workload}-${var.environment}-${local.loc}"
 
   repo = "${var.github_owner}/${var.github_repository}"
+
+  # Every app registration is owned by the operator AND the release's bootstrap
+  # identity, which may change only the apps it owns.
+  app_owners = [var.operator_object_id, azuread_service_principal.bootstrap.object_id]
 
   tags = {
     platform    = "sparx"
@@ -134,12 +125,12 @@ resource "azurerm_storage_container" "tfstate" {
 # ---------------------------------------------------------------------------
 resource "azuread_application" "gha" {
   display_name = "gha-${local.suffix}"
-  owners       = [data.azurerm_client_config.current.object_id]
+  owners       = local.app_owners
 }
 
 resource "azuread_service_principal" "gha" {
   client_id = azuread_application.gha.client_id
-  owners    = [data.azurerm_client_config.current.object_id]
+  owners    = local.app_owners
 }
 
 # One federated credential per trusted GitHub context. `subject` is matched
@@ -295,7 +286,7 @@ resource "azurerm_role_assignment" "gha_kv_secrets" {
 resource "azurerm_role_assignment" "operator_kv_secrets" {
   scope                = azurerm_key_vault.app.id
   role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = var.operator_object_id
 }
 
 # The HUMAN running Terraform needs blob data access too, and this is the single
@@ -312,5 +303,5 @@ resource "azurerm_role_assignment" "operator_kv_secrets" {
 resource "azurerm_role_assignment" "operator_blob" {
   scope                = azurerm_storage_account.tfstate.id
   role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = var.operator_object_id
 }
