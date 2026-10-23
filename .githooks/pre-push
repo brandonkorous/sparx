@@ -7,6 +7,23 @@
 
 set -e
 
+# WAIT IN LINE. Several agents share this machine, each in its own worktree and
+# often in different projects, and every one of them used to run this whole suite
+# at once. A push was killed for low memory on 2026-10-22 and again 2026-10-23.
+# The machine-wide queue (G:/code/@wizeworks/agent-queue, outside this repo so
+# every project shares it) lets 2 heavy runs go at a time; this re-runs the hook
+# inside a slot. The queue sets AGENT_QUEUE_HELD=1, so the re-run, or a push the
+# agent already queued, goes straight through. No queue on this machine (CI, a
+# different box): the hook runs as before. Set AGENT_QUEUE_RUN to move it.
+AGENT_QUEUE_RUN="${AGENT_QUEUE_RUN:-G:/code/@wizeworks/agent-queue/run.mjs}"
+if [ "$AGENT_QUEUE_HELD" != "1" ] && [ -f "$AGENT_QUEUE_RUN" ]; then
+  # The queue starts the command through cmd.exe, which can find WSL's bash
+  # before Git's, so hand it the full Windows path of the bash running this.
+  HOOK_BASH="bash"
+  command -v cygpath >/dev/null 2>&1 && HOOK_BASH="$(cygpath -w "$BASH")"
+  exec node "$AGENT_QUEUE_RUN" "$HOOK_BASH" "$0" "$@"
+fi
+
 # Color helpers (no-op when not a TTY)
 if [ -t 1 ]; then
   GREY=$'\033[90m'; RED=$'\033[31m'; GREEN=$'\033[32m'; RESET=$'\033[0m'
