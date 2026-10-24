@@ -17,8 +17,8 @@ const BASE = 'https://sparx.works';
 // the same source the pages render from, so the sitemap can never drift from
 // what actually ships. (Module pages were briefly CMS-backed; that `module`
 // content type was reclassified into builder components — docs/51 §7.)
-// Async so it can await the published-bootcamp slugs from the public API — those
-// are dynamic listings, guarded to [] so a down endpoint never breaks coverage.
+// Async so it can await the published-bootcamp slugs from the public API. When
+// api-rest is unreachable the fetches throw, so ISR keeps the last good sitemap.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
@@ -32,9 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'daily' as const,
     priority: 0.6,
   }));
-  // Listable partner profiles. Same guard as the bootcamps above — the fetch
-  // degrades to [] rather than throwing, so a down public API narrows this
-  // sitemap instead of taking all coverage with it.
+  // Listable partner profiles, read the same way as the bootcamps above.
   const partnerPages: MetadataRoute.Sitemap = partnerSlugs.map((slug) => ({
     url: `${BASE}/partners/${slug}`,
     lastModified: now,
@@ -138,8 +136,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 // robots.ts disallows `/market/*?*` outright, so emitting a faceted permutation
 // here would contradict both signals.
 //
-// Every fetch degrades to empty rather than throwing — a down catalog API must
-// narrow this sitemap, never fail the whole route and take all coverage with it.
+// An unreachable catalog API throws rather than narrowing this sitemap: the
+// render fails and Next keeps serving the last good sitemap (lib/public-api).
 async function marketplacePages(now: Date): Promise<MetadataRoute.Sitemap> {
   const perCategory = await Promise.all(
     LIVE_CATEGORIES.map(async (category) => {
