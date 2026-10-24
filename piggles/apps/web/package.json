@@ -25,7 +25,7 @@
     "@wizeworks/lens-react": "0.3.0-alpha.11",
     "@wizeworks/silicaui": "catalog:",
     "@wizeworks/silicaui-react": "catalog:",
-    "next": "^16.2.6",
+    "next": "^16.4.1",
     "posthog-js": "^1.376.4",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
