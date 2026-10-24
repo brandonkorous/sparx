@@ -41,6 +41,7 @@ import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
 import { selfRegisterFirstPartyCatalog } from './lib/marketplace/self-register.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
 import { checkOfferCoupons } from './lib/billing-boot-check.js';
+import { prewarmOfferStandings } from './lib/offer-standings.js';
 import { startReservationReaperLoop } from './lib/reservation-reaper-loop.js';
 import { startBookingNotificationLoop } from './lib/scheduling-notifications.js';
 import { startCalendarSyncLoop } from './lib/scheduling-calendar-sync.js';
@@ -268,6 +269,11 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  // A plan offer whose coupon Stripe lacks is logged at error level, once per boot (WW-4).
+  void checkOfferCoupons(app.log);
+  // Warm the public offer standings so no visitor waits on Stripe (PG-2.3).
+  void prewarmOfferStandings(app.log);
+
   // Publish sparx's own marketplace catalog — ALL FOUR categories: themes,
   // components, blueprints and integrations — and retract what it no longer ships.
   // This is how first-party content reaches the shelf: the platform publishing itself
@@ -293,9 +299,6 @@ async function main(): Promise<void> {
   // many; a catalog that failed to refresh must not take down orders, checkout and
   // webhooks with it. It is idempotent, so the next boot re-asserts the shelf — but
   // the failure is logged at error level because a stale catalog is still wrong.
-  // A plan offer whose coupon Stripe lacks is logged at error level, once per boot (WW-4).
-  void checkOfferCoupons(app.log);
-
   void selfRegisterFirstPartyCatalog()
     .then((r) => {
       app.log.info(
