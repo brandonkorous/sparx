@@ -4,7 +4,12 @@ import { join } from 'node:path';
 
 import { afterAll, describe, expect, it } from 'vitest';
 
-import { postedActionIds, readActionIds, staleFormActionRedirect } from './stale-form-action';
+import {
+  postedActionIds,
+  readActionIds,
+  staleFormActionRedirect,
+  unknownActionResponse,
+} from './stale-form-action';
 
 // The 500 this exists for: a server-action form posted without JavaScript names
 // its action by id, and an id from an older build made Next.js throw "Failed to
@@ -13,6 +18,7 @@ import { postedActionIds, readActionIds, staleFormActionRedirect } from './stale
 
 const LIVE = 'a'.repeat(42);
 const STALE = 'b'.repeat(42);
+const EDGE = 'c'.repeat(42);
 
 const dist = mkdtempSync(join(tmpdir(), 'app-kit-actions-'));
 mkdirSync(join(dist, 'server'));
@@ -20,7 +26,7 @@ writeFileSync(
   join(dist, 'server', 'server-reference-manifest.json'),
   JSON.stringify({
     node: { [LIVE]: { workers: { 'app/signup/page': { moduleId: 1, async: false } } } },
-    edge: {},
+    edge: { [EDGE]: { workers: { 'app/og/route': { moduleId: 2, async: false } } } },
   })
 );
 afterAll(() => rmSync(dist, { recursive: true, force: true }));
@@ -47,7 +53,7 @@ async function post(
 
 describe('readActionIds', () => {
   it('reads the ids from the build manifest', () => {
-    expect(readActionIds(dist)).toEqual(new Set([LIVE]));
+    expect(readActionIds(dist)).toEqual(new Set([LIVE, EDGE]));
   });
 
   it('knows nothing when there is no build to read', () => {
@@ -142,5 +148,46 @@ describe('staleFormActionRedirect', () => {
     const req = await post({ [`$ACTION_ID_${LIVE}`]: '', email: 'owner@example.com' });
     await staleFormActionRedirect(req, known);
     expect((await req.formData()).get('email')).toBe('owner@example.com');
+  });
+});
+
+/** A hydrated action call, as the scanner sent it: header-named, asking for RSC. */
+function actionCall(id: string | null, method = 'POST'): Request {
+  const headers: Record<string, string> = { rsc: '1', 'content-type': 'text/plain' };
+  if (id !== null) headers['next-action'] = id;
+  return new Request('https://sparx.works/app', {
+    method,
+    headers,
+    body: method === 'POST' ? '[]' : null,
+  });
+}
+
+describe('unknownActionResponse', () => {
+  const known = readActionIds(dist);
+
+  it("answers an unknown id with Next's own not-found, not a 500", async () => {
+    const res = unknownActionResponse(actionCall('cachefn'), known);
+    expect(res?.status).toBe(404);
+    expect(res?.headers.get('x-nextjs-action-not-found')).toBe('1');
+    expect(res?.headers.get('content-type')).toBe('text/plain');
+    expect(res?.headers.get('cache-control')).toBe('no-store');
+    expect(await res?.text()).toBe('Server action not found.');
+  });
+
+  it('lets a call to an action of this build through, node or edge', () => {
+    expect(unknownActionResponse(actionCall(LIVE), known)).toBeNull();
+    expect(unknownActionResponse(actionCall(EDGE), known)).toBeNull();
+  });
+
+  it('never touches a request that names no action', () => {
+    expect(unknownActionResponse(actionCall(null), known)).toBeNull();
+  });
+
+  it('leaves a GET to Next, which does not run actions on it', () => {
+    expect(unknownActionResponse(actionCall('cachefn', 'GET'), known)).toBeNull();
+  });
+
+  it('judges nothing when the build could not be read', () => {
+    expect(unknownActionResponse(actionCall('cachefn'), null)).toBeNull();
   });
 });
