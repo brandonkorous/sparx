@@ -6,6 +6,7 @@ import {
 } from '@wizeworks/app-kit/stale-form-action';
 import { newVisitorId } from '@wizeworks/attribution';
 import { SPARX_ATTR } from './lib/attribution-cookies';
+import { facetFloodResponse } from './lib/facet-flood';
 
 // Edge attribution seed (docs/80 §5.3, §7.2). Next 16 renamed the `middleware`
 // file convention to `proxy` (same Edge-runtime behaviour). Mints a first-party
@@ -22,6 +23,10 @@ export async function proxy(request: NextRequest): Promise<Response> {
   if (unknown) return unknown;
   const stale = await staleFormActionRedirect(request, known);
   if (stale) return stale;
+
+  // A facet combination past the browse cap is a scraper's URL; 404 it here.
+  const flood = facetFloodResponse(request.nextUrl);
+  if (flood) return flood;
 
   const response = NextResponse.next();
 
