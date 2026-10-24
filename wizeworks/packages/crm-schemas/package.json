@@ -27,7 +27,7 @@
   "dependencies": {
     "@wizeworks/automation-schemas": "workspace:*",
     "@wizeworks/field-schema": "workspace:*",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

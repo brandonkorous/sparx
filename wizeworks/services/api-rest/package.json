@@ -107,7 +107,7 @@
     "llm-harness": "^0.3.1",
     "socket.io": "^4.8.1",
     "stripe": "^17.7.0",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

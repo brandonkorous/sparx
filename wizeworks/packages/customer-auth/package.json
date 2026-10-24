@@ -24,7 +24,7 @@
     "@wizeworks/db": "workspace:*",
     "@wizeworks/events": "workspace:*",
     "better-auth": "~1.6.33",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

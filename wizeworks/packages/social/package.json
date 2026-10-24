@@ -38,7 +38,7 @@
     "@wizeworks/brand-core": "workspace:*",
     "@wizeworks/db": "workspace:*",
     "@wizeworks/integrations": "workspace:*",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "scripts": {
     "lint": "eslint .",

@@ -23,7 +23,7 @@
   "dependencies": {
     "@wizeworks/silicaui-builder": "catalog:",
     "@wizeworks/silicaui-html": "catalog:",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

@@ -21,7 +21,7 @@
     "@wizeworks/site-mcp": "workspace:*",
     "fastify": "^5.12.5",
     "pino": "^9.5.0",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

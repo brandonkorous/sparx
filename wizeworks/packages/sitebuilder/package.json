@@ -31,7 +31,7 @@
     "@wizeworks/sitebuilder-schemas": "workspace:*",
     "@wizeworks/ui": "workspace:*",
     "lucide-react": "^0.577.0",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "peerDependencies": {
     "react": "^19.0.0"

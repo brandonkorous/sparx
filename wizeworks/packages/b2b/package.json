@@ -28,7 +28,7 @@
     "@wizeworks/db": "workspace:*",
     "@wizeworks/events": "workspace:*",
     "@wizeworks/inventory": "workspace:*",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "scripts": {
     "lint": "eslint .",
