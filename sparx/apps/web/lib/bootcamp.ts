@@ -4,13 +4,11 @@
 // RLS policy (status='published'), so only live listings come back.
 //
 // Server-only: reads `process.env`, imported by server components, the load-more
-// action, the detail route, and the sitemap. Degrades to empty on any error so
-// the directory + detail always render (empty state / notFound) while the
-// endpoints stand up.
+// action, the detail route, and the sitemap. Degrades to empty when api-rest
+// refuses a query, and throws when it is unreachable (lib/public-api).
 
 import type { FacetCount, PartnerTier } from './partners';
-
-const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
+import { getPublic } from './public-api';
 
 export type BootcampFormat = 'in_person' | 'virtual' | 'hybrid' | 'async';
 
@@ -66,24 +64,8 @@ const EMPTY_PAGE: BootcampListResponse = {
   next_cursor: null,
 };
 
-interface Envelope<T> {
-  success: boolean;
-  data: T;
-}
-
-async function getPublic<T>(path: string): Promise<T | null> {
-  try {
-    const res = await fetch(`${API_BASE}${path}`, { next: { revalidate: 300 } });
-    if (!res.ok) return null;
-    const body = (await res.json()) as Envelope<T>;
-    return body.success ? body.data : null;
-  } catch {
-    return null;
-  }
-}
-
 /** The faceted, paged public directory. `query` carries `format`, `location`,
- *  `from`, `to`, `q`, `cursor`, `limit`. Degrades to an empty page on error. */
+ *  `from`, `to`, `q`, `cursor`, `limit`. Empty when api-rest refuses the query. */
 export async function fetchBootcamps(
   query: Record<string, string> = {}
 ): Promise<BootcampListResponse> {
@@ -114,9 +96,9 @@ const DIRECTORY_PAGE_SIZE = 48;
 /** 48 × 40 = 1,920 bootcamps before the sitemap reports a bound. */
 const MAX_SLUG_PAGES = 40;
 
-/** Published slugs for the sitemap. Degrades to whatever it has when the API
- *  errors — a down endpoint narrows coverage, it never fails the sitemap route —
- *  and a hit cap is logged rather than silent (docs/50 §6). */
+/** Published slugs for the sitemap. Throws when api-rest is unreachable, so ISR
+ *  keeps the last good sitemap instead of a narrowed one; a hit cap is logged
+ *  rather than silent (docs/50 §6). */
 export async function fetchPublishedBootcampSlugs(): Promise<string[]> {
   const slugs: string[] = [];
   let cursor: string | null = null;

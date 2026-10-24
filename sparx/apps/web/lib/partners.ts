@@ -4,10 +4,10 @@
 // directory_visible), so only listable partners come back. No per-tenant overlay.
 //
 // Server-only by construction: reads `process.env`, imported only by server
-// components + the load-more server action. Degrades to empty results on any
-// error so every page still renders its empty state while the endpoints stand up.
+// components + the load-more server action. Degrades to empty results when
+// api-rest refuses a query; throws when it is unreachable (lib/public-api).
 
-const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
+import { getPublic } from './public-api';
 
 // The workbench origin the apply/activation funnel hands off to: one definition for
 // the whole site, in cta.ts. Re-exported because partner pages import it from here.
@@ -72,28 +72,9 @@ const EMPTY_PAGE: PartnerListResponse = {
   next_cursor: null,
 };
 
-interface Envelope<T> {
-  success: boolean;
-  data: T;
-}
-
-/** GET a public path, unwrap the `{ success, data }` envelope. Returns null on
- *  any non-2xx / shape mismatch so callers degrade gracefully. Cacheable +
- *  tenant-agnostic, so responses revalidate every 5 minutes. */
-async function getPublic<T>(path: string): Promise<T | null> {
-  try {
-    const res = await fetch(`${API_BASE}${path}`, { next: { revalidate: 300 } });
-    if (!res.ok) return null;
-    const body = (await res.json()) as Envelope<T>;
-    return body.success ? body.data : null;
-  } catch {
-    return null;
-  }
-}
-
 /** The faceted, paged public directory. `query` carries `tier`, `specialty`,
  *  `location`, `remote`, `q`, `cursor`, `limit`, passed through verbatim.
- *  Degrades to an empty page on error. */
+ *  An empty page when api-rest refuses the query; throws when it is unreachable. */
 export async function fetchPartners(
   query: Record<string, string> = {}
 ): Promise<PartnerListResponse> {
@@ -126,9 +107,9 @@ const DIRECTORY_PAGE_SIZE = 48;
 /** 48 × 40 = 1,920 partners before the sitemap reports a bound. */
 const MAX_SLUG_PAGES = 40;
 
-/** Every listable partner's slug, for the sitemap. Degrades to whatever it has
- *  when the API errors — a down endpoint narrows coverage, it never fails the
- *  sitemap route — and a hit cap is logged rather than silent (docs/50 §6). */
+/** Every listable partner's slug, for the sitemap. Throws when api-rest is
+ *  unreachable, so ISR keeps the last good sitemap instead of a narrowed one;
+ *  a hit cap is logged rather than silent (docs/50 §6). */
 export async function fetchPartnerSlugs(): Promise<string[]> {
   const slugs: string[] = [];
   let cursor: string | null = null;

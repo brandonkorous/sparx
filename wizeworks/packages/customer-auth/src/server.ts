@@ -17,6 +17,7 @@ import { publishCustomerAuthEmail } from './email';
 import { resolveStoreBaseUrl, resolveStoreName } from './store-url';
 import { CUSTOMER_COOKIE_PREFIX, SESSION_COOKIE_NAME } from './session';
 import { tenantScopedClient } from './tenant-adapter';
+import { redactingLogger } from './redacting-logger';
 import { CUSTOMER_MCP_SCOPES, verifyCustomerConsentGrant } from './mcp-scopes';
 
 declare global {
@@ -151,6 +152,8 @@ const CUSTOMER_SESSION_CONFIG = {
 function createCustomerAuth() {
   return betterAuth({
     appName: 'sparx-customer',
+    // Warn and up, emails masked: a failed sign-in logged the address (./redacting-logger).
+    logger: redactingLogger,
     // Mounted by api-rest at /v1/public/auth/* (docs/27 §6). baseURL is the
     // api-rest origin; the site reaches it through its /api/sparx proxy.
     baseURL: process.env.CUSTOMER_AUTH_URL ?? 'http://localhost:3100',

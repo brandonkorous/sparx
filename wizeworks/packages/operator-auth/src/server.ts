@@ -4,6 +4,7 @@ import { twoFactor } from 'better-auth/plugins';
 import { isNextBuild } from './build-phase';
 import { operatorPool } from './db';
 import { publishOperatorEmail } from './email';
+import { redactingLogger } from './redacting-logger';
 
 // The WizeWorks operator Better Auth instance (docs/16 §2.4, docs/apps/admin
 // build-plan §2 D3). A SECOND, fully separate auth boundary from the tenant
@@ -67,6 +68,8 @@ function operatorBaseUrl(): string {
 function createOperatorAuth() {
   return betterAuth({
     appName: 'sparx-operator',
+    // Warn and up, emails masked: a failed sign-in logged the address (./redacting-logger).
+    logger: redactingLogger,
     baseURL: operatorBaseUrl(),
     secret: operatorSecret(),
     // pg Pool → Better Auth wraps it with the Kysely postgres dialect.

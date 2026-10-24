@@ -17,6 +17,10 @@
       "types": "./src/forwarded-for.ts",
       "default": "./src/forwarded-for.ts"
     },
+    "./public-api": {
+      "types": "./src/public-api.ts",
+      "default": "./src/public-api.ts"
+    },
     "./stale-form-action": {
       "types": "./src/stale-form-action.ts",
       "default": "./src/stale-form-action.ts"

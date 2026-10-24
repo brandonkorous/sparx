@@ -15,10 +15,7 @@
 
 import { canonicalQueryString } from './browse-params';
 import { renderComponentPreview } from './component-preview-render';
-
-// In-cluster api-rest URL (k8s/apps/site.yaml injects SPARX_API_REST_URL); the
-// public routes need no auth. Falls back to the local api-rest port for dev.
-const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
+import { getPublic } from './public-api';
 
 // The workbench origin the signup funnel lives on. sparx/apps/web is sparx.works; the
 // workbench is app.sparx.works — so the hand-off is an ABSOLUTE cross-origin URL.
@@ -150,34 +147,15 @@ function withComponentPreview(item: MarketplaceListing): MarketplaceListing {
   return { ...item, component: { ...c, previewHtml, tree: null } };
 }
 
-interface Envelope<T> {
-  success: boolean;
-  data: T;
-}
-
 /** How long a fetched catalog response is cached. The catalog is tenant-agnostic +
  *  cacheable, so prod revalidates every 5 minutes rather than per request. In dev the
  *  window is short so a re-ingest (new bundle payloads) shows up almost immediately
  *  instead of after the full 5-minute window. */
 const CATALOG_REVALIDATE = process.env.NODE_ENV === 'production' ? 300 : 5;
 
-/** GET a public-catalog path, unwrap the `{ success, data }` envelope. Returns
- *  null on any non-2xx / shape mismatch so callers degrade gracefully (an empty
- *  category page, a 404 detail). */
-async function getPublic<T>(path: string): Promise<T | null> {
-  try {
-    const res = await fetch(`${API_BASE}${path}`, { next: { revalidate: CATALOG_REVALIDATE } });
-    if (!res.ok) return null;
-    const body = (await res.json()) as Envelope<T>;
-    return body.success ? body.data : null;
-  } catch {
-    return null;
-  }
-}
-
 /** A category's faceted, paged catalog page. `query` carries `q`, `sort`,
- *  `cursor`, `limit`, and any facet keys (comma-separated values). Degrades to an
- *  empty page on error.
+ *  `cursor`, `limit`, and any facet keys (comma-separated values). An empty page
+ *  when api-rest refuses the query; throws when api-rest is unreachable.
  *
  *  The query is CANONICALIZED before it becomes a URL, because that URL is the
  *  fetch cache's key: without it, the same logical query spelled two ways is two
@@ -190,19 +168,22 @@ export async function fetchCategory(
 ): Promise<MarketplaceListResponse> {
   const qs = canonicalQueryString(category, query);
   const data = await getPublic<MarketplaceListResponse>(
-    `/v1/public/marketplace/${encodeURIComponent(category)}${qs ? `?${qs}` : ''}`
+    `/v1/public/marketplace/${encodeURIComponent(category)}${qs ? `?${qs}` : ''}`,
+    CATALOG_REVALIDATE
   );
   if (!data) return EMPTY_PAGE;
   return { ...data, items: data.items.map(withComponentPreview) };
 }
 
-/** One listing by slug, or null if it isn't published/public. */
+/** One listing by slug, or null if it isn't published/public. Throws when
+ *  api-rest is unreachable, so a live listing never answers 404 for that. */
 export async function fetchListing(
   category: string,
   slug: string
 ): Promise<MarketplaceListing | null> {
   const item = await getPublic<MarketplaceListing>(
-    `/v1/public/marketplace/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`
+    `/v1/public/marketplace/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`,
+    CATALOG_REVALIDATE
   );
   return item ? withComponentPreview(item) : null;
 }
@@ -223,10 +204,10 @@ const SITEMAP_MAX_PER_CATEGORY = 1_000;
 
 /** Every published+public listing slug in a category, for sitemap coverage.
  *  Walks `next_cursor` rather than taking the first page — a category that grew
- *  past one page would otherwise drop out of the index silently. Degrades to the
- *  slugs gathered so far on any error, so a mid-walk api-rest blip narrows
- *  coverage instead of emptying it. `truncated` is surfaced (not swallowed) so
- *  the caller can log an explicit coverage bound. */
+ *  past one page would otherwise drop out of the index silently. Throws when
+ *  api-rest is unreachable mid-walk, so the last good sitemap is kept instead of
+ *  a narrowed one. `truncated` is surfaced (not swallowed) so the caller can log
+ *  an explicit coverage bound. */
 export async function fetchListingSlugs(
   category: string
 ): Promise<{ slugs: string[]; truncated: boolean }> {
