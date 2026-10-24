@@ -85,7 +85,7 @@ const fastifyClientErrorMapper: ErrorMapper = (err, request, reply) => {
   return reply.code(status).send(envelope(request, 'BAD_REQUEST', e.message));
 };
 
-// Pool exhaustion is a 503 the caller can retry (WW-1).
+// Pool exhaustion is a 503 the caller can retry; a NUL byte is the caller's 400 (WW-1, WW-2).
 const prismaMapper: ErrorMapper = (err, request, reply) => {
   const mapped = prismaErrorReply(err);
   if (!mapped) return undefined;

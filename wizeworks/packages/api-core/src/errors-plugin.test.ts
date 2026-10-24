@@ -43,3 +43,15 @@ describe('a database pool error', () => {
     expect(res.headers['retry-after']).toBeUndefined();
   });
 });
+
+// WW-2: a scanner's `/%00production.json` reached Postgres and came back a 500.
+describe('a NUL byte that reached Postgres (22021)', () => {
+  it("is the caller's 400, not our 500", async () => {
+    const message =
+      'Error occurred during query execution:\nConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "22021", message: "invalid byte sequence for encoding \\"UTF8\\": 0x00" }) })';
+    const err = new Prisma.PrismaClientUnknownRequestError(message, { clientVersion: '6.19.3' });
+    const res = await (await serverThrowing(err)).inject({ method: 'GET', url: '/boom' });
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('VALIDATION_ERROR');
+  });
+});
