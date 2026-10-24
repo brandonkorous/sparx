@@ -22,6 +22,7 @@ import { wizelensPlugin } from './wizelens.js';
 import { buildSiteServer, invokesCustomerTool } from './mcp.js';
 import { resolveSite, makeClient, fetchSiteInfo, callerChain, UnknownSiteError } from './site.js';
 import { enforceRateLimit, RateLimitError } from './rate-limit.js';
+import { keepSseAlive } from './sse-heartbeat.js';
 import { TRUSTED_PROXIES } from '@wizeworks/client-ip';
 import { bearerToken, protectedResourceMetadata, wwwAuthenticate } from './oauth-resource.js';
 
@@ -94,6 +95,8 @@ async function handleMcp(
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
   await server.connect(transport);
   await transport.handleRequest(request.raw, reply.raw, request.body);
+  // A GET leaves an SSE stream open; keep it alive past the ingress idle cut (WW-11).
+  if (request.method === 'GET') keepSseAlive(reply.raw);
   reply.hijack();
 }
 
