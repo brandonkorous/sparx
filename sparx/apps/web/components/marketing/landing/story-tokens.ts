@@ -107,11 +107,22 @@ function clauseList(ids: string[], story: StoryState): Token[] {
   });
 }
 
+const told = new WeakMap<StoryState, StoryTokens | null>();
+
+/**
+ * The told form of a story, built once per story object: the same token objects
+ * every render are what let the hero's memoized tokens skip re-rendering.
+ */
+export function storyTokens(story: StoryState): StoryTokens | null {
+  if (!told.has(story)) told.set(story, buildStoryTokens(story));
+  return told.get(story) ?? null;
+}
+
 /**
  * Build the told form of a story. Returns null for an incomplete one — a half-told
  * story is worse than none, and every shipped example is complete by construction.
  */
-export function storyTokens(story: StoryState): StoryTokens | null {
+function buildStoryTokens(story: StoryState): StoryTokens | null {
   if (!story.tense || !story.industry || !story.audience) return null;
   const ind = industryOf(story.industry);
 
