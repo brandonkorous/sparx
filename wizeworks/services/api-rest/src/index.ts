@@ -40,7 +40,7 @@ import { startSocialSlotFillLoop } from './lib/social-slot-fill.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
 import { selfRegisterFirstPartyCatalog } from './lib/marketplace/self-register.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
-import { checkOfferCoupons } from './lib/billing-boot-check.js';
+import { checkOfferCoupons, loadBillingPlansAtBoot } from './lib/billing-boot-check.js';
 import { prewarmOfferStandings } from './lib/offer-standings.js';
 import { startReservationReaperLoop } from './lib/reservation-reaper-loop.js';
 import { startBookingNotificationLoop } from './lib/scheduling-notifications.js';
@@ -62,6 +62,9 @@ async function main(): Promise<void> {
   // success. Nothing here needs a cloud's project id any more — @wizeworks/events
   // owns that, and only the pubsub adapter ever sees it.
   console.info('events: transport resolved to', resolveTransport().kind);
+
+  // Throws on a malformed BILLING_PLANS, so the pod fails its rollout rather than 500 later.
+  console.info('billing: plans loaded', loadBillingPlansAtBoot());
 
   // Bridge the CRM bus (crm.customer.*) + platform bus (order.*) to real
   // Pub/Sub so the commerce-indexer can keep search live. MUST run before
