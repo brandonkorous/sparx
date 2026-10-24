@@ -38,7 +38,13 @@ export {
   type PlanShape,
 } from './plans';
 
-export { heldDiscount, offerStanding, type HeldDiscount, type OfferStanding } from './offer';
+export {
+  heldDiscount,
+  missingOfferCoupons,
+  offerStanding,
+  type HeldDiscount,
+  type OfferStanding,
+} from './offer';
 
 export {
   resolveBillingPhase,

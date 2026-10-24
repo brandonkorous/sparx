@@ -40,6 +40,7 @@ import { startSocialSlotFillLoop } from './lib/social-slot-fill.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
 import { selfRegisterFirstPartyCatalog } from './lib/marketplace/self-register.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
+import { checkOfferCoupons } from './lib/billing-boot-check.js';
 import { startReservationReaperLoop } from './lib/reservation-reaper-loop.js';
 import { startBookingNotificationLoop } from './lib/scheduling-notifications.js';
 import { startCalendarSyncLoop } from './lib/scheduling-calendar-sync.js';
@@ -292,6 +293,9 @@ async function main(): Promise<void> {
   // many; a catalog that failed to refresh must not take down orders, checkout and
   // webhooks with it. It is idempotent, so the next boot re-asserts the shelf — but
   // the failure is logged at error level because a stale catalog is still wrong.
+  // A plan offer whose coupon Stripe lacks is logged at error level, once per boot (WW-4).
+  void checkOfferCoupons(app.log);
+
   void selfRegisterFirstPartyCatalog()
     .then((r) => {
       app.log.info(
