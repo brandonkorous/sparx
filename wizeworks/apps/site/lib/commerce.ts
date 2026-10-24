@@ -10,6 +10,7 @@ import type { FleetFit, RepeatCadence } from '@wizeworks/commerce-schemas';
 import type { AccountOrdering, BuyingRule } from './account-buying-rules';
 import { resolveReaderLocale } from './locale';
 import { resolveActivePropertySlug } from './site-context';
+import { isSlugMiss } from './slug-miss';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
@@ -935,7 +936,7 @@ export async function getCategory(
     );
     return data;
   } catch (err) {
-    if ((err as { code?: string }).code === 'NOT_FOUND') return null;
+    if (isSlugMiss(err)) return null;
     throw err;
   }
 }
@@ -996,7 +997,7 @@ export async function getProduct(
     );
     return data;
   } catch (err) {
-    if ((err as { code?: string }).code === 'NOT_FOUND') return null;
+    if (isSlugMiss(err)) return null;
     throw err;
   }
 }

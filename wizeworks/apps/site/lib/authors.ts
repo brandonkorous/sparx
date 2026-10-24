@@ -7,6 +7,7 @@ import { formatPublishedDate } from './builder-data';
 import { publicGet, type ApiEntry } from './content';
 import { pieceImage, pieceSummary, pieceTitle } from './kind-pieces';
 import { mediaUrl } from './media';
+import { isSlugMiss } from './slug-miss';
 
 /** One author, as the public list answers. */
 export interface PublicAuthor {
@@ -48,7 +49,7 @@ export async function getPublicAuthor(
       { tag: `author:${tenantSlug}:${slug}` }
     );
   } catch (err) {
-    if ((err as { code?: string }).code === 'NOT_FOUND') return null;
+    if (isSlugMiss(err)) return null;
     throw err;
   }
 }

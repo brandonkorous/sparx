@@ -4,311 +4,117 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { resolveActivePropertySlug, resolveSite, type ResolvedSite } from '@/lib/site-context';
 import { SUSPENDED_METADATA } from '@/lib/suspended';
-import { metadataTitle, socialTitle } from '@/lib/page-title';
 import { getPageBySlug } from '@/lib/content';
-import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
-import { getPublishedBuilderPage, getPublishedBuilderStyles } from '@/lib/builder';
-import { getPublishedSilicaPage, hostKeysIn, treeHasHostNode } from '@/lib/silica';
-import { requireSiteModule, siteShowsPage } from '@/lib/site-modules';
+import { getPublishedBuilderPage } from '@/lib/builder';
+import { getPublishedSilicaPage } from '@/lib/silica';
+import { requireSiteModule } from '@/lib/site-modules';
 import { getKindPiece } from '@/lib/kind-pieces';
+import { joinSlug, unservableSlug } from '@/lib/unservable-slug';
+import { authoredPageMetadata, cmsPageMetadata, NOT_FOUND_METADATA } from '@/lib/slug-metadata';
 import { KindPiecePage, kindPieceMetadata } from '@/components/kind-piece-page';
-import { buildSilicaHost, pageOutOfRange, silicaSiteIdentity } from '@/lib/silica-data';
-import { loadBuilderData } from '@/lib/builder-data';
 import { PageView } from '@/components/page-view';
 import { SectionRenderer } from '@/components/section-renderer';
-import { BuilderRenderer } from '@/components/builder-renderer';
-import { SilicaBody, SilicaFunctionalBody } from '@/components/silica-chrome';
-import { SiteHostRenderer } from '@/components/silica-host-cores';
+import { BuilderSlugPage, SilicaSlugPage } from './authored-page';
 
-// NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
-// forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
-// overrode the revalidate window + purge tags each read in lib/* already declares. This
-// route still renders per-request either way, because `resolveSite()` reads the Host
-// header; what changed is that its data is now cached and purged on publish.
+// NO `force-dynamic` (docs/127 §6): data stays cached and purged on publish; the Host read keeps it per-request.
 
 interface SlugPageProps {
   params: Promise<{ slug: string[] }>;
-  // The full URL params — a page may embed a host core (the faceted PLP on /shop) that
-  // reads facet/sort/page state from the URL, so this is no longer just the preview tokens.
+  // The full URL params: an embedded host core (the faceted PLP on /shop) reads facet/sort/page from them.
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
-}
-
-function buildSlug(parts: string[]): string {
-  return parts.map((p) => decodeURIComponent(p)).join('/');
 }
 
 const one = (v: string | string[] | undefined): string | undefined => (Array.isArray(v) ? v[0] : v);
 
+/** The slug and whether it can be a page at all; a broken escape or a `_next/` miss cannot. */
+async function slugOf(
+  params: SlugPageProps['params']
+): Promise<{ slug: string; unservable: ReturnType<typeof unservableSlug> }> {
+  const slug = joinSlug((await params).slug);
+  return { slug: slug ?? '', unservable: slug === null ? 'asset' : unservableSlug(slug) };
+}
+
 export async function generateMetadata({ params, searchParams }: SlugPageProps): Promise<Metadata> {
   const site = await resolveSite();
   if (!site) return {};
-  // A dark site tells a crawler nothing about the tenant. The layout says the
-  // same, but a route's metadata overrides a layout's, so it has to be said
-  // here too (issue 503).
+  // A dark site tells a crawler nothing; a route's metadata overrides the layout's (issue 503).
   if (site.billingPhase === 'suspended') return SUSPENDED_METADATA;
-  const slug = buildSlug((await params).slug);
+  const { slug, unservable } = await slugOf(params);
+  if (unservable === 'asset') notFound();
+  // Too long for any page: the page itself still tries the tenant's redirects (WW-3).
+  if (unservable === 'too-long') return NOT_FOUND_METADATA;
   const sp = await searchParams;
   const previewToken = one(sp?.sparxPreview);
   const sitePreview = one(sp?.sparxSitePreview);
+  const preview = sitePreview ? { previewToken: sitePreview } : {};
 
-  // The silica engine's published page owns this slug (docs/118 Stage 6) — title it
-  // from its name / SEO, and skip the paths below. Per-page silica SEO lands with
-  // the inspector (docs/118 Stage 10); until then it falls back to the page name.
-  // Honours the site-preview token so preview metadata matches preview content.
-  const silicaPage = await getPublishedSilicaPage(
-    site.slug,
-    slug,
-    sitePreview ? { previewToken: sitePreview } : {}
-  );
-  if (silicaPage) {
-    const clean = (v: string | null): string | undefined => {
-      const t = v?.trim();
-      return t && t.length > 0 ? t : undefined;
-    };
-    // NOT `… · ${site.name}` — the root layout's title template already appends it
-    // (`template: '%s · <site>'`), so carrying the brand here too shipped every page
-    // with no SEO title as "Collection orders · Thistle & Rye · Thistle & Rye" in the
-    // browser tab. `ogTitle` below keeps the brand, because openGraph has no template
-    // and a social card is seen with none of the site around it.
-    const title = clean(silicaPage.seoTitle) ?? silicaPage.name;
-    const ogTitle = socialTitle(title, site.name);
-    const description = clean(silicaPage.seoDescription);
-    const canonical = clean(silicaPage.canonical);
-    const ogImage =
-      clean(silicaPage.ogImage) ??
-      ogImageUrl({
-        title: clean(silicaPage.seoTitle) ?? silicaPage.name,
-        brand: site.name,
-        accent: site.theme?.colorPrimary,
-        platformBrand: site.platformBrand,
-      });
-    return {
-      title: metadataTitle(title, site.name),
-      ...(description ? { description } : {}),
-      ...(canonical ? { alternates: { canonical } } : {}),
-      openGraph: {
-        title: ogTitle,
-        ...(description ? { description } : {}),
-        images: [{ url: ogImage }],
-      },
-      robots: silicaPage.noindex ? { index: false, follow: false } : { index: true, follow: true },
-    };
-  }
-
-  // A Builder page owns its slug — title it from the page name (docs/44). Under a
-  // site-preview token, the DRAFT page's name.
-  const builderPage = await getPublishedBuilderPage(
-    site.slug,
-    slug,
-    sitePreview ? { previewToken: sitePreview } : {}
-  );
-  if (builderPage) {
-    // Author-set SEO (docs/50) wins; blank/whitespace fields fall back to the
-    // page name. `clean` collapses empty strings to undefined so the `??`
-    // fallbacks below fire (which `seoTitle ?? …` alone wouldn't).
-    const clean = (v: string | null): string | undefined => {
-      const t = v?.trim();
-      return t && t.length > 0 ? t : undefined;
-    };
-    // Same rule as the silica branch above: the layout template owns the ` · <site>`
-    // suffix, so the page title must not carry one of its own.
-    const title = clean(builderPage.seoTitle) ?? builderPage.name;
-    const ogTitle = socialTitle(title, site.name);
-    const description = clean(builderPage.seoDescription);
-    const canonical = clean(builderPage.canonical);
-    // Author-set OG URL wins; otherwise a tenant-branded generated card
-    // (docs/50 §5) so every Builder page has a real social image.
-    const ogImage =
-      clean(builderPage.ogImage) ??
-      ogImageUrl({
-        title: clean(builderPage.seoTitle) ?? builderPage.name,
-        brand: site.name,
-        accent: site.theme?.colorPrimary,
-        platformBrand: site.platformBrand,
-      });
-    return {
-      title: metadataTitle(title, site.name),
-      ...(description ? { description } : {}),
-      ...(canonical ? { alternates: { canonical } } : {}),
-      openGraph: {
-        title: ogTitle,
-        ...(description ? { description } : {}),
-        images: [{ url: ogImage }],
-      },
-      robots: builderPage.noindex ? { index: false, follow: false } : { index: true, follow: true },
-    };
-  }
-
-  // A piece of a content kind, at the address its kind gives it (`/articles/x`).
+  const silicaPage = await getPublishedSilicaPage(site.slug, slug, preview);
+  if (silicaPage) return authoredPageMetadata(silicaPage, site);
+  const builderPage = await getPublishedBuilderPage(site.slug, slug, preview);
+  if (builderPage) return authoredPageMetadata(builderPage, site);
   const piece = await getKindPiece(site.slug, slug, previewToken ? { previewToken } : {});
   if (piece) return kindPieceMetadata(piece, site);
-
   const page = await getPageBySlug(site.slug, slug, previewToken ? { previewToken } : {});
-  // Nothing lives here, and the page renders not-found. With no title of its own
-  // the tab read just the shop's name over "We couldn't find that page"
-  // (sparx persona issue 321); say what app/not-found.tsx says.
-  if (!page) return { title: 'Page not found', robots: { index: false, follow: false } };
-
-  const seo = page.seo ?? {};
-  const seoTitle = typeof seo.title === 'string' ? seo.title : undefined;
-  const seoDescription = typeof seo.description === 'string' ? seo.description : undefined;
-  const bodyTitle = typeof page.body.title === 'string' ? page.body.title : undefined;
-  // The last fallback is the site's own name, which the layout template would turn
-  // into "Thistle & Rye · Thistle & Rye". `absolute` opts that one out — it is the
-  // whole title already, not a page within a site.
-  const title = seoTitle ?? bodyTitle;
-
-  return {
-    title: title ? metadataTitle(title, site.name) : { absolute: site.name },
-    ...(seoDescription ? { description: seoDescription } : {}),
-    // CMS pages carry no image of their own — give them a tenant-branded
-    // generated social card (docs/50 §5).
-    openGraph: {
-      title: title ? socialTitle(title, site.name) : site.name,
-      ...(seoDescription ? { description: seoDescription } : {}),
-      images: [
-        {
-          url: ogImageUrl({
-            title: title ?? site.name,
-            brand: site.name,
-            accent: site.theme?.colorPrimary,
-            platformBrand: site.platformBrand,
-          }),
-        },
-      ],
-    },
-    robots: page.status === 'published' ? { index: true, follow: true } : { index: false },
-  };
+  return page ? cmsPageMetadata(page, site) : NOT_FOUND_METADATA;
 }
 
+// Tier order: silica page, builder page, content-kind piece, then CMS page + Site Builder sections.
 export default async function SitePage({ params, searchParams }: SlugPageProps) {
   const site = await resolveSite();
   if (!site) notFound();
-
-  const slug = buildSlug((await params).slug);
+  const { slug, unservable } = await slugOf(params);
+  if (unservable === 'asset') notFound();
+  if (unservable === 'too-long') {
+    await applyRedirect(site.slug, `/${slug}`);
+    notFound();
+  }
   const sp = (await searchParams) ?? {};
   const previewToken = one(sp.sparxPreview);
-
-  // The silica engine's published page owns this slug (docs/118 Stage 6) and wins
-  // over every path below. Rendered end to end through `renderSilicaBody`, its
-  // bindings resolved against the sparx host built over its data needs. Null when
-  // no silica page owns the slug — the storefront falls through to the sparx builder
-  // page / CMS / sections paths unchanged.
-  // A valid `?sparxSitePreview=` serves the DRAFT tree here too (docs/127 §11). The
-  // silica tier previously took no token at all, so an author previewing a page the
-  // silica engine owns — which is every page today — saw PUBLISHED output, while the
-  // sparx-tier fallback below honoured drafts. Same feature, different behaviour
-  // depending on which tier happened to own the page.
+  // `?sparxSitePreview=` serves the DRAFT tree on both authored tiers (docs/127 §11).
   const sitePreview = one(sp.sparxSitePreview);
-  const silicaPage = await getPublishedSilicaPage(
-    site.slug,
-    slug,
-    sitePreview ? { previewToken: sitePreview } : {}
-  );
+  const preview = sitePreview ? { previewToken: sitePreview } : {};
+
+  const silicaPage = await getPublishedSilicaPage(site.slug, slug, preview);
   if (silicaPage) {
-    // WHAT THE PAGE IS FOR, not what it is called.
-    //
-    // A tenant names their product grid "Shop", or "Our things", or nothing at
-    // all, so the slug answers nothing — the `commerce.plp` core inside it
-    // answers everything. A site with Selling switched off under "What this site
-    // shows" refuses the pages whose reason to exist is selling, and keeps the
-    // ones that merely link to them. See `siteShowsPage`.
-    if (!siteShowsPage(site, { hostKeys: hostKeysIn(silicaPage.root) })) notFound();
-    const { resolver, paging } = await buildSilicaHost(site.slug, silicaPage.root, {
-      currency: site.commerce.defaultCurrency,
-      locale: site.commerce.defaultLocale,
-      // The PAGE binds `site.*` too, not just the frame — this route renders the
-      // Contact page, whose whole job is the business's own phone, email and address.
-      site: silicaSiteIdentity(site),
-      // Where `?page=` is read from — an authored page carrying a product grid or a
-      // journal index paginates like any other.
-      searchParams: sp,
-    });
-    // `?page=99` on a one-page list is Not Found, not a 200 (see `pageOutOfRange`). Without
-    // this the reader got the collection TEMPLATE rendered as a real record — a card headed
-    // "Post title" with an image that had no src, published to anyone who followed a stale
-    // link. Page 1 is never out of range, so an empty blog still renders its empty state.
-    if (pageOutOfRange(paging)) notFound();
-    // A page that embeds a pinned host core (e.g. the faceted PLP on /shop) renders through
-    // the React walk so the core mounts live and can read the route's search params for its
-    // facet/sort/page state; a pure-content page keeps the faster HTML-string path. Bindings
-    // resolve either way via `host`.
-    if (treeHasHostNode(silicaPage.root)) {
-      const renderHost = SiteHostRenderer({
-        site,
-        propertySlug: (await resolveActivePropertySlug()) ?? undefined,
-        searchParams: sp,
-        paging,
-        basePath: `/${slug}`,
-      });
-      return (
-        <SilicaFunctionalBody
-          root={silicaPage.root}
-          symbols={silicaPage.symbols}
-          host={resolver}
-          renderHost={renderHost}
-        />
-      );
-    }
-    return <SilicaBody root={silicaPage.root} symbols={silicaPage.symbols} host={resolver} />;
+    return <SilicaSlugPage site={site} page={silicaPage} slug={slug} searchParams={sp} />;
   }
+  const builderPage = await getPublishedBuilderPage(site.slug, slug, preview);
+  if (builderPage)
+    return <BuilderSlugPage site={site} page={builderPage} sitePreview={sitePreview} />;
 
-  // A published Builder page owns its slug (docs/44 §2.5): if one exists, render
-  // it and skip the legacy Site-Builder-sections + CMS-page paths entirely. Its
-  // bindings resolve against real records fetched per source (docs/44 §3 A.2). A
-  // valid `?sparxSitePreview=<token>` swaps in the DRAFT page (docs/45 §2.6).
-  const builderPage = await getPublishedBuilderPage(
-    site.slug,
-    slug,
-    sitePreview ? { previewToken: sitePreview } : {}
-  );
-  if (builderPage) {
-    const data = await loadBuilderData(site.slug, builderPage.tree);
-    // In preview, inject the DRAFT Surface sheet so classes authored since the
-    // last publish resolve (the layout injects only the published sheet). A plain
-    // inline <style> in the body lands after it, simply adding the missing rules.
-    const draftCss = sitePreview
-      ? await getPublishedBuilderStyles(site.slug, { previewToken: sitePreview })
-      : '';
-    return (
-      <>
-        {draftCss ? (
-          <style data-surface-preview dangerouslySetInnerHTML={{ __html: draftCss }} />
-        ) : null}
-        <BuilderRenderer tree={builderPage.tree} data={data} />
-      </>
-    );
-  }
-
-  // A piece of a content kind, at the address its kind gives it — `/articles/x` for a
-  // journal whose Article kind says `/articles/{slug}`. The sitemap, the feed and site
-  // search all link here; before this route they all linked to a 404. After the pages
-  // above, so a page the owner made at that exact address still wins.
+  // After the pages above, so a page the owner made at that exact address still wins.
   const piece = await getKindPiece(site.slug, slug, previewToken ? { previewToken } : {});
   if (piece) {
-    // A site that switched Content off under "What this site shows" has no pieces.
     requireSiteModule(site, 'cms');
     return <KindPiecePage site={site} piece={piece} sitePreview={sitePreview} />;
   }
+  return (
+    <CmsSlugPage site={site} slug={slug} previewToken={previewToken} sitePreview={sitePreview} />
+  );
+}
 
+// Neither a CMS page nor Site Builder sections: last chance is a tenant redirect, then 404.
+async function CmsSlugPage(props: {
+  site: ResolvedSite;
+  slug: string;
+  previewToken: string | undefined;
+  sitePreview: string | undefined;
+}) {
+  const { site, slug, previewToken, sitePreview } = props;
   const activePropertySlug = (await resolveActivePropertySlug()) ?? undefined;
   const [page, snapshot] = await Promise.all([
     getPageBySlug(site.slug, slug, previewToken ? { previewToken } : {}),
     getPublishedSite(site.slug, sitePreview, activePropertySlug),
   ]);
   const sections = sectionsForPage(snapshot, slug);
-
-  // Neither a CMS page nor Site Builder sections exist for this slug — last
-  // chance is a tenant-managed redirect before we 404.
   if (!page && sections.length === 0) {
     await applyRedirect(site.slug, `/${slug}`);
     notFound();
   }
-
   const { defaultCurrency, defaultLocale } = site.commerce;
   return (
     <>
