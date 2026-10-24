@@ -1,9 +1,5 @@
-import type { NextConfig } from 'next';
 import { describe, expect, it } from 'vitest';
-// @ts-expect-error -- the config is plain .mjs with no declaration file.
-import rawConfig from '../next.config.mjs';
-
-const config = rawConfig as NextConfig;
+import config from '../next.config.mjs';
 
 // WW-12: WizeLens saw site pages answer without X-Content-Type-Options.
 describe('site response headers', () => {

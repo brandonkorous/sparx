@@ -14,7 +14,7 @@ import { getPublishedSilicaPage } from '@/lib/silica';
 import { requireSiteModule } from '@/lib/site-modules';
 import { getKindPiece } from '@/lib/kind-pieces';
 import { joinSlug, unservableSlug } from '@/lib/unservable-slug';
-import { authoredPageMetadata, cmsPageMetadata, NOT_FOUND_METADATA } from '@/lib/slug-metadata';
+import { authoredPageMetadata, cmsPageMetadata } from '@/lib/slug-metadata';
 import { KindPiecePage, kindPieceMetadata } from '@/components/kind-piece-page';
 import { PageView } from '@/components/page-view';
 import { SectionRenderer } from '@/components/section-renderer';
@@ -45,8 +45,8 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   if (site.billingPhase === 'suspended') return SUSPENDED_METADATA;
   const { slug, unservable } = await slugOf(params);
   if (unservable === 'asset') notFound();
-  // Too long for any page: the page itself still tries the tenant's redirects (WW-3).
-  if (unservable === 'too-long') return NOT_FOUND_METADATA;
+  // Metadata blocks the response (htmlLimitedBots), so a miss here is a real 404 (WW-8).
+  if (unservable === 'too-long') return missing(site, slug);
   const sp = await searchParams;
   const previewToken = one(sp?.sparxPreview);
   const sitePreview = one(sp?.sparxSitePreview);
@@ -58,8 +58,30 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   if (builderPage) return authoredPageMetadata(builderPage, site);
   const piece = await getKindPiece(site.slug, slug, previewToken ? { previewToken } : {});
   if (piece) return kindPieceMetadata(piece, site);
-  const page = await getPageBySlug(site.slug, slug, previewToken ? { previewToken } : {});
-  return page ? cmsPageMetadata(page, site) : NOT_FOUND_METADATA;
+  return cmsSlugMetadata(site, slug, previewToken, sitePreview);
+}
+
+// A CMS page titles itself; Site Builder sections take the layout's title; nothing at all is a 404.
+async function cmsSlugMetadata(
+  site: ResolvedSite,
+  slug: string,
+  previewToken: string | undefined,
+  sitePreview: string | undefined
+): Promise<Metadata> {
+  const activePropertySlug = (await resolveActivePropertySlug()) ?? undefined;
+  const [page, snapshot] = await Promise.all([
+    getPageBySlug(site.slug, slug, previewToken ? { previewToken } : {}),
+    getPublishedSite(site.slug, sitePreview, activePropertySlug),
+  ]);
+  if (page) return cmsPageMetadata(page, site);
+  if (sectionsForPage(snapshot, slug).length > 0) return {};
+  return missing(site, slug);
+}
+
+/** Nothing owns this slug: a tenant redirect if there is one, else a real 404. */
+async function missing(site: ResolvedSite, slug: string): Promise<never> {
+  await applyRedirect(site.slug, `/${slug}`);
+  notFound();
 }
 
 // Tier order: silica page, builder page, content-kind piece, then CMS page + Site Builder sections.
