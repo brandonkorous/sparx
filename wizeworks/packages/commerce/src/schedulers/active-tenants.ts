@@ -33,3 +33,11 @@ export async function listDropshipActiveTenants(): Promise<{ id: string }[]> {
     select: { id: true },
   });
 }
+
+/** Tenants holding an expired cart reservation at `now`, in one cross-tenant scan (WW-9). */
+export async function listTenantsWithDueReservations(now: Date = new Date()): Promise<Set<string>> {
+  const rows = await prisma.$queryRaw<{ tenant_id: string }[]>`
+    SELECT tenant_id FROM find_tenants_with_due_reservations(${now})
+  `;
+  return new Set(rows.map((r) => r.tenant_id));
+}
