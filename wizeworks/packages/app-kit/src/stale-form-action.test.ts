@@ -34,13 +34,14 @@ afterAll(() => rmSync(dist, { recursive: true, force: true }));
 /** A multipart POST as it arrives through the ingress: typed and sized. */
 async function post(
   fields: Record<string, string>,
-  headers: Record<string, string> = {}
+  headers: Record<string, string> = {},
+  url = 'https://getpiggles.com/signup?from=home-why'
 ): Promise<Request> {
   const form = new FormData();
   for (const [k, v] of Object.entries(fields)) form.append(k, v);
   const encoded = new Response(form);
   const body = await encoded.arrayBuffer();
-  return new Request('https://getpiggles.com/signup?from=home-why', {
+  return new Request(url, {
     method: 'POST',
     body,
     headers: {
@@ -82,6 +83,17 @@ describe('staleFormActionRedirect', () => {
     );
     expect(res?.status).toBe(303);
     expect(res?.headers.get('location')).toBe('https://getpiggles.com/signup?from=home-why');
+  });
+
+  it('sends back a stale form posted to a path with a file extension', async () => {
+    // sparx web's matcher skipped `*.php`, so this 500ed seven times on 2026-10-19.
+    const url = 'https://sparx.works/wp-admin/admin-ajax.php';
+    const res = await staleFormActionRedirect(
+      await post({ [`$ACTION_ID_${STALE}`]: '' }, {}, url),
+      known
+    );
+    expect(res?.status).toBe(303);
+    expect(res?.headers.get('location')).toBe(url);
   });
 
   it('gives a Location Next can parse without a base', async () => {

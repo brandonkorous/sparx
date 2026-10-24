@@ -52,11 +52,15 @@ export async function proxy(request: NextRequest): Promise<Response> {
 // Anchored with `$` so only the metadata route itself is excluded, not an
 // ordinary page whose path happens to contain the word.
 //
-// The `has` entry reaches paths the first rule skips (`/wp-admin/x.php`): any
-// server-action call, so the guard above sees it.
+// The `has` entries reach paths the first rule skips (`/wp-admin/x.php`): any
+// server-action call, and any multipart post, so the guards above see them.
 export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico|.*(?:opengraph-image|twitter-image)$|.*\\.[\\w]+$).*)',
     { source: '/:path*', has: [{ type: 'header', key: 'next-action' }] },
+    {
+      source: '/:path*',
+      has: [{ type: 'header', key: 'content-type', value: 'multipart/form-data.*' }],
+    },
   ],
 };

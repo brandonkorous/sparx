@@ -6,23 +6,37 @@
 // site and the seller's tenant is resolved per-listing in the data layer, not
 // from the Host header. So this proxy does no routing at all.
 //
-// Its one job: a header-named call to an unknown server action gets Next's own
-// 404 here, because on a prerendered page Next's answer to it is a 500. See
+// Its jobs: a header-named call to an unknown server action gets Next's own 404
+// here, because on a prerendered page Next's answer to it is a 500; and a form
+// posted from an older build is sent back to a fresh page instead of a 500. See
 // @wizeworks/app-kit/stale-form-action.
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { runningActionIds, unknownActionResponse } from '@wizeworks/app-kit/stale-form-action';
+import {
+  runningActionIds,
+  staleFormActionRedirect,
+  unknownActionResponse,
+} from '@wizeworks/app-kit/stale-form-action';
 
-export function proxy(req: NextRequest) {
-  return unknownActionResponse(req, runningActionIds()) ?? NextResponse.next();
+export async function proxy(req: NextRequest) {
+  const known = runningActionIds();
+  return (
+    unknownActionResponse(req, known) ??
+    (await staleFormActionRedirect(req, known)) ??
+    NextResponse.next()
+  );
 }
 
 export const config = {
   // Skip Next internals + the static SEO/health routes; everything else passes
-  // straight through. The `has` entry reaches the skipped paths for any
-  // server-action call, so the guard sees those too.
+  // straight through. The `has` entries reach the skipped paths for any
+  // server-action call and any multipart post, so the guards see those too.
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|api/health).*)',
     { source: '/:path*', has: [{ type: 'header', key: 'next-action' }] },
+    {
+      source: '/:path*',
+      has: [{ type: 'header', key: 'content-type', value: 'multipart/form-data.*' }],
+    },
   ],
 };
