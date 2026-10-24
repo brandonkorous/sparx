@@ -13,6 +13,7 @@ import { publishAuthEmail } from './email-events';
 import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioning';
 import { MCP_ALL_OAUTH_SCOPES, verifyConsentGrant } from './mcp-scopes';
 import { ac, roles } from './org-roles';
+import { redactingLogger } from './redacting-logger';
 import { isPasswordStep } from './sign-in-step';
 import { startingBusinessFor } from './starting-business';
 
@@ -126,6 +127,8 @@ function createAuth() {
 
   return betterAuth({
     appName,
+    // Warn and up, emails masked: a failed sign-in logged the address (./redacting-logger).
+    logger: redactingLogger,
     baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3001',
     secret: process.env.BETTER_AUTH_SECRET,
     // The BRAND-SCOPED client, never the bare one. Both products mount this
