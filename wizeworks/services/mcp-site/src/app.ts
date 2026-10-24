@@ -129,6 +129,11 @@ export async function createApp(): Promise<FastifyInstance> {
   // WizeLens goes first, so its request span wraps every other plugin's hooks.
   await app.register(wizelensPlugin);
 
+  // On the raw response, so the hijacked MCP stream carries it too (WW-12).
+  app.addHook('onRequest', async (_request, reply) => {
+    reply.raw.setHeader('x-content-type-options', 'nosniff');
+  });
+
   app.setErrorHandler((err, request, reply) => {
     if (err instanceof UnknownSiteError) {
       return reply.code(404).send({

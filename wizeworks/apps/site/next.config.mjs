@@ -25,6 +25,11 @@ const config = {
     loader: 'custom',
     loaderFile: './lib/image-loader.ts',
   },
+  // Caddy adds nosniff at the edge; the app sends it too for in-cluster callers (WW-12).
+  headers: () =>
+    Promise.resolve([
+      { source: '/:path*', headers: [{ key: 'X-Content-Type-Options', value: 'nosniff' }] },
+    ]),
 };
 
 export default config;
