@@ -32,6 +32,8 @@ function devMediaPatterns() {
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  // No `X-Powered-By: Next.js`: it tells a scanner which exploits to try.
+  poweredByHeader: false,
   // @wizeworks/api-client ships raw TypeScript (main points at src/index.ts), so it
   // must be transpiled rather than treated as a prebuilt dependency. workbench
   // is its first consumer — it had never been through a bundler before.

@@ -3,9 +3,26 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+// Report-only for now: the browser logs what this policy would block, and blocks
+// nothing. Tighten and enforce once the console shows no real violations.
+const CSP_REPORT_ONLY = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://us.i.posthog.com https://us-assets.i.posthog.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net",
+  "font-src 'self' data: https://fonts.gstatic.com https://use.typekit.net",
+  "img-src 'self' data: blob: https:",
+  "connect-src 'self' https://api.sparx.works https://us.i.posthog.com https://us-assets.i.posthog.com https://app.wizelens.com",
+  "frame-ancestors 'self'",
+  "base-uri 'self'",
+  "form-action 'self' https://app.sparx.works",
+  "object-src 'none'",
+].join('; ');
+
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  // No `X-Powered-By: Next.js`: it tells a scanner which exploits to try.
+  poweredByHeader: false,
   transpilePackages: [
     '@wizeworks/app-kit',
     '@wizeworks/ui',
@@ -24,6 +41,14 @@ const config = {
   // Monorepo: tell Next.js to trace files starting at the repo root so
   // workspace deps (@wizeworks/ui) are included in the standalone bundle.
   outputFileTracingRoot: join(__dirname, '../../../'),
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [{ key: 'Content-Security-Policy-Report-Only', value: CSP_REPORT_ONLY }],
+      },
+    ];
+  },
 };
 
 export default config;

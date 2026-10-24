@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { memo, type ReactNode } from 'react';
 import {
   Briefcase,
   Car,
@@ -43,7 +43,15 @@ const INDUSTRY_ICONS: Record<string, typeof Sparkles> = {
   sparkles: Sparkles,
 };
 
-function TokenView({ tok, shown }: { tok: Token; shown: number }): ReactNode {
+// Memoized: a token already typed keeps its props, so a tick re-renders only the
+// token being typed (storyTokens returns the same token objects every time).
+const TokenView = memo(function TokenView({
+  tok,
+  shown,
+}: {
+  tok: Token;
+  shown: number;
+}): ReactNode {
   if (tok.t === 'wbr') return <wbr />;
   if (tok.t === 'text') {
     const text = tok.s.slice(0, shown);
@@ -71,7 +79,7 @@ function TokenView({ tok, shown }: { tok: Token; shown: number }): ReactNode {
       <span>{tok.s}</span>
     </span>
   );
-}
+});
 
 /** Walk a token group, spending the reveal budget in order. Returns what's left so
  *  the next group picks up exactly where this one stopped. */

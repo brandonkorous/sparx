@@ -8,6 +8,7 @@
 
 import { MAX_FACET_SELECTIONS, countFacetSelections } from '@/lib/browse-params';
 import { fetchCategory, type MarketplaceListing } from '@/lib/marketplace';
+import { orWhenUnavailable } from '@/lib/public-api';
 
 export async function loadMoreListings(
   category: string,
@@ -19,6 +20,11 @@ export async function loadMoreListings(
   if (countFacetSelections(category, query) > MAX_FACET_SELECTIONS) {
     return { items: [], next_cursor: null };
   }
-  const page = await fetchCategory(category, { ...query, cursor, limit: '24' });
+  const page = await orWhenUnavailable(
+    fetchCategory(category, { ...query, cursor, limit: '24' }),
+    null
+  );
+  // api-rest did not answer: keep the cursor so "Load more" can be pressed again.
+  if (!page) return { items: [], next_cursor: cursor };
   return { items: page.items, next_cursor: page.next_cursor };
 }

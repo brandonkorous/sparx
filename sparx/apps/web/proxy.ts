@@ -1,5 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { runningActionIds, staleFormActionRedirect } from '@wizeworks/app-kit/stale-form-action';
+import {
+  runningActionIds,
+  staleFormActionRedirect,
+  unknownActionResponse,
+} from '@wizeworks/app-kit/stale-form-action';
 import { newVisitorId } from '@wizeworks/attribution';
 import { SPARX_ATTR } from './lib/attribution-cookies';
 
@@ -11,9 +15,12 @@ import { SPARX_ATTR } from './lib/attribution-cookies';
 // at signup; host-only on localhost / preview hosts where a registrable-domain
 // cookie won't set.
 export async function proxy(request: NextRequest): Promise<Response> {
-  // A server-action form posted from an older build answered 500; this sends it
-  // back to a fresh page. See @wizeworks/app-kit/stale-form-action.
-  const stale = await staleFormActionRedirect(request, runningActionIds());
+  // An unknown header-named action 500ed on prerendered pages, and a form posted
+  // from an older build 500ed too. See @wizeworks/app-kit/stale-form-action.
+  const known = runningActionIds();
+  const unknown = unknownActionResponse(request, known);
+  if (unknown) return unknown;
+  const stale = await staleFormActionRedirect(request, known);
   if (stale) return stale;
 
   const response = NextResponse.next();
@@ -44,8 +51,16 @@ export async function proxy(request: NextRequest): Promise<Response> {
 // response carrying Set-Cookie — so every social card was a cold origin hit.
 // Anchored with `$` so only the metadata route itself is excluded, not an
 // ordinary page whose path happens to contain the word.
+//
+// The `has` entries reach paths the first rule skips (`/wp-admin/x.php`): any
+// server-action call, and any multipart post, so the guards above see them.
 export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico|.*(?:opengraph-image|twitter-image)$|.*\\.[\\w]+$).*)',
+    { source: '/:path*', has: [{ type: 'header', key: 'next-action' }] },
+    {
+      source: '/:path*',
+      has: [{ type: 'header', key: 'content-type', value: 'multipart/form-data.*' }],
+    },
   ],
 };
