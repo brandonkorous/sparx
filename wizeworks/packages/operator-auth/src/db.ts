@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 
 import { isNextBuild } from './build-phase';
+import { operatorPoolMax } from './pool-size';
 
 // The operator instance's ONLY database handle: a pg Pool connected as the
 // dedicated `wize_operator` role with its search_path pinned to the `wize_admin`
@@ -65,7 +66,7 @@ export const operatorPool: Pool =
     // unqualified Kysely queries (platform_operators, …) resolve there. Our own
     // queries schema-qualify explicitly as belt-and-suspenders.
     options: '-c search_path=wize_admin',
-    max: 5,
+    max: operatorPoolMax(process.env.OPERATOR_DB_POOL_MAX),
   });
 
 if (process.env.NODE_ENV !== 'production') {

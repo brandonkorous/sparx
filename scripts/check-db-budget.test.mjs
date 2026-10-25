@@ -39,7 +39,20 @@ spec:
 `;
 
 test('reads app and auth limits per Deployment', () => {
-  assert.deepEqual(parseBudget(BUDGET_YAML), { 'api-rest': { db: 4, auth: 1 }, 'event-worker': { db: 2, auth: 0 } });
+  assert.deepEqual(parseBudget(BUDGET_YAML), {
+    'api-rest': { db: 4, auth: 1, operator: 0 },
+    'event-worker': { db: 2, auth: 0, operator: 0 },
+  });
+});
+
+test('the direct total may not pass the 35 usable connections (event-worker forced to 20 did)', () => {
+  const budget = { ...parseBudget(BUDGET_YAML), admin: { db: 0, auth: 0, operator: 2 } };
+  const kinds = { 'api-rest': 'db', 'event-worker': 'db', admin: 'operator' };
+  const ok = tally({ budget, replicas: { 'api-rest': 2 }, kinds, operatorMax: 5 });
+  assert.equal(ok.direct, 2 * 5 + 2 + 2);
+  const forced = { ...budget, 'event-worker': { db: 20, auth: 0, operator: 0 } };
+  const over = tally({ budget: forced, replicas: { 'api-rest': 4 }, kinds, operatorMax: 5 });
+  assert.match(over.problems[0], /direct to Postgres the pools total 42, over the 35/);
 });
 
 test('reads replica overrides and base replicas', () => {

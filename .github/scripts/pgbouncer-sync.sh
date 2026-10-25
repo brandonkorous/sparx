@@ -7,6 +7,11 @@ ENV_FILE=$1
 DIR=$(mktemp -d)
 trap 'rm -rf "$DIR"' EXIT
 
+# A connection_limit in the shared URL beats every Deployment's DB_CONNECTION_LIMIT (db-budget.yaml).
+if grep -q '^DATABASE_URL=.*[?&]connection_limit=' "$ENV_FILE"; then
+  echo "::warning::DATABASE_URL carries connection_limit, which overrides the per-Deployment pool budget. Remove it from the vault."
+fi
+
 # Built from the DIRECT DATABASE_URL, so the userlist always matches the password the apps use.
 node scripts/pgbouncer-config.mjs files "$ENV_FILE" "$DIR"
 
