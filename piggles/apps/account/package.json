@@ -30,8 +30,8 @@
     "@wizeworks/silicaui": "catalog:",
     "@wizeworks/silicaui-react": "catalog:",
     "@wizeworks/usage": "workspace:*",
-    "better-auth": "^1.6.11",
-    "next": "^16.2.6",
+    "better-auth": "~1.6.33",
+    "next": "^16.4.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "server-only": "^0.0.1"

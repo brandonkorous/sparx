@@ -6,90 +6,26 @@ import {
   type QueryFunctionContext,
 } from '@tanstack/react-query';
 
-// Keeps a failed read moving until it has an answer, for every query on a
-// client, so no pane has to.
-//
-// ── THE SHAPE THIS EXISTS FOR (sparx persona issue 086) ─────────────────────
-//
-// api-rest restarted. A quote pane asked for its quote and got a 503. The
-// network log showed ONE request and no retry, and more than a minute after the
-// API was answering again the pane still said "Loading…". The shell's
-// "Reconnecting" gate did the same for minutes, until a reload.
-//
-// Neither the pane nor the gate was wrong. TanStack's retryer only makes a retry
-// while `focusManager.isFocused()`, which is `document.visibilityState !==
-// 'hidden'`; otherwise it holds the retry as `fetchStatus: 'paused'` until the
-// page becomes visible again. For a read with no data yet, a held retry IS
-// `status: 'pending'`, so `isError` never arrives and every pane in the platform
-// shows its waiting state for as long as the browser says the tab is hidden. A
-// covered or minimized window says exactly that while a person, or a test
-// driving the browser, is looking at it. So does a background tab during a
-// deploy: a failed read there waits for the tab, not for the API.
-//
-// `networkMode` cannot fix it (it governs the online check, never the focus
-// check), and reporting the tab as always focused would make every
-// `refetchInterval` poll in every background tab, which is a real cost. So this
-// does two narrow things instead:
-//
-//   1. A retry held ONLY because the page is hidden is made anyway, on the
-//      schedule the query's own policy set, with the budget that policy had left.
-//      A query that retries three times still retries three times and then shows
-//      its error; one that retries a blip until it clears keeps going. A browser
-//      that is really offline is left alone: TanStack resumes those itself when
-//      the connection comes back, which is the case the pause exists for.
-//
-//   2. A read that ended in a failure that might pass (no answer at all, a 5xx,
-//      408 or 429) is asked again in the background while something still shows
-//      it, on a backoff, for up to ten minutes. The pane keeps its error and its
-//      Try again throughout, and the answer replaces the error when it comes. The
-//      probe calls the query's own function rather than refetching, because a
-//      refetch of a read with no data flips it back to `pending`, and a pane that
-//      blinked from its error to "Loading…" every few seconds would be worse than
-//      one that waited.
+import { ApiBreaker } from './api-breaker';
+import {
+  mightSucceedLater,
+  retryDelayFor,
+  retryWanted,
+  type RetryDelayOption,
+  type RetryOption,
+} from './retry-policy';
 
-/** The HTTP status behind a rejection, when there is one. Read structurally so
- *  this package depends on no API client: `status: number` is the contract. */
-export function httpStatus(error: unknown): number | null {
-  if (typeof error !== 'object' || error === null || !('status' in error)) return null;
-  return typeof error.status === 'number' ? error.status : null;
-}
+export { httpStatus, mightSucceedLater } from './retry-policy';
 
-/**
- * Whether asking again could get a different answer.
- *
- * A 4xx was refused for a reason that is still true a second later, except 408
- * and 429, which change on their own. A 5xx is the server failing or busy. An
- * error with no status never got an answer at all: the service was down, or a
- * CORS preflight failed, which reaches `fetch` as a TypeError.
- */
-export function mightSucceedLater(error: unknown): boolean {
-  const status = httpStatus(error);
-  if (status === null) return true;
-  if (status === 408 || status === 429) return true;
-  return status >= 500;
-}
-
-type RetryOption = boolean | number | ((failureCount: number, error: unknown) => boolean);
-type RetryDelayOption = number | ((failureCount: number, error: unknown) => number);
-
-/** TanStack's own reading of a `retry` option, including its client default of 3. */
-function retryWanted(retry: RetryOption | undefined, failures: number, error: unknown): boolean {
-  if (typeof retry === 'function') return retry(failures, error);
-  if (typeof retry === 'number') return failures < retry;
-  if (retry === undefined) return failures < 3;
-  return retry;
-}
-
-/** TanStack's own reading of a `retryDelay` option, including its default backoff. */
-function retryDelayFor(
-  delay: RetryDelayOption | undefined,
-  failures: number,
-  error: unknown
-): number {
-  if (typeof delay === 'function') return delay(failures, error);
-  if (typeof delay === 'number') return delay;
-  return Math.min(1000 * 2 ** failures, 30_000);
-}
+// Keeps a failed read moving until it has an answer, for every query on a client,
+// so no pane has to (sparx persona issue 086: a 503 left panes on "Loading…" after
+// the API was back). TanStack holds a retry as `paused` while the tab is hidden,
+// and a held retry with no data is `pending` for ever. Two narrow fixes:
+//   1. A retry held ONLY because the page is hidden is made anyway, with the
+//      query's own budget and backoff; a really offline browser is left alone.
+//   2. A read that ended on a failure that might pass is asked again in the
+//      background, one read per wait, for up to ten minutes, by calling its own
+//      function, so the pane keeps its error until the answer replaces it.
 
 /** Waits between background probes of a failed read. The last one repeats. */
 const PROBE_DELAYS_MS = [2_000, 4_000, 8_000, 15_000] as const;
@@ -106,7 +42,10 @@ function isInfinite(query: Query): boolean {
  * Browser only: on a server there is no hidden page to hold a retry, and a
  * background probe would outlive the request that made the client.
  */
-export function keepFailedReadsMoving(client: QueryClient): () => void {
+export function keepFailedReadsMoving(
+  client: QueryClient,
+  breaker: ApiBreaker = new ApiBreaker()
+): () => void {
   const cache = client.getQueryCache();
 
   // ── 1. Retries held by a hidden page ──────────────────────────────────────
@@ -187,7 +126,9 @@ export function keepFailedReadsMoving(client: QueryClient): () => void {
   function scheduleProbe(): void {
     if (probeTimer !== undefined || probing) return;
     episodeStartedAt ??= Date.now();
-    const wait = PROBE_DELAYS_MS[Math.min(step, PROBE_DELAYS_MS.length - 1)];
+    // Jittered and never sooner than the server's Retry-After (PG-7).
+    const base = PROBE_DELAYS_MS[Math.min(step, PROBE_DELAYS_MS.length - 1)] ?? 15_000;
+    const wait = breaker.probeDelay(base);
     probeTimer = setTimeout(() => {
       probeTimer = undefined;
       void probe();

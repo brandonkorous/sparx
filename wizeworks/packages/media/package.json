@@ -32,11 +32,11 @@
     "@google-cloud/storage": "^7.16.0",
     "@wizeworks/db": "workspace:*",
     "@wizeworks/events": "workspace:*",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.12"
   }
 }

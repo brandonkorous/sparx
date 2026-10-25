@@ -18,7 +18,9 @@
 // time, and never run. Every loop reschedules itself only after its tick
 // returns, so a queued tick can never be queued twice.
 //
-// This module imports nothing, so it can be tested without a database.
+// This module needs no database, so it can be tested without one.
+
+import { connectionLimit } from './connection-limit';
 
 /** A FIFO counting semaphore. */
 export class TickGate {
@@ -48,28 +50,12 @@ export class TickGate {
   }
 }
 
-/** The pool size this process runs with, or null when Prisma picks its own. */
-export function poolSize(env: Record<string, string | undefined>): number | null {
-  const explicit = Number(env.DB_CONNECTION_LIMIT?.trim());
-  if (Number.isInteger(explicit) && explicit > 0) {
-    // An explicit `connection_limit` in the URL wins in client.ts, so it wins here too.
-    return fromUrl(env.DATABASE_URL) ?? explicit;
-  }
-  return fromUrl(env.DATABASE_URL);
+/** The pool size this process runs with; the same answer client.ts opens with. */
+export function poolSize(env: Record<string, string | undefined>): number {
+  return connectionLimit(env).limit;
 }
 
-function fromUrl(url: string | undefined): number | null {
-  const match = url ? /[?&]connection_limit=(\d+)/.exec(url) : null;
-  const n = match ? Number(match[1]) : NaN;
-  return Number.isInteger(n) && n > 0 ? n : null;
-}
-
-/**
- * Ticks allowed inside their lock at once: a quarter of the pool, at least one.
- * Three quarters stay free for the ticks' own work and for HTTP requests.
- * An unknown pool is Prisma's default, as small as 3, so it gets one.
- */
+/** Ticks allowed inside their lock at once: a quarter of the pool, at least one. */
 export function tickSlots(env: Record<string, string | undefined>): number {
-  const size = poolSize(env);
-  return size === null ? 1 : Math.max(1, Math.floor(size / 4));
+  return Math.max(1, Math.floor(poolSize(env) / 4));
 }

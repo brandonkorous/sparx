@@ -627,9 +627,10 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     // theme row is one-per-(tenant, property); settings stays one-per-tenant. A
     // missing row means the site hasn't customized, so we fall back to
     // nulls/defaults the storefront's token layer reads as "use the default theme".
-    const [theme, storefront, brand, consent, propertyRow, business] = await withTenant(
-      { tenantId: tenant.id },
-      (tx) =>
+    // ONE transaction for the whole payload: payment config and languages used to
+    // open two more per call, on a read every storefront page makes (WW-10).
+    const [theme, storefront, brand, consent, propertyRow, business, paymentConfig, locales] =
+      await withTenant({ tenantId: tenant.id }, (tx) =>
         Promise.all([
           // PRESENTATION tokens only. Identity (colors, type, logo, favicon) comes
           // from the tenant brand below — those CommerceSiteTheme columns were removed
@@ -705,30 +706,31 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
             where: { tenantId: tenant.id },
             select: { timezone: true },
           }),
+          tx.tenantPaymentConfig.findUnique({
+            where: { tenantId: tenant.id },
+            select: { gatewayId: true, isActive: true },
+          }),
+          tx.productTranslation.findMany({
+            where: { product: { status: 'active', deletedAt: null } },
+            distinct: ['locale'],
+            select: { locale: true },
+            orderBy: { locale: 'asc' },
+          }),
         ])
-    );
+      );
 
     // How this shop can be paid, so the storefront knows BEFORE checkout whether
     // this website takes any money at all (issue 185). A shop on manual payments
     // settles in the room, and a product page that says "Pay $30.00 today" or a
     // basket that says "To pay at checkout" is describing a charge that never
-    // happens. Its own query rather than a member of the batch above: it reads
-    // through `withTenant` itself, and it never throws.
-    const paymentMode = await checkoutService.resolvePaymentMode(tenant.id);
+    // happens. Read in the batch above; `paymentModeOf` is resolvePaymentMode's rule.
+    const paymentMode = checkoutService.paymentModeOf(paymentConfig);
 
     // Which languages this shop's catalogue is actually WRITTEN in, so the site
     // can offer them and refuse the ones nobody has translated. Derived rather
     // than configured: a language exists here because a real product carries
     // words in it, which is the only definition that cannot go stale.
-    const languages = await withTenant({ tenantId: tenant.id }, async (tx) => {
-      const rows = await tx.productTranslation.findMany({
-        where: { product: { status: 'active', deletedAt: null } },
-        distinct: ['locale'],
-        select: { locale: true },
-        orderBy: { locale: 'asc' },
-      });
-      return rows.map((row) => row.locale);
-    });
+    const languages = locales.map((row) => row.locale);
 
     // Merge the per-site override over the tenant brand identity (Phase 4). A
     // null override leaves the tenant brand untouched, so single-site / no-override

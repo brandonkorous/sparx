@@ -17,6 +17,14 @@ describe('mcp-site app', () => {
     await app.close();
   });
 
+  // WW-12: WizeLens saw mcp-site answer without X-Content-Type-Options.
+  it('sends nosniff on every response', async () => {
+    const app = await createApp();
+    const res = await app.inject({ method: 'GET', url: '/health' });
+    expect(res.headers['x-content-type-options']).toBe('nosniff');
+    await app.close();
+  });
+
   it('returns 404 UNKNOWN_SITE for an unresolvable host', async () => {
     vi.stubGlobal(
       'fetch',

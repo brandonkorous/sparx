@@ -15,6 +15,7 @@ import {
 
 import { formatPublishedDate, projectByline } from './builder-data';
 import { publicGet, type ApiEntry } from './content';
+import { readSlugOrNull } from './slug-miss';
 import { mediaUrl } from './media';
 
 export { getPublicKind, pieceUrl, type KindRow } from './kind-url';
@@ -45,31 +46,19 @@ export async function getKindPiece(
 ): Promise<KindPiece | null> {
   if (!kindAddressForPath(path)) return null;
   const target = path.startsWith('/') ? path : `/${path}`;
-  const fetchOnce = (withPreview: boolean) =>
-    publicGet<KindPiece>(
-      '/v1/public/content/entries/by-path',
-      { tenant: tenantSlug, path: target },
-      {
-        ...(withPreview && options.previewToken ? { previewToken: options.previewToken } : {}),
-        tag: `entry:${tenantSlug}:path:${target}`,
-      }
-    );
-  try {
-    return await fetchOnce(true);
-  } catch (err) {
-    const code = (err as { code?: string }).code;
-    if (code === 'NOT_FOUND') return null;
-    // A stale preview link still shows the published piece, like the post route.
-    if (code === 'UNAUTHORIZED' && options.previewToken) {
-      try {
-        return await fetchOnce(false);
-      } catch (inner) {
-        if ((inner as { code?: string }).code === 'NOT_FOUND') return null;
-        throw inner;
-      }
-    }
-    throw err;
-  }
+  // A stale preview link still shows the published piece, like the post route.
+  return readSlugOrNull(
+    (withPreview) =>
+      publicGet<KindPiece>(
+        '/v1/public/content/entries/by-path',
+        { tenant: tenantSlug, path: target },
+        {
+          ...(withPreview && options.previewToken ? { previewToken: options.previewToken } : {}),
+          tag: `entry:${tenantSlug}:path:${target}`,
+        }
+      ),
+    options.previewToken
+  );
 }
 
 function formatDateTime(raw: unknown, timeZone: string | null, locale: string): string {

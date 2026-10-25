@@ -2,7 +2,7 @@
 // builds on `request()` — keep the auth/envelope/retry policy here so
 // downstream callers can't forget it.
 
-import { ApiError, type Envelope, type EnvelopeError } from './envelope';
+import { ApiError, retryAfterSeconds, type Envelope, type EnvelopeError } from './envelope';
 
 export interface SparxClientOptions {
   /** Base URL of api-rest, e.g. https://api.sparx.works. No trailing slash. */
@@ -175,7 +175,7 @@ export class SparxClient {
       // when the body is the standard envelope.
       if (!res.ok && res.headers.get('content-type')?.includes('application/json')) {
         const errBody = (await res.json()) as EnvelopeError;
-        throw new ApiError(res.status, errBody);
+        throw new ApiError(res.status, errBody, retryAfterSeconds(res.headers));
       }
       return {
         data: res as unknown as T,
@@ -200,7 +200,7 @@ export class SparxClient {
 
     const payload = (await res.json()) as Envelope<T>;
     if (!payload.success) {
-      throw new ApiError(res.status, payload);
+      throw new ApiError(res.status, payload, retryAfterSeconds(res.headers));
     }
 
     return {

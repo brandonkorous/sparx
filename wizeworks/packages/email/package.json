@@ -47,7 +47,7 @@
     "@wizeworks/cms-editor": "workspace:*",
     "@wizeworks/site-themes": "workspace:*",
     "@wizeworks/silicaui-builder": "catalog:",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "peerDependencies": {
     "react": "^19.0.0"
@@ -58,6 +58,6 @@
     "@vitejs/plugin-react": "^5.1.0",
     "react": "^19.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.12"
   }
 }

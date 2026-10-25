@@ -16,6 +16,20 @@ export interface OfferStanding {
   limit: number;
   /** Places still open. Zero once the limit is reached or the coupon is gone. */
   remaining: number;
+  /** `misconfigured`: the plan names a coupon Stripe does not have, so nobody can take the offer. */
+  state: 'open' | 'spent' | 'misconfigured';
+}
+
+/** Coupons already reported missing, so a busy banner logs each one once per process. */
+const reportedMissing = new Set<string>();
+
+// A configured coupon that 404s is a setup error (run provision-stripe), not a spent offer (WW-4).
+function reportMissingCoupon(id: string): void {
+  if (reportedMissing.has(id)) return;
+  reportedMissing.add(id);
+  console.error(
+    `billing: offer coupon "${id}" does not exist in Stripe; the offer is off until it is created`
+  );
 }
 
 /** The coupon as Stripe holds it, or null when it does not exist there. */
@@ -23,8 +37,9 @@ async function retrieveCoupon(stripe: Stripe, id: string): Promise<Stripe.Coupon
   try {
     return await stripe.coupons.retrieve(id);
   } catch (err) {
-    if ((err as { statusCode?: number }).statusCode === 404) return null;
-    throw err;
+    if ((err as { statusCode?: number }).statusCode !== 404) throw err;
+    reportMissingCoupon(id);
+    return null;
   }
 }
 
@@ -37,6 +52,7 @@ function standingOf(offer: PlanOffer, coupon: Stripe.Coupon | null): OfferStandi
     amountOffCents: coupon?.amount_off ?? offer.amountOffCents,
     limit,
     remaining: open,
+    state: !coupon ? 'misconfigured' : open > 0 ? 'open' : 'spent',
   };
 }
 
@@ -60,6 +76,22 @@ export async function openOfferDiscount(
   if (!plan.offer) return undefined;
   const standing = standingOf(plan.offer, await retrieveCoupon(stripe, plan.offer.coupon));
   return standing.remaining > 0 ? [{ coupon: plan.offer.coupon }] : undefined;
+}
+
+/** Plan coupons Stripe does not have; each is logged at error level. Run at boot. */
+export async function missingOfferCoupons(plans: readonly BillingPlan[]): Promise<string[]> {
+  const missing: string[] = [];
+  for (const plan of plans) {
+    const stripe = plan.offer ? getBillingStripe(plan) : null;
+    if (!plan.offer || !stripe) continue;
+    if (!(await retrieveCoupon(stripe, plan.offer.coupon))) missing.push(plan.offer.coupon);
+  }
+  return missing;
+}
+
+/** Test seam: forget which coupons were already reported. */
+export function resetMissingCouponReportsForTesting(): void {
+  reportedMissing.clear();
 }
 
 export interface HeldDiscount {

@@ -24,11 +24,11 @@
     "@wizeworks/db": "workspace:*",
     "@wizeworks/scheduling-schemas": "workspace:*",
     "@wizeworks/time": "workspace:*",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.12"
   }
 }
