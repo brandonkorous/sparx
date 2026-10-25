@@ -65,15 +65,24 @@ test('a database-using Deployment with no limit fails (the state before SI-1)', 
   assert.match(problems[0], /api-graphql uses the database but has no DB_CONNECTION_LIMIT/);
 });
 
-test('sums replicas x pools plus the operator pool, and fails over the budget', () => {
+test('sums direct pools, and through PgBouncer counts only its server pool plus owner and operator pools', () => {
   const budget = parseBudget(BUDGET_YAML);
   const kinds = { 'api-rest': 'db', 'event-worker': 'db', admin: 'operator' };
-  const ok = tally({ budget, replicas: { 'api-rest': 2 }, kinds, operatorMax: 5 });
-  assert.equal(ok.total, 2 * 5 + 2 + 5);
+  const pooler = { pods: 2, max: 9 };
+  const ok = tally({ budget, replicas: { 'api-rest': 2 }, kinds, operatorMax: 5, pooler });
+  assert.equal(ok.direct, 2 * 5 + 2 + 5);
+  assert.equal(ok.pooled, 18 + 2 * 1 + 5);
   assert.deepEqual(ok.problems, []);
-  const over = tally({ budget, replicas: { 'api-rest': 7 }, kinds, operatorMax: 5 });
-  assert.ok(over.total > BUDGET);
+  const over = tally({ budget, replicas: { 'api-rest': 20 }, kinds, operatorMax: 5, pooler });
+  assert.ok(over.pooled > BUDGET);
   assert.match(over.problems.at(-1), /over the budget/);
+});
+
+test('a pool the code raises at boot must be stated at its real size', () => {
+  const budget = parseBudget(BUDGET_YAML);
+  const kinds = { 'api-rest': 'db', 'event-worker': 'db' };
+  const { problems } = tally({ budget, replicas: {}, kinds, operatorMax: 5, codeFloors: { 'event-worker': 20 } });
+  assert.match(problems[0], /event-worker: code raises its pool to 20/);
 });
 
 test('a budget entry for a Deployment that does not use the database is flagged', () => {

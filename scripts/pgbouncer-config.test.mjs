@@ -29,7 +29,7 @@ test('ini is transaction mode with TLS to the server and a capped server pool', 
   assert.match(ini, /^sparx = host=psql-sparx-prod-cus\.postgres\.database\.azure\.com port=5432 dbname=sparx$/m);
   assert.match(ini, /^pool_mode = transaction$/m);
   assert.match(ini, /^server_tls_sslmode = require$/m);
-  assert.match(ini, /^max_db_connections = 7$/m);
+  assert.match(ini, /^max_db_connections = 9$/m);
   assert.doesNotMatch(ini, /user=/);
 });
 

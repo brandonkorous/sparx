@@ -1,21 +1,23 @@
 # Database connection budget for psql-sparx-prod-cus (B1ms: 50 max, 15 reserved, 35 usable).
 # One patch per Deployment that opens Postgres. `pnpm check:db-budget` sums these against the cap.
 # Per pod = DB_CONNECTION_LIMIT (sparx_app pool) + AUTH_DB_CONNECTION_LIMIT (Better Auth's sparx_owner pool).
+# 2 is the floor: withAdvisoryTickLock parks one connection, so a pool of 1 deadlocks ticks.
 #
-#   deployment        replicas  app  auth  total
-#   api-rest          2         4    1     10
-#   workbench         1         2    1     3
-#   piggles-console   1         2    1     3
-#   piggles-account   2         1    1     4
-#   api-graphql       1         1    1     2
-#   api-mcp           1         1    1     2
-#   event-worker      1         2    0     2
-#   media-worker      1         1    0     1
-#   import-worker     1         1    0     1
-#   admin             1         operator-auth pg pool (code)  5
-#   sum                                    33 of 35; 2 left for the role + migrate Jobs
+#   deployment        replicas  app  auth  direct  through PgBouncer
+#   api-rest          2         4    1     10      2
+#   workbench         1         2    1     3       1
+#   piggles-console   1         2    1     3       1
+#   piggles-account   2         2    1     6       2
+#   api-graphql       1         2    1     3       1
+#   api-mcp           1         2    1     3       1
+#   event-worker      1         20   0     20      0   (boot-db-pool.ts forces 20)
+#   media-worker      1         2    0     2       0
+#   import-worker     1         2    0     2       0
+#   admin             1         operator pg pool  5       5
+#   PgBouncer         2 pods x 9 server connections        18
+#   total                                  57      31 of 33 (2 kept for the role + migrate Jobs)
 #
-# Rollouts surge past this (old and new pods overlap). PgBouncer is the real fix; see ../infra/pgbouncer.yaml.
+# Direct to Postgres this overcommits, as it did before; PgBouncer (PGBOUNCER_ENABLED=true) is what fits.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -70,7 +72,7 @@ spec:
       containers:
         - name: piggles-account
           env:
-            - { name: DB_CONNECTION_LIMIT, value: '1' }
+            - { name: DB_CONNECTION_LIMIT, value: '2' }
             - { name: AUTH_DB_CONNECTION_LIMIT, value: '1' }
 ---
 apiVersion: apps/v1
@@ -84,7 +86,7 @@ spec:
       containers:
         - name: api-graphql
           env:
-            - { name: DB_CONNECTION_LIMIT, value: '1' }
+            - { name: DB_CONNECTION_LIMIT, value: '2' }
             - { name: AUTH_DB_CONNECTION_LIMIT, value: '1' }
 ---
 apiVersion: apps/v1
@@ -98,7 +100,7 @@ spec:
       containers:
         - name: api-mcp
           env:
-            - { name: DB_CONNECTION_LIMIT, value: '1' }
+            - { name: DB_CONNECTION_LIMIT, value: '2' }
             - { name: AUTH_DB_CONNECTION_LIMIT, value: '1' }
 ---
 apiVersion: apps/v1
@@ -112,7 +114,7 @@ spec:
       containers:
         - name: event-worker
           env:
-            - { name: DB_CONNECTION_LIMIT, value: '2' }
+            - { name: DB_CONNECTION_LIMIT, value: '20' }
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -125,7 +127,7 @@ spec:
       containers:
         - name: media-worker
           env:
-            - { name: DB_CONNECTION_LIMIT, value: '1' }
+            - { name: DB_CONNECTION_LIMIT, value: '2' }
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -138,4 +140,4 @@ spec:
       containers:
         - name: import-worker
           env:
-            - { name: DB_CONNECTION_LIMIT, value: '1' }
+            - { name: DB_CONNECTION_LIMIT, value: '2' }

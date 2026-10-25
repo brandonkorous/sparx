@@ -7,8 +7,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-// Server connections per PgBouncer pod (2 pods = 14) for sparx_app; the rest of the 35 stay for owner/operator.
-export const SERVER_POOL = { default: 6, reserve: 1, max: 7 };
+// Server connections per PgBouncer pod (2 pods = 18) for sparx_app; ticks park one each, so this is the big share.
+export const SERVER_POOL = { default: 7, reserve: 2, max: 9 };
 
 /** The value of `key` in a dotenv file body, or undefined. */
 export function readEnv(body, key) {

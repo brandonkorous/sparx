@@ -2,12 +2,14 @@
 // Does every Postgres pool on the sparx server fit its 35 usable connections? (SI-1)
 //
 // Sums replicas x (DB_CONNECTION_LIMIT + AUTH_DB_CONNECTION_LIMIT) from k8s/azure/apps/db-budget.yaml,
-// plus the operator console's pg pool, and fails above BUDGET. A Deployment whose package uses the
-// database but has no entry also fails: an unset limit means Prisma's own, uncapped default.
+// plus the operator console's pg pool. Fails when the server load THROUGH PgBouncer exceeds BUDGET,
+// and prints how far direct mode overcommits. A Deployment that uses the database with no entry
+// fails too: an unset limit means Prisma's own default.
 // Pure Node, no install.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { SERVER_POOL } from './pgbouncer-config.mjs';
 
 // B1ms: 50 max_connections - 15 Azure-reserved = 35; 2 kept for the role + migrate Jobs.
 export const BUDGET = 33;
@@ -60,22 +62,29 @@ export function poolKind(pkgText) {
   return OPERATOR_PACKAGE in deps ? 'operator' : null;
 }
 
-/** Rows of { name, replicas, perPod } and the problems found. */
-export function tally({ budget, replicas, kinds, operatorMax }) {
+/** Rows of { name, replicas, app, auth, direct } plus totals with and without PgBouncer, and problems. */
+export function tally({ budget, replicas, kinds, operatorMax, codeFloors = {}, pooler = { pods: 0, max: 0 } }) {
   const rows = [];
   const problems = [];
   for (const [name, kind] of Object.entries(kinds)) {
     const count = replicas[name] ?? 1;
-    if (kind === 'operator') rows.push({ name, replicas: count, perPod: operatorMax });
+    if (kind === 'operator') rows.push({ name, replicas: count, app: 0, auth: 0, direct: operatorMax });
     else if (!budget[name]?.db) problems.push(`${name} uses the database but has no DB_CONNECTION_LIMIT in db-budget.yaml`);
-    else rows.push({ name, replicas: count, perPod: budget[name].db + budget[name].auth });
+    else {
+      const app = Math.max(budget[name].db, codeFloors[name] ?? 0);
+      if (app !== budget[name].db) problems.push(`${name}: code raises its pool to ${app}; db-budget.yaml must say ${app}`);
+      rows.push({ name, replicas: count, app, auth: budget[name].auth, direct: app + budget[name].auth });
+    }
   }
   for (const name of Object.keys(budget)) {
     if (!(name in kinds)) problems.push(`db-budget.yaml names ${name}, which is not a database-using Deployment`);
   }
-  const total = rows.reduce((sum, r) => sum + r.replicas * r.perPod, 0);
-  if (total > BUDGET) problems.push(`pools total ${total}, over the budget of ${BUDGET}`);
-  return { rows, total, problems };
+  const sum = (f) => rows.reduce((s, r) => s + r.replicas * f(r), 0);
+  const direct = sum((r) => r.direct);
+  // Through PgBouncer every sparx_app pool shares its server pool; owner and operator pools stay direct.
+  const pooled = pooler.pods * pooler.max + sum((r) => r.auth + (r.app === 0 ? r.direct : 0));
+  if (pooled > BUDGET) problems.push(`with PgBouncer the server holds ${pooled}, over the budget of ${BUDGET}`);
+  return { rows, direct, pooled, problems };
 }
 
 function readRepo(root) {
@@ -89,15 +98,23 @@ function readRepo(root) {
     if (kind) kinds[name] = kind;
   }
   const operatorMax = Number(/max: (\d+)/.exec(read('wizeworks/packages/operator-auth/src/db.ts'))?.[1]);
-  return { budget: parseBudget(read('k8s/azure/apps/db-budget.yaml')), replicas, kinds, operatorMax };
+  // event-worker rewrites its own DATABASE_URL to at least this many connections at boot.
+  const eventFloor = Number(/MIN_CONNECTION_LIMIT = (\d+)/.exec(read('wizeworks/services/event-worker/src/boot-db-pool.ts'))?.[1] ?? 0);
+  const pooler = {
+    pods: Number(/^ {2}replicas: (\d+)/m.exec(read('k8s/azure/infra/pgbouncer.yaml'))?.[1] ?? 0),
+    max: SERVER_POOL.max,
+  };
+  const budget = parseBudget(read('k8s/azure/apps/db-budget.yaml'));
+  return { budget, replicas, kinds, operatorMax, codeFloors: { 'event-worker': eventFloor }, pooler };
 }
 
 function main() {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-  const { rows, total, problems } = tally(readRepo(root));
-  for (const r of rows) console.log(`  ${r.name.padEnd(18)} ${r.replicas} x ${r.perPod} = ${r.replicas * r.perPod}`);
-  console.log(`  total ${total} of ${BUDGET}`);
-  if (problems.length === 0) return console.log('check:db-budget — every pool fits.');
+  const { rows, direct, pooled, problems } = tally(readRepo(root));
+  for (const r of rows) console.log(`  ${r.name.padEnd(18)} ${r.replicas} x ${r.direct} = ${r.replicas * r.direct}`);
+  console.log(`  direct to Postgres: ${direct}; through PgBouncer: ${pooled}; budget ${BUDGET}`);
+  if (direct > BUDGET) console.log(`  direct mode overcommits by ${direct - BUDGET}: set PGBOUNCER_ENABLED=true (k8s/pgbouncer/README.md).`);
+  if (problems.length === 0) return console.log('check:db-budget — every pool fits behind PgBouncer.');
   for (const p of problems) console.error(`check:db-budget — ${p}`);
   process.exit(1);
 }

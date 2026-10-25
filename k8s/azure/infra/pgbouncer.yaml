@@ -1,4 +1,4 @@
-# PgBouncer in front of psql-sparx-prod-cus (SI-1). Azure copy of k8s/pgbouncer (same image, no Cloud SQL LB).
+# PgBouncer in front of psql-sparx-prod-cus (SI-1): 2 pods x 9 server connections. Azure copy of k8s/pgbouncer.
 # Config is the `pgbouncer-config` Secret the release writes from DATABASE_URL (scripts/pgbouncer-config.mjs).
 # Apps use it only when the PGBOUNCER_ENABLED repo variable is "true"; until then it holds no server connections.
 # Only sparx_app goes through it: the owner and operator roles stay direct (migrations, psql, search_path).
