@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { authConnectionUrl } from './auth-pool';
 
 // Dedicated Prisma client for Better Auth.
 //
@@ -29,7 +30,7 @@ function pickUrl(): string {
 export const authPrisma: PrismaClient =
   globalThis.__sparxAuthPrisma ??
   new PrismaClient({
-    datasourceUrl: pickUrl(),
+    datasourceUrl: authConnectionUrl(pickUrl(), process.env),
     log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['warn', 'error'],
   });
 

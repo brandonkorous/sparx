@@ -15,11 +15,20 @@ type Env = Record<string, string | undefined>;
 
 /** The pool size, and where it came from: the URL wins, then the env var, then 2. */
 export function connectionLimit(env: Env): ConnectionLimit {
-  const fromUrl = urlLimit(env.DATABASE_URL);
+  return poolFor(env.DATABASE_URL, env.DB_CONNECTION_LIMIT, DEFAULT_CONNECTION_LIMIT);
+}
+
+/** Any client's pool: the URL's own connection_limit, then `limit` if a positive integer, then `fallback`. */
+export function poolFor(
+  url: string | undefined,
+  limit: string | undefined,
+  fallback: number
+): ConnectionLimit {
+  const fromUrl = urlLimit(url);
   if (fromUrl !== null) return { limit: fromUrl, source: 'url' };
-  const explicit = Number(env.DB_CONNECTION_LIMIT?.trim());
+  const explicit = Number(limit?.trim());
   if (Number.isInteger(explicit) && explicit > 0) return { limit: explicit, source: 'env' };
-  return { limit: DEFAULT_CONNECTION_LIMIT, source: 'default' };
+  return { limit: fallback, source: 'default' };
 }
 
 function urlLimit(url: string | undefined): number | null {

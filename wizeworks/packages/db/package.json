@@ -16,6 +16,10 @@
     "./site-origin": {
       "types": "./src/site-origin.ts",
       "default": "./src/site-origin.ts"
+    },
+    "./connection-limit": {
+      "types": "./src/connection-limit.ts",
+      "default": "./src/connection-limit.ts"
     }
   },
   "files": [
