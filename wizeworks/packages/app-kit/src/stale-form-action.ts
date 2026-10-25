@@ -57,9 +57,11 @@ export type ActionIds = ReadonlySet<string> | null;
 export function readActionIds(distDir: string = join(process.cwd(), '.next')): ActionIds {
   try {
     const raw = readFileSync(join(distDir, 'server', 'server-reference-manifest.json'), 'utf8');
-    const manifest = JSON.parse(raw) as { node?: unknown };
+    const manifest = JSON.parse(raw) as { node?: unknown; edge?: unknown };
     if (!manifest.node || typeof manifest.node !== 'object') return null;
-    return new Set(Object.keys(manifest.node));
+    // Edge ids count too: a missing id here turns a real action call into a 404.
+    const edge = manifest.edge && typeof manifest.edge === 'object' ? manifest.edge : {};
+    return new Set([...Object.keys(manifest.node), ...Object.keys(edge)]);
   } catch {
     return null;
   }
@@ -92,6 +94,29 @@ export function postedActionIds(form: FormData): string[] {
     }
   }
   return ids;
+}
+
+/**
+ * Next's own "no such action" answer for a hydrated call (`next-action` header)
+ * naming an id this build does not have, or null to let the request through.
+ *
+ * Next answers it the same way, except on a prerendered page asked with `rsc: 1`,
+ * where its plain-text 404 trips an invariant and becomes a 500 (a scanner sent
+ * `next-action: cachefn` to sparx.works 75 times, 2026-10-20 to 10-23). A real
+ * stale tab still gets `x-nextjs-action-not-found`, so the client's recovery runs.
+ */
+export function unknownActionResponse(req: Request, known: ActionIds): Response | null {
+  if (!known || req.method !== 'POST') return null;
+  const id = req.headers.get('next-action');
+  if (id === null || known.has(id)) return null;
+  return new Response('Server action not found.', {
+    status: 404,
+    headers: {
+      'x-nextjs-action-not-found': '1',
+      'content-type': 'text/plain',
+      'cache-control': 'no-store',
+    },
+  });
 }
 
 /**

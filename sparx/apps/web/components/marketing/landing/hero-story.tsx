@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { memo, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { STORY_EXAMPLES } from '@wizeworks/story-schemas';
 import { StoryProse } from './story-prose';
 import { allTokens, storyPlainText, storyTokens, tokenSteps } from './story-tokens';
+import { useOnScreen } from './use-on-screen';
 import styles from './hero-story.module.css';
 
 /**
@@ -56,37 +57,67 @@ function stepDelays(idx: number): number[] {
   );
 }
 
-export function HeroStoryRotator(): ReactNode {
+/** Walk the stories: type one step at a time, hold, move on. Paused while `active` is
+ *  false, so a hero scrolled away or in a hidden tab stops re-rendering. */
+function useStoryTyping(reduced: boolean, active: boolean) {
   const [idx, setIdx] = useState(0);
   const [step, setStep] = useState(0);
-  const reduced = usePrefersReducedMotion();
-
   const delays = useMemo(() => stepDelays(idx), [idx]);
   const total = delays.length;
   const done = step >= total;
 
-  // Type the current story, one step at a time. A per-step timeout (rather than one
-  // interval) is what lets a chip pause longer than a character.
+  // A per-step timeout (rather than one interval) is what lets a chip pause longer
+  // than a character.
   useEffect(() => {
-    if (reduced || done) return;
-    const wait = delays[step] ?? CHAR_MS;
-    const timer = setTimeout(() => setStep((s) => s + 1), wait);
+    if (!active || reduced || done) return;
+    const timer = setTimeout(() => setStep((s) => s + 1), delays[step] ?? CHAR_MS);
     return () => clearTimeout(timer);
-  }, [step, done, delays, reduced]);
+  }, [step, done, delays, reduced, active]);
 
   // Hold the finished story, then move on. `idx` is a dep so the hold restarts per
   // story rather than firing once and stranding the rotation.
   useEffect(() => {
-    if (!reduced && !done) return;
-    const timer = setTimeout(
-      () => {
-        setIdx((i) => (i + 1) % STORY_EXAMPLES.length);
-        setStep(0);
-      },
-      reduced ? STATIC_DWELL_MS : HOLD_MS
-    );
+    if (!active || (!reduced && !done)) return;
+    const next = (): void => {
+      setIdx((i) => (i + 1) % STORY_EXAMPLES.length);
+      setStep(0);
+    };
+    const timer = setTimeout(next, reduced ? STATIC_DWELL_MS : HOLD_MS);
     return () => clearTimeout(timer);
-  }, [done, reduced, idx]);
+  }, [done, reduced, idx, active]);
+
+  return { idx, step, total };
+}
+
+/** Every story at full length, invisible: they hold the stage open so the live one
+ *  types into a space that never resizes. No props, so it renders once. */
+const Sizers = memo(function Sizers(): ReactNode {
+  return STORY_EXAMPLES.map((ex) => (
+    <div key={ex.label} className={styles.sizer}>
+      <StoryProse story={ex.story} />
+    </div>
+  ));
+});
+
+function Ticks({ idx, step, total }: { idx: number; step: number; total: number }): ReactNode {
+  const fill = (i: number): number =>
+    i < idx ? 1 : i === idx ? (total ? Math.min(step / total, 1) : 1) : 0;
+  return (
+    <div className={styles.ticks} aria-hidden>
+      {STORY_EXAMPLES.map((ex, i) => (
+        <span key={ex.label} className={styles.tick}>
+          <span className={styles.tickFill} style={{ transform: `scaleX(${fill(i)})` }} />
+        </span>
+      ))}
+    </div>
+  );
+}
+
+export function HeroStoryRotator(): ReactNode {
+  const stage = useRef<HTMLDivElement>(null);
+  const reduced = usePrefersReducedMotion();
+  const { idx, step, total } = useStoryTyping(reduced, useOnScreen(stage));
+  const live = STORY_EXAMPLES[idx];
 
   return (
     <div>
@@ -96,37 +127,16 @@ export function HeroStoryRotator(): ReactNode {
         ))}
       </ul>
 
-      <div className={styles.stage} aria-hidden>
-        {/* Sizers: every story at full length, invisible — they hold the stage open
-            so the live one can type into a space that never resizes. */}
-        {STORY_EXAMPLES.map((ex) => (
-          <div key={ex.label} className={styles.sizer}>
-            <StoryProse story={ex.story} />
-          </div>
-        ))}
-
-        {STORY_EXAMPLES[idx] && (
+      <div ref={stage} className={styles.stage} aria-hidden>
+        <Sizers />
+        {live && (
           <div className={styles.live}>
-            <StoryProse
-              story={STORY_EXAMPLES[idx].story}
-              revealed={reduced ? null : Math.min(step, total)}
-            />
+            <StoryProse story={live.story} revealed={reduced ? null : Math.min(step, total)} />
           </div>
         )}
       </div>
 
-      <div className={styles.ticks} aria-hidden>
-        {STORY_EXAMPLES.map((ex, i) => (
-          <span key={ex.label} className={styles.tick}>
-            <span
-              className={styles.tickFill}
-              style={{
-                transform: `scaleX(${i < idx ? 1 : i === idx ? (total ? Math.min(step / total, 1) : 1) : 0})`,
-              }}
-            />
-          </span>
-        ))}
-      </div>
+      <Ticks idx={idx} step={step} total={total} />
     </div>
   );
 }

@@ -40,6 +40,7 @@
 // that keep it small (documents only, cached per host, fail open).
 
 import { NextResponse, type NextRequest } from 'next/server';
+import { runningActionIds, unknownActionResponse } from '@wizeworks/app-kit/stale-form-action';
 
 import { isCrawlablePath, siteIsDark } from './lib/dark-at-the-edge';
 import { isProbePath, probeNotFound } from './lib/probe-path';
@@ -114,7 +115,50 @@ function publicHost(req: NextRequest): string {
   return req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? req.nextUrl.hostname;
 }
 
+// ── Local dev: honor the `?tenant=`/`?property=` site override ──────────────
+async function localDevResponse(
+  req: NextRequest,
+  requestHeaders: Headers,
+  host: string
+): Promise<Response> {
+  const fromQuery = req.nextUrl.searchParams.get('tenant');
+  const fromCookie = req.cookies.get(COOKIE)?.value;
+  const slug = fromQuery ?? fromCookie;
+
+  // A dark site's pages answer 503, like its robots.txt (issue 844). Asked
+  // here so the dev override is already in hand: on a local host the tenant
+  // is in the query string, not the hostname.
+  if (isCrawlablePath(req.nextUrl.pathname) && (await siteIsDark(host, slug ?? null))) {
+    return suspendedPage();
+  }
+  const propertyQuery = req.nextUrl.searchParams.get('property');
+  const propertyCookie = req.cookies.get(PROPERTY_COOKIE)?.value;
+  const propertySlug = propertyQuery ?? propertyCookie;
+
+  if (slug) requestHeaders.set('x-tenant-slug', slug);
+  if (propertySlug) requestHeaders.set('x-property-slug', propertySlug);
+
+  const lang = mirrorLanguage(req, requestHeaders);
+  const res = rememberLanguage(NextResponse.next({ request: { headers: requestHeaders } }), lang);
+  if (fromQuery && fromQuery !== fromCookie) {
+    res.cookies.set(COOKIE, fromQuery, { httpOnly: false, sameSite: 'lax', path: '/' });
+  }
+  if (propertyQuery && propertyQuery !== propertyCookie) {
+    res.cookies.set(PROPERTY_COOKIE, propertyQuery, {
+      httpOnly: false,
+      sameSite: 'lax',
+      path: '/',
+    });
+  }
+  return res;
+}
+
 export async function proxy(req: NextRequest) {
+  // A header-named call to an unknown server action gets Next's own 404 here; on a
+  // prerendered page Next's answer is a 500. See @wizeworks/app-kit/stale-form-action.
+  const unknownAction = unknownActionResponse(req, runningActionIds());
+  if (unknownAction) return unknownAction;
+
   // A hidden-file probe (`/.env`, `/.git/config`) answers 404 here, before any
   // lookup: no tenant page can live there, and the render it used to reach cost
   // about sixty queries per bot request. See lib/probe-path for what is NOT caught.
@@ -141,39 +185,7 @@ export async function proxy(req: NextRequest) {
 
   const host = publicHost(req);
 
-  // ── Local dev: honor the `?tenant=`/`?property=` site override ──────────────
-  if (isLocalDevHost(host)) {
-    const fromQuery = req.nextUrl.searchParams.get('tenant');
-    const fromCookie = req.cookies.get(COOKIE)?.value;
-    const slug = fromQuery ?? fromCookie;
-
-    // A dark site's pages answer 503, like its robots.txt (issue 844). Asked
-    // here so the dev override is already in hand: on a local host the tenant
-    // is in the query string, not the hostname.
-    if (isCrawlablePath(req.nextUrl.pathname) && (await siteIsDark(host, slug ?? null))) {
-      return suspendedPage();
-    }
-    const propertyQuery = req.nextUrl.searchParams.get('property');
-    const propertyCookie = req.cookies.get(PROPERTY_COOKIE)?.value;
-    const propertySlug = propertyQuery ?? propertyCookie;
-
-    if (slug) requestHeaders.set('x-tenant-slug', slug);
-    if (propertySlug) requestHeaders.set('x-property-slug', propertySlug);
-
-    const lang = mirrorLanguage(req, requestHeaders);
-    const res = rememberLanguage(NextResponse.next({ request: { headers: requestHeaders } }), lang);
-    if (fromQuery && fromQuery !== fromCookie) {
-      res.cookies.set(COOKIE, fromQuery, { httpOnly: false, sameSite: 'lax', path: '/' });
-    }
-    if (propertyQuery && propertyQuery !== propertyCookie) {
-      res.cookies.set(PROPERTY_COOKIE, propertyQuery, {
-        httpOnly: false,
-        sameSite: 'lax',
-        path: '/',
-      });
-    }
-    return res;
-  }
+  if (isLocalDevHost(host)) return localDevResponse(req, requestHeaders, host);
 
   // ── Production (any real host): never honor the dev override ────────────────
   // Strip the headers defensively (a client can't spoof site selection), and

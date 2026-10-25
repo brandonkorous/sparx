@@ -6,6 +6,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  // No `X-Powered-By: Next.js`: it tells a scanner which exploits to try.
+  poweredByHeader: false,
   transpilePackages: ['@wizeworks/silicaui-react', '@sparx/brand', '@wizeworks/app-kit'],
   typedRoutes: false,
   // WizeLens patches node:http and reads its own files: load it from node_modules, not a bundle.

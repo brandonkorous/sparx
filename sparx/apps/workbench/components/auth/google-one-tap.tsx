@@ -17,22 +17,8 @@
 // https://accounts.google.com (script + frame + connect). Until both are true
 // it silently no-ops, which is the correct degraded state.
 
-import { useEffect } from 'react';
-
-interface GoogleCredentialResponse {
-  credential: string;
-}
-
-interface GoogleIdApi {
-  initialize(config: {
-    client_id: string;
-    callback: (response: GoogleCredentialResponse) => void;
-    auto_select?: boolean;
-    cancel_on_tap_outside?: boolean;
-  }): void;
-  prompt(): void;
-  cancel(): void;
-}
+import { useEffect, useRef } from 'react';
+import { startOneTap, type GoogleIdApi } from './one-tap-session';
 
 declare global {
   interface Window {
@@ -41,6 +27,26 @@ declare global {
 }
 
 const GSI_SRC = 'https://accounts.google.com/gsi/client';
+const FAILED = 'Google sign-in did not complete. Use your email or the Google button instead.';
+
+/** POST Google's credential, then land on `callbackURL`; `onError` on failure. */
+async function completeSignIn(
+  idToken: string,
+  callbackURL: string,
+  onError: (message: string) => void
+): Promise<void> {
+  try {
+    const res = await fetch('/api/auth/one-tap/callback', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+    });
+    if (!res.ok) throw new Error('one-tap callback rejected');
+    window.location.href = callbackURL;
+  } catch {
+    onError(FAILED);
+  }
+}
 
 export function GoogleOneTap({
   clientId,
@@ -53,35 +59,22 @@ export function GoogleOneTap({
    *  Carries the MCP consent flow through One Tap. Defaults to '/'. */
   callbackURL?: string;
 }) {
+  // Held in refs so a parent re-render never re-runs the effect (and initialise).
+  const latest = useRef({ onError, callbackURL });
+  useEffect(() => {
+    latest.current = { onError, callbackURL };
+  }, [onError, callbackURL]);
+
   useEffect(() => {
     let cancelled = false;
 
-    async function completeSignIn(idToken: string) {
-      try {
-        const res = await fetch('/api/auth/one-tap/callback', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ idToken }),
-        });
-        if (!res.ok) throw new Error('one-tap callback rejected');
-        window.location.href = callbackURL;
-      } catch {
-        onError('Google sign-in did not complete. Use your email or the Google button instead.');
-      }
-    }
-
     function init() {
-      if (cancelled) return;
       const api = window.google?.accounts.id;
-      if (!api) return;
-      api.initialize({
-        client_id: clientId,
-        callback: (response) => {
-          void completeSignIn(response.credential);
-        },
-        cancel_on_tap_outside: false,
+      if (cancelled || !api) return;
+      startOneTap(api, clientId, (idToken) => {
+        const { callbackURL: to, onError: fail } = latest.current;
+        void completeSignIn(idToken, to, fail);
       });
-      api.prompt();
     }
 
     // Load the GSI library once, then initialise. If it's already present (a
@@ -108,7 +101,7 @@ export function GoogleOneTap({
       script.removeEventListener('load', init);
       window.google?.accounts.id.cancel();
     };
-  }, [clientId, onError, callbackURL]);
+  }, [clientId]);
 
   return null;
 }
