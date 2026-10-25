@@ -391,15 +391,17 @@ resource "random_password" "rocketease_auth_secret" {
 # hyphens — an underscore is rejected outright — so the release maps `_` to `-`
 # on read: DATABASE_URL in the container is DATABASE-URL here.
 #
-# sslmode=require: Flexible Server enforces TLS and neither the `postgres` driver
+# sslmode: Flexible Server enforces TLS and neither the `postgres` driver
 # (the app) nor `pg` (pg-boss) will negotiate it implicitly.
+# The app URL is verify-full: pg already treated `require` as verify-full and warned on every start.
+# The admin URL stays `require`: the role Job runs psql, which needs a CA file for verify-full.
 # ---------------------------------------------------------------------------
 locals {
   rocketease_server = var.rocketease_enabled ? azurerm_postgresql_flexible_server.rocketease[0].fqdn : ""
 
   rocketease_secrets = var.rocketease_enabled ? {
     "DATABASE-URL" = {
-      value = "postgresql://rocketease_app:${urlencode(random_password.rocketease_app[0].result)}@${local.rocketease_server}:5432/rocketease?sslmode=require"
+      value = "postgresql://rocketease_app:${urlencode(random_password.rocketease_app[0].result)}@${local.rocketease_server}:5432/rocketease?sslmode=verify-full"
       type  = "connection-string; the APPLICATION role. Rotate by tainting random_password.rocketease_app"
     }
     "DATABASE-ADMIN-URL" = {
