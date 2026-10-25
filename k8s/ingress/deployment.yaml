@@ -12,14 +12,16 @@ metadata:
     app: caddy
     tier: ingress
 spec:
-  replicas: 1
-  # RWO PVC for certificate storage — Recreate avoids two pods holding the
-  # volume. Multi-replica Caddy needs distributed cert storage
-  # (caddy-storage-redis); that is the change to make when this becomes the
-  # availability bottleneck, and it is tracked as such rather than pretended
-  # away: today a Caddy roll is a brief outage for every hostname.
+  # Two pods, so a crash, OOM or rollout never leaves every hostname with no ingress (SI-3).
+  # They share the RWO cert disk on ONE node; Caddy's file storage locks across instances.
+  # Node-level HA needs RWX or Redis cert storage; that is a separate change.
+  replicas: 2
+  # A new pod is Ready before an old one stops, so a roll is no longer an outage.
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: caddy
@@ -34,6 +36,14 @@ spec:
       # API. This used to name a GCP Workload Identity SA, which meant every
       # non-GCP overlay had to patch it back out.
       enableServiceLinks: false
+      # Same node as the other Caddy pods: the RWO disk attaches to one node only.
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: caddy
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: caddy
           # PINNED. `caddy:2-alpine` is a floating tag, and floating it is how a
@@ -96,6 +106,11 @@ spec:
             tcpSocket: { port: 80 }
             initialDelaySeconds: 5
             periodSeconds: 10
+          # Stay up while the endpoint leaves the load balancer, so a roll drops no request.
+          lifecycle:
+            preStop:
+              exec:
+                command: ['/bin/sh', '-c', 'sleep 5']
       volumes:
         - name: config
           configMap:

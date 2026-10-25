@@ -514,6 +514,10 @@ jobs:
       - name: Check every Next app builds and runs with one server-action key
         run: node scripts/check-next-actions-key.mjs
 
+      # kubectl ships on the hosted runner; `kustomize` here renders only, it talks to no cluster.
+      - name: Check the rendered Azure overlays keep their availability rules
+        run: node scripts/check-k8s-overlays.mjs
+
   terraform:
     name: Terraform fmt + validate
     runs-on: ubuntu-latest
