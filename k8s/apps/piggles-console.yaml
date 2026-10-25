@@ -132,7 +132,8 @@ spec:
           resources:
             requests:
               cpu: '25m'
-              memory: '256Mi'
+              # Measured 365 MB RSS (WizeLens, 2026-10-23); the request sits just above it (SI-5).
+              memory: '400Mi'
             limits:
               memory: '640Mi'
           # Static handler, never a rendered page. `/` on this app is the shell

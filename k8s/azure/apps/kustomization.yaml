@@ -143,7 +143,7 @@ replicas:
   - name: piggles-web
     count: 1
   - name: piggles-account
-    count: 1
+    count: 2
   - name: piggles-console
     count: 1
 
@@ -183,6 +183,7 @@ patches:
       $patch: delete
   - target:
       kind: PodDisruptionBudget
+      labelSelector: sparx.works/keep-pdb!=true
     patch: |-
       apiVersion: policy/v1
       kind: PodDisruptionBudget

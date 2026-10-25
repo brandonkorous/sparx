@@ -136,6 +136,7 @@ patches:
       $patch: delete
   - target:
       kind: PodDisruptionBudget
+      labelSelector: sparx.works/keep-pdb!=true
     patch: |-
       apiVersion: policy/v1
       kind: PodDisruptionBudget

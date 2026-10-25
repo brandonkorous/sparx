@@ -24,10 +24,28 @@ export function caddyProblems(infra) {
   ];
 }
 
+/** Memory request of a Deployment's first container, in Mi (0 when absent). */
+export function memoryRequestMi(doc) {
+  const m = /requests:\n(?:\s+cpu: \S+\n)?\s+memory: "?(\d+)(Mi|Gi)"?/.exec(doc);
+  if (!m) return 0;
+  return m[2] === 'Gi' ? Number(m[1]) * 1024 : Number(m[1]);
+}
+
+/** Piggles sign-in authority: two pods, a PDB that keeps one, requests at measured RSS. */
+export function pigglesProblems(apps) {
+  const account = findDoc(apps, 'Deployment', 'piggles-account');
+  const pdb = findDoc(apps, 'PodDisruptionBudget', 'piggles-account');
+  return [
+    ...rule(/^  replicas: ([2-9]|\d{2,})$/m.test(account), 'piggles-account must run at least 2 replicas'),
+    ...rule(/minAvailable: 1/.test(pdb), 'piggles-account needs a PDB with minAvailable 1 in the Azure overlay'),
+    ...rule(memoryRequestMi(account) >= 400, 'piggles-account must request at least 400Mi (measured 351 MB)'),
+    ...rule(memoryRequestMi(findDoc(apps, 'Deployment', 'piggles-console')) >= 400, 'piggles-console must request at least 400Mi (measured 365 MB)'),
+  ];
+}
+
 /** Every problem across both rendered overlays. */
 export function overlayProblems({ infra, apps }) {
-  void apps;
-  return [...caddyProblems(infra)];
+  return [...caddyProblems(infra), ...pigglesProblems(apps)];
 }
 
 function render(root, dir) {
