@@ -26,6 +26,11 @@ describe('isProbePath', () => {
     '/wp/.env',
     '/.claude/settings.json',
     '/%2Eenv',
+    // WW-2: a NUL went on to Postgres, a broken escape crashed the page.
+    '/%00production.json',
+    '/%00x.json',
+    '/a%1Fb',
+    '/%c0',
   ])('stops %s, which no tenant page can be', (path) => {
     expect(isProbePath(path)).toBe(true);
   });

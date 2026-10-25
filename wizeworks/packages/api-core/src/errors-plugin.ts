@@ -1,17 +1,12 @@
-// Single error-handling plugin. Every thrown error — ours, Fastify's,
-// Zod's, or anything unexpected — funnels through here and exits as the
-// `{ success: false, error: { code, message, details?, request_id } }`
-// envelope described in docs/06-api-specification.md §3.
-//
-// Service-specific error classes (e.g. CRM's CrmNotFoundError) are mapped
-// via the `extraMappers` option so api-core stays free of feature-specific
-// dependencies. api-rest passes its own mappers in; api-graphql doesn't
-// need any today.
+// Single error-handling plugin. Every thrown error exits as the
+// `{ success: false, error: { code, message, details?, request_id } }` envelope (docs/06 §3).
+// Service-specific error classes are mapped via `extraMappers`, so api-core stays feature-free.
 
 import type { FastifyError, FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import { ZodError } from 'zod';
 import { ApiError } from './errors.js';
+import { prismaErrorReply, RETRY_AFTER_SECONDS } from './prisma-errors.js';
 
 export interface ErrorEnvelope {
   success: false;
@@ -23,10 +18,7 @@ export interface ErrorEnvelope {
   };
 }
 
-// A mapper inspects the thrown error and either sends a reply (claiming the
-// error) or returns `undefined` so the next mapper can try. Mappers run
-// before the built-in handlers, so a service-specific class like
-// CrmConflictError can render with its own envelope shape.
+// A mapper sends a reply (claiming the error) or returns `undefined` so the next one can try.
 export type ErrorMapper = (
   err: unknown,
   request: FastifyRequest,
@@ -37,161 +29,107 @@ export interface ErrorsPluginOptions {
   extraMappers?: ErrorMapper[];
 }
 
+function envelope(request: FastifyRequest, code: string, message: string, details?: unknown) {
+  return {
+    success: false,
+    error: { code, message, ...(details !== undefined ? { details } : {}), request_id: request.id },
+  } satisfies ErrorEnvelope;
+}
+
+const apiErrorMapper: ErrorMapper = (err, request, reply) => {
+  if (!(err instanceof ApiError)) return undefined;
+  return reply.code(err.statusCode).send(envelope(request, err.code, err.message, err.details));
+};
+
+// `field` aliases `path`: dashboard forms match a server error back to a field by it.
+const zodMapper: ErrorMapper = (err, request, reply) => {
+  if (!(err instanceof ZodError)) return undefined;
+  const details = err.issues.map((i) => ({
+    path: i.path.join('.'),
+    field: i.path.join('.'),
+    message: i.message,
+    code: i.code,
+  }));
+  return reply
+    .code(422)
+    .send(envelope(request, 'VALIDATION_ERROR', 'Request validation failed.', details));
+};
+
+// Fastify's own schema validation: same VALIDATION_ERROR shape, kept at 400.
+const fastifyValidationMapper: ErrorMapper = (err, request, reply) => {
+  const e = err as FastifyError;
+  if (e.statusCode !== 400 || !Array.isArray(e.validation)) return undefined;
+  return reply.code(400).send(envelope(request, 'VALIDATION_ERROR', e.message, e.validation));
+};
+
+// A 401 keeps an attached code (INVALID_PREVIEW_TOKEN); Fastify's FST_* codes stay internal.
+const unauthorizedMapper: ErrorMapper = (err, request, reply) => {
+  const e = err as FastifyError;
+  if (e.statusCode !== 401) return undefined;
+  const code = typeof e.code === 'string' && !e.code.startsWith('FST_') ? e.code : 'UNAUTHORIZED';
+  return reply.code(401).send(envelope(request, code, e.message || 'Authentication required.'));
+};
+
+const rateLimitMapper: ErrorMapper = (err, request, reply) => {
+  const e = err as FastifyError;
+  if (e.statusCode !== 429) return undefined;
+  return reply.code(429).send(envelope(request, 'RATE_LIMITED', e.message || 'Too many requests.'));
+};
+
+// Fastify framework 4xx (bad JSON body, payload too large): its message is safe to show.
+const fastifyClientErrorMapper: ErrorMapper = (err, request, reply) => {
+  const e = err as FastifyError;
+  const status = e.statusCode;
+  if (typeof e.code !== 'string' || !e.code.startsWith('FST_ERR_')) return undefined;
+  if (typeof status !== 'number' || status < 400 || status >= 500) return undefined;
+  return reply.code(status).send(envelope(request, 'BAD_REQUEST', e.message));
+};
+
+// Pool exhaustion is a 503 the caller can retry; a NUL byte is the caller's 400 (WW-1, WW-2).
+const prismaMapper: ErrorMapper = (err, request, reply) => {
+  const mapped = prismaErrorReply(err);
+  if (!mapped) return undefined;
+  if (mapped.status === 503) {
+    request.log.warn({ err }, 'database unavailable');
+    reply.header('retry-after', String(RETRY_AFTER_SECONDS));
+  }
+  return reply.code(mapped.status).send(envelope(request, mapped.code, mapped.message));
+};
+
+const BUILTIN_MAPPERS: ErrorMapper[] = [
+  apiErrorMapper,
+  zodMapper,
+  fastifyValidationMapper,
+  unauthorizedMapper,
+  rateLimitMapper,
+  fastifyClientErrorMapper,
+  prismaMapper,
+];
+
+function sendNotFound(request: FastifyRequest, reply: FastifyReply) {
+  const message = `Route ${request.method} ${request.url} not found.`;
+  return reply.code(404).send(envelope(request, 'NOT_FOUND', message));
+}
+
 export function createErrorsPlugin(options: ErrorsPluginOptions = {}): FastifyPluginAsync {
-  const extraMappers = options.extraMappers ?? [];
+  const mappers = [...(options.extraMappers ?? []), ...BUILTIN_MAPPERS];
 
   const errorsPlugin: FastifyPluginAsync = (app) => {
     app.setErrorHandler((err: FastifyError, request, reply) => {
-      const requestId = request.id;
-
-      // Service-supplied mappers run first so they can catch their own
-      // domain errors before the generic fallthroughs.
-      for (const mapper of extraMappers) {
+      for (const mapper of mappers) {
         const handled = mapper(err, request, reply);
         if (handled) return handled;
       }
-
-      if (err instanceof ApiError) {
-        const body: ErrorEnvelope = {
-          success: false,
-          error: {
-            code: err.code,
-            message: err.message,
-            ...(err.details !== undefined ? { details: err.details } : {}),
-            request_id: requestId,
-          },
-        };
-        return reply.code(err.statusCode).send(body);
-      }
-
-      if (err instanceof ZodError) {
-        const body: ErrorEnvelope = {
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Request validation failed.',
-            // `field` is an alias of `path` — dashboard forms match a server
-            // validation error back to a specific field via `d.field in
-            // values` (19 call sites), but only `path` was ever emitted here,
-            // so every one of them silently fell through to the generic
-            // top-level message instead of an inline per-field error.
-            details: err.issues.map((i) => ({
-              path: i.path.join('.'),
-              field: i.path.join('.'),
-              message: i.message,
-              code: i.code,
-            })),
-            request_id: requestId,
-          },
-        };
-        return reply.code(422).send(body);
-      }
-
-      // Fastify's built-in schema validation surfaces as a FastifyError with
-      // `validation` and statusCode 400 — map it to the same VALIDATION_ERROR
-      // shape so callers don't have to special-case it.
-      if (err.statusCode === 400 && Array.isArray(err.validation)) {
-        const body: ErrorEnvelope = {
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: err.message,
-            details: err.validation,
-            request_id: requestId,
-          },
-        };
-        return reply.code(400).send(body);
-      }
-
-      if (err.statusCode === 401) {
-        // Preserve an explicitly-attached code instead of flattening every 401
-        // to UNAUTHORIZED. `lib/preview.ts` sets `INVALID_PREVIEW_TOKEN` at five
-        // call sites to tell a caller their preview link is revoked or expired
-        // rather than that they are logged out — two different problems with two
-        // different fixes. Blanket-mapping discarded that at the door, so the
-        // distinction existed in the thrower and nowhere else.
-        //
-        // `FST_*` codes are Fastify's own (FST_JWT_NO_AUTHORIZATION_IN_HEADER
-        // and friends) and are deliberately NOT surfaced — they are internal
-        // vocabulary, and leaking them would make the framework part of our
-        // public contract.
-        const attached =
-          typeof err.code === 'string' && !err.code.startsWith('FST_') ? err.code : 'UNAUTHORIZED';
-        return reply.code(401).send({
-          success: false,
-          error: {
-            code: attached,
-            message: err.message || 'Authentication required.',
-            request_id: requestId,
-          },
-        } satisfies ErrorEnvelope);
-      }
-
-      if (err.statusCode === 429) {
-        return reply.code(429).send({
-          success: false,
-          error: {
-            code: 'RATE_LIMITED',
-            message: err.message || 'Too many requests.',
-            request_id: requestId,
-          },
-        } satisfies ErrorEnvelope);
-      }
-
-      // Fastify's own framework-level errors (malformed/empty JSON body,
-      // unsupported media type, payload too large, ...) carry a stable
-      // `FST_ERR_*` code and an accurate 4xx statusCode but no `.validation`
-      // array, so they fell through to the generic 500 branch below —
-      // turning a client bug (e.g. a `content-type: application/json` POST
-      // with no body) into a misleading "internal error" with no actionable
-      // cause. These messages are framework-authored and always safe to
-      // expose (never internal details), unlike an arbitrary thrown error.
-      if (
-        typeof err.code === 'string' &&
-        err.code.startsWith('FST_ERR_') &&
-        typeof err.statusCode === 'number' &&
-        err.statusCode >= 400 &&
-        err.statusCode < 500
-      ) {
-        return reply.code(err.statusCode).send({
-          success: false,
-          error: {
-            code: 'BAD_REQUEST',
-            message: err.message,
-            request_id: requestId,
-          },
-        } satisfies ErrorEnvelope);
-      }
-
-      // Anything else is a bug. Log the full error server-side; return a
-      // generic message client-side. The request_id lets us look it up.
+      // Anything else is a bug: log it in full, answer generically; request_id finds it.
       request.log.error({ err }, 'unhandled error');
-      return reply.code(500).send({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'An internal error occurred.',
-          request_id: requestId,
-        },
-      } satisfies ErrorEnvelope);
+      return reply
+        .code(500)
+        .send(envelope(request, 'INTERNAL_ERROR', 'An internal error occurred.'));
     });
-
-    app.setNotFoundHandler((request, reply) => {
-      reply.code(404).send({
-        success: false,
-        error: {
-          code: 'NOT_FOUND',
-          message: `Route ${request.method} ${request.url} not found.`,
-          request_id: request.id,
-        },
-      } satisfies ErrorEnvelope);
-    });
+    app.setNotFoundHandler(sendNotFound);
     return Promise.resolve();
   };
 
-  // Wrap with fastify-plugin so setErrorHandler + setNotFoundHandler apply to
-  // the parent (root) scope rather than only the encapsulated child scope.
-  // Without this, errors thrown from sibling plugins fall through to
-  // Fastify's default error response shape and bypass our envelope.
+  // fastify-plugin makes the handlers apply to the root scope, not only this child scope.
   return fp(errorsPlugin, { name: 'envelope-errors' });
 }

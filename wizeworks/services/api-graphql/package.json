@@ -15,7 +15,7 @@
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {
-    "@fastify/jwt": "^9.0.4",
+    "@fastify/jwt": "^10.2.5",
     "@google-cloud/pubsub": "^5.3.0",
     "@prisma/client": "^6.19.3",
     "@wizeworks/api-core": "workspace:*",
@@ -28,10 +28,10 @@
     "@wizeworks/db": "workspace:*",
     "@wizeworks/events": "workspace:*",
     "@wizeworks/lens-node": "0.3.0-alpha.11",
-    "fastify": "^5.6.1",
+    "fastify": "^5.12.5",
     "fastify-plugin": "^5.0.1",
     "mercurius": "^16.0.0",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
@@ -39,6 +39,6 @@
     "pino-pretty": "^13.0.0",
     "tsx": "^4.19.2",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.12"
   }
 }

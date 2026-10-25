@@ -30,7 +30,7 @@
   "dependencies": {
     "@wizeworks/events": "workspace:*",
     "@wizeworks/operator": "workspace:*",
-    "better-auth": "^1.6.11",
+    "better-auth": "~1.6.33",
     "pg": "^8.13.1"
   },
   "peerDependencies": {
@@ -39,8 +39,8 @@
   "devDependencies": {
     "@types/node": "^25.9.1",
     "@types/pg": "^8.11.10",
-    "next": "^16.2.6",
+    "next": "^16.4.1",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.12"
   }
 }

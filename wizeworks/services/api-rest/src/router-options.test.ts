@@ -26,8 +26,9 @@ async function statusFor(handle: string, options?: typeof ROUTER_OPTIONS): Promi
 }
 
 describe('a long address part', () => {
+  // fastify 5.12 answers 414 here where 5.8 answered 404; either way the page never opens.
   it('is refused by the router as it comes, which is the defect', async () => {
-    expect(await statusFor(TANK)).toBe(404);
+    expect([404, 414]).toContain(await statusFor(TANK));
   });
 
   it('reaches its route with the API’s options', async () => {

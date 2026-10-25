@@ -35,3 +35,19 @@ export async function listInvoicingActiveTenants(): Promise<{ id: string }[]> {
     select: { id: true },
   });
 }
+
+/** Tenants with an SLA mark or a signing link due by `now`, in one cross-tenant scan (WW-9). */
+export async function listTenantsWithDueSlaWork(now: Date = new Date()): Promise<Set<string>> {
+  const rows = await prisma.$queryRaw<{ tenant_id: string }[]>`
+    SELECT tenant_id FROM find_tenants_with_due_crm_sweep(${now})
+  `;
+  return new Set(rows.map((r) => r.tenant_id));
+}
+
+/** Tenants with a mailbox the sync polls, in one cross-tenant scan (WW-9). */
+export async function listTenantsWithSyncableMailboxes(): Promise<Set<string>> {
+  const rows = await prisma.$queryRaw<{ tenant_id: string }[]>`
+    SELECT tenant_id FROM find_tenants_with_syncable_mailboxes()
+  `;
+  return new Set(rows.map((r) => r.tenant_id));
+}

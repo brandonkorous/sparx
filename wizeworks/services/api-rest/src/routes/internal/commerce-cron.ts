@@ -33,6 +33,7 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { commerceSchedulers } from '@wizeworks/commerce';
 
 import { env } from '../../env.js';
+import { listTenantsWithOpenPayments } from '../../lib/payment-due-tenants.js';
 import { sweepStrandedCheckoutPayments } from '../../lib/payment-webhook-reconcile.js';
 
 const CRON_TOKEN_HEADER = 'x-sparx-internal-cron-token';
@@ -60,10 +61,13 @@ interface TenantOutcome {
   result?: unknown;
 }
 
+/** Runs `run` per active tenant, one at a time; `only` skips tenants with nothing due (WW-9). */
 async function forEachActiveTenant<T>(
-  run: (tenantId: string) => Promise<T>
-): Promise<{ tenants: number; outcomes: TenantOutcome[] }> {
-  const tenants = await commerceSchedulers.listCommerceActiveTenants();
+  run: (tenantId: string) => Promise<T>,
+  only?: ReadonlySet<string>
+): Promise<{ tenants: number; skipped: number; outcomes: TenantOutcome[] }> {
+  const active = await commerceSchedulers.listCommerceActiveTenants();
+  const tenants = only ? active.filter((t) => only.has(t.id)) : active;
   const outcomes: TenantOutcome[] = [];
   for (const t of tenants) {
     try {
@@ -77,7 +81,7 @@ async function forEachActiveTenant<T>(
       });
     }
   }
-  return { tenants: tenants.length, outcomes };
+  return { tenants: tenants.length, skipped: active.length - tenants.length, outcomes };
 }
 
 /** Parse `?days=` into a positive integer window override, or undefined to use
@@ -108,8 +112,11 @@ function parseIsoDate(raw: unknown): string | undefined {
 const commerceCronRoutes: FastifyPluginAsync = (app) => {
   app.post('/internal/commerce/reservation-reaper', async (request) => {
     authorize(request);
-    const summary = await forEachActiveTenant((tenantId) =>
-      commerceSchedulers.reapExpiredReservations({ tenantId })
+    // Only tenants holding an expired reservation; the rest cost nothing (WW-9).
+    const due = await commerceSchedulers.listTenantsWithDueReservations();
+    const summary = await forEachActiveTenant(
+      (tenantId) => commerceSchedulers.reapExpiredReservations({ tenantId }),
+      due
     );
     return { success: true, data: summary };
   });
@@ -138,8 +145,11 @@ const commerceCronRoutes: FastifyPluginAsync = (app) => {
 
   app.post('/internal/commerce/payment-reconcile-sweep', async (request) => {
     authorize(request);
-    const summary = await forEachActiveTenant((tenantId) =>
-      sweepStrandedCheckoutPayments(request.log, tenantId)
+    // Only tenants with a payment still open past the cutoff (WW-9).
+    const due = await listTenantsWithOpenPayments();
+    const summary = await forEachActiveTenant(
+      (tenantId) => sweepStrandedCheckoutPayments(request.log, tenantId),
+      due
     );
     return { success: true, data: summary };
   });

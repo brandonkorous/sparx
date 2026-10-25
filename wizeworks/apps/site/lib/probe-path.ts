@@ -7,7 +7,7 @@
 // 540 queries for 26 of them in one week, and the `/.env` family is asked for
 // thousands of times.
 //
-// ── WHY ONLY DOT SEGMENTS ──────────────────────────────────────────────────
+// ── WHY ONLY DOT SEGMENTS (AND BYTES NO SLUG HAS) ─────────────────────────
 //
 // A segment that starts with a dot is a hidden file. No page, product, post or
 // category slug can start with one, so nothing a tenant built is ever behind it.
@@ -25,14 +25,25 @@
 
 const WELL_KNOWN = '.well-known';
 
-/** Is this a hidden-file path that no tenant page can answer? */
+// A control character (`%00`, `%1F`) or a broken escape (`%c0`) is never in a slug either;
+// before WW-2 a NUL rode on to Postgres and a broken escape crashed the page, both as 500s.
+function hasControlChar(text: string): boolean {
+  for (let i = 0; i < text.length; i++) {
+    const code = text.charCodeAt(i);
+    if (code < 0x20 || code === 0x7f) return true;
+  }
+  return false;
+}
+
+/** Is this a path that no tenant page can answer? */
 export function isProbePath(pathname: string): boolean {
-  let decoded = pathname;
+  let decoded: string;
   try {
     decoded = decodeURIComponent(pathname);
   } catch {
-    // A malformed escape is a probe's habit, not a shopper's; judge it as sent.
+    return true;
   }
+  if (hasControlChar(decoded)) return true;
   return decoded.split('/').some((segment) => segment.startsWith('.') && segment !== WELL_KNOWN);
 }
 

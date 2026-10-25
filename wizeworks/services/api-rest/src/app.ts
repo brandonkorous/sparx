@@ -74,6 +74,8 @@ import { createErrorsPlugin, type ErrorEnvelope } from '@wizeworks/api-core/erro
 import { env } from './env.js';
 import openapiPlugin from './plugins/openapi.js';
 import rateLimitPlugin from './plugins/rate-limit.js';
+import nulGuardPlugin from './plugins/nul-guard.js';
+import responseHeadersPlugin from './plugins/response-headers.js';
 import healthRoutes from './routes/health.js';
 import domainCheckRoutes from './routes/internal/domain-check.js';
 import crmCronRoutes from './routes/internal/crm-cron.js';
@@ -922,6 +924,8 @@ export async function createApp(): Promise<FastifyInstance> {
       ],
     })
   );
+  // A NUL byte in the query or params is the caller's 400, before Prisma sees it (WW-2).
+  await app.register(nulGuardPlugin);
   await app.register(openapiPlugin);
   await app.register(rateLimitPlugin);
   // Every tenant/custom domain (and api.sparx.works itself) is a distinct
@@ -971,11 +975,8 @@ export async function createApp(): Promise<FastifyInstance> {
     })
   );
 
-  // Surface request_id on every response (success or failure) so callers
-  // logging a 5xx have something to send back to support.
-  app.addHook('onSend', async (request, reply) => {
-    reply.header('x-request-id', request.id);
-  });
+  // request_id and nosniff on every response, success or failure (WW-12).
+  await app.register(responseHeadersPlugin);
 
   await app.register(healthRoutes);
   await app.register(domainCheckRoutes);

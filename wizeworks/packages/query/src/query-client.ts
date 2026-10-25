@@ -1,6 +1,8 @@
 import { QueryClient, environmentManager, type QueryClientConfig } from '@tanstack/react-query';
 
-import { keepFailedReadsMoving, mightSucceedLater } from './recovery';
+import { ApiBreaker, watchApiHealth } from './api-breaker';
+import { keepFailedReadsMoving } from './recovery';
+import { mightSucceedLater } from './retry-policy';
 
 // Default cache behaviour for every sparx QueryClient.
 //
@@ -56,7 +58,20 @@ export const DEFAULT_QUERY_OPTIONS: QueryClientConfig = {
  * probe would outlive the request.
  */
 export function makeQueryClient(): QueryClient {
-  const client = new QueryClient(DEFAULT_QUERY_OPTIONS);
-  if (!environmentManager.isServer()) keepFailedReadsMoving(client);
+  if (environmentManager.isServer()) return new QueryClient(DEFAULT_QUERY_OPTIONS);
+  const breaker = new ApiBreaker();
+  const client = new QueryClient(withBreaker(breaker));
+  watchApiHealth(client, breaker);
+  keepFailedReadsMoving(client, breaker);
   return client;
+}
+
+/** The defaults, except no default retry while the API is known to be down: the one probe asks (PG-7). */
+function withBreaker(breaker: ApiBreaker): QueryClientConfig {
+  const queries = DEFAULT_QUERY_OPTIONS.defaultOptions?.queries;
+  const retry = (failureCount: number, error: unknown) =>
+    !breaker.isOpen() && retryWorthMaking(failureCount, error);
+  return {
+    defaultOptions: { ...DEFAULT_QUERY_OPTIONS.defaultOptions, queries: { ...queries, retry } },
+  };
 }
