@@ -29,7 +29,7 @@ metadata:
     app: commerce-cron
     job: subscription-tick
 spec:
-  schedule: '*/15 * * * *'
+  schedule: '10-59/15 * * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

@@ -23,8 +23,8 @@
 # is correct and skipping is not. `renewalRemindersSent` records which
 # thresholds have fired per domain, so a late or repeated run cannot double-send.
 #
-# 04:20 UTC sits between crm-overdue-reminders (04:00) and crm-segment-recompute
-# (05:00), off the top of the hour where every other scheduler bunches — the same
+# 04:20 UTC sits between crm-overdue-reminders (04:09) and crm-segment-recompute
+# (05:12), off the top of the hour where every other scheduler bunches — the same
 # reasoning as automation-reconcile-seeds at 02:07.
 #
 # Auth is the shared cron token, matching automation-tick and

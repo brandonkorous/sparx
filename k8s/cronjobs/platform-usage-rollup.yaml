@@ -7,8 +7,8 @@
 # is a night that is gone, which is why it is scheduled early, retried, and
 # reports partial results rather than failing silently.
 #
-# Runs at 05:00 UTC — BEFORE the reporting rollups (commerce 06:00, invoicing
-# 06:30, dropship 07:00, automations 08:00). Those recompute yesterday from data
+# Runs at 05:21 UTC — BEFORE the reporting rollups (commerce 06:14, invoicing
+# 06:30, dropship 07:18, automations 08:16). Those recompute yesterday from data
 # that is already closed and can catch up whenever they like; this one takes a
 # point-in-time reading of storage and seat counts, so the earlier in the quiet
 # window it lands, the closer it is to a clean day boundary.
@@ -25,7 +25,7 @@ metadata:
     app: platform-cron
     job: usage-rollup
 spec:
-  schedule: '0 5 * * *'
+  schedule: '21 5 * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

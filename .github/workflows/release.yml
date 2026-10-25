@@ -685,6 +685,8 @@ jobs:
                   KEY_VAULT_NAME: ${{ vars.AZURE_KEY_VAULT_NAME }}
                   APP_SECRETS: ${{ secrets.SPARX_APP_SECRETS_ENV }}
                   TYPESENSE_API_KEY: ${{ secrets.TYPESENSE_API_KEY }}
+                  # "true" routes sparx_app through PgBouncer (SI-1). Unset = direct, as before.
+                  PGBOUNCER_ENABLED: ${{ vars.PGBOUNCER_ENABLED }}
                   # For `terraform output` below — the media storage credentials are read
                   # back out of the state this job just applied.
                   ARM_USE_OIDC: "true"
@@ -918,6 +920,9 @@ jobs:
                   # cannot subscribe. Same posture as the media-storage pair above — a silent
                   # fallback is exactly what this stage exists to refuse, so fail the release.
                   node scripts/check-billing-plans.mjs --secrets /tmp/app.env.plain
+
+                  # PgBouncer config from DATABASE_URL; the URL moves to it only when PGBOUNCER_ENABLED=true (SI-1).
+                  bash .github/scripts/pgbouncer-sync.sh /tmp/app.env.plain
 
                   # Did the app's SECRETS actually change? The containers stage decides whether
                   # to roll by diffing runtime PATHS (apps/ services/ packages/ k8s/), which is

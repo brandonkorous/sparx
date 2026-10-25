@@ -15,7 +15,7 @@ metadata:
     app: crm-cron
     job: segment-recompute
 spec:
-  schedule: '0 5 * * *' # 05:00 UTC daily
+  schedule: '12 5 * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

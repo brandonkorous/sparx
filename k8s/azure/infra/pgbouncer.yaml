@@ -1,0 +1,84 @@
+# PgBouncer in front of psql-sparx-prod-cus (SI-1). Azure copy of k8s/pgbouncer (same image, no Cloud SQL LB).
+# Config is the `pgbouncer-config` Secret the release writes from DATABASE_URL (scripts/pgbouncer-config.mjs).
+# Apps use it only when the PGBOUNCER_ENABLED repo variable is "true"; until then it holds no server connections.
+# Only sparx_app goes through it: the owner and operator roles stay direct (migrations, psql, search_path).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgbouncer
+  namespace: sparx-prod
+  labels:
+    app: pgbouncer
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
+  selector:
+    matchLabels:
+      app: pgbouncer
+  template:
+    metadata:
+      labels:
+        app: pgbouncer
+    spec:
+      enableServiceLinks: false
+      # Group 70 (postgres) reads the 0440 config files.
+      securityContext:
+        fsGroup: 70
+      # One pod per node, so a node drain never takes the pooler away.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: pgbouncer
+      containers:
+        - name: pgbouncer
+          image: edoburu/pgbouncer:v1.25.1-p0
+          ports:
+            - name: pgbouncer
+              containerPort: 5432
+          volumeMounts:
+            - name: config
+              mountPath: /etc/pgbouncer
+              readOnly: true
+          resources:
+            requests: { cpu: '25m', memory: '32Mi' }
+            limits: { memory: '128Mi' }
+          livenessProbe:
+            tcpSocket: { port: 5432 }
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            tcpSocket: { port: 5432 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 70
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ['ALL'] }
+            seccompProfile: { type: RuntimeDefault }
+      volumes:
+        - name: config
+          secret:
+            secretName: pgbouncer-config
+            defaultMode: 0440
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgbouncer
+  namespace: sparx-prod
+  labels:
+    app: pgbouncer
+spec:
+  type: ClusterIP
+  ports:
+    - name: pgbouncer
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: pgbouncer

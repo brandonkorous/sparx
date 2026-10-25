@@ -26,7 +26,7 @@ metadata:
     app: crm-cron
     job: sla-sweep
 spec:
-  schedule: '*/5 * * * *'
+  schedule: '4-59/5 * * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

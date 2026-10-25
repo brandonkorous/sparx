@@ -5,8 +5,8 @@
 # rows instead of expanding line-item JSON and joining order_items ↔ variants on
 # the hot path.
 #
-# Runs nightly at 07:00 UTC — after the day has fully closed and after the
-# commerce revenue (06:00) and invoicing collected (06:30) rollups, so the
+# Runs nightly at 07:18 UTC — after the day has fully closed and after the
+# commerce revenue (06:14) and invoicing collected (06:30) rollups, so the
 # nightly reconciles don't pile onto the DB at once. The work is a single
 # GROUP-BY-day pass over the trailing window per tenant, but Forbid concurrency
 # so a slow run never overlaps the next. The read endpoint live-overlays today,
@@ -22,7 +22,7 @@ metadata:
     app: dropship-cron
     job: orders-rollup
 spec:
-  schedule: '0 7 * * *'
+  schedule: '18 7 * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

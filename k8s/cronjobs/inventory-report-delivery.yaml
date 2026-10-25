@@ -42,7 +42,7 @@ metadata:
     app: inventory-report-cron
     job: report-delivery
 spec:
-  schedule: '5 * * * *'
+  schedule: '17 * * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

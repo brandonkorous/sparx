@@ -493,6 +493,24 @@ jobs:
       - name: Lint workflow heredocs
         run: bash .github/scripts/lint-workflow-heredocs.sh
 
+  infra:
+    name: Infra checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Pure Node checks over k8s/ and the release; no install.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Unit tests for the infra scripts
+        run: node --test scripts/*.test.mjs
+
+      - name: Check every Postgres pool fits the server
+        run: node scripts/check-db-budget.mjs
+
   terraform:
     name: Terraform fmt + validate
     runs-on: ubuntu-latest

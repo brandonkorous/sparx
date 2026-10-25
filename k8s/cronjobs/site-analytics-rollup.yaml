@@ -4,8 +4,8 @@
 # tenant that has captured ≥1 event, so the Builder overview's traffic chart
 # reads pre-aggregated rows instead of scanning the raw events on the hot path.
 #
-# Runs nightly at 09:00 UTC — after the day has fully closed and after the
-# commerce (06:00), invoicing (06:30), dropship (07:00) and automation (08:00)
+# Runs nightly at 09:13 UTC — after the day has fully closed and after the
+# commerce (06:14), invoicing (06:30), dropship (07:18) and automation (08:16)
 # rollups, so the nightly reconciles don't pile onto the DB at once. The read
 # endpoint live-overlays today + cold-starts from the raw events, so a late or
 # skipped run only delays correcting closed days, never the live figure. Forbid
@@ -20,7 +20,7 @@ metadata:
     app: site-analytics-cron
     job: analytics-rollup
 spec:
-  schedule: '0 9 * * *'
+  schedule: '13 9 * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3
