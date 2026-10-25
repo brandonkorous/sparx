@@ -25,6 +25,14 @@ const config = {
     loader: 'custom',
     loaderFile: './lib/image-loader.ts',
   },
+  // Metadata blocks the response for every visitor, not only crawlers, so a slug nothing owns
+  // answers a real 404 instead of a streamed 200 shell (WW-8).
+  htmlLimitedBots: /.*/,
+  // Caddy adds nosniff at the edge; the app sends it too for in-cluster callers (WW-12).
+  headers: () =>
+    Promise.resolve([
+      { source: '/:path*', headers: [{ key: 'X-Content-Type-Options', value: 'nosniff' }] },
+    ]),
 };
 
 export default config;

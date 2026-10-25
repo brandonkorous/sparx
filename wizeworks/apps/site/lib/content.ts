@@ -10,6 +10,7 @@ import { headers } from 'next/headers';
 import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
 
 import { resolveActivePropertySlug } from './site-context';
+import { readSlugOrNull } from './slug-miss';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
@@ -192,35 +193,18 @@ export async function getPageBySlug(
   slug: string,
   options: { previewToken?: string } = {}
 ): Promise<ApiEntry<PageBody> | null> {
-  const fetchOnce = (withPreview: boolean) =>
-    publicGet<ApiEntry<PageBody>>(
-      '/v1/public/content/entries/by-slug',
-      { tenant: tenantSlug, type: 'page', slug },
-      {
-        ...(withPreview && options.previewToken ? { previewToken: options.previewToken } : {}),
-        tag: `entry:${tenantSlug}:page:${slug}`,
-      }
-    );
-
-  try {
-    return await fetchOnce(true);
-  } catch (err) {
-    const code = (err as { code?: string }).code;
-    if (code === 'NOT_FOUND') return null;
-    // Expired / revoked / wrong-tenant preview tokens — fall back to the
-    // published-only path so the user still sees the live page rather than
-    // an opaque server error.
-    if (code === 'UNAUTHORIZED' && options.previewToken) {
-      try {
-        return await fetchOnce(false);
-      } catch (innerErr) {
-        const innerCode = (innerErr as { code?: string }).code;
-        if (innerCode === 'NOT_FOUND') return null;
-        throw innerErr;
-      }
-    }
-    throw err;
-  }
+  return readSlugOrNull(
+    (withPreview) =>
+      publicGet<ApiEntry<PageBody>>(
+        '/v1/public/content/entries/by-slug',
+        { tenant: tenantSlug, type: 'page', slug },
+        {
+          ...(withPreview && options.previewToken ? { previewToken: options.previewToken } : {}),
+          tag: `entry:${tenantSlug}:page:${slug}`,
+        }
+      ),
+    options.previewToken
+  );
 }
 
 // A blog_post entry's body field map — the `blog_post` content type's fields
@@ -243,30 +227,16 @@ export async function getBlogPostBySlug(
   slug: string,
   options: { previewToken?: string } = {}
 ): Promise<ApiEntry<BlogPostBody> | null> {
-  const fetchOnce = (withPreview: boolean) =>
-    publicGet<ApiEntry<BlogPostBody>>(
-      '/v1/public/content/entries/by-slug',
-      { tenant: tenantSlug, type: 'blog_post', slug },
-      {
-        ...(withPreview && options.previewToken ? { previewToken: options.previewToken } : {}),
-        tag: `entry:${tenantSlug}:blog_post:${slug}`,
-      }
-    );
-
-  try {
-    return await fetchOnce(true);
-  } catch (err) {
-    const code = (err as { code?: string }).code;
-    if (code === 'NOT_FOUND') return null;
-    if (code === 'UNAUTHORIZED' && options.previewToken) {
-      try {
-        return await fetchOnce(false);
-      } catch (innerErr) {
-        const innerCode = (innerErr as { code?: string }).code;
-        if (innerCode === 'NOT_FOUND') return null;
-        throw innerErr;
-      }
-    }
-    throw err;
-  }
+  return readSlugOrNull(
+    (withPreview) =>
+      publicGet<ApiEntry<BlogPostBody>>(
+        '/v1/public/content/entries/by-slug',
+        { tenant: tenantSlug, type: 'blog_post', slug },
+        {
+          ...(withPreview && options.previewToken ? { previewToken: options.previewToken } : {}),
+          tag: `entry:${tenantSlug}:blog_post:${slug}`,
+        }
+      ),
+    options.previewToken
+  );
 }

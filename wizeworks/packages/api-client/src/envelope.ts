@@ -29,13 +29,23 @@ export class ApiError extends Error {
   public readonly code: string;
   public readonly requestId: string;
   public readonly details: unknown;
+  /** The server's Retry-After in seconds, when it sent one (a 503 or 429). */
+  public readonly retryAfterSeconds: number | undefined;
 
-  constructor(status: number, body: EnvelopeError) {
+  constructor(status: number, body: EnvelopeError, retryAfterSeconds?: number) {
     super(body.error.message);
     this.name = 'ApiError';
     this.status = status;
     this.code = body.error.code;
     this.requestId = body.error.request_id;
     this.details = body.error.details;
+    this.retryAfterSeconds = retryAfterSeconds;
   }
+}
+
+/** Retry-After as whole seconds; only the delta-seconds form api-rest sends is read. */
+export function retryAfterSeconds(headers: Headers): number | undefined {
+  const raw = headers.get('retry-after');
+  const seconds = raw === null ? NaN : Number(raw);
+  return Number.isFinite(seconds) && seconds > 0 ? seconds : undefined;
 }

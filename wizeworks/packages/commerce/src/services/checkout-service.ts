@@ -783,6 +783,13 @@ export async function resolvePaymentMode(
       select: { gatewayId: true, isActive: true },
     })
   );
+  return paymentModeOf(config);
+}
+
+/** The payment mode a tenant's payment config row means; for callers that already read it. */
+export function paymentModeOf(
+  config: { gatewayId: string; isActive: boolean } | null
+): 'card' | 'in_person' | 'unavailable' {
   if (!config) return 'unavailable';
   if (config.gatewayId === MANUAL_GATEWAY_ID) return 'in_person';
   // Chosen but not collecting is not the same as chosen: a gateway with its keys

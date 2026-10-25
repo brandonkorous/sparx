@@ -13,11 +13,17 @@
 // checked by walking them as a customer, which is the right test for a surface and
 // the wrong one for a lookup table.
 
+import { fileURLToPath } from 'node:url';
+
 // A PLAIN OBJECT, not `defineConfig` — the helper resolves only once vitest is
 // linked into this workspace, so a config using it cannot load on a checkout where
 // `pnpm install` has not run and the failure is an unresolved-import stack rather
 // than "run install". A literal config loads either way.
 export default {
+  // The app's own `@/` import alias, so a route module can be loaded in a test.
+  // tsconfig keeps JSX for Next (`preserve`); a test that loads a .tsx route needs it compiled.
+  oxc: { jsx: { runtime: 'automatic' } },
+  resolve: { alias: { '@': fileURLToPath(new URL('.', import.meta.url)) } },
   test: {
     include: ['**/*.test.ts'],
     exclude: ['node_modules/**', '.next/**'],

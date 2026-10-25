@@ -50,10 +50,13 @@ interface TenantOutcome {
   result?: unknown;
 }
 
+/** Runs `run` per active tenant, one at a time; `only` skips tenants with nothing due (WW-9). */
 async function forEachActiveTenant<T>(
-  run: (tenantId: string) => Promise<T>
-): Promise<{ tenants: number; outcomes: TenantOutcome[] }> {
-  const tenants = await crmSchedulers.listCrmActiveTenants();
+  run: (tenantId: string) => Promise<T>,
+  only?: ReadonlySet<string>
+): Promise<{ tenants: number; skipped: number; outcomes: TenantOutcome[] }> {
+  const active = await crmSchedulers.listCrmActiveTenants();
+  const tenants = only ? active.filter((t) => only.has(t.id)) : active;
   const outcomes: TenantOutcome[] = [];
   for (const t of tenants) {
     try {
@@ -67,7 +70,7 @@ async function forEachActiveTenant<T>(
       });
     }
   }
-  return { tenants: tenants.length, outcomes };
+  return { tenants: tenants.length, skipped: active.length - tenants.length, outcomes };
 }
 
 const crmCronRoutes: FastifyPluginAsync = (app) => {
@@ -107,8 +110,11 @@ const crmCronRoutes: FastifyPluginAsync = (app) => {
   // Its CronJob is the most frequent of the CRM set for that reason.
   app.post('/internal/crm/mailbox-sync', async (request) => {
     authorize(request);
-    const summary = await forEachActiveTenant((tenantId) =>
-      syncTenantMailboxes(request.log, tenantId)
+    // Only tenants with a mailbox to poll (WW-9).
+    const due = await crmSchedulers.listTenantsWithSyncableMailboxes();
+    const summary = await forEachActiveTenant(
+      (tenantId) => syncTenantMailboxes(request.log, tenantId),
+      due
     );
     return { success: true, data: summary };
   });
@@ -119,12 +125,14 @@ const crmCronRoutes: FastifyPluginAsync = (app) => {
   // overlapping run or a pod that dies halfway announces nothing twice.
   app.post('/internal/crm/sla-sweep', async (request) => {
     authorize(request);
+    // One cross-tenant scan first: a tenant with nothing due costs no transaction (WW-9).
+    const due = await crmSchedulers.listTenantsWithDueSlaWork();
     const summary = await forEachActiveTenant(async (tenantId) => {
       // Signing links that ran out. `expireStale` was written for this walk and
       // never called, so an expired link stayed "pending" in the table.
       const expiredSignatures = await signatureService.expireStale({ tenantId });
       return { ...(await ticketSlaSweep.sweepTenant({ tenantId })), expiredSignatures };
-    });
+    }, due);
     return { success: true, data: summary };
   });
 

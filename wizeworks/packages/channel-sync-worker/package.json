@@ -19,13 +19,13 @@
     "@wizeworks/db": "workspace:*",
     "@wizeworks/events": "workspace:*",
     "pino": "^9.5.0",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
     "dotenv": "^16.4.7",
     "tsx": "^4.19.2",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.12"
   }
 }
