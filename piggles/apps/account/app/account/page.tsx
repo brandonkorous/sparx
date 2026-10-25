@@ -1,17 +1,14 @@
 import type { Metadata } from 'next';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
 import { requireSession } from '@wizeworks/auth';
-import { prisma } from '@wizeworks/db';
 import { PRODUCT } from '@piggles/config';
-import { capacityReport } from '@wizeworks/usage';
 import { AccountBar } from '@/components/account/account-bar';
 import { BillingNotice } from '@/components/account/billing-notice';
 import { CookieSection } from '@/components/account/cookie-section';
 import { PaymentSection } from '@/components/account/payment-section';
 import { PlanCard } from '@/components/account/plan-card';
 import { Capacity } from '@/components/capacity';
-import { readBilling } from '@/lib/billing';
-import { readConsent } from '@/lib/consent';
+import { loadAccountHome } from '@/lib/account-load';
 import { canPay } from '@/lib/pay-roles';
 import { planState } from '@/lib/plan-state';
 
@@ -21,40 +18,18 @@ export const dynamic = 'force-dynamic';
 // The account home: what you pay, what you are using, and the way back to work.
 // The badge and the Payment sentence both come from `planState`, so they agree.
 
-async function loadAccount(tenantId: string) {
-  return Promise.all([
-    prisma.tenant.findUnique({
-      where: { id: tenantId },
-      select: {
-        name: true,
-        slug: true,
-        subscriptionStatus: true,
-        trialEndsAt: true,
-        platformBrand: true,
-      },
-    }),
-    // The address her site is really served at, READ rather than composed (issue #089).
-    prisma.domain.findFirst({
-      where: { tenantId, type: 'subdomain' },
-      orderBy: [{ isCanonical: 'desc' }, { createdAt: 'asc' }],
-      select: { host: true },
-    }),
-    readBilling(tenantId),
-  ]);
-}
-
 export default async function AccountPage({
   searchParams,
 }: {
   searchParams: Promise<{ billing?: string }>;
 }) {
   const session = await requireSession();
-  const { billing: marker } = await searchParams;
-  const [tenant, siteAddress, billing] = await loadAccount(session.user.tenantId);
+  const [{ billing: marker }, home] = await Promise.all([
+    searchParams,
+    loadAccountHome(session.user),
+  ]);
+  const { tenant, siteAddress, billing, consent, capacity } = home;
   const plan = planState(tenant?.subscriptionStatus, tenant?.trialEndsAt, !!billing?.subscribed);
-  const consent = await readConsent(session.user.id, session.user.homeTenantId);
-  // The tenant's own brand column decides the ceilings, not the deployment.
-  const capacity = await capacityReport(session.user.tenantId, tenant?.platformBrand ?? null);
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
