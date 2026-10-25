@@ -2,23 +2,23 @@
 
 Four Kubernetes `CronJob` resources that POST to `/internal/crm/*` on api-rest. Each job runs once per day in a small `curlimages/curl` container and is the production wiring for the schedulers under [wizeworks/packages/crm/src/schedulers/](../../packages/crm/src/schedulers/).
 
-| CronJob                   | Schedule    | Endpoint                                 | Why this time                              |
-| ------------------------- | ----------- | ---------------------------------------- | ------------------------------------------ |
+| CronJob                   | Schedule     | Endpoint                                 | Why this time                              |
+| ------------------------- | ------------ | ---------------------------------------- | ------------------------------------------ |
 | `crm-partition-rollover`  | `13 2 * * *` | `POST /internal/crm/partition-rollover`  | Earliest — keeps `crm_activities` writable |
 | `crm-automation-triggers` | `11 3 * * *` | `POST /internal/crm/automation-triggers` | After partition is guaranteed              |
-| `crm-overdue-reminders`   | `9 4 * * *` | `POST /internal/crm/overdue-reminders`   | Mid-morning UTC ≈ early US workday         |
+| `crm-overdue-reminders`   | `9 4 * * *`  | `POST /internal/crm/overdue-reminders`   | Mid-morning UTC ≈ early US workday         |
 | `crm-segment-recompute`   | `12 5 * * *` | `POST /internal/crm/segment-recompute`   | Latest — heaviest, runs after the rest     |
 
 ## Commerce scheduled jobs
 
 Wiring for the schedulers under [wizeworks/packages/commerce/src/schedulers/](../../packages/commerce/src/schedulers/).
 
-| CronJob                            | Schedule       | Endpoint                                          | Why this time                                                |
-| ---------------------------------- | -------------- | ------------------------------------------------- | ------------------------------------------------------------ |
+| CronJob                            | Schedule          | Endpoint                                          | Why this time                                                |
+| ---------------------------------- | ----------------- | ------------------------------------------------- | ------------------------------------------------------------ |
 | `commerce-cart-abandonment-sweep`  | `5-59/10 * * * *` | `POST /internal/commerce/cart-abandonment-sweep`  | A 120-minute threshold means nothing if the sweep is nightly |
-| `commerce-reservation-reaper`      | `*/1 * * * *`  | `POST /internal/commerce/reservation-reaper`      | Every minute — a stuck cart reservation holds stock          |
-| `commerce-revenue-rollup`          | `14 6 * * *`   | `POST /internal/commerce/revenue-rollup`          | Nightly, after the day closes and the CRM jobs (docs/97)     |
-| `commerce-payment-reconcile-sweep` | `3-59/5 * * * *` | `POST /internal/commerce/payment-reconcile-sweep` | Every 5 min — heals rare orders stranded "Not paid"          |
+| `commerce-reservation-reaper`      | `*/1 * * * *`     | `POST /internal/commerce/reservation-reaper`      | Every minute — a stuck cart reservation holds stock          |
+| `commerce-revenue-rollup`          | `14 6 * * *`      | `POST /internal/commerce/revenue-rollup`          | Nightly, after the day closes and the CRM jobs (docs/97)     |
+| `commerce-payment-reconcile-sweep` | `3-59/5 * * * *`  | `POST /internal/commerce/payment-reconcile-sweep` | Every 5 min — heals rare orders stranded "Not paid"          |
 
 `commerce-revenue-rollup` reconciles `rollup_commerce_daily_revenue` per active
 tenant. It accepts an optional `?days=N` to widen the recomputed window for a
@@ -57,8 +57,8 @@ Wiring for the dropship reconcile, which lives on the commerce scheduler spine
 `reportingService` owns the dropship margin/timeseries logic — but enumerates
 the dropship-active tenant set, gated on its own `dropship` module flag.
 
-| CronJob                  | Schedule    | Endpoint                                | Why this time                                                     |
-| ------------------------ | ----------- | --------------------------------------- | ----------------------------------------------------------------- |
+| CronJob                  | Schedule     | Endpoint                                | Why this time                                                     |
+| ------------------------ | ------------ | --------------------------------------- | ----------------------------------------------------------------- |
 | `dropship-orders-rollup` | `18 7 * * *` | `POST /internal/dropship/orders-rollup` | Nightly, after the commerce (06:14) and invoicing (06:30) rollups |
 
 `dropship-orders-rollup` reconciles `rollup_dropship_daily_orders` per
@@ -76,8 +76,8 @@ engine's own scheduler spine
 Automations are a platform capability, not a gated module, so it enumerates
 tenants that own ≥1 automation rather than a module-flag set.
 
-| CronJob                  | Schedule    | Endpoint                                 | Why this time                                                                       |
-| ------------------------ | ----------- | ---------------------------------------- | ----------------------------------------------------------------------------------- |
+| CronJob                  | Schedule     | Endpoint                                 | Why this time                                                                       |
+| ------------------------ | ------------ | ---------------------------------------- | ----------------------------------------------------------------------------------- |
 | `automation-runs-rollup` | `16 8 * * *` | `POST /internal/automations/runs-rollup` | Nightly, after the commerce (06:14), invoicing (06:30) and dropship (07:18) rollups |
 
 `automation-runs-rollup` reconciles `rollup_automation_daily_runs` per tenant
