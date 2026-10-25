@@ -248,6 +248,15 @@ variable "cloudflare_enabled" {
   default     = false
 }
 
+variable "cloudflare_waf_enabled" {
+  description = <<-EOT
+    Create the sparx.works firewall rules in module.dns (modules/dns/waf.tf, SI-7). The token needs
+    Zone > Zone WAF > Edit first; the apply fails with an authorization error otherwise.
+  EOT
+  type        = bool
+  default     = false
+}
+
 variable "cloudflare_origin_ca_enabled" {
   description = <<-EOT
     Create the admin.wize.works Origin CA certificate and write it into the

@@ -663,6 +663,9 @@ import mode.caddy
 {$SX_SCHEME:https}://sparx.email, {$SX_SCHEME:https}://www.sparx.email {
 	import tls_policy
 	import security_headers
+	# The marketplace and partner directory live on sparx.works; the facet crawler hit them here too (SI-7).
+	@platform_pages path /market /market/* /partners/directory /partners/directory/*
+	redir @platform_pages https://sparx.works{uri} permanent
 	reverse_proxy web.sparx-prod.svc.cluster.local:3000
 }
 

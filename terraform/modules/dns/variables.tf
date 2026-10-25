@@ -34,6 +34,15 @@ variable "cloudflare_enabled" {
   default     = false
 }
 
+variable "cloudflare_waf_enabled" {
+  description = <<-EOT
+    Create the sparx.works custom firewall rules (waf.tf). Separate from cloudflare_enabled because
+    the token needs Zone WAF Edit, which DNS does not; flip it once that permission is added.
+  EOT
+  type        = bool
+  default     = false
+}
+
 variable "operator_access_emails" {
   description = <<-EOT
     Emails allowed through the Cloudflare Access policy on admin.wize.works.

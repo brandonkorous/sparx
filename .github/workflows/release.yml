@@ -518,6 +518,7 @@ jobs:
                   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
                   CLOUDFLARE_ENABLED: ${{ vars.CLOUDFLARE_ENABLED }}
                   CLOUDFLARE_ORIGIN_CA_ENABLED: ${{ vars.CLOUDFLARE_ORIGIN_CA_ENABLED }}
+                  CLOUDFLARE_WAF_ENABLED: ${{ vars.CLOUDFLARE_WAF_ENABLED }}
                   OPERATOR_ACCESS_EMAILS: ${{ vars.OPERATOR_ACCESS_EMAILS }}
                   DKIM_SELECTOR: ${{ vars.SPARX_EMAIL_DKIM_SELECTOR }}
                   DKIM_VALUE: ${{ vars.SPARX_EMAIL_DKIM_VALUE }}
@@ -543,6 +544,7 @@ jobs:
                   put cloudflare_api_token        "$CLOUDFLARE_API_TOKEN"
                   put cloudflare_enabled          "$CLOUDFLARE_ENABLED"
                   put cloudflare_origin_ca_enabled "$CLOUDFLARE_ORIGIN_CA_ENABLED"
+                  put cloudflare_waf_enabled      "$CLOUDFLARE_WAF_ENABLED"
                   put operator_access_emails      "$OPERATOR_ACCESS_EMAILS"
                   put sparx_email_dkim_selector   "$DKIM_SELECTOR"
                   put sparx_email_dkim_value      "$DKIM_VALUE"
