@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", ".next", ".turbo", "**/*.test.ts", "**/*.test.tsx"]
+}
