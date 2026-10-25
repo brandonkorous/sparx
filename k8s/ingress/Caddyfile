@@ -91,28 +91,73 @@
 # k8s/local. Imported before first use.
 import mode.caddy
 
-# Baseline security headers (docs/50 §4). Conservative on purpose: HSTS
-# (no includeSubDomains/preload, to avoid surprising tenant custom domains),
-# nosniff, clickjacking protection, and a tight referrer policy. Deliberately
-# NO Content-Security-Policy or Permissions-Policy here — those need per-app
-# tuning (Stripe/checkout, PostHog, Satori) and land as a Report-Only pass.
+# Baseline security headers (docs/50 §4) and the request hygiene every app block needs.
+# HSTS covers subdomains on the hosts we own; tenant hosts get `tenant_headers` without it.
+# No CSP here except Piggles' report-only one: the others need per-app tuning first.
 #
-# Also one REQUEST header: X-Client-IP, the visitor's address exactly as the
-# global `trusted_proxies` resolves it, SET (never appended) so whatever a client
-# sends under that name is overwritten. It is here because every block that
-# serves one of our apps imports this snippet. It exists for code that reads ONE
-# header and takes its first value — Better Auth does that with X-Forwarded-For,
-# whose first value the client writes, so its sign-in brute-force limit and its
-# session records were keyed on an address an attacker could change per guess.
-# The staff auth instance reads this header instead (packages/auth server.ts).
+# X-Client-IP is SET (never appended) from `trusted_proxies`, so a client cannot choose it.
+# Better Auth reads one header and takes its first value; X-Forwarded-For's first value is the
+# client's own, so the staff auth instance reads this header instead (packages/auth server.ts).
+(edge_request) {
+	request_header X-Client-IP {client_ip}
+	# CVE-2025-29927: Next.js trusts this header to skip middleware; nothing outside may send it.
+	request_header -X-Middleware-Subrequest
+	# Compress text responses an upstream left uncompressed. Streams (SSE, RSC) are not listed.
+	encode zstd gzip {
+		minimum_length 1024
+		match {
+			header Content-Type text/html*
+			header Content-Type text/css*
+			header Content-Type text/plain*
+			header Content-Type text/xml*
+			header Content-Type text/javascript*
+			header Content-Type text/markdown*
+			header Content-Type application/javascript*
+			header Content-Type application/json*
+			header Content-Type application/manifest+json*
+			header Content-Type application/ld+json*
+			header Content-Type application/xml*
+			header Content-Type application/rss+xml*
+			header Content-Type application/atom+xml*
+			header Content-Type application/wasm*
+			header Content-Type image/svg+xml*
+			header Content-Type font/ttf*
+			header Content-Type font/otf*
+		}
+	}
+}
+
 (security_headers) {
+	import edge_request
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+}
+
+# Tenant sites and tenant zones: HSTS on the exact host only, never a customer's other subdomains.
+(tenant_headers) {
+	import edge_request
 	header {
 		Strict-Transport-Security "max-age=31536000"
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "SAMEORIGIN"
 		Referrer-Policy "strict-origin-when-cross-origin"
 	}
-	request_header X-Client-IP {client_ip}
+}
+
+# The three Piggles hosts: no framing at all, and a CSP in report-only mode while it is tuned.
+(piggles_headers) {
+	import edge_request
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline' https://us.i.posthog.com https://us-assets.i.posthog.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.mypiggles.com https://us.i.posthog.com https://us-assets.i.posthog.com https://app.wizelens.com; frame-src https://js.stripe.com https://checkout.stripe.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://getpiggles.com https://mypiggles.com https://accounts.google.com https://checkout.stripe.com; object-src 'none'"
+	}
 }
 
 # ----- Platform hostnames -----
@@ -136,6 +181,7 @@ import mode.caddy
 # Cloudflare edge.
 {$SX_SCHEME:https}://media.sparx.works {
 	import tls_policy
+	import security_headers
 	header {
 		# Strip any cookies merchant proxies might forward — the CDN variants
 		# are pure content.
@@ -159,6 +205,7 @@ import mode.caddy
 # Allow-listed in api-rest /internal/domain-check PLATFORM_HOSTNAMES.
 {$SX_SCHEME:https}://media-direct.sparx.works {
 	import tls_policy
+	import security_headers
 	header {
 		-Set-Cookie
 	}
@@ -256,19 +303,19 @@ import mode.caddy
 # certificate at all. Same reasoning as the kanNINJA blocks below.
 {$SX_SCHEME:https}://meetpiggles.com, {$SX_SCHEME:https}://www.meetpiggles.com {
 	import tls_policy
-	import security_headers
+	import piggles_headers
 	reverse_proxy piggles-web.sparx-prod.svc.cluster.local:3000
 }
 
 {$SX_SCHEME:https}://getpiggles.com, {$SX_SCHEME:https}://www.getpiggles.com {
 	import tls_policy
-	import security_headers
+	import piggles_headers
 	reverse_proxy piggles-account.sparx-prod.svc.cluster.local:3000
 }
 
 {$SX_SCHEME:https}://mypiggles.com, {$SX_SCHEME:https}://www.mypiggles.com {
 	import tls_policy
-	import security_headers
+	import piggles_headers
 	reverse_proxy piggles-console.sparx-prod.svc.cluster.local:3000
 }
 
@@ -623,11 +670,13 @@ import mode.caddy
 # Replace with real reverse_proxy targets when each product matures.
 {$SX_SCHEME:https}://sparx.host, {$SX_SCHEME:https}://www.sparx.host {
 	import tls_policy
+	import security_headers
 	redir https://sparx.works/hosting{uri} permanent
 }
 
 {$SX_SCHEME:https}://sparx.software, {$SX_SCHEME:https}://www.sparx.software {
 	import tls_policy
+	import security_headers
 	redir https://sparx.works/docs{uri} permanent
 }
 
@@ -635,6 +684,7 @@ import mode.caddy
 # dedicated Next.js app (apps/market). www → apex.
 {$SX_SCHEME:https}://www.sparx.market {
 	import tls_policy
+	import security_headers
 	redir https://sparx.market{uri} permanent
 }
 
@@ -646,12 +696,14 @@ import mode.caddy
 
 {$SX_SCHEME:https}://sparx.exchange, {$SX_SCHEME:https}://www.sparx.exchange {
 	import tls_policy
+	import security_headers
 	redir https://sparx.works{uri} permanent
 }
 
 # sparx.zone apex — redirect to the platform home.
 {$SX_SCHEME:https}://sparx.zone, {$SX_SCHEME:https}://www.sparx.zone {
 	import tls_policy
+	import tenant_headers
 	redir https://sparx.works{uri} permanent
 }
 
@@ -668,6 +720,7 @@ import mode.caddy
 # that has been fixed, and the warning was left behind to send somebody chasing it.
 {$SX_SCHEME:https}://piggles.site, {$SX_SCHEME:https}://www.piggles.site {
 	import tls_policy
+	import tenant_headers
 	redir https://meetpiggles.com{uri} permanent
 }
 
@@ -694,7 +747,7 @@ import mode.caddy
 # Everything else reaches the site app.
 {$SX_CATCHALL::443} {
 	import tls_policy
-	import security_headers
+	import tenant_headers
 
 	handle /mcp* {
 		reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200

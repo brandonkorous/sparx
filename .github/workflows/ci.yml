@@ -497,7 +497,7 @@ jobs:
     name: Infra checks
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Pure Node checks over k8s/ and the release; no install.
+    # Checks over k8s/, the ingress and the release; no pnpm install.
     steps:
       - uses: actions/checkout@v4
 
@@ -517,6 +517,10 @@ jobs:
       # kubectl ships on the hosted runner; `kustomize` here renders only, it talks to no cluster.
       - name: Check the rendered Azure overlays keep their availability rules
         run: node scripts/check-k8s-overlays.mjs
+
+      # The ingress serves every hostname; a config Caddy refuses takes all of them down at once.
+      - name: Validate the Caddyfile and smoke-test its header snippets
+        run: bash .github/scripts/caddy-smoke.sh
 
   terraform:
     name: Terraform fmt + validate
