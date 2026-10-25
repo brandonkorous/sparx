@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { Fredoka, Inter } from 'next/font/google';
-import { fetchHeaderNotice, marketingUrl, PRODUCT } from '@piggles/config';
-import { fetchFounderOffer, founderNotice } from '@piggles/config/pricing';
-import { HeaderNotice } from '@piggles/ui';
+import { Suspense } from 'react';
+import { PRODUCT } from '@piggles/config';
 import { ChunkReloadGuard } from '@wizeworks/app-kit';
+import { HeaderNoticeSlot } from '@/components/header-notice-slot';
 import { WizeLens } from '@/components/wizelens';
 import { THEME_SCRIPT } from '@/lib/theme';
 import './globals.css';
@@ -27,13 +27,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // The same bar as the marketing site: an offer stops being repeated at the
-  // moment of signing up reads as an offer withdrawn.
-  const notice =
-    (await fetchHeaderNotice('account')) ??
-    founderNotice(await fetchFounderOffer(), marketingUrl('pricing#founding'));
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   // NO `data-theme`: THEME_SCRIPT writes it at load and `useAppearance` after, and
   // a React default would race them. `suppressHydrationWarning` is the counterpart.
   return (
@@ -47,7 +41,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ChunkReloadGuard />
         {/* Tracing (WizeLens): on only when this page's server traces it; no HUD outside development. */}
         <WizeLens />
-        <HeaderNotice notice={notice} />
+        {/* The marketing site's bar too: an offer dropped at signup reads as withdrawn. */}
+        <Suspense fallback={null}>
+          <HeaderNoticeSlot />
+        </Suspense>
         {children}
       </body>
     </html>
