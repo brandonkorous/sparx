@@ -166,7 +166,11 @@ ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
 #
 # Each image builds on its own runner (release.yml's matrix, max-parallel 6), so
 # 8192 is one build against 16 GB rather than six sharing it.
-RUN NODE_OPTIONS=--max-old-space-size=8192 pnpm --filter @sparx/workbench build
+# Stable server-action ids across builds (SI-2). No secret = Next picks a random key, as before.
+RUN --mount=type=secret,id=next_actions_key \
+    key="$(cat /run/secrets/next_actions_key 2>/dev/null || true)"; \
+    if [ -n "$key" ]; then export NEXT_SERVER_ACTIONS_ENCRYPTION_KEY="$key"; fi; \
+    NODE_OPTIONS=--max-old-space-size=8192 pnpm --filter @sparx/workbench build
 
 # ----- Production runner -----
 FROM node:${NODE_VERSION} AS runner
@@ -195,5 +199,9 @@ COPY --from=builder --chown=nextjs:nodejs /repo/sparx/apps/workbench/public ./sp
 USER nextjs
 
 EXPOSE 3000
+
+# The commit this image was built from; WizeLens reports it as the release (SI-2).
+ARG WIZELENS_RELEASE=local
+ENV WIZELENS_RELEASE=$WIZELENS_RELEASE
 
 CMD ["node", "sparx/apps/workbench/server.js"]

@@ -27,6 +27,7 @@
     "check:notify-entities": "node scripts/check-notification-entities.mjs",
     "check:docker": "node scripts/check-dockerfile-deps.mjs",
     "check:db-budget": "node scripts/check-db-budget.mjs",
+    "check:next-actions-key": "node scripts/check-next-actions-key.mjs",
     "test:infra": "node --test scripts/*.test.mjs",
     "check:service-env": "node scripts/check-service-env.mjs",
     "check:brand-wordmark": "node scripts/check-brand-wordmark.mjs",

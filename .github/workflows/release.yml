@@ -281,13 +281,15 @@ jobs:
                     - {
                           name: workbench,
                           dockerfile: sparx/apps/workbench/Dockerfile,
+                          actions_key: NEXT_ACTIONS_KEY_WORKBENCH,
                       }
-                    - { name: web, dockerfile: sparx/apps/web/Dockerfile }
-                    - { name: site, dockerfile: wizeworks/apps/site/Dockerfile }
-                    - { name: market, dockerfile: sparx/apps/market/Dockerfile }
+                    - { name: web, dockerfile: sparx/apps/web/Dockerfile, actions_key: NEXT_ACTIONS_KEY_WEB }
+                    - { name: site, dockerfile: wizeworks/apps/site/Dockerfile, actions_key: NEXT_ACTIONS_KEY_SITE }
+                    - { name: market, dockerfile: sparx/apps/market/Dockerfile, actions_key: NEXT_ACTIONS_KEY_MARKET }
                     - {
                           name: admin,
                           dockerfile: wizeworks/apps/admin/Dockerfile,
+                          actions_key: NEXT_ACTIONS_KEY_ADMIN,
                       }
                     # Piggles — the sister brand's three surfaces (k8s/apps). Separate
                     # images because they are separate applications: piggles/CLAUDE.md
@@ -300,10 +302,12 @@ jobs:
                     - {
                           name: piggles-web,
                           dockerfile: piggles/apps/web/Dockerfile,
+                          actions_key: NEXT_ACTIONS_KEY_PIGGLES_WEB,
                       }
                     - {
                           name: piggles-account,
                           dockerfile: piggles/apps/account/Dockerfile,
+                          actions_key: NEXT_ACTIONS_KEY_PIGGLES_ACCOUNT,
                       }
                     # Directory `sparx/apps/workbench`, image `piggles-console`: the console is a
                     # workbench-shaped app, but "workbench" is a sparx word and nothing an
@@ -311,6 +315,7 @@ jobs:
                     - {
                           name: piggles-console,
                           dockerfile: piggles/apps/workbench/Dockerfile,
+                          actions_key: NEXT_ACTIONS_KEY_PIGGLES_CONSOLE,
                       }
                     # Workers (k8s/self-hosted/workers.yaml). THREE images, not fourteen:
                     # twelve of them were the same container with a different WORKDIR, and
@@ -384,11 +389,14 @@ jobs:
                   build-args: |
                       BASE=${{ needs.base.outputs.image }}
                       NEXT_PUBLIC_POSTHOG_KEY=${{ vars.POSTHOG_PROJECT_KEY }}
+                      WIZELENS_RELEASE=${{ github.sha }}
+                  # next_actions_key: the app's NEXT_ACTIONS_KEY_* secret, so server-action ids survive rebuilds (SI-2).
                   # A BuildKit secret, never a build-arg: an arg stays readable in the
                   # image's layer history. Only the three Piggles Dockerfiles mount it —
                   # for the other nineteen it is declared and never materialised.
                   secrets: |
                       fontawesome_npm_token=${{ secrets.FONTAWESOME_NPM_TOKEN }}
+                      next_actions_key=${{ matrix.actions_key && secrets[matrix.actions_key] || '' }}
                   tags: |
                       ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ github.sha }}
                       ghcr.io/${{ github.repository }}/${{ matrix.name }}:latest
@@ -687,6 +695,15 @@ jobs:
                   TYPESENSE_API_KEY: ${{ secrets.TYPESENSE_API_KEY }}
                   # "true" routes sparx_app through PgBouncer (SI-1). Unset = direct, as before.
                   PGBOUNCER_ENABLED: ${{ vars.PGBOUNCER_ENABLED }}
+                  # Next server-action keys (SI-2): the same secrets the build mounts, so build and pods agree.
+                  NEXT_ACTIONS_KEY_ADMIN: ${{ secrets.NEXT_ACTIONS_KEY_ADMIN }}
+                  NEXT_ACTIONS_KEY_MARKET: ${{ secrets.NEXT_ACTIONS_KEY_MARKET }}
+                  NEXT_ACTIONS_KEY_PIGGLES_ACCOUNT: ${{ secrets.NEXT_ACTIONS_KEY_PIGGLES_ACCOUNT }}
+                  NEXT_ACTIONS_KEY_PIGGLES_CONSOLE: ${{ secrets.NEXT_ACTIONS_KEY_PIGGLES_CONSOLE }}
+                  NEXT_ACTIONS_KEY_PIGGLES_WEB: ${{ secrets.NEXT_ACTIONS_KEY_PIGGLES_WEB }}
+                  NEXT_ACTIONS_KEY_SITE: ${{ secrets.NEXT_ACTIONS_KEY_SITE }}
+                  NEXT_ACTIONS_KEY_WEB: ${{ secrets.NEXT_ACTIONS_KEY_WEB }}
+                  NEXT_ACTIONS_KEY_WORKBENCH: ${{ secrets.NEXT_ACTIONS_KEY_WORKBENCH }}
                   # For `terraform output` below — the media storage credentials are read
                   # back out of the state this job just applied.
                   ARM_USE_OIDC: "true"
@@ -923,6 +940,9 @@ jobs:
 
                   # PgBouncer config from DATABASE_URL; the URL moves to it only when PGBOUNCER_ENABLED=true (SI-1).
                   bash .github/scripts/pgbouncer-sync.sh /tmp/app.env.plain
+
+                  # Each app's Next server-action key, as its image was built with (SI-2).
+                  bash .github/scripts/next-actions-keys.sh /tmp/app.env.plain
 
                   # Did the app's SECRETS actually change? The containers stage decides whether
                   # to roll by diffing runtime PATHS (apps/ services/ packages/ k8s/), which is
