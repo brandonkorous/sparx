@@ -55,6 +55,9 @@ function devMediaPatterns() {
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  // `next build` type-checks without the tests: some import files outside the image
+  // (scripts/, a sibling app), and the CI Typecheck job still checks them.
+  typescript: { tsconfigPath: './tsconfig.build.json' },
   // Every workspace package this app's graph reaches that ships raw TypeScript.
   // Deliberately NOT kept in step with sparx's list: separate applications.
   transpilePackages: [
