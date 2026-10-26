@@ -11,10 +11,12 @@ import {
   staleFormActionRedirect,
   unknownActionResponse,
 } from '@wizeworks/app-kit/stale-form-action';
+import { malformedPathResponse } from '@wizeworks/app-kit/malformed-path';
 
 export async function proxy(req: NextRequest) {
   const known = runningActionIds();
   return (
+    malformedPathResponse(req) ??
     unknownActionResponse(req, known) ??
     (await staleFormActionRedirect(req, known)) ??
     NextResponse.next()
