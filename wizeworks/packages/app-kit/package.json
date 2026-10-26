@@ -24,6 +24,10 @@
     "./stale-form-action": {
       "types": "./src/stale-form-action.ts",
       "default": "./src/stale-form-action.ts"
+    },
+    "./malformed-path": {
+      "types": "./src/malformed-path.ts",
+      "default": "./src/malformed-path.ts"
     }
   },
   "files": [

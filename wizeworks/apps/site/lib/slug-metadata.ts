@@ -1,10 +1,16 @@
-// Metadata for the catch-all route: an authored (silica or builder) page or a CMS page.
+// Metadata for the catch-all route: an authored (silica or builder) page, a CMS page, or nothing.
 
 import type { Metadata } from 'next';
 import type { ApiEntry, PageBody } from './content';
 import { ogImageUrl } from './og';
 import { metadataTitle, socialTitle } from './page-title';
 import type { ResolvedSite } from './site-context';
+
+/** What app/not-found.tsx says, so the tab does not read only the shop's name. */
+export const NOT_FOUND_METADATA: Metadata = {
+  title: 'Page not found',
+  robots: { index: false, follow: false },
+};
 
 /** The SEO fields a silica page and a builder page share. */
 export interface AuthoredPageSeo {
