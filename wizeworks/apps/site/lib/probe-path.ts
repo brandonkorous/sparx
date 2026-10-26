@@ -22,6 +22,15 @@
 //
 // `/.well-known/` is the one dot segment the web defines a meaning for (ACME,
 // security.txt, OAuth discovery), so it is let through.
+//
+// ── AND FILES NO PAGE IS (WW-8) ────────────────────────────────────────────
+//
+// `/config.json`, `/app-config.js`, `/backup.sql`: a config, script, data,
+// archive or key file. No page, product or post address ends in one, and a
+// WordPress shop's old addresses end in .php, .html or an image, never these. They
+// must stop HERE: Next 16 sends a 200 head before the page can say not found, so
+// the catch-all answered every one of them 200. `/api/…` is ours, so a `.php`
+// under it is a probe too; the api-rest relay at `/api/sparx/` passes untouched.
 
 const WELL_KNOWN = '.well-known';
 
@@ -35,6 +44,30 @@ function hasControlChar(text: string): boolean {
   return false;
 }
 
+const PROBE_EXTENSIONS = new Set(
+  (
+    'json js mjs cjs map ts yml yaml toml ini conf cfg config env properties ' +
+    'sql sqlite sqlite3 db mdb bak backup old orig save swp tmp log ' +
+    'zip gz tgz tar rar 7z bz2 pem key crt cer p12 pfx jks ' +
+    'sh bash ps1 bat cmd py rb pl cgi jsp jspx asp aspx war jar exe dll'
+  ).split(' ')
+);
+
+const API_RELAY = '/api/sparx/';
+
+function extensionOf(segment: string): string | null {
+  const dot = segment.lastIndexOf('.');
+  return dot > 0 ? segment.slice(dot + 1).toLowerCase() : null;
+}
+
+/** A config, script, data, archive or key file: no page is one (WW-8). */
+function isProbeFile(decoded: string): boolean {
+  if (decoded.startsWith(API_RELAY)) return false;
+  const ext = extensionOf(decoded.slice(decoded.lastIndexOf('/') + 1));
+  if (!ext) return false;
+  return PROBE_EXTENSIONS.has(ext) || (ext === 'php' && decoded.startsWith('/api/'));
+}
+
 /** Is this a path that no tenant page can answer? */
 export function isProbePath(pathname: string): boolean {
   let decoded: string;
@@ -43,7 +76,7 @@ export function isProbePath(pathname: string): boolean {
   } catch {
     return true;
   }
-  if (hasControlChar(decoded)) return true;
+  if (hasControlChar(decoded) || isProbeFile(decoded)) return true;
   return decoded.split('/').some((segment) => segment.startsWith('.') && segment !== WELL_KNOWN);
 }
 

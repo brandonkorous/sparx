@@ -14,7 +14,7 @@ import { getPublishedSilicaPage } from '@/lib/silica';
 import { requireSiteModule } from '@/lib/site-modules';
 import { getKindPiece } from '@/lib/kind-pieces';
 import { joinSlug, unservableSlug } from '@/lib/unservable-slug';
-import { authoredPageMetadata, cmsPageMetadata } from '@/lib/slug-metadata';
+import { authoredPageMetadata, cmsPageMetadata, NOT_FOUND_METADATA } from '@/lib/slug-metadata';
 import { KindPiecePage, kindPieceMetadata } from '@/components/kind-piece-page';
 import { PageView } from '@/components/page-view';
 import { SectionRenderer } from '@/components/section-renderer';
@@ -44,9 +44,8 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   // A dark site tells a crawler nothing; a route's metadata overrides the layout's (issue 503).
   if (site.billingPhase === 'suspended') return SUSPENDED_METADATA;
   const { slug, unservable } = await slugOf(params);
-  if (unservable === 'asset') notFound();
-  // Metadata blocks the response (htmlLimitedBots), so a miss here is a real 404 (WW-8).
-  if (unservable === 'too-long') return missing(site, slug);
+  // Metadata never decides the 404: by then Next 16 has sent the 200 head. The page does.
+  if (unservable) return NOT_FOUND_METADATA;
   const sp = await searchParams;
   const previewToken = one(sp?.sparxPreview);
   const sitePreview = one(sp?.sparxSitePreview);
@@ -61,7 +60,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   return cmsSlugMetadata(site, slug, previewToken, sitePreview);
 }
 
-// A CMS page titles itself; Site Builder sections take the layout's title; nothing at all is a 404.
+// A CMS page titles itself; Site Builder sections take the layout's title; nothing says not found.
 async function cmsSlugMetadata(
   site: ResolvedSite,
   slug: string,
@@ -74,14 +73,7 @@ async function cmsSlugMetadata(
     getPublishedSite(site.slug, sitePreview, activePropertySlug),
   ]);
   if (page) return cmsPageMetadata(page, site);
-  if (sectionsForPage(snapshot, slug).length > 0) return {};
-  return missing(site, slug);
-}
-
-/** Nothing owns this slug: a tenant redirect if there is one, else a real 404. */
-async function missing(site: ResolvedSite, slug: string): Promise<never> {
-  await applyRedirect(site.slug, `/${slug}`);
-  notFound();
+  return sectionsForPage(snapshot, slug).length > 0 ? {} : NOT_FOUND_METADATA;
 }
 
 // Tier order: silica page, builder page, content-kind piece, then CMS page + Site Builder sections.

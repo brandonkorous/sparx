@@ -31,6 +31,17 @@ describe('isProbePath', () => {
     '/%00x.json',
     '/a%1Fb',
     '/%c0',
+    // WW-8: these answered 200 from the catch-all; Next 16 sends the head first.
+    '/config.json',
+    '/app-config.js',
+    '/config/aws.json',
+    '/gcp-credentials.json',
+    '/static/js/main.js',
+    '/backup-2023.zip',
+    '/backup-2025.tar.gz',
+    '/db.sql',
+    '/server.key',
+    '/api/phpinfo.php',
   ])('stops %s, which no tenant page can be', (path) => {
     expect(isProbePath(path)).toBe(true);
   });
@@ -47,6 +58,13 @@ describe('isProbePath', () => {
     '/wp-content/uploads/2019/04/shop-front.jpg',
     '/index.php',
     '/products/v1.2-release',
+    '/phpinfo.php',
+    '/old-shop/about-us.html',
+    '/api/sparx/v1/public/thing.json',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/feed.xml',
+    '/video/hero.mp4',
   ])('lets %s through, which a tenant can publish or redirect from', (path) => {
     expect(isProbePath(path)).toBe(false);
   });
