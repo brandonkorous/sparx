@@ -494,6 +494,17 @@ resource "azurerm_key_vault_secret" "agconn" {
   }
 }
 
+# DATABASE-URL and DIRECT-URL already held the Supabase URLs, so Terraform adopts them (AG-11 cutover).
+# The ids pin the versions that existed at import; Terraform then writes the Azure URLs as new versions.
+import {
+  for_each = local.agconn_data_count == 1 ? {
+    "DATABASE-URL" = "2aa8998c64234b98862dba115abe0958"
+    "DIRECT-URL"   = "714bf28ba79d4ca9a736c92fca1a45f7"
+  } : {}
+  to = azurerm_key_vault_secret.agconn[each.key]
+  id = "${azurerm_key_vault.agconn[0].vault_uri}secrets/${each.key}/${each.value}"
+}
+
 # ---------------------------------------------------------------------------
 # Outputs
 # ---------------------------------------------------------------------------
