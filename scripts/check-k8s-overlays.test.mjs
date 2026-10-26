@@ -43,8 +43,14 @@ test('one caddy pod on Recreate passes while the cert disk is RWO', () => {
   assert.deepEqual(caddyProblems(CADDY_BEFORE), []);
 });
 
-test('two caddy pods on a rolling update fail both rules (Multi-Attach hang, 10-26)', () => {
-  assert.equal(caddyProblems(CADDY_TWO).length, 2);
+test('two co-located caddy pods pass only on Recreate (Multi-Attach hang, 10-26)', () => {
+  assert.equal(caddyProblems(CADDY_TWO).length, 1);
+  const recreate = CADDY_TWO.replace(/  strategy:[\s\S]*?type: RollingUpdate\n/, '  strategy:\n    type: Recreate\n');
+  assert.deepEqual(caddyProblems(recreate), []);
+});
+
+test('two caddy pods without the same-node rule fail', () => {
+  assert.equal(caddyProblems(CADDY_BEFORE.replace('replicas: 1', 'replicas: 2')).length, 1);
 });
 
 const deployment = (name, replicas, memory) =>

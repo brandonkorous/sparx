@@ -12,12 +12,13 @@ metadata:
     app: caddy
     tier: ingress
 spec:
-  replicas: 1
-  # RWO PVC for certificate storage — Recreate avoids two pods holding the
-  # volume. Multi-replica Caddy needs distributed cert storage
-  # (caddy-storage-redis); that is the change to make when this becomes the
-  # availability bottleneck, and it is tracked as such rather than pretended
-  # away: today a Caddy roll is a brief outage for every hostname.
+  # Two pods on ONE node: they share the RWO cert disk, and Caddy's file storage
+  # locks across instances. Keep 2: the ReplicaSets carry desired-replicas=2 from
+  # #136, and changing replicas together with a Recreate roll deadlocks the
+  # Deployment controller (10-26). Node-level HA needs RWX or Redis cert storage.
+  replicas: 2
+  # Recreate, never RollingUpdate: a surge pod from the old template can land on
+  # the other node and hang on Multi-Attach. A Caddy roll is a brief outage.
   strategy:
     type: Recreate
   selector:
@@ -34,6 +35,14 @@ spec:
       # API. This used to name a GCP Workload Identity SA, which meant every
       # non-GCP overlay had to patch it back out.
       enableServiceLinks: false
+      # Every Caddy pod on the node that holds the RWO cert disk.
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: caddy
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: caddy
           # PINNED. `caddy:2-alpine` is a floating tag, and floating it is how a

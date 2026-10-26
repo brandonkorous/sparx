@@ -1033,7 +1033,13 @@ jobs:
                   # entire output.
                   kubectl apply -k "$OVERLAY/infra" \
                     --prune --selector app.kubernetes.io/managed-by=sparx-release-infra
-                  kubectl -n "$NAMESPACE" rollout status deployment/caddy --timeout=10m
+                  # Retry: after a failed roll, `rollout status` exits at once on the stale
+                  # ProgressDeadlineExceeded until the next roll moves a pod (10-26).
+                  for _ in $(seq 1 60); do
+                    kubectl -n "$NAMESPACE" rollout status deployment/caddy --timeout=10s >/dev/null 2>&1 && break
+                    sleep 10
+                  done
+                  kubectl -n "$NAMESPACE" rollout status deployment/caddy --timeout=1m
                   kubectl -n "$NAMESPACE" rollout status statefulset/typesense --timeout=10m
 
             # The address the platform answers on. Reported here rather than after the
