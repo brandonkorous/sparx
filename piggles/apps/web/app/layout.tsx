@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { Fredoka, Inter } from 'next/font/google';
-import { fetchHeaderNotice, PRODUCT } from '@piggles/config';
-import { fetchFounderOffer, founderNotice } from '@piggles/config/pricing';
-import { HeaderNotice } from '@piggles/ui';
+import { Suspense } from 'react';
+import { PRODUCT } from '@piggles/config';
 import { ChunkReloadGuard } from '@wizeworks/app-kit';
+import { HeaderNoticeSlot } from '@/components/header-notice-slot';
 import { SiteHeader } from '@/components/marketing/site-header';
 import { SiteFooter } from '@/components/marketing/site-footer';
 import { THEME_SCRIPT } from '@/lib/theme';
@@ -46,13 +46,7 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image' },
 };
 
-// The bar: whatever staff have switched on, else the founding offer while places
-// are left. Both are cached a minute and NEVER throw; the worst case is no bar.
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const notice =
-    (await fetchHeaderNotice('marketing')) ??
-    founderNotice(await fetchFounderOffer(), '/pricing#founding');
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     // NO `data-theme`: THEME_SCRIPT is its one writer, and a React default would
     // race it. `suppressHydrationWarning` is the counterpart, for that attribute.
@@ -69,7 +63,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Above everything that might capture; initialises nothing until consent. */}
         <PostHogProvider>
           {/* Above the header, so switching a notice on never moves the site's chrome. */}
-          <HeaderNotice notice={notice} />
+          {/* Staff's notice, else the offer; streamed, so a slow api-rest never holds the page. */}
+          <Suspense fallback={null}>
+            <HeaderNoticeSlot />
+          </Suspense>
           <SiteHeader />
           <main>{children}</main>
           <SiteFooter />

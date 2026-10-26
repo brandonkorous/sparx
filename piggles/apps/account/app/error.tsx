@@ -55,7 +55,7 @@ export default function AccountError({
   );
 }
 
-// Says what a reload costs: saved work stays, unsent typing on this page goes.
+// Says what a reload costs: saved work and kept signup and setup drafts stay, a password goes.
 function Message({ stale }: { stale: boolean }) {
   return (
     <div>
@@ -64,7 +64,7 @@ function Message({ stale }: { stale: boolean }) {
       </h1>
       <p className="mt-2 text-base">
         {stale
-          ? 'This page was open while we shipped an update. Reload to pick it up. Anything you typed on this page needs to be filled in again.'
+          ? 'This page was open while we shipped an update. Reload to pick it up. Your signup and setup answers are kept, but a password needs typing again.'
           : 'Try again first. If it keeps happening, reload the page. Nothing you have saved is affected.'}
       </p>
     </div>

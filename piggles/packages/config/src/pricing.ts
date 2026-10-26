@@ -2,8 +2,8 @@
 // NOT the package index, because the console never knows a price (RULE #2).
 // A price change is this file plus `piggles/config/billing-plan.json`.
 
-import { apiOrigin, REVALIDATE_ONE_MINUTE } from './api-origin';
-import type { HeaderNotice } from './notice';
+import { apiOrigin, cachedWithTimeout } from './api-origin';
+import { fetchHeaderNotice, type HeaderNotice, type NoticeSurface } from './notice';
 
 /** Dollars a month. The arithmetic form — comparisons, count-ups, receipts. */
 export const PRICE_MONTHLY = 99;
@@ -35,13 +35,13 @@ interface OfferWire {
   remaining: number;
 }
 
-/** The founding offer as it stands, or null when it cannot be read. NEVER
- *  THROWS: a page that cannot count the places says nothing about them. */
+/** The founding offer, or null when it cannot be read in 1.5 s. Never throws. */
 export async function fetchFounderOffer(): Promise<FounderOffer | null> {
   try {
-    const res = await fetch(`${apiOrigin()}/v1/public/billing/offer?plan=piggles`, {
-      ...REVALIDATE_ONE_MINUTE,
-    });
+    const res = await fetch(
+      `${apiOrigin()}/v1/public/billing/offer?plan=piggles`,
+      cachedWithTimeout()
+    );
     if (!res.ok) return null;
     const body = (await res.json()) as { data?: { offer?: OfferWire | null } };
     const offer = body.data?.offer;
@@ -72,4 +72,13 @@ export function founderNotice(offer: FounderOffer | null, href: string): HeaderN
     tone: 'primary',
     dismissible: true,
   };
+}
+
+/** The bar for a surface: staff's notice, else the offer. Both reads run at once. */
+export async function resolveHeaderNotice(
+  surface: NoticeSurface,
+  offerHref: string
+): Promise<HeaderNotice | null> {
+  const [notice, offer] = await Promise.all([fetchHeaderNotice(surface), fetchFounderOffer()]);
+  return notice ?? founderNotice(offer, offerHref);
 }

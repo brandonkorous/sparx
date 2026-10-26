@@ -9,6 +9,7 @@
     "start": "next start --port 3021",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run --maxWorkers=1 --passWithNoTests",
     "clean": "rm -rf .turbo .next *.tsbuildinfo"
   },
   "dependencies": {
@@ -43,6 +44,7 @@
     "@types/react-dom": "^19.0.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^4.3.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.12"
   }
 }
