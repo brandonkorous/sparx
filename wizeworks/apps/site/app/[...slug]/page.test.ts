@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// WW-8: unknown paths (`/api/phpinfo.php`, `/config.js`) sometimes answered 200.
-// The browser shell streamed before the page's late notFound(); metadata now
-// blocks the response (htmlLimitedBots) and decides the 404 itself.
+// WW-8: generateMetadata used to call notFound() for a slug nothing owns. Next 16
+// had already sent a 200 head, so it was only noise; real 404s for scanner paths
+// come from the proxy (lib/probe-path).
 
 const h = vi.hoisted(() => ({
   silica: vi.fn(),
@@ -42,6 +42,7 @@ vi.mock('@/components/section-renderer', () => ({ SectionRenderer: vi.fn() }));
 vi.mock('./authored-page', () => ({ SilicaSlugPage: vi.fn(), BuilderSlugPage: vi.fn() }));
 
 import config from '../../next.config.mjs';
+import { NOT_FOUND_METADATA } from '@/lib/slug-metadata';
 import { generateMetadata } from './page';
 
 const props = (...slug: string[]) => ({
@@ -55,13 +56,13 @@ beforeEach(() => {
 });
 
 describe('catch-all metadata', () => {
-  it('is a real 404 when nothing owns the slug, after trying redirects', async () => {
-    for (let i = 0; i < 20; i++) {
-      await expect(generateMetadata(props('definitely-missing.php'))).rejects.toThrow(
-        'NEXT_NOT_FOUND'
-      );
-    }
-    expect(h.redirect).toHaveBeenCalledWith('acme', '/definitely-missing.php');
+  // Next 16 sends the 200 head before metadata resolves, so a notFound() here never
+  // became a 404; it only added an exception per scanner request.
+  it('says not found without throwing when nothing owns the slug', async () => {
+    await expect(generateMetadata(props('definitely-missing'))).resolves.toEqual(
+      NOT_FOUND_METADATA
+    );
+    expect(h.redirect).not.toHaveBeenCalled();
   });
 
   it('keeps a page that only has Site Builder sections', async () => {
@@ -69,14 +70,12 @@ describe('catch-all metadata', () => {
     await expect(generateMetadata(props('about'))).resolves.toEqual({});
   });
 
-  it('is a 404 for a slug too long to be a page, without any page lookup', async () => {
-    await expect(generateMetadata(props('a'.repeat(300)))).rejects.toThrow('NEXT_NOT_FOUND');
+  it('skips every lookup for a slug too long to be a page', async () => {
+    await expect(generateMetadata(props('a'.repeat(300)))).resolves.toEqual(NOT_FOUND_METADATA);
     expect(h.silica).not.toHaveBeenCalled();
-    expect(h.redirect).toHaveBeenCalledOnce();
   });
 
-  it('blocks on metadata for every visitor, not only known crawlers', () => {
-    const chrome = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/148.0';
-    expect(config.htmlLimitedBots?.test(chrome)).toBe(true);
+  it('leaves metadata streaming as Next ships it', () => {
+    expect(config.htmlLimitedBots).toBeUndefined();
   });
 });
