@@ -4,7 +4,7 @@
 # the SEO overview's organic cards read pre-aggregated rows instead of a live
 # Google call on the hot path.
 #
-# Runs nightly at 10:00 UTC — after the site-analytics rollup (09:00) and the
+# Runs nightly at 10:23 UTC — after the site-analytics rollup (09:13) and the
 # other nightly reconciles, so they don't pile onto the DB at once. GSC data lags
 # ~2-3 days, so the exact run time is not sensitive; a missed run only delays
 # refreshing the organic figures by a day. Forbid concurrency so a slow run
@@ -23,7 +23,7 @@ metadata:
     app: search-console-cron
     job: search-console-sync
 spec:
-  schedule: '0 10 * * *'
+  schedule: '23 10 * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

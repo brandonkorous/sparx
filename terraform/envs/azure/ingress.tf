@@ -48,8 +48,9 @@ resource "azurerm_public_ip" "ingress" {
 module "dns" {
   source = "../../modules/dns"
 
-  ingress_ip         = azurerm_public_ip.ingress.ip_address
-  cloudflare_enabled = var.cloudflare_enabled
+  ingress_ip             = azurerm_public_ip.ingress.ip_address
+  cloudflare_enabled     = var.cloudflare_enabled
+  cloudflare_waf_enabled = var.cloudflare_waf_enabled
 
   operator_access_emails    = var.operator_access_emails
   sparx_email_dkim_selector = var.sparx_email_dkim_selector

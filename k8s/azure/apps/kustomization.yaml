@@ -143,11 +143,14 @@ replicas:
   - name: piggles-web
     count: 1
   - name: piggles-account
-    count: 1
+    count: 2
   - name: piggles-console
     count: 1
 
 patches:
+  # Every Postgres pool size, in one file, summed by `pnpm check:db-budget`.
+  - path: db-budget.yaml
+
   # --- The broker's JetStream volume ------------------------------------------
   # k8s/self-hosted/nats.yaml omits the storage class so it stays portable;
   # without this patch AKS binds it to the `default` class, which is Standard
@@ -180,6 +183,7 @@ patches:
       $patch: delete
   - target:
       kind: PodDisruptionBudget
+      labelSelector: sparx.works/keep-pdb!=true
     patch: |-
       apiVersion: policy/v1
       kind: PodDisruptionBudget
@@ -537,32 +541,7 @@ patches:
                 env:
                   - name: NODE_OPTIONS
                     value: '--max-old-space-size=1024'
-                  # Prisma sizes its pool `cpus * 2 + 1`, and this container requests
-                  # 50m, so it sees ONE cpu and opens THREE connections. api-rest is not
-                  # a worker: it runs eight background ticks (social sweeps, scheduled
-                  # publish, email dispatch, sitebuilder publish, webhook delivery, …)
-                  # alongside every HTTP request, all contending for those three.
-                  #
-                  # That produced 154 pool timeouts in 45 minutes with ZERO server-side
-                  # rejections — the database was never the constraint, the client pool
-                  # was. Each tick died mid-transaction, and since `email-dispatch` is
-                  # the only publisher of `email.send`, no transactional email had ever
-                  # been sent here: its JetStream consumer read `delivered: 0` for three
-                  # days.
-                  #
-                  # Set HERE and not in DATABASE_URL because that URL lives in the shared
-                  # `sparx-app-secrets` that ~20 services mount via envFrom — a limit
-                  # there multiplies across all of them. The single-consumer workers are
-                  # correctly served by 3.
-                  #
-                  # The budget is 8 for api-rest as a whole: Postgres is B1ms (~35
-                  # usable connections), it has already run out once (2026-10-19
-                  # 07:00 UTC, in the CronJob burst), and the idle floor across the
-                  # platform is ~20. So with TWO replicas each gets 4, and the total
-                  # stays the 8 it was at one. Raising the replica count means
-                  # dividing this again, or the pool total grows with every pod.
-                  - name: DB_CONNECTION_LIMIT
-                    value: '4'
+                  # DB_CONNECTION_LIMIT lives in db-budget.yaml with every other pool.
                 volumeMounts:
                   - name: media
                     mountPath: /media

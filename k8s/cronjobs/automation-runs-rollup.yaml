@@ -5,9 +5,9 @@
 # pre-aggregated rows instead of scanning every automation's run history on the
 # hot path.
 #
-# Runs nightly at 08:00 UTC — after the day has fully closed and after the
-# commerce revenue (06:00), invoicing collected (06:30) and dropship orders
-# (07:00) rollups, so the nightly reconciles don't pile onto the DB at once. The
+# Runs nightly at 08:16 UTC — after the day has fully closed and after the
+# commerce revenue (06:14), invoicing collected (06:30) and dropship orders
+# (07:18) rollups, so the nightly reconciles don't pile onto the DB at once. The
 # work is a single GROUP-BY-day pass over the trailing window per tenant, but
 # Forbid concurrency so a slow run never overlaps the next. The read endpoint
 # live-overlays today, so a late or skipped run only delays correcting closed
@@ -22,7 +22,7 @@ metadata:
     app: automation-cron
     job: runs-rollup
 spec:
-  schedule: '0 8 * * *'
+  schedule: '16 8 * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

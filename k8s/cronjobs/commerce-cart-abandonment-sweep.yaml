@@ -23,7 +23,7 @@ metadata:
     app: commerce-cron
     job: cart-abandonment-sweep
 spec:
-  schedule: '*/10 * * * *'
+  schedule: '5-59/10 * * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

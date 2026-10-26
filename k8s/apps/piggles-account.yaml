@@ -19,7 +19,8 @@ metadata:
     tier: web
     brand: piggles
 spec:
-  replicas: 1
+  # Two pods (SI-5): the Piggles sign-in authority must survive a pod restart or a node drain.
+  replicas: 2
   revisionHistoryLimit: 5
   strategy:
     type: RollingUpdate
@@ -37,6 +38,14 @@ spec:
         brand: piggles
     spec:
       serviceAccountName: sparx-app
+      # One pod per node where possible, so a node drain never takes both.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: piggles-account
       containers:
         - name: piggles-account
           image: us-central1-docker.pkg.dev/sparxworks/sparx/piggles-account:latest
@@ -59,6 +68,14 @@ spec:
           env:
             - name: NODE_ENV
               value: production
+            # The key this image was built with, so server-action ids match across releases (SI-2).
+            # Optional: without the NEXT_ACTIONS_KEY_PIGGLES_ACCOUNT secret, Next uses the key baked into the build.
+            - name: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sparx-app-secrets
+                  key: NEXT_ACTIONS_KEY_PIGGLES_ACCOUNT
+                  optional: true
             # WizeLens: send-only tracing to WizeLens Cloud. With NODE_ENV=production
             # the add-on serves no dashboard or read API; it only sends. The ingest
             # key is per app (vault `wizelens-key-piggles-account`); optional, so a missing key
@@ -144,13 +161,11 @@ spec:
             seccompProfile:
               type: RuntimeDefault
           # No CPU limit, memory ceilinged — see the note in piggles-web.yaml.
-          # 256Mi is an ESTIMATE from sparx's workbench (measured 232Mi), which
-          # is the nearest thing to this app's shape: a small route table over
-          # @wizeworks/auth and Prisma. Measure and move it.
+          # Measured 351 MB RSS (WizeLens, 2026-10-23); the request sits just above it (SI-5).
           resources:
             requests:
               cpu: '25m'
-              memory: '256Mi'
+              memory: '400Mi'
             limits:
               memory: '640Mi'
           # `/sign-in` is a full RSC render and would be the wrong probe for
@@ -199,8 +214,12 @@ kind: PodDisruptionBudget
 metadata:
   name: piggles-account
   namespace: sparx-prod
+  labels:
+    # The Azure overlays delete every PDB except these.
+    sparx.works/keep-pdb: "true"
 spec:
-  maxUnavailable: 1
+  # Keep one pod through any voluntary eviction (SI-5); maxUnavailable 1 allowed both to go.
+  minAvailable: 1
   selector:
     matchLabels:
       app: piggles-account

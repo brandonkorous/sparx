@@ -176,7 +176,11 @@ ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
 # thing and the program no longer fits V8's default ~4 GB. It does not fail as a
 # type error — the worker dies with `Ineffective mark-compacts near heap limit`
 # and SIGABRT, which reads as a broken build rather than a box that ran short.
-RUN NODE_OPTIONS=--max-old-space-size=8192 pnpm --filter @piggles/console build
+# Stable server-action ids across builds (SI-2). No secret = Next picks a random key, as before.
+RUN --mount=type=secret,id=next_actions_key \
+    key="$(cat /run/secrets/next_actions_key 2>/dev/null || true)"; \
+    if [ -n "$key" ]; then export NEXT_SERVER_ACTIONS_ENCRYPTION_KEY="$key"; fi; \
+    NODE_OPTIONS=--max-old-space-size=8192 pnpm --filter @piggles/console build
 
 # ----- Production runner -----
 FROM node:${NODE_VERSION} AS runner
@@ -204,5 +208,9 @@ COPY --from=builder --chown=nextjs:nodejs /repo/piggles/apps/workbench/public ./
 USER nextjs
 
 EXPOSE 3000
+
+# The commit this image was built from; WizeLens reports it as the release (SI-2).
+ARG WIZELENS_RELEASE=local
+ENV WIZELENS_RELEASE=$WIZELENS_RELEASE
 
 CMD ["node", "piggles/apps/workbench/server.js"]

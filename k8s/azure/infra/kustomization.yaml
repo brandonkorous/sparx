@@ -57,6 +57,8 @@ resources:
   # config, which is the point. AKS provisions a Standard LB and public IP from
   # that Service exactly as GKE provisions a Network LB.
   - ../../ingress
+  # PgBouncer for sparx_app (SI-1); see the file header for when apps use it.
+  - pgbouncer.yaml
 
 # The application environment. It lives in the INFRA overlay, not with the apps,
 # because the data-stage Jobs consume it (`envFrom: configMapRef: sparx-app-env`)
@@ -134,6 +136,7 @@ patches:
       $patch: delete
   - target:
       kind: PodDisruptionBudget
+      labelSelector: sparx.works/keep-pdb!=true
     patch: |-
       apiVersion: policy/v1
       kind: PodDisruptionBudget

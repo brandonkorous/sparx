@@ -493,6 +493,35 @@ jobs:
       - name: Lint workflow heredocs
         run: bash .github/scripts/lint-workflow-heredocs.sh
 
+  infra:
+    name: Infra checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Checks over k8s/, the ingress and the release; no pnpm install.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Unit tests for the infra scripts
+        run: node --test scripts/*.test.mjs
+
+      - name: Check every Postgres pool fits the server
+        run: node scripts/check-db-budget.mjs
+
+      - name: Check every Next app builds and runs with one server-action key
+        run: node scripts/check-next-actions-key.mjs
+
+      # kubectl ships on the hosted runner; `kustomize` here renders only, it talks to no cluster.
+      - name: Check the rendered Azure overlays keep their availability rules
+        run: node scripts/check-k8s-overlays.mjs
+
+      # The ingress serves every hostname; a config Caddy refuses takes all of them down at once.
+      - name: Validate the Caddyfile and smoke-test its header snippets
+        run: bash .github/scripts/caddy-smoke.sh
+
   terraform:
     name: Terraform fmt + validate
     runs-on: ubuntu-latest

@@ -45,3 +45,7 @@ kubectl delete secret pgbouncer-secrets -n sparx-prod
 # Recreate with the new password
 kubectl rollout restart deployment pgbouncer -n sparx-prod
 ```
+
+## Azure
+
+This directory is the GCP-era copy. On AKS the pooler is [k8s/azure/infra/pgbouncer.yaml](../azure/infra/pgbouncer.yaml): its config Secret is written by the release from `DATABASE_URL` ([scripts/pgbouncer-config.mjs](../../scripts/pgbouncer-config.mjs)), and apps move to it only when the `PGBOUNCER_ENABLED` repository variable is `true`. Pool sizes for every Deployment are in [k8s/azure/apps/db-budget.yaml](../azure/apps/db-budget.yaml), checked by `pnpm check:db-budget`.

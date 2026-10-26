@@ -1,0 +1,158 @@
+# Database connection budget for psql-sparx-prod-cus (B1ms: 50 max, 15 reserved, 35 usable).
+# One patch per Deployment that opens Postgres. `pnpm check:db-budget` sums these against the cap.
+# Per pod = DB_CONNECTION_LIMIT (sparx_app pool) + AUTH_DB_CONNECTION_LIMIT (Better Auth's sparx_owner pool).
+# Processes that run withAdvisoryTickLock (api-rest, event-worker) need 2+: the lock parks one connection.
+#
+#   deployment        replicas  app  auth  direct  through PgBouncer
+#   api-rest          2         4    1     10      2
+#   workbench         1         2    1     3       1
+#   piggles-console   1         2    1     3       1
+#   piggles-account   2         2    1     6       2
+#   api-graphql       1         1    1     2       1
+#   api-mcp           1         2    1     3       1
+#   event-worker      1         4    0     4       0
+#   media-worker      1         1    0     1       0
+#   import-worker     1         1    0     1       0
+#   admin             1         operator pg pool  2       2
+#   PgBouncer         2 pods x 9 server connections        18
+#   total                                  35 of 35  28 of 33 (2 kept for the role + migrate Jobs)
+#
+# These are maxima, not use. Rollouts surge past them; PgBouncer (PGBOUNCER_ENABLED=true) absorbs that.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-rest
+  namespace: sparx-prod
+spec:
+  template:
+    spec:
+      containers:
+        - name: api-rest
+          env:
+            # Per replica; two replicas share the 8 it had at one (see the api-rest patch).
+            - { name: DB_CONNECTION_LIMIT, value: '4' }
+            - { name: AUTH_DB_CONNECTION_LIMIT, value: '1' }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workbench
+  namespace: sparx-prod
+spec:
+  template:
+    spec:
+      containers:
+        - name: workbench
+          env:
+            - { name: DB_CONNECTION_LIMIT, value: '2' }
+            - { name: AUTH_DB_CONNECTION_LIMIT, value: '1' }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: piggles-console
+  namespace: sparx-prod
+spec:
+  template:
+    spec:
+      containers:
+        - name: piggles-console
+          env:
+            - { name: DB_CONNECTION_LIMIT, value: '2' }
+            - { name: AUTH_DB_CONNECTION_LIMIT, value: '1' }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: piggles-account
+  namespace: sparx-prod
+spec:
+  template:
+    spec:
+      containers:
+        - name: piggles-account
+          env:
+            - { name: DB_CONNECTION_LIMIT, value: '2' }
+            - { name: AUTH_DB_CONNECTION_LIMIT, value: '1' }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-graphql
+  namespace: sparx-prod
+spec:
+  template:
+    spec:
+      containers:
+        - name: api-graphql
+          env:
+            - { name: DB_CONNECTION_LIMIT, value: '1' }
+            - { name: AUTH_DB_CONNECTION_LIMIT, value: '1' }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-mcp
+  namespace: sparx-prod
+spec:
+  template:
+    spec:
+      containers:
+        - name: api-mcp
+          env:
+            - { name: DB_CONNECTION_LIMIT, value: '2' }
+            - { name: AUTH_DB_CONNECTION_LIMIT, value: '1' }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-worker
+  namespace: sparx-prod
+spec:
+  template:
+    spec:
+      containers:
+        - name: event-worker
+          env:
+            - { name: DB_CONNECTION_LIMIT, value: '4' }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-worker
+  namespace: sparx-prod
+spec:
+  template:
+    spec:
+      containers:
+        - name: media-worker
+          env:
+            - { name: DB_CONNECTION_LIMIT, value: '1' }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: import-worker
+  namespace: sparx-prod
+spec:
+  template:
+    spec:
+      containers:
+        - name: import-worker
+          env:
+            - { name: DB_CONNECTION_LIMIT, value: '1' }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+  namespace: sparx-prod
+spec:
+  template:
+    spec:
+      containers:
+        - name: admin
+          env:
+            # The operator console's pg pool (wizeworks/packages/operator-auth/src/pool-size.ts).
+            - { name: OPERATOR_DB_POOL_MAX, value: '2' }

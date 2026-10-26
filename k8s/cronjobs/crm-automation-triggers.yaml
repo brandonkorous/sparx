@@ -11,7 +11,7 @@ metadata:
     app: crm-cron
     job: automation-triggers
 spec:
-  schedule: '0 3 * * *' # 03:00 UTC daily
+  schedule: '11 3 * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

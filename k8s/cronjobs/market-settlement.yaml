@@ -3,7 +3,7 @@
 # run, disburses the net via the configured payout rail (or leaves it pending for
 # manual ACH), and emails the settlement report.
 #
-# Mondays at 09:00 UTC — a weekly cadence (the doc's "every Monday"); marketplace
+# Mondays at 09:22 UTC — a weekly cadence (the doc's "every Monday"); marketplace
 # payout SLAs are weekly, not real-time. Forbid concurrency so a slow run (it loops
 # every tenant + sends email events) can't pile up. computeSettlementRun only ever
 # sweeps `accrued` rows, so a re-run finds nothing left — idempotent in effect. A
@@ -18,7 +18,7 @@ metadata:
     app: market-cron
     job: market-settlement
 spec:
-  schedule: '0 9 * * 1'
+  schedule: '22 9 * * 1' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

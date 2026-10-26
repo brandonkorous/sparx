@@ -52,6 +52,14 @@ spec:
           env:
             - name: NODE_ENV
               value: production
+            # The key this image was built with, so server-action ids match across releases (SI-2).
+            # Optional: without the NEXT_ACTIONS_KEY_WEB secret, Next uses the key baked into the build.
+            - name: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sparx-app-secrets
+                  key: NEXT_ACTIONS_KEY_WEB
+                  optional: true
             # WizeLens: send-only tracing to WizeLens Cloud. With NODE_ENV=production
             # the add-on serves no dashboard or read API; it only sends. The ingest
             # key is per app (vault `wizelens-key-web`); optional, so a missing key

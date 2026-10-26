@@ -139,7 +139,11 @@ ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
 
 # Eleven routes, but the type program spans @wizeworks/auth and the whole schema
 # family, so this sits above the small-app default and below the console's.
-RUN NODE_OPTIONS=--max-old-space-size=6144 pnpm --filter @piggles/account build
+# Stable server-action ids across builds (SI-2). No secret = Next picks a random key, as before.
+RUN --mount=type=secret,id=next_actions_key \
+    key="$(cat /run/secrets/next_actions_key 2>/dev/null || true)"; \
+    if [ -n "$key" ]; then export NEXT_SERVER_ACTIONS_ENCRYPTION_KEY="$key"; fi; \
+    NODE_OPTIONS=--max-old-space-size=6144 pnpm --filter @piggles/account build
 
 # ----- Production runner -----
 FROM node:${NODE_VERSION} AS runner
@@ -164,5 +168,9 @@ COPY --from=builder --chown=nextjs:nodejs /repo/piggles/apps/account/public ./pi
 USER nextjs
 
 EXPOSE 3000
+
+# The commit this image was built from; WizeLens reports it as the release (SI-2).
+ARG WIZELENS_RELEASE=local
+ENV WIZELENS_RELEASE=$WIZELENS_RELEASE
 
 CMD ["node", "piggles/apps/account/server.js"]

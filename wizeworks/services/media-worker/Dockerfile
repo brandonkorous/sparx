@@ -18,4 +18,8 @@ WORKDIR /app/wizeworks/services/media-worker
 
 EXPOSE 8080
 
+# The commit this image was built from; WizeLens reports it as the release (SI-2).
+ARG WIZELENS_RELEASE=local
+ENV WIZELENS_RELEASE=$WIZELENS_RELEASE
+
 ENTRYPOINT ["dumb-init", "--", "node", "--import", "tsx", "src/index.ts"]

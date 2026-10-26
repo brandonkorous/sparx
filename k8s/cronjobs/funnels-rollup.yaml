@@ -5,7 +5,7 @@
 # it (counted as distinct visitors on each view rung's page). Idempotent
 # (delete-window-then-insert), so a replay is free.
 #
-# Runs at 10:00 UTC — after site-analytics-rollup at 09:00, and that order is
+# Runs at 10:12 UTC — after site-analytics-rollup at 09:13, and that order is
 # load-bearing rather than tidy: this job reads site_analytics_events for its
 # anonymous half, and running it first would count a day the beacon was still
 # writing into. Everything else stays clear of the 06:00–09:00 nightly reconcile
@@ -24,7 +24,7 @@ metadata:
     app: funnels-cron
     job: funnels-rollup
 spec:
-  schedule: '0 10 * * *'
+  schedule: '12 10 * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3

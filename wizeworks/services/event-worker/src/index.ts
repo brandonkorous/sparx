@@ -44,9 +44,8 @@
 // nak handling for a saving NATS does not need. Connections are cheap; the Node
 // heaps were not.
 
-// MUST BE FIRST: raises DATABASE_URL's connection_limit before `@wizeworks/db` is
-// constructed (it reads the pool size at import). Twelve handlers now share one
-// pool — see boot-db-pool.ts for why the floor moved from 5 to 20.
+// MUST BE FIRST: sets DB_CONNECTION_LIMIT before `@wizeworks/db` is constructed (it reads
+// the pool size at import). See boot-db-pool.ts for the floor and the default.
 import './boot-db-pool.js';
 
 import pino from 'pino';

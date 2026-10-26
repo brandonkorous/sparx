@@ -11,7 +11,7 @@ metadata:
     app: crm-cron
     job: partition-rollover
 spec:
-  schedule: '0 2 * * *' # 02:00 UTC daily
+  schedule: '13 2 * * *' # off :00 so jobs do not all fire at once (SI-1)
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3
