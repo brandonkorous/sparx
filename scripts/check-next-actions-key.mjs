@@ -3,8 +3,8 @@
 //
 // Next salts server-action ids with NEXT_SERVER_ACTIONS_ENCRYPTION_KEY, random per build when unset, so every
 // release broke open tabs ("Failed to find Server Action"). For each Next image in the release matrix this
-// checks the four places that must agree: the matrix names a NEXT_ACTIONS_KEY_* secret, the build passes it,
-// the Dockerfile mounts it, the pod maps it, and the secret sync copies it. Pure Node, no install.
+// checks the places that must agree: the matrix names a key, the build reads it from Key Vault and passes it,
+// the Dockerfile mounts it, and the pod maps it. No GitHub secret may carry it. Pure Node, no install.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -24,15 +24,15 @@ export function nextProblems(entry, { dockerfile, manifest, release }) {
   const key = entry.actionsKey;
   if (!key) return [`${entry.name}: no actions_key in the release matrix`];
   const problems = [];
-  if (!release.includes('next_actions_key=${{ matrix.actions_key && secrets[matrix.actions_key]')) {
-    problems.push(`${entry.name}: the build step does not pass next_actions_key`);
+  if (!release.includes('next_actions_key=${{ env.NEXT_ACTIONS_KEY }}') || !release.includes('az keyvault secret show')) {
+    problems.push(`${entry.name}: the build step does not pass next_actions_key from Key Vault`);
   }
   if (!/id=next_actions_key/.test(dockerfile) || !dockerfile.includes('NEXT_SERVER_ACTIONS_ENCRYPTION_KEY')) {
     problems.push(`${entry.name}: ${entry.dockerfile} does not build with the next_actions_key secret`);
   }
   const mapped = new RegExp(`name: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY[\\s\\S]{0,200}?key: ${key}\\s`).test(manifest ?? '');
   if (!mapped) problems.push(`${entry.name}: k8s/apps/${entry.name}.yaml does not map ${key}`);
-  if (!release.includes(`${key}: \${{ secrets.${key} }}`)) problems.push(`${entry.name}: the secret sync does not read ${key}`);
+  if (release.includes(`secrets.${key}`)) problems.push(`${entry.name}: ${key} must come from Key Vault, not a GitHub secret`);
   return problems;
 }
 
