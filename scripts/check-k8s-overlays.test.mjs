@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { caddyProblems, findDoc, memoryRequestMi, pigglesProblems } from './check-k8s-overlays.mjs';
 
-const CADDY_OK = `apiVersion: apps/v1
+const CADDY_TWO = `apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: caddy
@@ -34,17 +34,17 @@ spec:
 `;
 
 test('finds a document by kind and name', () => {
-  const rendered = `kind: Service\nmetadata:\n  name: caddy\n---\n${CADDY_OK}`;
+  const rendered = `kind: Service\nmetadata:\n  name: caddy\n---\n${CADDY_TWO}`;
   assert.match(findDoc(rendered, 'Deployment', 'caddy'), /replicas: 2/);
   assert.equal(findDoc(rendered, 'Deployment', 'nope'), '');
 });
 
-test('two co-located caddy pods on a rolling update pass', () => {
-  assert.deepEqual(caddyProblems(CADDY_OK), []);
+test('one caddy pod on Recreate passes while the cert disk is RWO', () => {
+  assert.deepEqual(caddyProblems(CADDY_BEFORE), []);
 });
 
-test('one caddy pod on Recreate (before SI-3) fails all three rules', () => {
-  assert.equal(caddyProblems(CADDY_BEFORE).length, 3);
+test('two caddy pods on a rolling update fail both rules (Multi-Attach hang, 10-26)', () => {
+  assert.equal(caddyProblems(CADDY_TWO).length, 2);
 });
 
 const deployment = (name, replicas, memory) =>

@@ -14,13 +14,12 @@ export function findDoc(rendered, kind, name) {
 /** One rule: a label and the problem text when the predicate fails. */
 const rule = (ok, problem) => (ok ? [] : [problem]);
 
-/** Caddy: two pods, rolled without a gap, kept on one node for the RWO cert disk. */
+/** Caddy on its RWO cert disk: one pod, Recreate. A second pod lands on another node and hangs on Multi-Attach (10-26). */
 export function caddyProblems(infra) {
   const d = findDoc(infra, 'Deployment', 'caddy');
   return [
-    ...rule(/^  replicas: ([2-9]|\d{2,})$/m.test(d), 'caddy must run at least 2 replicas'),
-    ...rule(/type: RollingUpdate/.test(d) && /maxUnavailable: 0/.test(d), 'caddy must roll with maxUnavailable 0'),
-    ...rule(/podAffinity:[\s\S]*app: caddy[\s\S]*topologyKey: kubernetes\.io\/hostname/.test(d), 'caddy pods must share a node (RWO cert disk)'),
+    ...rule(/^  replicas: 1$/m.test(d), 'caddy must run 1 replica while its cert disk is ReadWriteOnce'),
+    ...rule(/type: Recreate/.test(d), 'caddy must use Recreate while its cert disk is ReadWriteOnce'),
   ];
 }
 
