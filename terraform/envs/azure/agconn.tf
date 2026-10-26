@@ -18,12 +18,8 @@
 # So this file has two halves and two switches:
 #
 #   agconn_enabled       the vault. ON. This is what the pipeline needs today.
-#   agconn_data_enabled  Postgres + storage. OFF. Written out in full so the
-#                        later decision is one variable rather than a design
-#                        session, but not provisioned, because a Flexible Server
-#                        with no database in it is ~$14/mo of nothing and, per
-#                        jotacular's own note, "an empty vault and an idle server
-#                        both look configured and are not."
+#   agconn_data_enabled  Postgres + storage. ON since 2026-10-26 (AG-11), when
+#                        AGCONN's data moved off Supabase to this server.
 #
 # TWO SWITCHES RATHER THAN ONE, because one would force a choice between paying
 # for an idle server and having no vault, and AGCONN needs the vault now.
@@ -69,12 +65,10 @@ variable "agconn_data_enabled" {
     Master switch for AGCONN's Postgres Flexible Server, its database, its
     Storage Account, and the five secrets derived from them.
 
-    OFF, and off is the CORRECT state, not an unfinished one. AGCONN's data
-    lives on Supabase and the decision on 2026-08-26 was to leave it there for
-    now. Everything below is written out so that turning it on is one variable
-    plus a data migration, rather than starting from a blank file — but nothing
-    is provisioned, so nothing is billed and nothing sits empty pretending to be
-    configured.
+    ON since 2026-10-26 (AG-11): AGCONN's data moves off Supabase to this server,
+    and the app connects as the restricted agconn_app role. Turning it on
+    overwrites DATABASE-URL and DIRECT-URL in kv-agconn-prod-cus, so merging this
+    starts the cutover (runbook: AgConnect move-to-azure.yml, then its PR #10).
 
     TURNING IT ON IS NOT SUFFICIENT BY ITSELF. Three things happen in the AGCONN
     repo at the same time, and none of them are here:
@@ -100,7 +94,7 @@ variable "agconn_data_enabled" {
     deploy that looks provisioned and cannot serve.
   EOT
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "agconn_key_vault_name" {
