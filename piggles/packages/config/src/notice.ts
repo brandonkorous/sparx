@@ -2,7 +2,7 @@
 // in the admin console and served by api-rest. Shared so all three surfaces say
 // the same thing. SERVER ONLY: one cached fetch per render, never per visitor.
 
-import { apiOrigin, REVALIDATE_ONE_MINUTE } from './api-origin';
+import { apiOrigin, cachedWithTimeout } from './api-origin';
 
 /** A notice as it is shown: none of the operator's window, switch or audit fields. */
 export interface HeaderNotice {
@@ -17,12 +17,11 @@ export interface HeaderNotice {
 
 export type NoticeSurface = 'marketing' | 'account' | 'console';
 
-/** The one notice for this surface, or null. NEVER THROWS: a layout calls this,
- *  and a missing banner must not take out every page. Cached a minute. */
+/** The notice for this surface, or null. Never throws, cached a minute, gives up after 1.5 s. */
 export async function fetchHeaderNotice(surface: NoticeSurface): Promise<HeaderNotice | null> {
   try {
     const url = `${apiOrigin()}/v1/public/announcements?brand=piggles&surface=${surface}`;
-    const res = await fetch(url, REVALIDATE_ONE_MINUTE);
+    const res = await fetch(url, cachedWithTimeout());
     if (!res.ok) return null;
     const body: unknown = await res.json();
     const announcement = (body as { data?: { announcement?: HeaderNotice | null } })?.data

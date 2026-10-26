@@ -32,6 +32,9 @@ function devMediaPatterns() {
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  // `next build` type-checks without the tests: some import files outside the image
+  // (scripts/, a sibling app), and the CI Typecheck job still checks them.
+  typescript: { tsconfigPath: './tsconfig.build.json' },
   // No `X-Powered-By: Next.js`: it tells a scanner which exploits to try.
   poweredByHeader: false,
   // @wizeworks/api-client ships raw TypeScript (main points at src/index.ts), so it
