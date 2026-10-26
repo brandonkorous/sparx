@@ -71,13 +71,14 @@ const LEGAL: FooterLink[] = [
   { href: '/brand', label: 'Brand' },
 ];
 
+// No prefetch: ~30 footer links in view at load fired ~30 RSC fetches per page view.
 function FooterAnchor({ link, className }: { link: FooterLink; className: string }) {
   return link.external ? (
     <a href={link.href} className={className}>
       {link.label}
     </a>
   ) : (
-    <Link href={link.href} className={className}>
+    <Link href={link.href} className={className} prefetch={false}>
       {link.label}
     </Link>
   );
@@ -86,7 +87,7 @@ function FooterAnchor({ link, className }: { link: FooterLink; className: string
 function FooterAsk() {
   return (
     <div className="lg:col-span-2">
-      <Link href="/" aria-label={`${PRODUCT.name} home`}>
+      <Link href="/" aria-label={`${PRODUCT.name} home`} prefetch={false}>
         <Logo />
       </Link>
       <p className="mt-5 max-w-[32ch] text-lg font-semibold">{PRODUCT.tagline}</p>
