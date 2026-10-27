@@ -22,17 +22,22 @@
 // can re-display their unused codes; a one-way hash would make that impossible.
 
 model TwoFactor {
-  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId      String  @map("user_id") @db.Uuid
+  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                  String    @map("user_id") @db.Uuid
   // Base32 TOTP shared secret, encrypted at rest with BETTER_AUTH_SECRET.
-  secret      String  @db.Text
+  secret                  String    @db.Text
   // The user's remaining single-use backup codes, encrypted at rest as one
   // JSON array. Consumed codes are removed from the array on use.
-  backupCodes String  @map("backup_codes") @db.Text
+  backupCodes             String    @map("backup_codes") @db.Text
   // Whether this enrollment completed its proving step. The enable flow writes
   // the row unverified, and only flips this once the operator has typed a code
   // their app generated — so a half-finished setup can never lock anyone out.
-  verified    Boolean @default(true)
+  verified                Boolean   @default(true)
+  // Wrong codes since the last right one. The plugin locks the enrollment once
+  // this passes its limit, and resets it to 0 on a correct code.
+  failedVerificationCount Int       @default(0) @map("failed_verification_count")
+  // Set while the enrollment is locked out after too many wrong codes.
+  lockedUntil             DateTime? @map("locked_until") @db.Timestamptz
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
