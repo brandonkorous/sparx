@@ -76,7 +76,6 @@ COPY --chown=node:node pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.
 # refuses to run when the workspace on disk does not match the lockfile's
 # importers, and every workspace glob has to resolve for that to hold. Manifests
 # only: no source, and nothing installs for them.
-COPY --chown=node:node wizeworks/apps/admin/package.json ./wizeworks/apps/admin/
 COPY --chown=node:node wizeworks/apps/site/package.json ./wizeworks/apps/site/
 COPY --chown=node:node sparx/apps/market/package.json ./sparx/apps/market/
 COPY --chown=node:node sparx/apps/web/package.json ./sparx/apps/web/

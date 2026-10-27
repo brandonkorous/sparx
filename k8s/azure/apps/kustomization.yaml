@@ -81,9 +81,6 @@ images:
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/market
     newName: ghcr.io/brandonkorous/sparx/market
     newTag: latest
-  - name: us-central1-docker.pkg.dev/sparxworks/sparx/admin
-    newName: ghcr.io/brandonkorous/sparx/admin
-    newTag: latest
   # Piggles. Same registry and the same `sparx/` package path — the repository
   # is the unit GHCR names, not the brand, and inventing a second package path
   # would mean a second set of package permissions to keep public.
@@ -124,8 +121,6 @@ replicas:
   # a Postgres advisory lock, so only one replica runs it at a time.
   - name: api-rest
     count: 2
-  - name: admin
-    count: 1
   - name: api-graphql
     count: 1
   - name: api-mcp

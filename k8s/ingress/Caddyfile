@@ -600,17 +600,19 @@ import mode.caddy
 	redir https://wize.works{uri} permanent
 }
 
-# ----- WizeWorks operator console (admin.wize.works, sparx-prod namespace) -----
+# ----- WizeWorks operator console (admin.wize.works, wizeworks namespace) -----
 # The Layer-4 operator console (docs/16 §2.4). Access control is enforced IN
-# FRONT by Cloudflare Access, the load-bearing gate until operator MFA ships;
-# Caddy just proxies to the admin Service.
+# FRONT by Cloudflare Access; Caddy just proxies to the admin Service.
 #
-# The console used to live in its own `wize-admin` namespace, applied out of
-# band. That namespace was never recreated on AKS, so this block proxied into
-# nothing and the host 502'd BEHIND Cloudflare Access — which made it look up
-# from outside, because Access answers the first request itself and never
-# reaches the origin. It now ships in sparx-prod like every other app
-# (k8s/apps/admin.yaml), so there is no out-of-band namespace left to forget.
+# The console is a WizeWorks app and ships from the wizeworks repo
+# (admin/, k8s/admin/) into the `wizeworks` namespace, beside wize.works. It
+# moved out of sparx-prod on 2026-10-27. Like every co-tenant it is addressed
+# on port 80.
+#
+# ORDER MATTERS, the same lesson as the old `wize-admin` namespace: this route
+# must not point at a Service that does not exist yet, or the host 502s BEHIND
+# Cloudflare Access and looks up from outside. The wizeworks repo deploys the
+# Service first; only then does this change ship.
 #
 # TLS is a Cloudflare ORIGIN CA certificate, NOT Let's Encrypt. This host sits
 # behind Cloudflare Access, which intercepts the ACME challenge path
@@ -650,7 +652,7 @@ import mode.caddy
 {$SX_SCHEME:https}://admin.wize.works {
 	import tls_admin_origin
 	import security_headers
-	reverse_proxy admin.sparx-prod.svc.cluster.local:3000
+	reverse_proxy admin.wizeworks.svc.cluster.local:80
 }
 
 # ----- Module marketing sites -----

@@ -286,11 +286,6 @@ jobs:
                     - { name: web, dockerfile: sparx/apps/web/Dockerfile, actions_key: NEXT_ACTIONS_KEY_WEB }
                     - { name: site, dockerfile: wizeworks/apps/site/Dockerfile, actions_key: NEXT_ACTIONS_KEY_SITE }
                     - { name: market, dockerfile: sparx/apps/market/Dockerfile, actions_key: NEXT_ACTIONS_KEY_MARKET }
-                    - {
-                          name: admin,
-                          dockerfile: wizeworks/apps/admin/Dockerfile,
-                          actions_key: NEXT_ACTIONS_KEY_ADMIN,
-                      }
                     # Piggles — the sister brand's three surfaces (k8s/apps). Separate
                     # images because they are separate applications: piggles/CLAUDE.md
                     # RULE #0 says either product must be deletable tomorrow without
@@ -827,36 +822,6 @@ jobs:
                   grep -v '_B64=' /tmp/app.env > /tmp/app.env.plain || true
                   grep '_B64=' /tmp/app.env > /tmp/app.env.b64 || true
                   B64_COUNT=$(wc -l < /tmp/app.env.b64 | tr -d ' ')
-
-                  # OPERATOR_DATABASE_URL — derived when absent, never silently omitted.
-                  #
-                  # wizeworks/apps/admin talks to the wize_admin schema as `wize_operator`, a
-                  # different role from the one in DATABASE_URL. When the var is unset,
-                  # wizeworks/packages/operator-auth/src/db.ts falls back to a LOCALHOST dev
-                  # default — so the admin pod dialled 127.0.0.1:5544 in-cluster and
-                  # every sign-in returned 500, while the console looked deployed and
-                  # healthy.
-                  #
-                  # Deriving it is sound rather than a guess: wizeworks/packages/db/sql/azure-bootstrap.sql
-                  # sets wize_operator's password from the SAME app_password as
-                  # sparx_app, so on this provider the two differ only by role name.
-                  # Supplying OPERATOR_DATABASE_URL explicitly in SPARX_APP_SECRETS_ENV
-                  # overrides this entirely, which is what to do the moment those
-                  # passwords diverge.
-                  if ! grep -q '^OPERATOR_DATABASE_URL' /tmp/app.env; then
-                    DB_URL=$(grep -m1 '^DATABASE_URL=' /tmp/app.env.plain | cut -d= -f2-)
-                    if [ -z "$DB_URL" ]; then
-                      echo "::error::DATABASE_URL missing from SPARX_APP_SECRETS_ENV; cannot derive OPERATOR_DATABASE_URL."
-                      exit 1
-                    fi
-                    OP_URL=$(printf '%s' "$DB_URL" | sed 's#://sparx_app:#://wize_operator:#')
-                    case "$OP_URL" in
-                      *\?*) OP_URL="$OP_URL&schema=wize_admin" ;;
-                      *)    OP_URL="$OP_URL?schema=wize_admin" ;;
-                    esac
-                    printf 'OPERATOR_DATABASE_URL=%s\n' "$OP_URL" >> /tmp/app.env.plain
-                    echo "OPERATOR_DATABASE_URL not supplied; derived it from DATABASE_URL as wize_operator."
-                  fi
 
                   # AZURE_STORAGE_ACCOUNT / AZURE_STORAGE_KEY — read out of the state this
                   # job just applied, not copied by hand.

@@ -64,16 +64,16 @@ undoing is in the wrong tree.
 
 ## What lives here
 
-| Area            | Contents                                                                                |
-| --------------- | --------------------------------------------------------------------------------------- |
-| Data            | `db` (Prisma schema, migrations, RLS), `search`                                         |
-| Identity        | `auth` (Better Auth, both instances, API keys), `entitlements`                          |
-| Messaging       | `events` (the `EventType` catalog), `email` (templates + delivery)                      |
-| Modules         | `commerce`, `crm`, `cms`, `inventory`, `b2b`, `finance`, `scheduling`, `dropship`, …    |
-| Design contract | `brand-core` — which tokens exist, the attribute vocabulary, the module list            |
-| Integrations    | `integration-framework` and every adapter                                               |
-| Services        | all ~18 — `api-rest`, `api-graphql`, `api-mcp`, `mcp-site`, the worker fleet            |
-| Apps            | `admin` (the WizeWorks staff console — ours by name), `site` (the tenant site renderer) |
+| Area            | Contents                                                                             |
+| --------------- | ------------------------------------------------------------------------------------ |
+| Data            | `db` (Prisma schema, migrations, RLS), `search`                                      |
+| Identity        | `auth` (Better Auth, both instances, API keys), `entitlements`                       |
+| Messaging       | `events` (the `EventType` catalog), `email` (templates + delivery)                   |
+| Modules         | `commerce`, `crm`, `cms`, `inventory`, `b2b`, `finance`, `scheduling`, `dropship`, … |
+| Design contract | `brand-core` — which tokens exist, the attribute vocabulary, the module list         |
+| Integrations    | `integration-framework` and every adapter                                            |
+| Services        | all ~18 — `api-rest`, `api-graphql`, `api-mcp`, `mcp-site`, the worker fleet         |
+| Apps            | `site` (the tenant site renderer)                                                    |
 
 **`wizeworks/apps/site` is here on purpose.** It paints the _tenant's_ brand, never ours,
 so it is indifferent to whether the tenant signed up through sparx or Piggles.
@@ -81,8 +81,12 @@ A tenant site must render identically under either. This is also why the sparx
 design restraints (no shadows, no gradients, RULE #3) do **not** reach it —
 builder output is tenant content with full design freedom.
 
-**`wizeworks/apps/admin` is here because it is literally the WizeWorks staff console**, not
-a tenant surface. It administers both brands and belongs to neither.
+**The WizeWorks staff console is not here.** It moved to the wizeworks repo
+(`admin/`, admin.wize.works) on 2026-10-27, with its own copies of the packages
+it used. It still depends on three things in this repo: api-rest's
+`/internal/operator/*` routes (contract in `packages/operator`), the `wize_admin`
+tables (migrations in `packages/db`), and `email.send`. Change any of those and
+the console has to follow, in that repo.
 
 ### Scope rename in flight
 
