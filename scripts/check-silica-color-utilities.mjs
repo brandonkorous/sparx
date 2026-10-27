@@ -51,7 +51,6 @@ const APPS = [
   { css: 'sparx/apps/workbench/app/globals.css' },
   { css: 'sparx/apps/web/app/globals.css' },
   { css: 'sparx/apps/market/app/globals.css' },
-  { css: 'wizeworks/apps/admin/app/globals.css' },
   {
     css: 'wizeworks/apps/site/app/globals.css',
     imports: ['wizeworks/packages/silica-catalog/src/base-theme.css'],

@@ -14,11 +14,9 @@ resources:
   - workbench.yaml
   - site.yaml
   - market.yaml
-  # The WizeWorks staff console (admin.wize.works). Added 2026-08-01: it ran in
-  # an out-of-band `wize-admin` namespace on GKE that was never recreated on AKS,
-  # so the host passed Cloudflare Access and then 502'd at Caddy. It lives in
-  # sparx-prod with everything else now.
-  - admin.yaml
+  # admin.yaml removed 2026-10-27 — the WizeWorks staff console ships from the
+  # wizeworks repo into the `wizeworks` namespace now. The release's label-based
+  # prune deletes the old Deployment and Service.
   # ── Piggles ────────────────────────────────────────────────────────────────
   # The sister brand's three surfaces. They share this namespace, the database,
   # api-rest and the secret store — the PLATFORM — and share no application code

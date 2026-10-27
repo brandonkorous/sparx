@@ -102,3 +102,12 @@ test('a budget entry for a Deployment that does not use the database is flagged'
   const { problems } = tally({ budget: parseBudget(BUDGET_YAML), replicas: {}, kinds: { 'api-rest': 'db' }, operatorMax: 5 });
   assert.match(problems[0], /names event-worker/);
 });
+
+test('a pool another repo opens on this server still counts, direct and through PgBouncer', () => {
+  const budget = parseBudget(BUDGET_YAML);
+  const kinds = { 'api-rest': 'db', 'event-worker': 'db' };
+  const base = tally({ budget, replicas: {}, kinds, operatorMax: 5 });
+  const withOutside = tally({ budget, replicas: {}, kinds, operatorMax: 5, outside: [{ name: 'admin (wizeworks)', direct: 2 }] });
+  assert.equal(withOutside.direct, base.direct + 2);
+  assert.equal(withOutside.pooled, base.pooled + 2);
+});

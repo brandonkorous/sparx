@@ -18,6 +18,12 @@ export const BUDGET = 33;
 const DB_PACKAGES = ['@wizeworks/db', '@wizeworks/auth'];
 const OPERATOR_PACKAGE = '@wizeworks/operator-auth';
 
+// Pools on this server that no Deployment in this repo owns. The operator console moved to
+// the wizeworks repo on 2026-10-27 and still signs operators in against wize_admin here, as
+// wize_operator. Its pool size is OPERATOR_DB_POOL_MAX in that repo's k8s/admin/deployment.yaml;
+// change both together.
+export const OUTSIDE = [{ name: 'admin (wizeworks)', direct: 2 }];
+
 /** Deployment name -> { db, auth, operator } from the multi-document budget patch file. */
 export function parseBudget(text) {
   const out = {};
@@ -65,8 +71,8 @@ export function poolKind(pkgText) {
 }
 
 /** Rows of { name, replicas, app, auth, direct } plus totals with and without PgBouncer, and problems. */
-export function tally({ budget, replicas, kinds, operatorMax, codeFloors = {}, pooler = { pods: 0, max: 0 } }) {
-  const rows = [];
+export function tally({ budget, replicas, kinds, operatorMax, codeFloors = {}, pooler = { pods: 0, max: 0 }, outside = [] }) {
+  const rows = outside.map((o) => ({ name: o.name, replicas: 1, app: 0, auth: 0, direct: o.direct }));
   const problems = [];
   for (const [name, kind] of Object.entries(kinds)) {
     const count = replicas[name] ?? 1;
@@ -100,7 +106,6 @@ function readRepo(root) {
     const kind = name in baseReplicas ? poolKind(read(`${dir}/package.json`)) : null;
     if (kind) kinds[name] = kind;
   }
-  const operatorMax = Number(/DEFAULT_OPERATOR_POOL_MAX = (\d+)/.exec(read('wizeworks/packages/operator-auth/src/pool-size.ts'))?.[1]);
   // event-worker never opens fewer than this many connections, whatever its env says.
   const eventFloor = Number(/MIN_CONNECTION_LIMIT = (\d+)/.exec(read('wizeworks/services/event-worker/src/boot-db-pool.ts'))?.[1] ?? 0);
   const pooler = {
@@ -108,7 +113,7 @@ function readRepo(root) {
     max: SERVER_POOL.max,
   };
   const budget = parseBudget(read('k8s/azure/apps/db-budget.yaml'));
-  return { budget, replicas, kinds, operatorMax, codeFloors: { 'event-worker': eventFloor }, pooler };
+  return { budget, replicas, kinds, codeFloors: { 'event-worker': eventFloor }, pooler, outside: OUTSIDE };
 }
 
 function main() {

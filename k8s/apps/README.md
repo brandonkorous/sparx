@@ -15,7 +15,6 @@ how an app is actually deleted rather than silently left running.
 | `web.yaml`             | sparx.works + the module marketing domains | One Next.js app reading the Host header                                                                                                |
 | `site.yaml`            | every tenant storefront                    | Multi-tenant; hostname resolved per request                                                                                            |
 | `market.yaml`          | sparx.market                               | The marketplace                                                                                                                        |
-| `admin.yaml`           | admin.wize.works                           | The WizeWorks staff console — not a tenant surface                                                                                     |
 | `piggles-web.yaml`     | meetpiggles.com                            | **Piggles.** Marketing. No database, no auth, no api-rest                                                                              |
 | `piggles-account.yaml` | getpiggles.com                             | **Piggles.** The auth authority + platform billing                                                                                     |
 | `piggles-console.yaml` | mypiggles.com                              | **Piggles.** The operating console. No sign-in UI at all                                                                               |
