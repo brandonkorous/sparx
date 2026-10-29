@@ -1,42 +1,42 @@
-// Shopper OAuth authorization-server metadata + authorize-request validation
-// (docs/113 §5, docs/27 §6). The customer instance is the AS; api-rest mounts its
-// Better Auth handler under `<store-origin>/v1/public/auth/*` (Caddy routes that
-// path to api-rest, so the AS lives on the store's OWN origin — where the
-// sparx_customer_session cookie lives). We serve OUR OWN AS metadata (not Better
-// Auth's default, which only knows the openid/profile/email/offline_access
-// scopes) so the discovery document advertises the real shopper scope vocabulary
-// and the store-origin endpoints.
+// The shopper authorization server's public surface (docs/113 §5, docs/27 §6):
+// discovery, and the server side of the store-branded consent page.
 //
-// Everything here is defensive: a public DCR client + a phishable redirect means
-// we exact-match the redirect URI, require PKCE/S256 at our own layer (not only
-// trust the plugin), and refuse to mint a token for any resource other than this
-// store's MCP server.
+// The customer instance is the AS; api-rest mounts its handler under
+// `<store-origin>/v1/public/auth/*` (Caddy routes that path to api-rest, so the
+// AS lives on the store's OWN origin, where the sparx_customer_session cookie
+// lives).
+//
+// On Better Auth 1.7 the provider owns the authorization request. When a
+// shopper has to sign in or approve, `/oauth2/authorize` sends the browser to
+// `<store>/account/authorize` with the whole request in the query string,
+// SIGNED with the instance secret and stamped with an expiry. That signature
+// is what makes the consent page safe: the client, the redirect address and the
+// requested scopes are exactly what the provider validated. So the page only
+// verifies it, names the client, lets the shopper choose, and hands the
+// decision back to `/oauth2/consent`, which records it and finishes the flow.
 
-import { withTenant } from '@wizeworks/db';
+import { verifyOAuthQueryParams } from '@better-auth/oauth-provider';
+import { tenantStore, withTenant } from '@wizeworks/db';
 
-import { CUSTOMER_ALL_OAUTH_SCOPES } from './mcp-scopes';
+import { capCustomerScopes, CUSTOMER_OIDC_BASE_SCOPES } from './mcp-scopes';
+import { customerAuthSecret, getCustomerAuth } from './server';
 
-/** RFC 8414 authorization-server metadata for a store origin. The endpoints all
- *  live on the store's own origin under `/v1/public/auth/mcp/*` (Better Auth's
- *  mcp() plugin routes), so the browser stays same-origin with its session
- *  cookie through authorize + consent. `storeOrigin` is `https://<host>` with no
- *  trailing slash. */
-export function buildCustomerAuthServerMetadata(storeOrigin: string): Record<string, unknown> {
-  const base = `${storeOrigin}/v1/public/auth`;
-  return {
-    issuer: storeOrigin,
-    authorization_endpoint: `${base}/mcp/authorize`,
-    token_endpoint: `${base}/mcp/token`,
-    registration_endpoint: `${base}/mcp/register`,
-    jwks_uri: `${base}/jwks`,
-    scopes_supported: [...CUSTOMER_ALL_OAUTH_SCOPES],
-    response_types_supported: ['code'],
-    grant_types_supported: ['authorization_code', 'refresh_token'],
-    code_challenge_methods_supported: ['S256'],
-    token_endpoint_auth_methods_supported: ['none', 'client_secret_basic', 'client_secret_post'],
-    // OAuth 2.1 / MCP: PKCE is mandatory. Signal it in metadata too.
-    pkce_required: true,
-  };
+/**
+ * The provider's own discovery document for the store this request is on.
+ *
+ * Built by the provider from its live configuration, with the per-request base
+ * URL, so `issuer` is `<store>/v1/public/auth` and every endpoint is on the
+ * store's origin: the document cannot advertise anything the server does not
+ * do. `headers` must carry the store's Host (api-rest passes the request's).
+ */
+export async function customerDiscoveryDocument(
+  kind: 'oauth' | 'openid',
+  headers: Headers
+): Promise<unknown> {
+  const auth = getCustomerAuth();
+  return kind === 'openid'
+    ? await auth.api.getOpenIdConfig({ headers })
+    : await auth.api.getOAuthServerConfig({ headers });
 }
 
 // ─── Registered DCR client lookup ────────────────────────────────────────────
@@ -44,34 +44,25 @@ export function buildCustomerAuthServerMetadata(storeOrigin: string): Record<str
 export interface RegisteredCustomerMcpClient {
   clientId: string;
   name: string | null;
-  /** Exact-match redirect URI allowlist (DCR-registered, comma-joined in the row). */
+  /** Exact-match redirect URI allowlist (DCR-registered). */
   redirectUrls: string[];
-  /** 'public' (PKCE) | 'web' (confidential) | … */
-  type: string;
-  disabled: boolean;
-}
-
-interface ClientRow {
-  client_id: string;
-  name: string | null;
-  redirect_urls: string;
-  type: string;
   disabled: boolean;
 }
 
 /** Look up a DCR-registered customer client by client_id within the tenant.
- *  Runs under RLS (the customer_oauth_applications table is FORCE-RLS + tenant
- *  scoped), so a client registered for another tenant is invisible. Returns null
- *  if unknown. */
+ *  Runs under RLS (customer_oauth_clients is FORCE-RLS + tenant scoped), so a
+ *  client registered at another store is invisible. Null if unknown. */
 export function getRegisteredCustomerMcpClient(
   tenantId: string,
   clientId: string
 ): Promise<RegisteredCustomerMcpClient | null> {
   if (!clientId) return Promise.resolve(null);
   return withTenant({ tenantId }, async (tx) => {
-    const rows = await tx.$queryRaw<ClientRow[]>`
-      SELECT client_id, name, redirect_urls, type, disabled
-        FROM customer_oauth_applications
+    const rows = await tx.$queryRaw<
+      { client_id: string; name: string | null; redirect_uris: string[]; disabled: boolean }[]
+    >`
+      SELECT client_id, name, redirect_uris, disabled
+        FROM customer_oauth_clients
        WHERE client_id = ${clientId}
        LIMIT 1
     `;
@@ -80,124 +71,107 @@ export function getRegisteredCustomerMcpClient(
     return {
       clientId: row.client_id,
       name: row.name,
-      redirectUrls: row.redirect_urls.split(',').filter(Boolean),
-      type: row.type,
+      redirectUrls: row.redirect_uris,
       disabled: row.disabled,
     };
   });
 }
 
-// ─── Authorize-request validation ────────────────────────────────────────────
+// ─── The consent request ─────────────────────────────────────────────────────
 
-export interface CustomerAuthorizeParams {
-  responseType: string;
-  clientId: string;
-  redirectUri: string;
-  /** Raw requested scope string (may be empty). */
-  scope: string;
-  state: string;
-  codeChallenge: string;
-  codeChallengeMethod: string;
-  resource: string;
-  nonce: string;
-}
-
-type QueryLike = Record<string, string | string[] | undefined>;
-const one = (v: string | string[] | undefined): string =>
-  Array.isArray(v) ? (v[0] ?? '') : (v ?? '');
-
-export function parseCustomerAuthorizeParams(q: QueryLike): CustomerAuthorizeParams {
-  return {
-    responseType: one(q.response_type),
-    clientId: one(q.client_id),
-    redirectUri: one(q.redirect_uri),
-    scope: one(q.scope),
-    state: one(q.state),
-    codeChallenge: one(q.code_challenge),
-    codeChallengeMethod: one(q.code_challenge_method),
-    resource: one(q.resource),
-    nonce: one(q.nonce),
-  };
-}
-
-/** The authorize params as a plain record (empties dropped) — used to seed the
- *  consent page URL + the final authorize redirect. */
-export function customerAuthorizeParamsRecord(p: CustomerAuthorizeParams): Record<string, string> {
-  const rec: Record<string, string> = {
-    response_type: p.responseType,
-    client_id: p.clientId,
-    redirect_uri: p.redirectUri,
-    code_challenge: p.codeChallenge,
-    code_challenge_method: p.codeChallengeMethod,
-  };
-  if (p.scope) rec.scope = p.scope;
-  if (p.state) rec.state = p.state;
-  if (p.resource) rec.resource = p.resource;
-  if (p.nonce) rec.nonce = p.nonce;
-  return rec;
-}
-
-function originOf(url: string): string | null {
-  try {
-    return new URL(url).origin;
-  } catch {
-    return null;
+/** The signed part of a consent URL's query string: every parameter the
+ *  provider listed in `ba_param`, plus `sig` and the list itself. Empty when
+ *  there is no signature at all. */
+export function signedCustomerOAuthQuery(search: URLSearchParams): string {
+  if (!search.has('sig')) return '';
+  const names = new Set(search.getAll('ba_param'));
+  if (names.size === 0) return '';
+  const out = new URLSearchParams();
+  for (const [key, value] of search.entries()) {
+    if (key === 'sig' || key === 'ba_param' || names.has(key)) out.append(key, value);
   }
+  return out.toString();
 }
 
-export type CustomerAuthorizeValidation =
-  { ok: true; client: RegisteredCustomerMcpClient } | { ok: false; error: string };
+export interface CustomerConsentRequest {
+  /** The signed query, passed back verbatim on submit. */
+  oauthQuery: string;
+  client: RegisteredCustomerMcpClient;
+  redirectUri: string;
+  /** Every scope in the request, OIDC framing included. */
+  requestedScopes: string[];
+}
 
-/** Validate an authorize request against protocol rules + the registered client.
- *  `storeOrigin` is the AS origin (the store's own origin); an RFC 8707 `resource`
- *  must be same-origin (the store's MCP lives at `<storeOrigin>/mcp`). Returns the
- *  client on success, or a human-readable error — we NEVER redirect to an
- *  unvalidated redirect_uri. */
-export async function validateCustomerAuthorizeRequest(
+export type CustomerConsentRead =
+  { ok: true; request: CustomerConsentRequest } | { ok: false; error: string };
+
+/** Check a consent URL's signature and load the client it names, at this
+ *  store. The error strings are shown to the shopper. */
+export async function readCustomerConsentRequest(
   tenantId: string,
-  p: CustomerAuthorizeParams,
-  storeOrigin: string
-): Promise<CustomerAuthorizeValidation> {
-  if (p.responseType !== 'code') {
+  search: URLSearchParams
+): Promise<CustomerConsentRead> {
+  const oauthQuery = signedCustomerOAuthQuery(search);
+  if (!oauthQuery) {
     return {
       ok: false,
-      error: 'Unsupported response type. Only the authorization-code flow is allowed.',
+      error:
+        'This page opens when an assistant asks to connect. Start the connection from your assistant.',
     };
   }
-  if (!p.clientId) return { ok: false, error: 'Missing client_id.' };
-  if (!p.redirectUri) return { ok: false, error: 'Missing redirect_uri.' };
-  // OAuth 2.1 / MCP: PKCE with S256 is mandatory. Enforce here too, not only in
-  // the token endpoint, so a non-PKCE request never reaches consent.
-  if (!p.codeChallenge) return { ok: false, error: 'Missing PKCE code_challenge.' };
-  if (p.codeChallengeMethod.toLowerCase() !== 's256') {
-    return { ok: false, error: 'Only the S256 PKCE method is supported.' };
+  if (!(await verifyOAuthQueryParams(oauthQuery, customerAuthSecret()))) {
+    return {
+      ok: false,
+      error: 'This connection request has expired. Start the connection again from your assistant.',
+    };
   }
-
-  const client = await getRegisteredCustomerMcpClient(tenantId, p.clientId);
+  const query = new URLSearchParams(oauthQuery);
+  const client = await getRegisteredCustomerMcpClient(tenantId, query.get('client_id') ?? '');
   if (!client) {
     return { ok: false, error: 'Unknown OAuth client. Try reconnecting from your assistant.' };
   }
-  if (client.disabled) {
-    return { ok: false, error: 'This connection has been disabled.' };
-  }
+  if (client.disabled) return { ok: false, error: 'This connection has been disabled.' };
+  return {
+    ok: true,
+    request: {
+      oauthQuery,
+      client,
+      redirectUri: query.get('redirect_uri') ?? '',
+      requestedScopes: (query.get('scope') ?? '').split(' ').filter(Boolean),
+    },
+  };
+}
 
-  // Exact-match the redirect URI against the DCR allowlist — the core
-  // anti-phishing gate. Never a prefix/substring match.
-  if (!client.redirectUrls.includes(p.redirectUri)) {
-    return { ok: false, error: 'The redirect URI does not match this client’s registration.' };
-  }
+/** The scope string to approve: the shopper's picks from the known vocabulary
+ *  plus OIDC framing, all limited to what the client requested. Empty when no
+ *  capability was picked. */
+export function customerApprovedScope(requested: string[], selected: string[]): string {
+  const business = capCustomerScopes(selected).filter((s) => requested.includes(s));
+  if (business.length === 0) return '';
+  const wanted = new Set<string>([...CUSTOMER_OIDC_BASE_SCOPES, ...business]);
+  return requested.filter((s) => wanted.has(s)).join(' ');
+}
 
-  // RFC 8707: if the client names a target resource, it must be THIS store's MCP
-  // server (same origin as the AS). Refuse to mint a token for a different one.
-  if (p.resource) {
-    const got = originOf(p.resource);
-    if (!got || got !== storeOrigin) {
-      return {
-        ok: false,
-        error: 'This authorization targets a resource other than this store’s assistant.',
-      };
-    }
-  }
-
-  return { ok: true, client };
+/** Record the shopper's decision at this store and return where the browser
+ *  goes next (the client's redirect with a code, or `access_denied`). Throws a
+ *  Better Auth APIError when the request is invalid/expired or the session is
+ *  gone. `headers` carry the session cookie and the store's Host. */
+export async function submitCustomerConsent(args: {
+  tenantId: string;
+  oauthQuery: string;
+  accept: boolean;
+  scope?: string;
+  headers: Headers;
+}): Promise<string> {
+  const result = await tenantStore.run(args.tenantId, () =>
+    getCustomerAuth().api.oauth2Consent({
+      body: {
+        accept: args.accept,
+        oauth_query: args.oauthQuery,
+        ...(args.accept && args.scope ? { scope: args.scope } : {}),
+      },
+      headers: args.headers,
+    })
+  );
+  return result.url;
 }

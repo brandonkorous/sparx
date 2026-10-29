@@ -1,17 +1,19 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
-import { emailOTP, magicLink, mcp, oneTap, organization, twoFactor } from 'better-auth/plugins';
+import { emailOTP, jwt, magicLink, oneTap, organization, twoFactor } from 'better-auth/plugins';
+import { mcp } from '@better-auth/mcp';
 import { socialProviderConfigured } from './social-providers';
 import { passkey } from '@better-auth/passkey';
-import { createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
 import { accountOrigin, mcpResourceUrl as brandMcpResourceUrl } from '@wizeworks/links/server';
 import { currentPlatformBrand, platformBrandIdentity } from '@wizeworks/brand-core';
 import { authPrisma } from './prisma';
 import { brandScopedAuthPrisma } from './brand-scoped-prisma';
 import { publishAuthEmail } from './email-events';
 import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioning';
-import { MCP_ALL_OAUTH_SCOPES, verifyConsentGrant } from './mcp-scopes';
+import { MCP_ALL_OAUTH_SCOPES } from './mcp-scopes';
+import { keepAccountsOnEmailProof } from './credential-retention';
+import { legacyMcpEndpoints } from './legacy-mcp-endpoints';
 import { ac, roles } from './org-roles';
 import { redactingLogger } from './redacting-logger';
 import { isPasswordStep } from './sign-in-step';
@@ -54,55 +56,6 @@ declare global {
   var __sparxAuth: ReturnType<typeof createAuth> | undefined;
 }
 
-// Consent guard for Better Auth's `/mcp/authorize` (docs/07 §5). That endpoint
-// mints an auth code for ANY requested scope the moment a staff user has a
-// session — it only shows a consent screen when the client sends
-// `prompt=consent`, which an attacker's self-registered DCR client won't. On a
-// PUBLIC surface that's a confused-deputy hole. So we require a signed,
-// session-bound, short-lived consent grant (minted only by our first-party
-// /oauth/consent page after the user explicitly picks scopes); any
-// /mcp/authorize hit without a valid grant is bounced to that page.
-const mcpAuthorizeGuard = createAuthMiddleware(async (ctx) => {
-  if (ctx.path !== '/mcp/authorize') return;
-
-  const origin = typeof ctx.context.options.baseURL === 'string' ? ctx.context.options.baseURL : '';
-  const query = (ctx.query ?? {}) as Record<string, unknown>;
-
-  // Rebuild the consent-page URL from the original authorize params (minus our
-  // own grant param) so the user can review + approve. toConsent() returns
-  // `never`, so each guard below both terminates and narrows.
-  const toConsent = (): never => {
-    const params = new URLSearchParams();
-    for (const [k, v] of Object.entries(query)) {
-      if (k === 'sparx_grant') continue;
-      if (typeof v === 'string') params.set(k, v);
-    }
-    throw ctx.redirect(`${origin}/oauth/consent?${params.toString()}`);
-  };
-
-  const grant = verifyConsentGrant(
-    typeof query.sparx_grant === 'string' ? query.sparx_grant : null,
-    ctx.context.secret
-  );
-  if (!grant) return toConsent();
-
-  // The grant must bind the EXACT client, redirect, and scope in this request —
-  // a signed approval can't be replayed onto a different one.
-  if (
-    grant.clientId !== query.client_id ||
-    grant.redirectUri !== query.redirect_uri ||
-    grant.scope !== query.scope
-  ) {
-    return toConsent();
-  }
-
-  // …and it must belong to the user who is actually signed in now.
-  const session = await getSessionFromCtx(ctx);
-  if (session?.user.id !== grant.userId) return toConsent();
-
-  // Valid, bound, and session-matched — let Better Auth mint the code.
-});
-
 function createAuth() {
   // Google OAuth is opt-in via env — the provider is only registered when both
   // creds are present, so the social button stays inert until the OAuth app +
@@ -125,11 +78,17 @@ function createAuth() {
   // deployment means.
   const appName = process.env.BETTER_AUTH_APP_NAME ?? 'sparx';
 
+  const baseURL = process.env.BETTER_AUTH_URL ?? 'http://localhost:3001';
+
   return betterAuth({
     appName,
     // Warn and up, emails masked: a failed sign-in logged the address (./redacting-logger).
     logger: redactingLogger,
-    baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3001',
+    baseURL,
+    // The jwt() plugin's own `/token` turns a browser session into a bearer JWT.
+    // An OAuth provider must not offer that side door (the provider's
+    // `/oauth2/token` is the only token endpoint), so it is switched off.
+    disabledPaths: ['/token'],
     secret: process.env.BETTER_AUTH_SECRET,
     // The BRAND-SCOPED client, never the bare one. Both products mount this
     // instance against one `users` table, and every user lookup in the system —
@@ -291,6 +250,11 @@ function createAuth() {
     },
 
     databaseHooks: {
+      // Signing in by magic link or emailed code must not delete the person's
+      // password or their Google link (./credential-retention).
+      account: {
+        delete: { before: keepAccountsOnEmailProof },
+      },
       user: {
         create: {
           // OAuth signups: Better Auth creates the user itself, but
@@ -535,48 +499,71 @@ function createAuth() {
     },
 
     // Throttle the public MCP OAuth surface (docs/07 §5). DCR is unauthenticated
-    // so registration is capped hard; authorize/token are per-IP capped to blunt
-    // brute force. Better Auth enables rate limiting in production by default;
-    // these custom rules apply on top. (Memory storage = per-instance; acceptable
-    // at the dashboard's current replica count.)
+    // so registration is capped hard; authorize/consent/token are per-IP capped
+    // to blunt brute force. Better Auth enables rate limiting in production by
+    // default; these custom rules apply on top. (Memory storage = per-instance;
+    // acceptable at the console's current replica count.)
     rateLimit: {
       customRules: {
-        '/mcp/register': { window: 60, max: 5 },
-        '/mcp/authorize': { window: 60, max: 30 },
-        '/mcp/token': { window: 60, max: 60 },
+        '/oauth2/register': { window: 60, max: 5 },
+        '/oauth2/authorize': { window: 60, max: 30 },
+        '/oauth2/consent': { window: 60, max: 30 },
+        '/oauth2/token': { window: 60, max: 60 },
       },
     },
 
-    // Guard the MCP authorization endpoint (docs/07 §5). See mcpAuthorizeGuard.
-    hooks: {
-      before: mcpAuthorizeGuard,
-    },
-
     plugins: [
-      // MCP OAuth authorization server (docs/07 §5). Hardened per OAuth 2.1:
-      //   • requirePKCE + S256 only (both OFF by default in this build).
-      //   • short access-token + code TTLs.
-      //   • our full MCP scope vocabulary is the allow-list; the user picks the
-      //     subset on the consent page (the `before` hook above enforces it).
-      // storeClientSecret stays "plain": the plugin's token endpoint compares
-      // client secrets raw, so hashing would break confidential clients.
-      // Claude connects as a PUBLIC (PKCE, secret-less) client regardless.
-      mcp({
-        loginPage: '/sign-in',
-        resource: mcpResourceUrl(),
-        oidcConfig: {
-          loginPage: '/sign-in',
-          requirePKCE: true,
-          allowPlainCodeChallengeMethod: false,
-          accessTokenExpiresIn: 60 * 60, // 1h
-          refreshTokenExpiresIn: 60 * 60 * 24 * 30, // 30d (offline_access)
-          codeExpiresIn: 5 * 60, // 5m
-          scopes: [...MCP_ALL_OAUTH_SCOPES],
-          metadata: {
-            scopes_supported: [...MCP_ALL_OAUTH_SCOPES],
-          },
-        },
+      // Signs the MCP access tokens (EdDSA, keys in the `jwks` table). The issuer
+      // is this console's ORIGIN, not Better Auth's default of origin + basePath:
+      // api-mcp's protected-resource metadata names the origin as the
+      // authorization server (mcpAuthServerOrigin), and an MCP client checks the
+      // `issuer` in our metadata against exactly that string. The session `/token`
+      // endpoint is disabled above and the per-response JWT header is off: this
+      // plugin is here for the OAuth provider, nothing else.
+      jwt({
+        jwt: { issuer: new URL(baseURL).origin },
+        disableSettingJwtHeader: true,
       }),
+      // MCP OAuth authorization server (docs/07 §5), @better-auth/mcp on the
+      // OAuth 2.1 provider. Hardened per OAuth 2.1 by the provider's defaults:
+      // PKCE required for public clients, S256 only, hashed tokens and secrets.
+      //
+      //   • Anonymous Dynamic Client Registration is ON, because that is how
+      //     Claude, ChatGPT and other connectors join: they register themselves
+      //     with no account. Native clients with loopback callbacks register too
+      //     (`infer`), without loosening web redirect rules.
+      //   • Login and consent are the SAME page, /oauth/consent. Without a session
+      //     it sends the person to sign in and back; with one it shows the
+      //     role-capped scope picker and posts to /oauth2/consent. The provider
+      //     never mints a code for a client the person has not approved, so the
+      //     1.6 `sparx_grant` guard is gone with the plugin it patched.
+      //   • The brand's MCP server is the one resource, declared with its scopes
+      //     (Prisma cannot store a resource without them) and re-merged at every
+      //     boot so a scope added to the catalog reaches the stored row.
+      mcp({
+        loginPage: '/oauth/consent',
+        consentPage: '/oauth/consent',
+        resource: mcpResourceUrl(),
+        resources: [
+          {
+            identifier: mcpResourceUrl(),
+            name: `${appName} MCP server`,
+            allowedScopes: [...MCP_ALL_OAUTH_SCOPES],
+          },
+        ],
+        resourceSeedMode: 'merge',
+        scopes: [...MCP_ALL_OAUTH_SCOPES],
+        allowDynamicClientRegistration: true,
+        allowUnauthenticatedClientRegistration: true,
+        clientRegistrationDefaultApplicationType: 'infer',
+        accessTokenExpiresIn: 60 * 60, // 1h
+        refreshTokenExpiresIn: 60 * 60 * 24 * 30, // 30d (offline_access)
+        // Also how long the signed consent link stays valid, and somebody may
+        // have to sign in first: 10 minutes, the OAuth ceiling for a code.
+        codeExpiresIn: 10 * 60,
+      }),
+      // The 1.6 `/mcp/*` endpoints, redirected to their 1.7 addresses.
+      legacyMcpEndpoints(),
       // Organizations & Teams (docs/114 Part A). The tenant IS the organization,
       // so the plugin's `organization` model maps onto the `tenant` Prisma model
       // (its `logo`/`metadata` fields → tenants.org_logo/org_metadata); `member`,
@@ -684,7 +671,7 @@ function createAuth() {
       // Google One Tap — the streamlined prompt, not just the button. Only when
       // Google is configured (same env gate as the social provider); the server
       // verifies the Google credential against that same OAuth client.
-      ...(googleReady ? [oneTap()] : []),
+      ...(googleReady && googleId ? [oneTap({ clientId: googleId })] : []),
       // WebAuthn passkeys (docs/16 §3.5) — phishing-resistant, the strongest
       // factor we offer. rpName is our display name; rpID + expected origin
       // auto-derive from BETTER_AUTH_URL's hostname and the request Origin, so

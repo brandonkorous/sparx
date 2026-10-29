@@ -5,24 +5,22 @@ import { Logo } from '@piggles/brand/react';
 import { AppearanceControl } from '@/components/appearance-control';
 import { APP_BY_ID, MODULE_TO_APP, moduleTerm } from '@piggles/config';
 import {
+  CONSENT_ERROR_PARAM,
   getSession,
   grantableScopesForRole,
   capBusinessScopes,
   MCP_SCOPE_CATALOG,
+  readMcpConsentRequest,
+  toSearchParams,
   type StaffRole,
 } from '@wizeworks/auth';
-import {
-  parseAuthorizeParams,
-  validateAuthorizeRequest,
-  authorizeParamsRecord,
-  consentReturnPath,
-} from './_lib/consent';
 import { ConsentForm } from './_components/consent-form';
 
 // "Do you want to let this app in?" — the MCP OAuth consent screen (docs/07 §5).
 //
-// Every /mcp/authorize request is funnelled here by the guard hook in
-// @wizeworks/auth. The person reviews who is asking and where their access will be
+// The MCP provider in @wizeworks/auth sends every authorization that needs a
+// person here, with the request signed (`loginPage` and `consentPage` are both
+// this page). The person reviews who is asking and where their access will be
 // sent, then chooses exactly what it may do.
 //
 // It lives in the ACCOUNT app because this is the only Piggles app that mounts
@@ -33,8 +31,6 @@ import { ConsentForm } from './_components/consent-form';
 export const dynamic = 'force-dynamic';
 
 type SP = Record<string, string | string[] | undefined>;
-const one = (v: string | string[] | undefined): string =>
-  Array.isArray(v) ? (v[0] ?? '') : (v ?? '');
 
 /** Piggles' name for the app a permission belongs to, so the groups read as the
  *  things people actually use — Bookings, Customers, Stock — instead of the
@@ -71,25 +67,19 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 export default async function OAuthConsentPage({ searchParams }: { searchParams: Promise<SP> }) {
-  const sp = await searchParams;
-  const params = parseAuthorizeParams(sp);
-  const queryError = one(sp.error);
+  const sp = toSearchParams(await searchParams);
+  const queryError = sp.get(CONSENT_ERROR_PARAM) ?? '';
 
-  const session = await getSession();
-  if (!session) {
-    // Carry the whole authorize request across sign-in, so somebody who has to
-    // log in first does not have to start the connection again from their app.
-    redirect(`/sign-in?callbackURL=${encodeURIComponent(consentReturnPath(params))}`);
-  }
-
-  const validation = await validateAuthorizeRequest(params);
-  if (!validation.ok) {
+  // The signature first: an expired or hand-made link fails the same way
+  // whether or not anybody is signed in, and nobody should sign in for nothing.
+  const read = await readMcpConsentRequest(sp);
+  if (!read.ok) {
     return (
       <Shell>
         <div className="flex flex-col gap-3 p-6 sm:p-8">
           <h1 className="text-2xl font-semibold tracking-tight">We stopped this connection</h1>
           <Alert color="danger" variant="soft" role="alert">
-            {validation.error}
+            {read.error}
           </Alert>
           <Text className="text-sm">
             Nothing has been shared. Close this window and start again from the app you were using.
@@ -99,18 +89,29 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
     );
   }
 
-  const client = validation.client;
+  const session = await getSession();
+  if (!session) {
+    // Carry the whole authorize request across sign-in, so somebody who has to
+    // log in first does not have to start the connection again from their app.
+    sp.delete(CONSENT_ERROR_PARAM);
+    redirect(`/sign-in?callbackURL=${encodeURIComponent(`/oauth/consent?${sp.toString()}`)}`);
+  }
+
+  const { client, redirectUri, requestedScopes, oauthQuery } = read.request;
   const role = session.user.role as StaffRole;
+  // Only what the client asked for AND this role may give: the provider refuses
+  // to approve a scope that was not in the signed request.
   const grantable = new Set<string>(grantableScopesForRole(role));
-  const catalog = MCP_SCOPE_CATALOG.filter((s) => grantable.has(s.scope));
-  const requested = params.scope.split(' ').filter(Boolean);
-  const defaultSelected = capBusinessScopes(requested, role);
+  const catalog = MCP_SCOPE_CATALOG.filter(
+    (s) => grantable.has(s.scope) && requestedScopes.includes(s.scope)
+  );
+  const defaultSelected = capBusinessScopes(requestedScopes, role);
 
   const rawName = client.name?.trim();
   const clientName = rawName?.length ? rawName : 'An assistant';
-  let redirectHost = params.redirectUri;
+  let redirectHost = redirectUri;
   try {
-    redirectHost = new URL(params.redirectUri).host;
+    redirectHost = new URL(redirectUri).host;
   } catch {
     /* validated above; keep the raw value as a fallback */
   }
@@ -162,7 +163,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
       </div>
 
       <ConsentForm
-        params={authorizeParamsRecord(params)}
+        oauthQuery={oauthQuery}
         catalog={catalog}
         defaultSelected={defaultSelected}
         groupLabel={appLabel}

@@ -20,7 +20,14 @@ export async function POST(request: Request): Promise<Response> {
 
   return relay((headers) =>
     auth.api.enableTwoFactor({
-      body: { ...optionalPassword(body), ...(issuer ? { issuer } : {}) },
+      // An authenticator app (TOTP), never an emailed code: the next step reads
+      // the QR from `totpURI`. Better Auth 1.7 added the emailed-code method
+      // beside it, so the method is named rather than left to a default.
+      body: {
+        method: 'totp' as const,
+        ...optionalPassword(body),
+        ...(issuer ? { issuer } : {}),
+      },
       headers,
     })
   );

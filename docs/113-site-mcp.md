@@ -1,8 +1,8 @@
 # Site MCP — the shopper-facing agent surface
 
-**Version:** 1.3
+**Version:** 1.4
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-02
+**Last Updated:** 2026-10-29
 
 ---
 
@@ -302,10 +302,12 @@ settings, unauthenticated `b2b/service-types`. Customer-tier tools (`my orders`,
 
 ### Phase 2G — returning-customer tier (BUILT)
 
-8. Customer-side OAuth on the customer Better Auth `mcp()` provider (docs/27 §6): the AS is served
-   by api-rest under `<store>/v1/public/auth/*` on the store's OWN origin (Caddy carve-out, tenant
-   from Host), with our own AS metadata (real shopper scope vocab), a `/mcp/authorize` consent guard,
-   and a store-branded `/account/authorize` consent page in `wizeworks/apps/site`. The bearer is **verified in
+8. Customer-side OAuth on the customer Better Auth 1.7 `@better-auth/oauth-provider` (docs/27 §6):
+   the AS is served by api-rest under `<store>/v1/public/auth/*` on the store's OWN origin (Caddy
+   carve-out, tenant from Host), each store its own issuer (`<store>/v1/public/auth`) with the
+   provider's own discovery document (real shopper scope vocab), a signed authorization request
+   handed to a store-branded `/account/authorize` consent page in `wizeworks/apps/site`, and JWT
+   access tokens signed by the store's own key. The bearer is **verified in
    api-rest** (not the DB-less mcp-site): the `customer`-tier public routes accept
    `Authorization: Bearer`, verify it (`verifyCustomerMcpToken`), resolve the per-site membership,
    and scope-gate. mcp-site advertises `oauth-protected-resource` + challenges unauthenticated

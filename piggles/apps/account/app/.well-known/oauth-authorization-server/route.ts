@@ -1,9 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import {
-  authServerOrigin,
-  buildAuthorizationServerMetadata,
-  OAUTH_DISCOVERY_HEADERS,
-} from '@/lib/mcp-oauth-metadata';
+import { mcpDiscoveryDocument, OAUTH_DISCOVERY_HEADERS } from '@/lib/mcp-oauth-metadata';
 
 // RFC 8414 — OAuth 2.0 Authorization Server Metadata (docs/07 §5).
 //
@@ -13,8 +9,8 @@ import {
 // discovery is the first request in the flow, and it was 404ing.
 export const dynamic = 'force-dynamic';
 
-export function GET(request: NextRequest) {
-  const metadata = buildAuthorizationServerMetadata(authServerOrigin(request.nextUrl.origin));
+export async function GET(request: NextRequest) {
+  const metadata = await mcpDiscoveryDocument('oauth', request);
   return NextResponse.json(metadata, { headers: OAUTH_DISCOVERY_HEADERS });
 }
 

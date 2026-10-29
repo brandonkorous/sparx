@@ -96,9 +96,21 @@ export function mcpResourcePath(request: FastifyRequest): string {
   return path;
 }
 
+/** Where the store's authorization server is mounted on its origin. Its issuer
+ *  identifier is the origin PLUS this path (Better Auth 1.7 names its issuer by
+ *  its base URL), and an MCP client compares the `authorization_servers` entry
+ *  with the `issuer` in the document it fetches, character for character. */
+export const STORE_AUTH_SERVER_PATH = '/v1/public/auth';
+
+/** The store's authorization-server issuer, from its canonical origin. */
+export function storeAuthServer(siteOrigin: string): string {
+  return `${siteOrigin.replace(/\/+$/, '')}${STORE_AUTH_SERVER_PATH}`;
+}
+
 /** RFC 9728 Protected Resource Metadata: this resource + the site's AS. `resource`
  *  is the MCP endpoint the request describes (see `mcpResourcePath`); `authServer`
- *  is the site's canonical origin (from site-info). */
+ *  is the site's canonical origin (from site-info), advertised as the issuer the
+ *  store's AS reports for itself (`<origin>/v1/public/auth`). */
 export function protectedResourceMetadata(
   request: FastifyRequest,
   authServer: string | null
@@ -106,7 +118,7 @@ export function protectedResourceMetadata(
   const resource = `${requestOrigin(request)}${mcpResourcePath(request)}`;
   return {
     resource,
-    ...(authServer ? { authorization_servers: [authServer] } : {}),
+    ...(authServer ? { authorization_servers: [storeAuthServer(authServer)] } : {}),
     scopes_supported: [...CUSTOMER_MCP_SCOPES],
     bearer_methods_supported: ['header'],
   };

@@ -1,10 +1,13 @@
 'use client';
 
 // Store-branded OAuth consent (docs/113 §5). A shopper's assistant is asking to
-// connect to their account on this store. We read the authorize params from the
-// URL, confirm the shopper is signed in (redirect to the store login otherwise),
-// let them choose scopes, and POST the decision to api-rest's consent endpoint —
-// which mints the signed grant and returns the /mcp/authorize URL to hand back to.
+// connect to their account on this store. The authorization server sends the
+// browser here with the whole request in the URL, signed. We pass that signed
+// request to api-rest, which checks it and says who is asking; confirm the
+// shopper is signed in (redirect to the store login otherwise); let them choose
+// scopes; and POST the decision with the signed request. api-rest records it
+// with the authorization server and returns where the browser goes next: the
+// assistant's own address, with a code or with a refusal.
 //
 // All API calls are same-origin `/v1/public/auth/consent` (Caddy routes it to
 // api-rest on the store's own origin, so the sparx_customer_session cookie rides
@@ -17,18 +20,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Alert, Button, Skeleton, Switch, Text } from '@wizeworks/silicaui-react';
-
-const AUTH_PARAM_KEYS = [
-  'response_type',
-  'client_id',
-  'redirect_uri',
-  'scope',
-  'state',
-  'code_challenge',
-  'code_challenge_method',
-  'resource',
-  'nonce',
-] as const;
 
 interface ScopeRow {
   scope: string;
@@ -93,7 +84,7 @@ function ScopeList({
               </span>
               {/* Linked via aria-describedby rather than nested, so the switch's
                     accessible name is the label alone — not the full paragraph. */}
-              <span id={descId} className="text-base-content text-sm">
+              <span id={descId} className="text-sm">
                 {s.description}
               </span>
             </div>
@@ -114,14 +105,9 @@ function ScopeList({
 
 export function AuthorizeConsent(): React.ReactElement {
   const search = useSearchParams();
-  const params = useMemo(() => {
-    const rec: Record<string, string> = {};
-    for (const key of AUTH_PARAM_KEYS) {
-      const value = search.get(key);
-      if (value) rec[key] = value;
-    }
-    return rec;
-  }, [search]);
+  // The signed request, verbatim: every parameter, repeated ones included, in
+  // the order the authorization server signed them.
+  const oauthQuery = useMemo(() => search.toString(), [search]);
 
   const [info, setInfo] = useState<ConsentInfo | null>(null);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -133,7 +119,7 @@ export function AuthorizeConsent(): React.ReactElement {
     let cancelled = false;
     void (async () => {
       try {
-        const qs = new URLSearchParams(params).toString();
+        const qs = oauthQuery;
         const res = await fetch(`/v1/public/auth/consent?${qs}`, {
           credentials: 'include',
           headers: { accept: 'application/json' },
@@ -162,7 +148,7 @@ export function AuthorizeConsent(): React.ReactElement {
     return () => {
       cancelled = true;
     };
-  }, [params]);
+  }, [oauthQuery]);
 
   async function submit(action: 'approve' | 'deny'): Promise<void> {
     setBusy(true);
@@ -176,10 +162,10 @@ export function AuthorizeConsent(): React.ReactElement {
         method: 'POST',
         credentials: 'include',
         headers: { 'content-type': 'application/json', accept: 'application/json' },
-        body: JSON.stringify({ ...params, action, granted }),
+        body: JSON.stringify({ oauth_query: oauthQuery, action, granted }),
       });
-      const body = await readEnvelope<{ authorizeUrl?: string; redirectUrl?: string }>(res);
-      const dest = body.data?.authorizeUrl ?? body.data?.redirectUrl;
+      const body = await readEnvelope<{ redirectUrl?: string }>(res);
+      const dest = body.data?.redirectUrl;
       if (!res.ok || !dest) {
         setError(body.error?.message ?? 'Something went wrong. Please try again.');
         setBusy(false);
@@ -222,7 +208,7 @@ export function AuthorizeConsent(): React.ReactElement {
       <div className="bg-base-100 border-base-300 flex flex-col gap-6 rounded-xl border p-6 sm:p-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h1>
-          <Text className="text-base-content">
+          <Text>
             {clientName} wants to access your {storeName} account
             {info.email ? ` (${info.email})` : ''}. Choose what it can do. You can revoke this
             anytime.
@@ -249,12 +235,16 @@ export function AuthorizeConsent(): React.ReactElement {
           ) : null}
 
           <div className="flex gap-3">
-            <Button type="submit" color="primary" size="lg" disabled={busy}>
+            <Button
+              type="submit"
+              color="primary"
+              size="lg"
+              disabled={busy || !Object.values(selected).some(Boolean)}
+            >
               {busy ? 'Authorizing…' : 'Authorize'}
             </Button>
             <Button
               type="button"
-              color="neutral"
               variant="outline"
               size="lg"
               disabled={busy}

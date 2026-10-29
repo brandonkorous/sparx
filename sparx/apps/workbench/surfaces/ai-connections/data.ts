@@ -179,13 +179,12 @@ export function credentialState(credential: AiCredential): {
 export interface McpConnection {
   clientId: string;
   clientName: string | null;
-  /** Union of scopes across this connection's live tokens. */
+  /** The scopes the person approved for this app. */
   scopes: string[];
   /** How many live sign-ins this app holds. */
   tokenCount: number;
   firstAuthorizedAt: string;
   lastAuthorizedAt: string;
-  accessExpiresAt: string;
 }
 
 export const MCP_CONNECTIONS_KEY = ['ai-mcp-connections'];

@@ -73,9 +73,10 @@ model User {
 
   // MCP OAuth provider (docs/07 §5) — clients this user registered/connected,
   // tokens issued to them, and recorded consents. See 03-auth-oauth.prisma.
-  oauthApplications OauthApplication[]
-  oauthAccessTokens OauthAccessToken[]
-  oauthConsents     OauthConsent[]
+  oauthClients       OauthClient[]
+  oauthRefreshTokens OauthRefreshToken[]
+  oauthAccessTokens  OauthAccessToken[]
+  oauthConsents      OauthConsent[]
 
   // CRM module — staff acting as sales rep / task owner / activity actor
   assignedCustomers        Customer[]                 @relation("CustomerAssignedRep")
@@ -154,6 +155,11 @@ model Session {
   updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // MCP OAuth tokens minted while this session was signed in. SET NULL on the
+  // token side: signing out never disconnects an assistant (03-auth-oauth.prisma).
+  oauthRefreshTokens OauthRefreshToken[]
+  oauthAccessTokens  OauthAccessToken[]
 
   @@index([userId])
   @@index([expiresAt])

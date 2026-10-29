@@ -11,6 +11,7 @@
 
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
+import { legacyMcpResponse } from '@wizeworks/auth';
 import { getCustomerAuth } from '@wizeworks/customer-auth';
 import { prisma, tenantStore } from '@wizeworks/db';
 import { notFound } from '@wizeworks/api-core/errors';
@@ -62,6 +63,55 @@ export async function resolveAuthTenant(request: FastifyRequest): Promise<AuthTe
   throw notFound('Store', host ?? slug ?? 'unknown');
 }
 
+/** The Fastify request's headers as Web `Headers` (repeated values kept), with
+ *  `host` set to the store host the tenant was resolved from. The customer
+ *  instance builds its per-request base URL (issuer, endpoints, the `iss` on a
+ *  redirect) from `host` alone, so it must name the same store. */
+export function webHeaders(request: FastifyRequest): Headers {
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(request.headers)) {
+    if (Array.isArray(value)) for (const v of value) headers.append(key, v);
+    else if (typeof value === 'string') headers.set(key, value);
+  }
+  const host = forwardedHost(request);
+  if (host) headers.set('host', host);
+  return headers;
+}
+
+/** The customer instance's mount point. */
+const AUTH_BASE = '/v1/public/auth';
+
+/**
+ * The Better Auth paths a browser or an assistant may reach over HTTP: the
+ * OAuth provider's endpoints, the signing keys, and discovery. Nothing else.
+ *
+ * The customer instance answers on every store host (a per-request base URL
+ * with `allowedHosts: ['*']`), which makes every store origin a trusted origin
+ * to it. That is right for OAuth, whose endpoints check redirect addresses
+ * against the registered client, and wrong for everything else Better Auth
+ * mounts (sign-in, sign-up, password reset, email verification take a
+ * callback URL that would then be allowed to point anywhere). Shoppers sign in
+ * through api-rest's own account routes, which call the instance directly, so
+ * none of those were ever meant to be public here.
+ *
+ * `/oauth2/consent` is excluded too: approving goes through POST
+ * /v1/public/auth/consent, which re-verifies the request and the session
+ * before calling the provider.
+ */
+const FORWARDED_PATHS: readonly RegExp[] = [
+  /^\/oauth2\/(authorize|token|register|userinfo|revoke|introspect|end-session)$/,
+  /^\/jwks$/,
+  /^\/\.well-known\/[a-z-]+$/,
+];
+
+/** Whether `pathname` (under the mount) is forwarded to Better Auth. Exported
+ *  for its test. */
+export function isForwardedAuthPath(pathname: string): boolean {
+  if (!pathname.startsWith(`${AUTH_BASE}/`)) return false;
+  const rest = pathname.slice(AUTH_BASE.length).replace(/\/$/, '');
+  return FORWARDED_PATHS.some((re) => re.test(rest));
+}
+
 /** Bridge a Fastify request into Better Auth's Web `handler(Request)` and pipe the
  *  Web `Response` back onto the Fastify reply, running the whole thing inside
  *  `tenantStore.run(tenantId, …)` so every customer-auth adapter op is scoped to
@@ -72,11 +122,7 @@ export async function runCustomerAuthHandler(
   reply: FastifyReply,
   tenant: AuthTenant
 ): Promise<void> {
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(request.headers)) {
-    if (Array.isArray(value)) for (const v of value) headers.append(key, v);
-    else if (typeof value === 'string') headers.set(key, value);
-  }
+  const headers = webHeaders(request);
 
   const method = request.method.toUpperCase();
   const hasBody = method !== 'GET' && method !== 'HEAD';
@@ -98,8 +144,18 @@ export async function runCustomerAuthHandler(
     redirect: 'manual',
   });
 
-  const auth = getCustomerAuth();
-  const webResponse = await tenantStore.run(tenant.tenantId, () => auth.handler(webRequest));
+  // A cached 1.6 address (`/mcp/authorize`, `/mcp/token`, …) is sent to its 1.7
+  // successor; anything else outside the OAuth surface is not found.
+  const pathname = new URL(webRequest.url).pathname;
+  let webResponse = legacyMcpResponse(webRequest, AUTH_BASE);
+  if (!webResponse) {
+    if (!isForwardedAuthPath(pathname)) {
+      reply.code(404).send({ error: 'not_found' });
+      return;
+    }
+    const auth = getCustomerAuth();
+    webResponse = await tenantStore.run(tenant.tenantId, () => auth.handler(webRequest));
+  }
 
   reply.status(webResponse.status);
   const setCookies = webResponse.headers.getSetCookie();

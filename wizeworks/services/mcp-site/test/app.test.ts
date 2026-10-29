@@ -82,7 +82,7 @@ describe('mcp-site app', () => {
       expect(res.statusCode).toBe(200);
       const body = res.json();
       expect(body.resource).toBe('http://acme.example/mcp');
-      expect(body.authorization_servers).toEqual(['https://acme.example']);
+      expect(body.authorization_servers).toEqual(['https://acme.example/v1/public/auth']);
       expect(body.bearer_methods_supported).toEqual(['header']);
       expect(body.scopes_supported).toContain('account:read');
       await app.close();

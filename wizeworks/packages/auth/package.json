@@ -45,7 +45,9 @@
     "test": "vitest run --maxWorkers=1 --passWithNoTests"
   },
   "dependencies": {
-    "@better-auth/passkey": "1.6.33",
+    "@better-auth/mcp": "1.7.14",
+    "@better-auth/oauth-provider": "1.7.14",
+    "@better-auth/passkey": "1.7.14",
     "@prisma/client": "^6.19.3",
     "@wizeworks/attribution": "workspace:*",
     "@wizeworks/db": "workspace:*",
@@ -56,7 +58,8 @@
     "@wizeworks/legal-seed": "workspace:*",
     "@wizeworks/links": "workspace:*",
     "@wizeworks/modules": "workspace:*",
-    "better-auth": "~1.6.33"
+    "better-auth": "~1.7.14",
+    "jose": "^6.2.3"
   },
   "peerDependencies": {
     "next": "^16.0.0",

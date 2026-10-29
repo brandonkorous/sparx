@@ -1,8 +1,8 @@
 # WizeWorks Platform — MCP Server Specification
 
-**Version:** 1.8  
+**Version:** 1.9  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-08-23
+**Last Updated:** 2026-10-29
 
 ---
 
@@ -162,16 +162,18 @@ In all three the tenant must have the `ai` module active; per-tool scopes then d
 
 ### OAuth 2.1 flow (Claude / ChatGPT connectors)
 
-Remote MCP connectors (Claude Desktop, ChatGPT) speak **only** OAuth 2.1 — Authorization-Code + PKCE with Dynamic Client Registration (RFC 7591). Each **brand's account surface** is the authorization server (Better Auth `mcp()` plugin); **api-mcp is the resource server**, on that brand's own MCP hostname. Discovery + hand-off, written here for sparx:
+Remote MCP connectors (Claude Desktop, ChatGPT) speak **only** OAuth 2.1 — Authorization-Code + PKCE with Dynamic Client Registration (RFC 7591). Each **brand's account surface** is the authorization server (Better Auth 1.7 `@better-auth/mcp`, which is `@better-auth/oauth-provider` with the MCP server declared as its one resource, plus `jwt()` for the signing keys); **api-mcp is the resource server**, on that brand's own MCP hostname. Discovery + hand-off, written here for sparx:
 
 1. Client `POST`s `mcp.sparx.works/mcp` → **401** with `WWW-Authenticate: Bearer resource_metadata="…/.well-known/oauth-protected-resource"`. (The endpoint is `/mcp` — matching the shopper site MCP and MCP convention; `/v1` is kept as a deprecated alias, and any other path returns a JSON 404 naming `/mcp`.)
 2. Client fetches that **Protected Resource Metadata** (RFC 9728, served by api-mcp) → `authorization_servers: ["https://app.sparx.works"]` + the MCP scope vocabulary.
-3. Client fetches `app.sparx.works/.well-known/oauth-authorization-server` (served by the workbench) → authorize / token / register endpoints, `code_challenge_methods_supported: ["S256"]`.
-4. Client **self-registers** at `/api/auth/mcp/register` (rate-limited), then opens `/api/auth/mcp/authorize`.
-5. A `before` hook (`wizeworks/packages/auth/src/server.ts` `mcpAuthorizeGuard`) refuses to mint a code unless the request carries a **signed, session-bound, short-lived consent grant** — so every authorize is funnelled through the first-party **consent + scope-picker** page at `/oauth/consent`. The user signs in (if needed), sees who is connecting + where tokens go, and **picks exactly which scopes to grant** (capped by their role). Approval mints the grant and hands back to the plugin, which issues the code.
-6. Client exchanges the code at `/api/auth/mcp/token` (PKCE verified) for an opaque access token (1h) + refresh token (30d, on `offline_access`).
+3. Client fetches `app.sparx.works/.well-known/oauth-authorization-server` (served by the workbench, which returns the provider's own document from `auth.api.getOAuthServerConfig`, so it can never advertise an endpoint the server does not have) → `issuer` = the account origin, authorize / token / register at `/api/auth/oauth2/*`, `jwks_uri` at `/api/auth/jwks`, `code_challenge_methods_supported: ["S256"]`.
+4. Client **self-registers** at `/api/auth/oauth2/register` (anonymous DCR, rate-limited), then opens `/api/auth/oauth2/authorize`.
+5. With no session, or no consent on file for that client, the provider redirects to the first-party **consent + scope-picker** page at `/oauth/consent` with the whole authorization request in the query string, **HMAC-signed with the instance secret and stamped with an expiry**. The page verifies that signature before it renders anything (`readMcpConsentRequest`), sends a signed-out user to sign in and back, shows who is connecting + where tokens go, and lets them **pick exactly which scopes to grant** (capped by their role). The decision goes to the provider's own `/oauth2/consent` with the signed request (`submitMcpConsent`); the provider refuses any scope that was not in the signed request, records the consent, and issues the code.
+6. Client exchanges the code at `/api/auth/oauth2/token` (PKCE verified) for a **signed JWT access token** (`typ: at+jwt`, EdDSA, `aud` = the MCP resource, 1h) + an opaque refresh token (30d, on `offline_access`, stored hashed).
 
-**Hardening notes (deliberate, since DCR is public):** PKCE is mandatory and **S256-only** (both off by default in the plugin build); redirect URIs are **exact-matched** against the DCR registration; the requested `resource` must be our MCP server (RFC 8707); the plugin's `getMcpSession` does **not** check expiry, so `verifyMcpOAuthToken` enforces `access_token_expires_at` + client-not-disabled in one atomic query as `sparx_owner`. The `oauth_*` tables are `ENABLE`-but-**NO-FORCE** RLS with **no policy** (owner-only; `sparx_app` sees zero rows). Tenants view + revoke connections in **Settings → AI Integrations** ("Connected assistants").
+**Hardening notes (deliberate, since DCR is public):** PKCE is mandatory and **S256-only**; redirect URIs are **exact-matched** against the DCR registration; the requested `resource` must be our MCP server (RFC 8707, enforced by the provider's resource table). api-mcp verifies a token itself (`verifyMcpOAuthToken`): signature against the brand's key in `jwks` (the key set is partitioned by `platform_brand`, since Sparx and Piggles share a database but not a secret), `typ`, `iss` = the brand's account origin, `aud` = the brand's MCP URL, expiry, and that the user's consent for that client **still exists and predates the token**, which is what makes removing a connection take effect before the token expires. The `oauth_*` and `jwks` tables are `ENABLE`-but-**NO-FORCE** RLS with **no policy** (owner-only; `sparx_app` sees zero rows). Tenants view + revoke connections in **Settings → AI Integrations** ("Connected assistants"); revoking deletes the consents and every token for the tenant's users.
+
+The 1.6 addresses (`/api/auth/mcp/{authorize,token,register,userinfo,jwks}`) answer with a redirect to their successor (302 for authorize, 308 for the POSTs) rather than a 404, and anything else under `/mcp/` answers 410 with the reason; the client ids those assistants hold no longer exist, so they get `invalid_client` and register again (`legacy-mcp-endpoints.ts`).
 
 #### The MCP hostname is per brand, and it has to be
 

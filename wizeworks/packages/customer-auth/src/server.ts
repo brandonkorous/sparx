@@ -9,8 +9,9 @@
 
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { mcp } from 'better-auth/plugins';
-import { APIError, createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
+import { jwt } from 'better-auth/plugins';
+import { APIError, createAuthMiddleware } from 'better-auth/api';
+import { oauthProvider } from '@better-auth/oauth-provider';
 
 import { hashPassword, verifyPassword } from './hash';
 import { publishCustomerAuthEmail } from './email';
@@ -18,7 +19,7 @@ import { resolveStoreBaseUrl, resolveStoreName } from './store-url';
 import { CUSTOMER_COOKIE_PREFIX, SESSION_COOKIE_NAME } from './session';
 import { tenantScopedClient } from './tenant-adapter';
 import { redactingLogger } from './redacting-logger';
-import { CUSTOMER_MCP_SCOPES, verifyCustomerConsentGrant } from './mcp-scopes';
+import { CUSTOMER_ALL_OAUTH_SCOPES } from './mcp-scopes';
 
 declare global {
   var __sparxCustomerAuth: ReturnType<typeof createCustomerAuth> | undefined;
@@ -30,102 +31,120 @@ const RESET_EXPIRES_MINUTES = 60;
 const CONFIRM_EXPIRES_MINUTES = 60;
 
 /** The secret the customer Better Auth instance is constructed with — the SINGLE
- *  source so the consent-grant minter (api-rest) and the /mcp/authorize guard
- *  (which reads `ctx.context.secret`) sign + verify with the identical key. */
+ *  source, so the consent page's signature check (as-metadata.ts) verifies the
+ *  signed authorization request with the exact key the provider signed it with. */
 export function customerAuthSecret(): string {
   return process.env.CUSTOMER_AUTH_SECRET ?? process.env.BETTER_AUTH_SECRET ?? '';
 }
 
-/** Reconstruct the store's own public origin from the forwarded request headers.
- *  The AS lives on the store origin (Caddy routes `<store>/v1/public/auth/*` to
- *  api-rest), so the browser stays same-origin with its session cookie. api-rest
- *  runs behind Caddy (trustProxy), which sets X-Forwarded-Host/Proto. */
-function storeOriginFromHeaders(headers: Headers | undefined): string | null {
-  if (!headers) return null;
-  const host = headers.get('x-forwarded-host') ?? headers.get('host');
-  if (!host) return null;
-  const firstHost = host.split(',')[0]?.trim();
-  if (!firstHost) return null;
-  const rawProto = headers.get('x-forwarded-proto')?.split(',')[0]?.trim();
-  const proto = rawProto && rawProto.length > 0 ? rawProto : 'https';
-  return `${proto}://${firstHost}`;
+/** Where the store-branded consent page lives, relative to the store origin.
+ *  It is also the login page: signed out, it sends the shopper to the store's
+ *  own sign-in and back (wizeworks/apps/site components/authorize-consent.tsx). */
+const CUSTOMER_CONSENT_PAGE = '/account/authorize';
+
+/** `resource` on an authorize request, as a list (it may repeat, RFC 8707). */
+function requestedResources(query: Record<string, unknown> | undefined): string[] {
+  const raw = query?.resource;
+  if (typeof raw === 'string') return raw ? [raw] : [];
+  return Array.isArray(raw) ? raw.filter((r): r is string => typeof r === 'string' && !!r) : [];
 }
 
-// Consent guard for the customer instance's `/mcp/authorize` (mirrors the operator
-// flow, @wizeworks/auth server.ts). That endpoint mints an auth code for ANY requested
-// scope the moment a shopper has a session — it only shows a consent screen on
-// `prompt=consent`, which an attacker's self-registered DCR client won't send. On
-// a PUBLIC surface that is a confused-deputy hole. So we require a signed,
-// session-bound, short-lived consent grant (minted only by the store-branded
-// consent page after the shopper explicitly picks scopes); any /mcp/authorize hit
-// without a valid grant is bounced to that page ON THE STORE'S OWN ORIGIN.
-const customerMcpAuthorizeGuard = createAuthMiddleware(async (ctx) => {
-  if (ctx.path !== '/mcp/authorize') return;
-
-  const storeOrigin = storeOriginFromHeaders(ctx.headers);
-  const query = (ctx.query ?? {}) as Record<string, unknown>;
-
-  // Rebuild the consent-page URL (store origin) from the original authorize params
-  // (minus our own grant param). toConsent() returns `never`, so each guard below
-  // both terminates and narrows. If we can't resolve the store origin we cannot
-  // safely build a redirect — fail closed with a plain error.
-  const toConsent = (): never => {
-    if (!storeOrigin)
-      throw new APIError('BAD_REQUEST', { message: 'Unable to resolve store origin.' });
-    const params = new URLSearchParams();
-    for (const [k, v] of Object.entries(query)) {
-      if (k === 'sparx_grant') continue;
-      if (typeof v === 'string') params.set(k, v);
-    }
-    throw ctx.redirect(`${storeOrigin}/account/authorize?${params.toString()}`);
-  };
-
-  const grant = verifyCustomerConsentGrant(
-    typeof query.sparx_grant === 'string' ? query.sparx_grant : null,
-    ctx.context.secret
-  );
-  if (!grant) return toConsent();
-
-  // The grant must bind the EXACT client, redirect, and scope in this request — a
-  // signed approval can't be replayed onto a different one.
-  if (
-    grant.clientId !== query.client_id ||
-    grant.redirectUri !== query.redirect_uri ||
-    grant.scope !== query.scope
-  ) {
-    return toConsent();
+function originOf(url: string): string | null {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return null;
   }
+}
 
-  // …and it must belong to the shopper who is actually signed in now (their
-  // session cookie, resolved under RLS via the ambient tenantStore).
-  const session = await getSessionFromCtx(ctx);
-  if (session?.user.id !== grant.userId) return toConsent();
+/**
+ * Register this store's MCP server as an OAuth resource the first time an
+ * assistant asks for it (RFC 8707).
+ *
+ * The provider only issues a token for a resource it has a row for, and the
+ * staff instance declares its one resource in config. A store cannot: every
+ * site is its own resource (`https://<store>/mcp`), on a host only known when
+ * the request arrives. So this hook runs before `/oauth2/authorize` and
+ *
+ *   • refuses a resource on any origin but the store's own (the AS origin,
+ *     which is where the store's MCP endpoint lives). This is the rule the 1.6
+ *     consent page enforced: a store's sign-in never mints a token for
+ *     somebody else's server;
+ *   • writes the row (tenant-scoped, through the RLS adapter) when it is
+ *     missing, allowing the whole shopper vocabulary. The consent screen is
+ *     what narrows a grant.
+ *
+ * The token the provider then mints is a JWT whose `aud` is that resource and
+ * whose `iss` is `<store>/v1/public/auth`; verifyCustomerMcpToken checks both.
+ */
+const registerStoreResource = createAuthMiddleware(async (ctx) => {
+  if (ctx.path !== '/oauth2/authorize') return;
+  const resources = requestedResources(ctx.query as Record<string, unknown> | undefined);
+  if (resources.length === 0) return;
 
-  // Valid, bound, and session-matched — let Better Auth mint the code.
+  const storeOrigin = originOf(ctx.context.baseURL);
+  for (const identifier of resources) {
+    if (!storeOrigin || originOf(identifier) !== storeOrigin) {
+      throw new APIError('BAD_REQUEST', {
+        error: 'invalid_target',
+        error_description: 'This store can only authorize access to its own assistant.',
+      });
+    }
+    const existing = await ctx.context.adapter.findOne({
+      model: 'oauthResource',
+      where: [{ field: 'identifier', value: identifier }],
+    });
+    if (existing) continue;
+    const now = new Date();
+    await ctx.context.adapter.create({
+      model: 'oauthResource',
+      data: {
+        identifier,
+        name: 'Store assistant',
+        allowedScopes: [...CUSTOMER_ALL_OAUTH_SCOPES],
+        disabled: false,
+        dpopBoundAccessTokensRequired: false,
+        policyVersion: 1,
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
+  }
 });
 
-/** The shopper MCP OAuth authorization server (docs/113 customer tier). Hardened
- *  per OAuth 2.1: PKCE-S256 only, short TTLs, our shopper scope vocabulary. The
- *  handler mount + first-party consent guard + per-store login-page redirect +
- *  resource-server advertisement are wired in the site-MCP customer-tier
- *  slice (docs/27 §6); this registration makes the instance + its tenant-scoped
- *  oauth tables OAuth-ready. Extracted so createCustomerAuth stays cohesive. */
-function customerMcpPlugin() {
-  const loginPage = process.env.CUSTOMER_MCP_LOGIN_PAGE ?? '/account/login';
-  return mcp({
-    loginPage,
-    resource: process.env.SITE_MCP_PUBLIC_ORIGIN ?? 'http://localhost:3200',
-    oidcConfig: {
-      loginPage,
-      requirePKCE: true,
-      allowPlainCodeChallengeMethod: false,
+/** The shopper MCP OAuth authorization server (docs/113 customer tier), on
+ *  `@better-auth/oauth-provider` (OAuth 2.1: PKCE required for public clients,
+ *  S256 only, hashed tokens). The provider directly, not `@better-auth/mcp`:
+ *  that wrapper declares ONE static resource and seeds it at boot, outside any
+ *  tenant, which this tenant-scoped instance can neither express nor survive.
+ *  Resources are registered per store by registerStoreResource instead. */
+function customerOAuthPlugins() {
+  return [
+    // Signs the access tokens, one EdDSA key set per store (customer_jwks is
+    // tenant-scoped). No fixed issuer: it follows the per-request base URL, so
+    // each store's tokens say `https://<store>/v1/public/auth`, which is what
+    // that store's discovery document says too.
+    jwt({ disableSettingJwtHeader: true }),
+    oauthProvider({
+      loginPage: CUSTOMER_CONSENT_PAGE,
+      consentPage: CUSTOMER_CONSENT_PAGE,
+      scopes: [...CUSTOMER_ALL_OAUTH_SCOPES],
+      // Anonymous Dynamic Client Registration: a shopper's assistant registers
+      // itself with no account, exactly like the staff flow.
+      allowDynamicClientRegistration: true,
+      allowUnauthenticatedClientRegistration: true,
+      clientRegistrationDefaultApplicationType: 'infer',
+      // Per-client resource links are a managed-client feature; a DCR client
+      // reaches the store's own resource, and only that (registerStoreResource).
+      enforcePerClientResources: false,
+      refreshTokenReuseInterval: 30,
       accessTokenExpiresIn: 60 * 60, // 1h
       refreshTokenExpiresIn: 60 * 60 * 24 * 30, // 30d
-      codeExpiresIn: 5 * 60, // 5m
-      scopes: [...CUSTOMER_MCP_SCOPES],
-      metadata: { scopes_supported: [...CUSTOMER_MCP_SCOPES] },
-    },
-  });
+      // Also the life of the signed link to the consent page, which may include
+      // signing in first: 10 minutes, the OAuth ceiling for a code.
+      codeExpiresIn: 10 * 60,
+    }),
+  ];
 }
 
 // Session config, extracted so createCustomerAuth stays cohesive. cookieCache is
@@ -154,10 +173,27 @@ function createCustomerAuth() {
     appName: 'sparx-customer',
     // Warn and up, emails masked: a failed sign-in logged the address (./redacting-logger).
     logger: redactingLogger,
-    // Mounted by api-rest at /v1/public/auth/* (docs/27 §6). baseURL is the
-    // api-rest origin; the site reaches it through its /api/sparx proxy.
-    baseURL: process.env.CUSTOMER_AUTH_URL ?? 'http://localhost:3100',
+    // Mounted by api-rest at /v1/public/auth/* (docs/27 §6), and reached on each
+    // STORE's own origin (Caddy routes `<store>/v1/public/auth*` there with the
+    // Host preserved). The base URL is therefore per request: every store is
+    // its own authorization server, and the issuer, the endpoints in discovery
+    // and the `iss` on a redirect all have to name the store the shopper is on.
+    //
+    // `*` because store hosts are unbounded (custom domains). What makes that
+    // safe is api-rest, not this list: it resolves the Host to a real site
+    // before calling in (resolveAuthTenant 404s anything else), and it only
+    // forwards the OAuth endpoints over HTTP (lib/customer-oauth.ts), so no
+    // endpoint that takes a callback URL is reachable from a browser. Calls
+    // without a host (service.ts) use the fallback.
+    baseURL: {
+      allowedHosts: ['*'],
+      fallback: process.env.CUSTOMER_AUTH_URL ?? 'http://localhost:3100',
+      protocol: 'auto',
+    },
     basePath: '/v1/public/auth',
+    // The jwt() plugin's session-to-JWT `/token` is not an OAuth endpoint and is
+    // never offered (the provider's `/oauth2/token` is the token endpoint).
+    disabledPaths: ['/token'],
     secret: customerAuthSecret(),
     database: prismaAdapter(tenantScopedClient, { provider: 'postgresql' }),
 
@@ -236,20 +272,20 @@ function createCustomerAuth() {
     // unauthenticated so registration is capped hard.
     rateLimit: {
       customRules: {
-        '/mcp/register': { window: 60, max: 5 },
-        '/mcp/authorize': { window: 60, max: 30 },
-        '/mcp/token': { window: 60, max: 60 },
+        '/oauth2/register': { window: 60, max: 5 },
+        '/oauth2/authorize': { window: 60, max: 30 },
+        '/oauth2/consent': { window: 60, max: 30 },
+        '/oauth2/token': { window: 60, max: 60 },
       },
     },
 
-    // Guard /mcp/authorize (docs/113 §5). See customerMcpAuthorizeGuard: bounce
-    // any authorize without a valid, session-bound consent grant to the store's
-    // own /account/authorize consent page.
+    // Register the store's MCP server as a resource on first use (see
+    // registerStoreResource).
     hooks: {
-      before: customerMcpAuthorizeGuard,
+      before: registerStoreResource,
     },
 
-    plugins: [customerMcpPlugin()],
+    plugins: customerOAuthPlugins(),
   });
 }
 

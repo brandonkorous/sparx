@@ -14,8 +14,8 @@ import { Badge, Button, Switch, Text } from '@wizeworks/silicaui-react';
 import type { McpScopeMeta } from '@wizeworks/auth';
 
 export interface ConsentFormProps {
-  /** Hidden authorize params echoed back to the submit route. */
-  params: Record<string, string>;
+  /** The provider's signed authorization request, posted back verbatim. */
+  oauthQuery: string;
   /** Permissions this person's role may grant (already role-capped). */
   catalog: McpScopeMeta[];
   /** Pre-checked (what the app asked for ∩ what this role may give). */
@@ -24,7 +24,12 @@ export interface ConsentFormProps {
   groupLabel: (module: string) => string;
 }
 
-export function ConsentForm({ params, catalog, defaultSelected, groupLabel }: ConsentFormProps) {
+export function ConsentForm({
+  oauthQuery,
+  catalog,
+  defaultSelected,
+  groupLabel,
+}: ConsentFormProps) {
   const [selected, setSelected] = React.useState<Set<string>>(() => new Set(defaultSelected));
 
   const toggle = (scope: string, on: boolean) =>
@@ -50,9 +55,7 @@ export function ConsentForm({ params, catalog, defaultSelected, groupLabel }: Co
 
   return (
     <form method="post" action="/oauth/consent/submit" className="flex min-h-0 flex-1 flex-col">
-      {Object.entries(params).map(([k, v]) => (
-        <input key={k} type="hidden" name={k} value={v} />
-      ))}
+      <input type="hidden" name="oauth_query" value={oauthQuery} />
       <input type="hidden" name="scopes" value={[...selected].join(' ')} />
 
       <div className="border-base-300 flex shrink-0 flex-wrap items-center gap-2 border-b px-6 py-3 sm:px-8">
@@ -131,7 +134,13 @@ export function ConsentForm({ params, catalog, defaultSelected, groupLabel }: Co
         <Button type="submit" name="decision" value="deny" variant="ghost">
           Cancel
         </Button>
-        <Button type="submit" name="decision" value="approve" color="primary">
+        <Button
+          type="submit"
+          name="decision"
+          value="approve"
+          color="primary"
+          disabled={selected.size === 0}
+        >
           Allow{selected.size > 0 ? ` (${selected.size})` : ''}
         </Button>
       </div>

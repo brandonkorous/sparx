@@ -1,107 +1,268 @@
 // OAuth 2.1 / OIDC provider tables — the MCP authorization server (docs/07 §5).
 //
-// These back Better Auth's `mcp()` plugin (which bundles its `oidcProvider`).
-// The dashboard (app.sparx.works) IS the authorization server: it serves
-// Dynamic Client Registration (RFC 7591), the Authorization-Code + PKCE flow,
-// token issuance, and refresh. api-mcp (mcp.sparx.works) is the resource server
-// — it introspects the opaque access token against `oauth_access_tokens`.
+// These back Better Auth 1.7's `@better-auth/mcp` plugin, which is the
+// `@better-auth/oauth-provider` configured for MCP, plus the `jwt()` plugin that
+// signs its access tokens. The staff console (app.sparx.works, and Piggles'
+// account app) IS the authorization server: it serves Dynamic Client
+// Registration (RFC 7591), the Authorization-Code + PKCE flow, token issuance,
+// and refresh under /api/auth/oauth2/*. api-mcp (mcp.sparx.works) is the
+// resource server — it verifies the signed access token against `jwks` and then
+// checks `oauth_consents` so a revoked connection stops at once
+// (verifyMcpOAuthToken in @wizeworks/auth).
+//
+// These replaced the 1.6 `mcp()`/`oidcProvider` tables (oauth_applications, the
+// token-pair oauth_access_tokens, consent_given consents) in migration
+// 20270530000041_better_auth_1_7_oauth_provider. Better Auth 1.7 removed that
+// plugin, and nothing carried over: every assistant reconnects once.
 //
 // FIELD NAMES ARE LOAD-BEARING. Better Auth's prisma adapter addresses these
-// models by the exact keys `oauthApplication` / `oauthAccessToken` /
-// `oauthConsent` (model `Oauth*`, NOT `OAuth*`, so the generated client key
-// matches) and reads/writes the camelCase FIELD names below verbatim. Renaming
-// a field silently breaks the adapter at runtime. Columns are snake_case via
-// @map, mirroring User/Session/Account.
+// models by the exact keys `oauthClient` / `oauthResource` / `oauthClientResource`
+// / `oauthRefreshToken` / `oauthAccessToken` / `oauthConsent` /
+// `oauthClientAssertion` / `jwks` (model `Oauth*`, NOT `OAuth*`, so the generated
+// client key matches) and reads/writes the camelCase FIELD names below verbatim.
+// Renaming a field silently breaks the adapter at runtime. Columns are
+// snake_case via @map, mirroring User/Session/Account.
+//
+// Plugin `json` fields are TEXT: the Prisma adapter does not declare JSON
+// support, so Better Auth stringifies them on write and parses them on read.
+// List fields default to '{}' because Prisma cannot write NULL to a list column.
 //
 // NO tenant_id: a client self-registers via public DCR BEFORE any tenant is
 // known, and tokens key on `userId`. Tenant scope is resolved transitively
-// (userId → users.tenant_id) at verification time — see verifyMcpOAuthToken in
-// @wizeworks/auth. RLS posture is set in the migration: ENABLE + NO FORCE + NO
-// policy, so ONLY the auth service (sparx_owner, table owner) can read these
-// secret-bearing rows; sparx_app is denied entirely. See wizeworks/packages/db/CLAUDE.md.
+// (userId → users.tenant_id) at verification time. RLS posture is set in the
+// migration: ENABLE + NO FORCE + NO policy, so ONLY the auth service
+// (sparx_owner, table owner) can read these secret-bearing rows; sparx_app is
+// denied entirely. See wizeworks/packages/db/CLAUDE.md.
 
-// A registered OAuth client. Created by Dynamic Client Registration
-// (`POST /api/auth/mcp/register`) — Claude/ChatGPT self-register here. `type`
-// = 'public' (PKCE, no secret) | 'web' (confidential, has clientSecret).
-// `redirectUrls` is a comma-joined allowlist; the authorize endpoint requires
-// an EXACT match against it.
-model OauthApplication {
-  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  // Client display name from DCR (`client_name`). Nullable: DCR permits a
-  // client to register without one.
-  name         String? @db.VarChar(255)
-  icon         String? @db.Text
-  // Arbitrary client metadata JSON (stringified) supplied at registration.
-  metadata     String? @db.Text
-  clientId     String  @unique @map("client_id") @db.VarChar(255)
-  // Confidential clients only; empty/absent for public (PKCE) clients.
-  clientSecret String? @map("client_secret") @db.Text
-  // Comma-joined allowlist of exact redirect URIs.
-  redirectUrls String  @map("redirect_urls") @db.Text
-  // 'web' | 'public' | 'native' | 'user-agent-based'
-  type         String  @db.VarChar(32)
-  // Kill switch: a disabled client is refused at authorize + token.
-  disabled     Boolean @default(false)
-  // The staff user who was signed in when the client registered (null for
-  // anonymous DCR). onDelete cascade so removing a user reaps their clients.
-  userId       String? @map("user_id") @db.Uuid
+// The signing keys for OAuth access tokens and ID tokens (the `jwt()` plugin).
+// `privateKey` is encrypted with BETTER_AUTH_SECRET; `publicKey` is the public
+// JWK as JSON, which is what api-mcp verifies a token's signature with. The row
+// id is the key id (`kid`) every token names in its header.
+//
+// ONE KEY SET PER BRAND. Each product's deployment has its own
+// BETTER_AUTH_SECRET, and the plugin signs with the NEWEST row it can see, so
+// a shared set would hand sparx a key only Piggles can decrypt the moment
+// Piggles minted one. `platformBrand` is stamped on create and ANDed into every
+// read by the brand-scoped client (@wizeworks/auth brand-scoped-prisma.ts), the
+// same partition `users` gets. api-mcp's lookup by kid spans both on purpose:
+// it checks the issuer, which differs per brand.
+model Jwks {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  platformBrand String    @map("platform_brand") @db.VarChar(20)
+  publicKey     String    @map("public_key") @db.Text
+  privateKey    String    @map("private_key") @db.Text
+  alg           String?   @db.VarChar(32)
+  crv           String?   @db.VarChar(32)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  expiresAt     DateTime? @map("expires_at") @db.Timestamptz
 
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
-
-  user         User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessTokens OauthAccessToken[]
-  consents     OauthConsent[]
-
-  @@index([userId])
-  @@map("oauth_applications")
+  @@index([platformBrand, createdAt])
+  @@map("jwks")
 }
 
-// An issued access/refresh token pair. `accessToken` + `refreshToken` are
-// 32-char opaque random strings (NOT JWTs, stored raw). The resource server
-// looks a token up here by `accessToken` — Better Auth's getMcpSession does NOT
-// check expiry, so verifyMcpOAuthToken enforces `accessTokenExpiresAt` itself.
-// `scopes` is a space-joined grant string (the platform MCP scope vocabulary,
-// e.g. "read:crm write:commerce") selected by the user at consent.
-model OauthAccessToken {
-  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  accessToken           String   @unique @map("access_token") @db.Text
-  refreshToken          String   @unique @map("refresh_token") @db.Text
-  accessTokenExpiresAt  DateTime @map("access_token_expires_at") @db.Timestamptz
-  refreshTokenExpiresAt DateTime @map("refresh_token_expires_at") @db.Timestamptz
-  clientId              String   @map("client_id") @db.VarChar(255)
-  userId                String?  @map("user_id") @db.Uuid
-  scopes                String   @db.Text
+// A registered OAuth client. Created by Dynamic Client Registration
+// (`POST /api/auth/oauth2/register`): Claude, ChatGPT and other connectors
+// register themselves here with no account. `tokenEndpointAuthMethod` 'none' is
+// a public PKCE client with no secret. `redirectUris` is the exact-match
+// allowlist the authorize endpoint checks.
+model OauthClient {
+  id                               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientId                         String   @unique @map("client_id") @db.VarChar(255)
+  // Hashed (the provider default). Confidential clients only.
+  clientSecret                     String?  @map("client_secret") @db.Text
+  clientDiscoveryId                String?  @map("client_discovery_id") @db.Text
+  // Kill switch: a disabled client is refused at authorize, token and api-mcp.
+  disabled                         Boolean  @default(false)
+  skipConsent                      Boolean? @map("skip_consent")
+  enableEndSession                 Boolean? @map("enable_end_session")
+  subjectType                      String?  @map("subject_type") @db.VarChar(32)
+  scopes                           String[] @default([])
+  clientCredentialsScopes          String[] @default([]) @map("client_credentials_scopes")
+  // The staff user signed in when the client registered (null for anonymous
+  // DCR). onDelete cascade so removing a user reaps their clients.
+  userId                           String?  @map("user_id") @db.Uuid
+  name                             String?  @db.VarChar(255)
+  uri                              String?  @db.Text
+  icon                             String?  @db.Text
+  contacts                         String[] @default([])
+  tos                              String?  @db.Text
+  policy                           String?  @db.Text
+  softwareId                       String?  @map("software_id") @db.Text
+  softwareVersion                  String?  @map("software_version") @db.Text
+  softwareStatement                String?  @map("software_statement") @db.Text
+  redirectUris                     String[] @default([]) @map("redirect_uris")
+  postLogoutRedirectUris           String[] @default([]) @map("post_logout_redirect_uris")
+  backchannelLogoutUri             String?  @map("backchannel_logout_uri") @db.Text
+  backchannelLogoutSessionRequired Boolean? @map("backchannel_logout_session_required")
+  tokenEndpointAuthMethod          String?  @map("token_endpoint_auth_method") @db.VarChar(64)
+  applicationType                  String?  @map("application_type") @db.VarChar(32)
+  jwks                             String?  @db.Text
+  jwksUri                          String?  @map("jwks_uri") @db.Text
+  grantTypes                       String[] @default([]) @map("grant_types")
+  responseTypes                    String[] @default([]) @map("response_types")
+  requirePKCE                      Boolean? @map("require_pkce")
+  dpopBoundAccessTokens            Boolean  @default(false) @map("dpop_bound_access_tokens")
+  referenceId                      String?  @map("reference_id") @db.Text
+  metadata                         String?  @db.Text
 
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime? @default(now()) @map("updated_at") @db.Timestamptz
 
-  client OauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
-  user   User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resources     OauthClientResource[]
+  refreshTokens OauthRefreshToken[]
+  accessTokens  OauthAccessToken[]
+  consents      OauthConsent[]
+
+  @@index([userId])
+  @@map("oauth_clients")
+}
+
+// A protected resource a token can be issued for (RFC 8707). Seeded at boot from
+// the mcp() config: the brand's MCP server, with `allowedScopes` declared
+// because a resource without them cannot be stored (Prisma, list column).
+model OauthResource {
+  id                            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  identifier                    String   @unique @db.Text
+  name                          String   @db.VarChar(255)
+  accessTokenTtl                Int?     @map("access_token_ttl")
+  refreshTokenTtl               Int?     @map("refresh_token_ttl")
+  signingAlgorithm              String?  @map("signing_algorithm") @db.VarChar(32)
+  signingKeyId                  String?  @map("signing_key_id") @db.Text
+  allowedScopes                 String[] @default([]) @map("allowed_scopes")
+  customClaims                  String?  @map("custom_claims") @db.Text
+  dpopBoundAccessTokensRequired Boolean  @default(false) @map("dpop_bound_access_tokens_required")
+  disabled                      Boolean  @default(false)
+  policyVersion                 Int      @default(1) @map("policy_version")
+  metadata                      String?  @db.Text
+
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime? @default(now()) @map("updated_at") @db.Timestamptz
+
+  clients OauthClientResource[]
+
+  @@map("oauth_resources")
+}
+
+// Which resources a client may request tokens for. Written at registration from
+// `clientRegistrationDefaultResources` (the MCP resource), checked at authorize.
+model OauthClientResource {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientId   String    @map("client_id") @db.VarChar(255)
+  resourceId String    @map("resource_id") @db.Text
+  metadata   String?   @db.Text
+  createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamptz
+
+  client   OauthClient   @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  resource OauthResource @relation(fields: [resourceId], references: [identifier], onDelete: Cascade)
+
+  @@unique([clientId, resourceId])
+  @@index([clientId])
+  @@index([resourceId])
+  @@map("oauth_client_resources")
+}
+
+// A refresh token (only issued with `offline_access`). `token` is a SHA-256
+// hash of the value the client holds. Rotated on every use; `revoked` marks a
+// retired one. A connection is cut off by deleting these plus the consent.
+model OauthRefreshToken {
+  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token                   String    @unique @db.Text
+  clientId                String    @map("client_id") @db.VarChar(255)
+  // SET NULL, not cascade: signing out of the console must not disconnect an
+  // assistant that was authorized from that browser session.
+  sessionId               String?   @map("session_id") @db.Uuid
+  userId                  String    @map("user_id") @db.Uuid
+  referenceId             String?   @map("reference_id") @db.Text
+  authorizationCodeId     String?   @map("authorization_code_id") @db.Text
+  resources               String[]  @default([])
+  requestedUserInfoClaims String[]  @default([]) @map("requested_user_info_claims")
+  scopes                  String[]  @default([])
+  expiresAt               DateTime? @map("expires_at") @db.Timestamptz
+  createdAt               DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  revoked                 DateTime? @db.Timestamptz
+  rotatedAt               DateTime? @map("rotated_at") @db.Timestamptz
+  rotationReplayResponse  String?   @map("rotation_replay_response") @db.Text
+  rotationReplayExpiresAt DateTime? @map("rotation_replay_expires_at") @db.Timestamptz
+  authTime                DateTime? @map("auth_time") @db.Timestamptz
+  confirmation            String?   @db.Text
+
+  client       OauthClient        @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  session      Session?           @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessTokens OauthAccessToken[]
 
   @@index([clientId])
+  @@index([sessionId])
   @@index([userId])
-  @@index([accessTokenExpiresAt])
+  @@index([authorizationCodeId])
+  @@map("oauth_refresh_tokens")
+}
+
+// An OPAQUE access token — only minted when the client names no `resource`.
+// With a resource (every MCP client), the access token is a signed JWT and is
+// NOT stored; it is verified by signature, so this table stays sparse. `token`
+// is a SHA-256 hash.
+model OauthAccessToken {
+  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token                   String?   @unique @db.Text
+  clientId                String    @map("client_id") @db.VarChar(255)
+  sessionId               String?   @map("session_id") @db.Uuid
+  userId                  String?   @map("user_id") @db.Uuid
+  referenceId             String?   @map("reference_id") @db.Text
+  authorizationCodeId     String?   @map("authorization_code_id") @db.Text
+  resources               String[]  @default([])
+  requestedUserInfoClaims String[]  @default([]) @map("requested_user_info_claims")
+  refreshId               String?   @map("refresh_id") @db.Uuid
+  scopes                  String[]  @default([])
+  expiresAt               DateTime? @map("expires_at") @db.Timestamptz
+  createdAt               DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  revoked                 DateTime? @db.Timestamptz
+  confirmation            String?   @db.Text
+
+  client  OauthClient        @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  session Session?           @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  user    User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh OauthRefreshToken? @relation(fields: [refreshId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([sessionId])
+  @@index([userId])
+  @@index([authorizationCodeId])
+  @@index([refreshId])
   @@map("oauth_access_tokens")
 }
 
-// A record that a user consented to a client's scopes. Written by the OIDC
-// consent endpoint; our MCP flow drives consent through a first-party page so
-// this may stay sparse, but the table exists for the full plugin contract.
+// A person's approval of a client's scopes, written by `POST /oauth2/consent`
+// from our consent page. It is also the revocation record: api-mcp accepts a
+// signed access token only while a consent for its (client, user) exists and is
+// no newer than the token (revokeMcpConnection deletes it).
 model OauthConsent {
-  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  clientId     String  @map("client_id") @db.VarChar(255)
-  userId       String  @map("user_id") @db.Uuid
-  scopes       String  @db.Text
-  consentGiven Boolean @map("consent_given")
+  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientId                String    @map("client_id") @db.VarChar(255)
+  userId                  String?   @map("user_id") @db.Uuid
+  referenceId             String?   @map("reference_id") @db.Text
+  resources               String[]  @default([])
+  requestedUserInfoClaims String[]  @default([]) @map("requested_user_info_claims")
+  scopes                  String[]  @default([])
+  createdAt               DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt               DateTime? @default(now()) @map("updated_at") @db.Timestamptz
 
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
-
-  client OauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
-  user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client OauthClient @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  user   User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([clientId])
   @@index([userId])
   @@map("oauth_consents")
+}
+
+// Single-use record of a `private_key_jwt` client assertion (its jti digest is
+// the id), so an assertion cannot be replayed. TEXT id: Better Auth writes a
+// base64url digest, not a uuid.
+model OauthClientAssertion {
+  id        String   @id @db.Text
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+
+  @@index([expiresAt])
+  @@map("oauth_client_assertions")
 }

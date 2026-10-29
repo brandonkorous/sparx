@@ -11,7 +11,7 @@
     "@piggles/config": "workspace:*",
     "@wizeworks/auth": "workspace:*",
     "@wizeworks/db": "workspace:*",
-    "better-auth": "~1.6.33"
+    "better-auth": "~1.7.14"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
