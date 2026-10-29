@@ -16,11 +16,12 @@
 // accessToken, …); these mirror the staff models in 03-auth*.prisma exactly.
 // The customer instance remaps the CORE models to these Prisma model keys via
 // `modelName` options (customerUser/customerSession/customerAccount/
-// customerVerification); the mcp() plugin's fixed keys (oauthApplication /
-// oauthAccessToken / oauthConsent) are remapped to the CustomerOauth* models by
-// the tenant-scoping adapter Proxy (plugin model names are not config-overridable
-// — verified in the installed better-auth). Renaming a field silently breaks the
-// adapter at runtime.
+// customerVerification); the OAuth provider's and jwt() plugin's keys
+// (oauthClient / oauthResource / oauthClientResource / oauthRefreshToken /
+// oauthAccessToken / oauthConsent / oauthClientAssertion / jwks) are remapped to
+// the Customer* models below by the tenant-scoping adapter Proxy, so this
+// instance can never reach the STAFF tables. Renaming a field silently breaks
+// the adapter at runtime.
 //
 // The CRM `customers` spine (per-site membership, orders, consent — docs/58) is
 // unchanged and links to the Better Auth user via `customers.auth_user_id`.
@@ -47,9 +48,10 @@ model CustomerUser {
   tenant            Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   sessions          CustomerSession[]
   accounts          CustomerAccount[]
-  oauthApplications CustomerOauthApplication[]
-  oauthAccessTokens CustomerOauthAccessToken[]
-  oauthConsents     CustomerOauthConsent[]
+  oauthClients       CustomerOauthClient[]
+  oauthRefreshTokens CustomerOauthRefreshToken[]
+  oauthAccessTokens  CustomerOauthAccessToken[]
+  oauthConsents      CustomerOauthConsent[]
   // The per-site memberships (CRM spine) behind this login (docs/58 D2).
   memberships       Customer[]
 
@@ -74,6 +76,11 @@ model CustomerSession {
 
   tenant Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   user   CustomerUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // OAuth tokens minted while this session was signed in (SET NULL on the token
+  // side: signing out never disconnects a shopper's assistant).
+  oauthRefreshTokens CustomerOauthRefreshToken[]
+  oauthAccessTokens  CustomerOauthAccessToken[]
 
   @@index([tenantId])
   @@index([userId])
@@ -129,81 +136,227 @@ model CustomerVerification {
 }
 
 // ─── Customer MCP OAuth authorization server (docs/07 §5 · docs/113) ─────────
-// Mirrors the staff oauth_* tables (03-auth-oauth.prisma) but tenant-scoped: a
-// shopper's DCR client + tokens belong to a tenant. The mcp() plugin addresses
-// these by the fixed keys oauthApplication/oauthAccessToken/oauthConsent; the
-// tenant-scoping adapter Proxy remaps those to the models below.
+// Mirrors the staff OAuth tables (03-auth-oauth.prisma, Better Auth 1.7's
+// @better-auth/oauth-provider + jwt()) but tenant-scoped: a shopper's DCR client,
+// tokens, consents, the store's MCP resource rows AND the signing keys belong to
+// one tenant. Per-tenant `customer_jwks` means each store signs with its own
+// key, so a token one store minted cannot verify at another even before RLS.
+// Unique columns stay GLOBALLY unique (random ids, hashed tokens, one store
+// origin per tenant): Better Auth addresses them as single-column unique keys.
 
-model CustomerOauthApplication {
-  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId     String  @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
-  name         String? @db.VarChar(255)
-  icon         String? @db.Text
-  metadata     String? @db.Text
-  // Global unique so the FK from CustomerOauthAccessToken.clientId can reference
-  // it; the DCR client id is a random 32-char string. RLS still scopes reads.
-  clientId     String  @unique @map("client_id") @db.VarChar(255)
-  clientSecret String? @map("client_secret") @db.Text
-  redirectUrls String  @map("redirect_urls") @db.Text
-  type         String  @db.VarChar(32)
-  disabled     Boolean @default(false)
-  userId       String? @map("user_id") @db.Uuid
+model CustomerJwks {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String    @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  publicKey  String    @map("public_key") @db.Text
+  privateKey String    @map("private_key") @db.Text
+  alg        String?   @db.VarChar(32)
+  crv        String?   @db.VarChar(32)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  expiresAt  DateTime? @map("expires_at") @db.Timestamptz
 
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  tenant       Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user         CustomerUser?              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessTokens CustomerOauthAccessToken[]
-  consents     CustomerOauthConsent[]
+  @@index([tenantId])
+  @@map("customer_jwks")
+}
+
+model CustomerOauthClient {
+  id                               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                         String   @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  clientId                         String   @unique @map("client_id") @db.VarChar(255)
+  clientSecret                     String?  @map("client_secret") @db.Text
+  clientDiscoveryId                String?  @map("client_discovery_id") @db.Text
+  disabled                         Boolean  @default(false)
+  skipConsent                      Boolean? @map("skip_consent")
+  enableEndSession                 Boolean? @map("enable_end_session")
+  subjectType                      String?  @map("subject_type") @db.VarChar(32)
+  scopes                           String[] @default([])
+  clientCredentialsScopes          String[] @default([]) @map("client_credentials_scopes")
+  userId                           String?  @map("user_id") @db.Uuid
+  name                             String?  @db.VarChar(255)
+  uri                              String?  @db.Text
+  icon                             String?  @db.Text
+  contacts                         String[] @default([])
+  tos                              String?  @db.Text
+  policy                           String?  @db.Text
+  softwareId                       String?  @map("software_id") @db.Text
+  softwareVersion                  String?  @map("software_version") @db.Text
+  softwareStatement                String?  @map("software_statement") @db.Text
+  redirectUris                     String[] @default([]) @map("redirect_uris")
+  postLogoutRedirectUris           String[] @default([]) @map("post_logout_redirect_uris")
+  backchannelLogoutUri             String?  @map("backchannel_logout_uri") @db.Text
+  backchannelLogoutSessionRequired Boolean? @map("backchannel_logout_session_required")
+  tokenEndpointAuthMethod          String?  @map("token_endpoint_auth_method") @db.VarChar(64)
+  applicationType                  String?  @map("application_type") @db.VarChar(32)
+  jwks                             String?  @db.Text
+  jwksUri                          String?  @map("jwks_uri") @db.Text
+  grantTypes                       String[] @default([]) @map("grant_types")
+  responseTypes                    String[] @default([]) @map("response_types")
+  requirePKCE                      Boolean? @map("require_pkce")
+  dpopBoundAccessTokens            Boolean  @default(false) @map("dpop_bound_access_tokens")
+  referenceId                      String?  @map("reference_id") @db.Text
+  metadata                         String?  @db.Text
+
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime? @default(now()) @map("updated_at") @db.Timestamptz
+
+  tenant        Tenant                        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user          CustomerUser?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resources     CustomerOauthClientResource[]
+  refreshTokens CustomerOauthRefreshToken[]
+  accessTokens  CustomerOauthAccessToken[]
+  consents      CustomerOauthConsent[]
 
   @@index([tenantId])
   @@index([userId])
-  @@map("customer_oauth_applications")
+  @@map("customer_oauth_clients")
 }
 
-model CustomerOauthAccessToken {
-  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId              String   @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
-  accessToken           String   @unique @map("access_token") @db.Text
-  refreshToken          String   @unique @map("refresh_token") @db.Text
-  accessTokenExpiresAt  DateTime @map("access_token_expires_at") @db.Timestamptz
-  refreshTokenExpiresAt DateTime @map("refresh_token_expires_at") @db.Timestamptz
-  clientId              String   @map("client_id") @db.VarChar(255)
-  userId                String?  @map("user_id") @db.Uuid
-  scopes                String   @db.Text
+// The store's own MCP endpoint(s), written by the authorize guard in
+// @wizeworks/customer-auth the first time a client names one (an MCP resource is
+// per store origin, so it cannot be a boot-time config value).
+model CustomerOauthResource {
+  id                            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                      String   @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  identifier                    String   @unique @db.Text
+  name                          String   @db.VarChar(255)
+  accessTokenTtl                Int?     @map("access_token_ttl")
+  refreshTokenTtl               Int?     @map("refresh_token_ttl")
+  signingAlgorithm              String?  @map("signing_algorithm") @db.VarChar(32)
+  signingKeyId                  String?  @map("signing_key_id") @db.Text
+  allowedScopes                 String[] @default([]) @map("allowed_scopes")
+  customClaims                  String?  @map("custom_claims") @db.Text
+  dpopBoundAccessTokensRequired Boolean  @default(false) @map("dpop_bound_access_tokens_required")
+  disabled                      Boolean  @default(false)
+  policyVersion                 Int      @default(1) @map("policy_version")
+  metadata                      String?  @db.Text
 
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime? @default(now()) @map("updated_at") @db.Timestamptz
 
-  tenant Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  client CustomerOauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
-  user   CustomerUser?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant  Tenant                        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  clients CustomerOauthClientResource[]
+
+  @@index([tenantId])
+  @@map("customer_oauth_resources")
+}
+
+model CustomerOauthClientResource {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String    @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  clientId   String    @map("client_id") @db.VarChar(255)
+  resourceId String    @map("resource_id") @db.Text
+  metadata   String?   @db.Text
+  createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  client   CustomerOauthClient   @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  resource CustomerOauthResource @relation(fields: [resourceId], references: [identifier], onDelete: Cascade)
+
+  @@unique([clientId, resourceId])
+  @@index([tenantId])
+  @@index([resourceId])
+  @@map("customer_oauth_client_resources")
+}
+
+model CustomerOauthRefreshToken {
+  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                String    @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  token                   String    @unique @db.Text
+  clientId                String    @map("client_id") @db.VarChar(255)
+  sessionId               String?   @map("session_id") @db.Uuid
+  userId                  String    @map("user_id") @db.Uuid
+  referenceId             String?   @map("reference_id") @db.Text
+  authorizationCodeId     String?   @map("authorization_code_id") @db.Text
+  resources               String[]  @default([])
+  requestedUserInfoClaims String[]  @default([]) @map("requested_user_info_claims")
+  scopes                  String[]  @default([])
+  expiresAt               DateTime? @map("expires_at") @db.Timestamptz
+  createdAt               DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  revoked                 DateTime? @db.Timestamptz
+  rotatedAt               DateTime? @map("rotated_at") @db.Timestamptz
+  rotationReplayResponse  String?   @map("rotation_replay_response") @db.Text
+  rotationReplayExpiresAt DateTime? @map("rotation_replay_expires_at") @db.Timestamptz
+  authTime                DateTime? @map("auth_time") @db.Timestamptz
+  confirmation            String?   @db.Text
+
+  tenant       Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  client       CustomerOauthClient        @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  session      CustomerSession?           @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  user         CustomerUser               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessTokens CustomerOauthAccessToken[]
 
   @@index([tenantId])
   @@index([clientId])
+  @@index([sessionId])
   @@index([userId])
-  @@index([accessTokenExpiresAt])
+  @@index([authorizationCodeId])
+  @@map("customer_oauth_refresh_tokens")
+}
+
+model CustomerOauthAccessToken {
+  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                String    @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  token                   String?   @unique @db.Text
+  clientId                String    @map("client_id") @db.VarChar(255)
+  sessionId               String?   @map("session_id") @db.Uuid
+  userId                  String?   @map("user_id") @db.Uuid
+  referenceId             String?   @map("reference_id") @db.Text
+  authorizationCodeId     String?   @map("authorization_code_id") @db.Text
+  resources               String[]  @default([])
+  requestedUserInfoClaims String[]  @default([]) @map("requested_user_info_claims")
+  refreshId               String?   @map("refresh_id") @db.Uuid
+  scopes                  String[]  @default([])
+  expiresAt               DateTime? @map("expires_at") @db.Timestamptz
+  createdAt               DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  revoked                 DateTime? @db.Timestamptz
+  confirmation            String?   @db.Text
+
+  tenant  Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  client  CustomerOauthClient        @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  session CustomerSession?           @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  user    CustomerUser?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh CustomerOauthRefreshToken? @relation(fields: [refreshId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([clientId])
+  @@index([sessionId])
+  @@index([userId])
+  @@index([authorizationCodeId])
+  @@index([refreshId])
   @@map("customer_oauth_access_tokens")
 }
 
 model CustomerOauthConsent {
-  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId     String  @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
-  clientId     String  @map("client_id") @db.VarChar(255)
-  userId       String  @map("user_id") @db.Uuid
-  scopes       String  @db.Text
-  consentGiven Boolean @map("consent_given")
+  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                String    @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  clientId                String    @map("client_id") @db.VarChar(255)
+  userId                  String?   @map("user_id") @db.Uuid
+  referenceId             String?   @map("reference_id") @db.Text
+  resources               String[]  @default([])
+  requestedUserInfoClaims String[]  @default([]) @map("requested_user_info_claims")
+  scopes                  String[]  @default([])
+  createdAt               DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt               DateTime? @default(now()) @map("updated_at") @db.Timestamptz
 
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
-
-  tenant Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  client CustomerOauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
-  user   CustomerUser             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  client CustomerOauthClient @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  user   CustomerUser?       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([clientId])
   @@index([userId])
   @@map("customer_oauth_consents")
+}
+
+model CustomerOauthClientAssertion {
+  id        String   @id @db.Text
+  tenantId  String   @default(dbgenerated("current_tenant_id()")) @map("tenant_id") @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([expiresAt])
+  @@map("customer_oauth_client_assertions")
 }

@@ -55,7 +55,6 @@ data:
   # from its protocol, so it MUST be https in prod. The matching CUSTOMER_AUTH_SECRET
   # (distinct from BETTER_AUTH_SECRET) lives in sparx-app-secrets. NOT a secret.
   CUSTOMER_AUTH_URL: https://api.sparx.works
-  CUSTOMER_MCP_LOGIN_PAGE: /account/login
   # The ONE name for the workbench's public origin — every link a service puts in
   # an email resolves through it (@wizeworks/links/server appOrigin). Four variables
   # used to mean this and each emitter read a different one with its own fallback,

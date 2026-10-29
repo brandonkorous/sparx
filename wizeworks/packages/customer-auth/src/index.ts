@@ -28,7 +28,13 @@ export {
   type AwaitingConfirmation,
 } from './membership';
 
-export { verifyCustomerMcpToken, type VerifiedCustomerMcp } from './mcp-verify';
+export {
+  verifyCustomerMcpToken,
+  verifyCustomerMcpTokenWith,
+  CUSTOMER_AUTH_BASE_PATH,
+  type CustomerMcpStore,
+  type VerifiedCustomerMcp,
+} from './mcp-verify';
 
 export { CustomerAuthError, type CustomerAuthErrorCode } from './errors';
 
@@ -39,30 +45,28 @@ export {
   RESET_TTL_SECONDS,
 } from './session';
 
-// Shopper MCP OAuth: scope vocabulary + consent-grant crypto (docs/113 §5).
+// Shopper MCP OAuth scope vocabulary (docs/113 §5).
 export {
   CUSTOMER_MCP_SCOPES,
   CUSTOMER_OIDC_BASE_SCOPES,
   CUSTOMER_ALL_OAUTH_SCOPES,
   CUSTOMER_MCP_SCOPE_CATALOG,
   capCustomerScopes,
-  signCustomerConsentGrant,
-  verifyCustomerConsentGrant,
   type CustomerMcpScope,
   type CustomerScopeMeta,
-  type CustomerConsentGrantPayload,
 } from './mcp-scopes';
 
-// Shopper OAuth authorization-server metadata + authorize-request validation.
+// Shopper OAuth discovery + the store-branded consent page's server side.
 export {
-  buildCustomerAuthServerMetadata,
+  customerApprovedScope,
+  customerDiscoveryDocument,
   getRegisteredCustomerMcpClient,
-  parseCustomerAuthorizeParams,
-  customerAuthorizeParamsRecord,
-  validateCustomerAuthorizeRequest,
+  readCustomerConsentRequest,
+  signedCustomerOAuthQuery,
+  submitCustomerConsent,
+  type CustomerConsentRead,
+  type CustomerConsentRequest,
   type RegisteredCustomerMcpClient,
-  type CustomerAuthorizeParams,
-  type CustomerAuthorizeValidation,
 } from './as-metadata';
 
 export { hashPassword, verifyPassword } from './hash';

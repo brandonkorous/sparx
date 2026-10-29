@@ -8,6 +8,11 @@
 //      Integrations dashboard, verified via @wizeworks/auth/api-keys. Scopes
 //      come from the key row; role is fixed as 'api'.
 //
+//   3. OAuth access token — minted by the brand's authorization server when an
+//      assistant connects itself (Claude, ChatGPT). A signed `at+jwt`, checked
+//      against that brand's issuer and this server's resource identifier for
+//      the host the request arrived on (@wizeworks/auth/mcp-oauth).
+//
 // In both cases the tenant must have the `ai` MODULE active. sparx is
 // module-based (a tenant pays per module, not per plan tier) — MCP / the AI
 // Integrations surface IS the `ai` module, so that flag is the eligibility
@@ -23,7 +28,9 @@ import {
   verifyMcpOAuthToken,
   type McpBusinessScope,
 } from '@wizeworks/auth';
+import { mcpAuthServerOrigin, mcpResourceUrl } from '@wizeworks/links/server';
 import { env } from './env.js';
+import { brandForRequest } from './oauth-metadata.js';
 import { wizelens } from './wizelens.js';
 
 export type StaffRole = 'owner' | 'admin' | 'editor' | 'viewer' | 'api';
@@ -100,15 +107,16 @@ export async function authenticate(request: FastifyRequest): Promise<McpAuthCont
 
   // Route by token shape:
   //   • sk_live_… → external API key
-  //   • three dot-separated segments → first-party internal JWT (HS256)
-  //   • anything else → opaque MCP OAuth access token (32-char random string)
+  //   • a JWT signed HS256 → first-party internal JWT (the shared secret)
+  //   • any other JWT, or an opaque string → MCP OAuth access token (the OAuth
+  //     provider signs with its asymmetric keys, never HS256)
   let auth: McpAuthContext;
   if (token.startsWith('sk_live_')) {
     auth = await authenticateApiKey(token);
-  } else if (token.split('.').length === 3) {
+  } else if (jwtAlg(token) === 'HS256') {
     auth = await authenticateJwt(request);
   } else {
-    auth = await authenticateOAuth(token);
+    auth = await authenticateOAuth(request, token);
   }
 
   // MCP is the `ai` module's capability — gate on it (module-based, not a plan
@@ -143,11 +151,29 @@ async function authenticateApiKey(token: string): Promise<McpAuthContext> {
   };
 }
 
-async function authenticateOAuth(token: string): Promise<McpAuthContext> {
-  // Opaque access token minted by the MCP OAuth flow. verifyMcpOAuthToken
-  // enforces expiry + client-not-disabled and resolves the tenant (the plugin's
-  // own getMcpSession skips expiry — see @wizeworks/auth/mcp-oauth).
-  const verified = await verifyMcpOAuthToken(token);
+/** The `alg` in a compact JWS header, or null when the token is not one. */
+function jwtAlg(token: string): string | null {
+  const parts = token.split('.');
+  if (parts.length !== 3 || !parts[0]) return null;
+  try {
+    const header = JSON.parse(Buffer.from(parts[0], 'base64url').toString('utf8')) as unknown;
+    if (typeof header !== 'object' || header === null) return null;
+    const alg = (header as { alg?: unknown }).alg;
+    return typeof alg === 'string' ? alg : null;
+  } catch {
+    return null;
+  }
+}
+
+async function authenticateOAuth(request: FastifyRequest, token: string): Promise<McpAuthContext> {
+  // The token must have been issued by the authorization server of the brand
+  // this request is addressed to, for this brand's MCP server: the same pair
+  // the protected-resource metadata advertises on this host (oauth-metadata.ts).
+  const brand = brandForRequest(request);
+  const verified = await verifyMcpOAuthToken(token, {
+    issuer: mcpAuthServerOrigin(brand),
+    audience: mcpResourceUrl(brand),
+  });
   if (!verified) {
     throw new AuthError('Invalid, expired, or revoked OAuth access token');
   }

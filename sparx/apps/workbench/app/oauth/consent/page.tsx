@@ -3,30 +3,26 @@ import { redirect } from 'next/navigation';
 import { Alert, Text } from '@wizeworks/silicaui-react';
 import { Wordmark } from '@sparx/brand/react';
 import {
+  CONSENT_ERROR_PARAM,
   getSession,
   grantableScopesForRole,
   capBusinessScopes,
   MCP_SCOPE_CATALOG,
+  readMcpConsentRequest,
+  toSearchParams,
   type StaffRole,
 } from '@wizeworks/auth';
-import {
-  parseAuthorizeParams,
-  validateAuthorizeRequest,
-  authorizeParamsRecord,
-  consentReturnPath,
-} from './_lib/consent';
 import { ConsentForm } from './_components/consent-form';
 
 // The MCP OAuth consent screen (docs/07 §5). A standalone route outside the
-// workbench dock — ALL /mcp/authorize traffic is funnelled here by the server.ts
-// guard hook. The operator reviews who is connecting + where tokens go, then
-// picks exactly which scopes to grant. Styled as a workbench pane on the
+// workbench dock: the MCP provider in @wizeworks/auth sends every authorization
+// that needs a person here, with the request signed (`loginPage` and
+// `consentPage` are both this page). The operator reviews who is connecting +
+// where tokens go, then picks exactly which scopes to grant. Styled as a workbench pane on the
 // recessed canvas so it reads as part of the app, not a separate site.
 export const dynamic = 'force-dynamic';
 
 type SP = Record<string, string | string[] | undefined>;
-const one = (v: string | string[] | undefined): string =>
-  Array.isArray(v) ? (v[0] ?? '') : (v ?? '');
 
 // Outer chrome only. The card is a viewport-bounded flex column so a caller can
 // pin a header + a sticky footer around a scrollable middle — the consent screen
@@ -46,24 +42,19 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 export default async function OAuthConsentPage({ searchParams }: { searchParams: Promise<SP> }) {
-  const sp = await searchParams;
-  const params = parseAuthorizeParams(sp);
-  const queryError = one(sp.error);
+  const sp = toSearchParams(await searchParams);
+  const queryError = sp.get(CONSENT_ERROR_PARAM) ?? '';
 
-  const session = await getSession();
-  if (!session) {
-    // Preserve the full authorize request across sign-in.
-    redirect(`/sign-in?callbackURL=${encodeURIComponent(consentReturnPath(params))}`);
-  }
-
-  const validation = await validateAuthorizeRequest(params);
-  if (!validation.ok) {
+  // The signature first: an expired or hand-made link fails the same way
+  // whether or not anybody is signed in, and nobody should sign in for nothing.
+  const read = await readMcpConsentRequest(sp);
+  if (!read.ok) {
     return (
       <Shell>
         <div className="flex flex-col gap-3 p-6 sm:p-8">
           <h1 className="text-2xl font-semibold tracking-tight">Can’t complete this connection</h1>
           <Alert color="danger" variant="soft" role="alert">
-            {validation.error}
+            {read.error}
           </Alert>
           <Text className="text-sm">
             Close this window and start the connection again from your assistant.
@@ -73,18 +64,28 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
     );
   }
 
-  const client = validation.client;
+  const session = await getSession();
+  if (!session) {
+    // Preserve the full authorize request across sign-in.
+    sp.delete(CONSENT_ERROR_PARAM);
+    redirect(`/sign-in?callbackURL=${encodeURIComponent(`/oauth/consent?${sp.toString()}`)}`);
+  }
+
+  const { client, redirectUri, requestedScopes, oauthQuery } = read.request;
   const role = session.user.role as StaffRole;
+  // Only what the client asked for AND this role may give: the provider refuses
+  // to approve a scope that was not in the signed request.
   const grantable = new Set<string>(grantableScopesForRole(role));
-  const catalog = MCP_SCOPE_CATALOG.filter((s) => grantable.has(s.scope));
-  const requested = params.scope.split(' ').filter(Boolean);
-  const defaultSelected = capBusinessScopes(requested, role);
+  const catalog = MCP_SCOPE_CATALOG.filter(
+    (s) => grantable.has(s.scope) && requestedScopes.includes(s.scope)
+  );
+  const defaultSelected = capBusinessScopes(requestedScopes, role);
 
   const rawName = client.name?.trim();
   const clientName = rawName?.length ? rawName : 'An AI assistant';
-  let redirectHost = params.redirectUri;
+  let redirectHost = redirectUri;
   try {
-    redirectHost = new URL(params.redirectUri).host;
+    redirectHost = new URL(redirectUri).host;
   } catch {
     /* validated above; keep raw as a fallback */
   }
@@ -132,11 +133,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
         </Text>
       </div>
 
-      <ConsentForm
-        params={authorizeParamsRecord(params)}
-        catalog={catalog}
-        defaultSelected={defaultSelected}
-      />
+      <ConsentForm oauthQuery={oauthQuery} catalog={catalog} defaultSelected={defaultSelected} />
     </Shell>
   );
 }

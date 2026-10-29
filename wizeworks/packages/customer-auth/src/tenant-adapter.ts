@@ -4,11 +4,12 @@
 // shared @wizeworks/db client that does exactly three things and nothing else, so all
 // of Better Auth's audited where/select/join logic is reused verbatim:
 //
-//   1. Remaps the mcp() plugin's fixed OAuth model keys (oauthApplication /
-//      oauthAccessToken / oauthConsent — NOT config-overridable, verified in the
-//      installed better-auth) onto the tenant-scoped CustomerOauth* models, so
-//      the customer instance can NEVER touch the STAFF oauth tables. The core
-//      four are remapped the supported way via `modelName` options in server.ts.
+//   1. Remaps the OAuth provider's and jwt() plugin's model keys (oauthClient,
+//      oauthResource, oauthClientResource, oauthRefreshToken, oauthAccessToken,
+//      oauthConsent, oauthClientAssertion, jwks) onto the tenant-scoped
+//      Customer* models, so the customer instance can NEVER touch the STAFF
+//      oauth tables or the staff signing keys. The core four are remapped the
+//      supported way via `modelName` options in server.ts.
 //   2. Runs every model op inside withTenant(<ambient tenant>, …) — SET LOCAL
 //      app.tenant_id on the sparx_app connection — so Postgres RLS scopes it. The
 //      tenant comes from the request-scoped `tenantStore` (fail-closed: no tenant
@@ -24,12 +25,18 @@
 import { prisma, tenantStore, withTenant, type TxClient } from '@wizeworks/db';
 
 // Better Auth model key → real @wizeworks/db Prisma delegate key. Core keys are the
-// SAME on both sides (set via server.ts `modelName` options); only the three
-// plugin keys are remapped.
+// SAME on both sides (set via server.ts `modelName` options); only the plugin
+// keys are remapped. A plugin key missing here would reach the staff table of
+// the same name, so every model the provider and jwt() declare is listed.
 const PLUGIN_MODEL_REMAP: Record<string, string> = {
-  oauthApplication: 'customerOauthApplication',
+  oauthClient: 'customerOauthClient',
+  oauthResource: 'customerOauthResource',
+  oauthClientResource: 'customerOauthClientResource',
+  oauthRefreshToken: 'customerOauthRefreshToken',
   oauthAccessToken: 'customerOauthAccessToken',
   oauthConsent: 'customerOauthConsent',
+  oauthClientAssertion: 'customerOauthClientAssertion',
+  jwks: 'customerJwks',
 };
 
 // Every model key Better Auth's adapter may address on this instance. Anything

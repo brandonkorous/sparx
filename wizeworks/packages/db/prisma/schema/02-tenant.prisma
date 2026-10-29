@@ -464,13 +464,18 @@ model Tenant {
   // Customer-auth (Layer 2, docs/27 v2) — the dedicated Better Auth customer
   // instance's tenant-scoped tables (shopper identity/session/credential + the
   // shopper MCP OAuth authorization server).
-  customerUsers             CustomerUser[]
-  customerSessions          CustomerSession[]
-  customerAccounts          CustomerAccount[]
-  customerVerifications     CustomerVerification[]
-  customerOauthApplications CustomerOauthApplication[]
-  customerOauthAccessTokens CustomerOauthAccessToken[]
-  customerOauthConsents     CustomerOauthConsent[]
+  customerUsers                 CustomerUser[]
+  customerSessions              CustomerSession[]
+  customerAccounts              CustomerAccount[]
+  customerVerifications         CustomerVerification[]
+  customerJwks                  CustomerJwks[]
+  customerOauthClients          CustomerOauthClient[]
+  customerOauthResources        CustomerOauthResource[]
+  customerOauthClientResources  CustomerOauthClientResource[]
+  customerOauthRefreshTokens    CustomerOauthRefreshToken[]
+  customerOauthAccessTokens     CustomerOauthAccessToken[]
+  customerOauthConsents         CustomerOauthConsent[]
+  customerOauthClientAssertions CustomerOauthClientAssertion[]
 
   // Sitebuilder module — theme/layout/page composition + publish history (docs/29).
   // The applied-theme trio (config/versions/schedules) is per web PROPERTY

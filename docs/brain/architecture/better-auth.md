@@ -12,7 +12,7 @@ sources:
 Auth is **Better Auth, self-hosted** — not Auth0/Clerk/any SaaS. The `organization` plugin is remapped so **the tenant Prisma model IS the Better Auth `organization`** (`modelName: 'tenant'`). sparx owns the tenant lifecycle (`allowUserToCreateOrganization: false`, `disableOrganizationDeletion: true`); the plugin manages membership/invitations/active-org. `session.activeOrganizationId` drives the JWT `tid`/`role` (falling back to the home membership `users.tenantId`).
 
 - **Two separate instances:** staff (Layer 1 — `users`, globally-unique email) and customer/shopper (Layer 2 — `customer_users`, per-`(tenant, email)`, RLS-scoped). They share **zero rows**.
-- Plugins: `mcp` (OAuth 2.1 server for the MCP connector, PKCE-required), `organization`, `nextCookies` (must stay last). Instance is lazily built behind a `Proxy` so workers importing a util don't force-construct it.
+- Plugins (Better Auth 1.7): `jwt` (signing keys, one set per brand in `jwks`) + `mcp` from `@better-auth/mcp` (the OAuth 2.1 server for the MCP connector: `@better-auth/oauth-provider` with the MCP server as its one resource, endpoints under `/oauth2/*`, PKCE S256 required, anonymous DCR, JWT access tokens that api-mcp verifies itself), `organization`, `nextCookies` (must stay last). The customer instance runs `@better-auth/oauth-provider` directly, one issuer per store (docs/27 §6.1). Instance is lazily built behind a `Proxy` so workers importing a util don't force-construct it.
 - Auth emails (invites, reset, verify) publish `email.send` via `publishAuthEmail` — never inline.
 
 ## ⚠️ Correction to root CLAUDE.md

@@ -124,14 +124,26 @@ export {
   MCP_ALL_OAUTH_SCOPES,
   grantableScopesForRole,
   capBusinessScopes,
-  signConsentGrant,
-  verifyConsentGrant,
   type McpBusinessScope,
   type McpScopeMeta,
-  type ConsentGrantPayload,
   type StaffRole,
 } from './mcp-scopes';
-export { verifyMcpOAuthToken, type VerifiedMcpOAuth } from './mcp-oauth';
+export {
+  verifyMcpOAuthToken,
+  verifyMcpOAuthTokenWith,
+  type McpOAuthExpectation,
+  type McpOAuthStore,
+  type VerifiedMcpOAuth,
+} from './mcp-oauth';
+export {
+  CONSENT_ERROR_PARAM,
+  approvedScope,
+  readMcpConsentRequest,
+  submitMcpConsent,
+  toSearchParams,
+  type McpConsentRead,
+  type McpConsentRequest,
+} from './mcp-consent';
 export {
   listMcpConnections,
   revokeMcpConnection,
@@ -139,3 +151,4 @@ export {
   type McpConnectionSummary,
   type RegisteredMcpClient,
 } from './mcp-connections';
+export { legacyMcpResponse } from './legacy-mcp-endpoints';

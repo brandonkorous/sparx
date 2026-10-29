@@ -1,19 +1,15 @@
-// MCP OAuth scope vocabulary + consent-grant crypto (docs/07 §5).
+// MCP OAuth scope vocabulary (docs/07 §5).
 //
 // This is the SINGLE source of truth for the scopes an MCP OAuth connection can
-// carry. The Better Auth `mcp()` provider advertises + allows exactly these
+// carry. The `@better-auth/mcp` provider advertises + allows exactly these
 // (server.ts), the consent page renders them as the scope picker, and the
 // resource server (api-mcp) gates each tool on them. Keep in lockstep with the
 // tool registry's `McpScope` union.
 //
-// Two concerns live here because both are pure (no Better Auth / DB imports, so
-// server.ts can use them without an import cycle):
-//   1. the scope catalog + role capping, and
-//   2. the signed consent-grant token that proves our first-party consent page
-//      approved a specific (client, redirect, scope, user) before Better Auth's
-//      /mcp/authorize is allowed to mint a code.
-
-import crypto from 'node:crypto';
+// Pure (no Better Auth / DB imports), so server.ts can use it without an import
+// cycle. The consent proof that used to live here (the `sparx_grant` HMAC) is
+// gone: on 1.7 the provider itself refuses to mint a code until the person has
+// approved on /oauth2/consent, so there is no side door left to close.
 
 /** OIDC framing scopes — always granted, never user-toggled. `offline_access`
  *  is what makes Better Auth return a refresh token. */
@@ -359,88 +355,4 @@ export function capBusinessScopes(requested: string[], role: StaffRole): McpBusi
     }
   }
   return out;
-}
-
-// ─── Consent-grant token ────────────────────────────────────────────────────
-//
-// A short-lived, session-bound HMAC proving our consent page approved a
-// specific authorization. Passed as the `sparx_grant` query param when the
-// approve action redirects the browser to Better Auth's /mcp/authorize; the
-// server.ts `before` hook verifies it and refuses to mint a code without it —
-// closing the "hit /mcp/authorize directly and skip consent" hole.
-
-export interface ConsentGrantPayload {
-  /** OAuth client the grant is bound to. */
-  clientId: string;
-  /** Exact redirect URI approved. */
-  redirectUri: string;
-  /** Space-joined FULL scope string approved (OIDC framing + business scopes). */
-  scope: string;
-  /** Staff user who approved — the before hook checks this equals the session. */
-  userId: string;
-  /** Epoch seconds the grant expires (short — single authorization hop). */
-  exp: number;
-}
-
-const b64u = (b: Buffer | string) => Buffer.from(b).toString('base64url');
-
-function grantSignature(encodedPayload: string, secret: string): string {
-  return crypto.createHmac('sha256', secret).update(encodedPayload).digest('base64url');
-}
-
-/** Sign a consent grant. Default TTL 120s — long enough for the redirect hop,
- *  short enough to make replay meaningless. */
-export function signConsentGrant(
-  payload: Omit<ConsentGrantPayload, 'exp'>,
-  secret: string,
-  ttlSeconds = 120,
-  nowMs: number = Date.now()
-): string {
-  const full: ConsentGrantPayload = { ...payload, exp: Math.floor(nowMs / 1000) + ttlSeconds };
-  const encoded = b64u(JSON.stringify(full));
-  return `${encoded}.${grantSignature(encoded, secret)}`;
-}
-
-/** Verify + parse a consent grant. Returns null on any tamper/expiry/format
- *  failure. Constant-time signature compare. */
-export function verifyConsentGrant(
-  token: string | undefined | null,
-  secret: string,
-  nowMs: number = Date.now()
-): ConsentGrantPayload | null {
-  if (!token) return null;
-  const dot = token.indexOf('.');
-  if (dot <= 0) return null;
-  const encoded = token.slice(0, dot);
-  const sig = token.slice(dot + 1);
-  const expected = grantSignature(encoded, secret);
-  const a = Buffer.from(sig);
-  const b = Buffer.from(expected);
-  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(Buffer.from(encoded, 'base64url').toString('utf8'));
-  } catch {
-    return null;
-  }
-  if (typeof parsed !== 'object' || parsed === null) return null;
-  const p = parsed as Record<string, unknown>;
-  if (
-    typeof p.clientId !== 'string' ||
-    typeof p.redirectUri !== 'string' ||
-    typeof p.scope !== 'string' ||
-    typeof p.userId !== 'string' ||
-    typeof p.exp !== 'number'
-  ) {
-    return null;
-  }
-  if (p.exp * 1000 < nowMs) return null;
-  return {
-    clientId: p.clientId,
-    redirectUri: p.redirectUri,
-    scope: p.scope,
-    userId: p.userId,
-    exp: p.exp,
-  };
 }

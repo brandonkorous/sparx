@@ -29,53 +29,10 @@
 // `mcp.mypiggles.com` maps to the Piggles brand and api-mcp answers with this
 // origin. See docs/07 §5 and piggles/STATUS.md.
 //
-// We build the document ourselves rather than proxying Better Auth's helper
-// because the plugin hardcodes `scopes_supported` to the four OIDC scopes and
-// never surfaces the MCP business-scope vocabulary. The endpoints below are the
-// plugin's mcp() routes under /api/auth; /mcp/authorize is guarded by the
-// consent-grant `before` hook in @wizeworks/auth, so advertising it is safe.
+// Better Auth mounts its handler under /api/auth, so the root /.well-known
+// documents have to be served here.
 
-import { MCP_ALL_OAUTH_SCOPES } from '@wizeworks/auth';
-
-/**
- * Canonical public origin of the authorization server.
- *
- * Prefer the configured `BETTER_AUTH_URL` — the same value Better Auth uses as
- * its baseURL — over the request origin, which behind the ingress proxy resolves
- * to the internal bind address rather than the public host. The dev fallback is
- * this app's own port (3021), NOT the console's: pointing discovery at an app
- * with no `/api/auth` handler is precisely the failure described above.
- */
-export function authServerOrigin(requestOrigin?: string): string {
-  const configured = process.env.BETTER_AUTH_URL;
-  return (configured ?? requestOrigin ?? 'http://localhost:3021').replace(/\/$/, '');
-}
-
-export function buildAuthorizationServerMetadata(origin: string): Record<string, unknown> {
-  const auth = `${origin}/api/auth`;
-  return {
-    issuer: origin,
-    authorization_endpoint: `${auth}/mcp/authorize`,
-    token_endpoint: `${auth}/mcp/token`,
-    registration_endpoint: `${auth}/mcp/register`,
-    // No jwks_uri: this AS issues OPAQUE access tokens (validated by api-mcp via
-    // a DB lookup, never signature verification) and signs id_tokens with HS256
-    // (a shared client secret, not an asymmetric keypair). Neither scheme has a
-    // public key to publish, so there is no JWKS document and the mcp() plugin
-    // serves no /mcp/jwks route. jwks_uri is optional in RFC 8414; advertising
-    // one only pointed strict clients at a 404.
-    scopes_supported: [...MCP_ALL_OAUTH_SCOPES],
-    response_types_supported: ['code'],
-    response_modes_supported: ['query'],
-    grant_types_supported: ['authorization_code', 'refresh_token'],
-    token_endpoint_auth_methods_supported: ['none', 'client_secret_basic', 'client_secret_post'],
-    // OAuth 2.1: PKCE with S256 only (plain is disabled in the provider config).
-    code_challenge_methods_supported: ['S256'],
-    subject_types_supported: ['public'],
-    id_token_signing_alg_values_supported: ['HS256'],
-    claims_supported: ['sub', 'iss', 'aud', 'exp', 'iat', 'email', 'email_verified', 'name'],
-  };
-}
+import { auth } from '@wizeworks/auth';
 
 /** Shared response headers so clients on any origin can read the discovery
  *  document and preflight it. */
@@ -87,3 +44,28 @@ export const OAUTH_DISCOVERY_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Max-Age': '86400',
 };
+
+/**
+ * The provider's own discovery document, as JSON.
+ *
+ * Built by `@better-auth/mcp` from the live configuration rather than written
+ * out here: the endpoints (`/api/auth/oauth2/*`), the signing keys
+ * (`/api/auth/jwks`), the grant types and the scope list (our whole MCP
+ * vocabulary, `MCP_ALL_OAUTH_SCOPES`) all come from the same options the
+ * provider enforces, so the document cannot advertise something the server
+ * does not do. The hand-written 1.6 version listed `/mcp/*` endpoints and no
+ * key set, which was true then and would be wrong now. `issuer` is this origin
+ * because the jwt() plugin is configured with it (@wizeworks/auth server.ts),
+ * and that is the authorization server api-mcp names for this brand.
+ *
+ * `openid` is the OpenID Provider Metadata alias some MCP clients probe
+ * instead; it carries the same endpoints plus the OIDC fields.
+ */
+export async function mcpDiscoveryDocument(
+  kind: 'oauth' | 'openid',
+  request: Request
+): Promise<unknown> {
+  return kind === 'openid'
+    ? await auth.api.getOpenIdConfig({ request })
+    : await auth.api.getOAuthServerConfig({ request });
+}

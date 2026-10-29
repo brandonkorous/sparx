@@ -6,8 +6,9 @@
 // deployment that mounted the instance.
 //
 // This hands Better Auth's stock `prismaAdapter` a PROXY over `authPrisma` that
-// does two things to the `user` model and nothing else: it ANDs the deployment's
-// brand into every read, and it stamps that brand onto every create. All of
+// does two things to the `user` model (and to `jwks`, below) and nothing else:
+// it ANDs the deployment's brand into every read, and it stamps that brand onto
+// every create. All of
 // Better Auth's audited where/select/join logic is reused verbatim — the same
 // approach, and for the same reason, as the tenant-scoped client the shopper
 // instance uses (@wizeworks/customer-auth's tenant-adapter.ts).
@@ -48,11 +49,17 @@ import type { PrismaClient } from '@prisma/client';
 import { currentPlatformBrand } from '@wizeworks/brand-core';
 import { authPrisma } from './prisma';
 
-/** The Prisma delegate key this proxy scopes. Sessions and accounts are keyed by
- *  `user_id` and carry no brand of their own — deliberately untouched. A session
- *  cookie minted under the other brand still dies correctly, because resolving
- *  its user by id returns nothing through this filter. */
-const SCOPED_MODEL = 'user';
+/** The Prisma delegate keys this proxy scopes. Sessions and accounts are keyed
+ *  by `user_id` and carry no brand of their own — deliberately untouched. A
+ *  session cookie minted under the other brand still dies correctly, because
+ *  resolving its user by id returns nothing through this filter.
+ *
+ *  `jwks` is the OAuth signing key set (the jwt() plugin). Each brand encrypts
+ *  its private keys with its own BETTER_AUTH_SECRET and signs with the newest
+ *  row it can read, so an unscoped set would hand one product the other's key
+ *  the moment the other minted one, and every token it signed after that would
+ *  fail to decrypt. */
+const SCOPED_MODELS: ReadonlySet<string> = new Set(['user', 'jwks']);
 
 /** Prisma's generated `where` key for `@@unique([platformBrand, email])`.
  *
@@ -107,11 +114,11 @@ function scopedWhere(where: unknown): Args {
  * An `id` where needs no rewrite — it is already unique — and simply gains the
  * brand as an extra filter, which Prisma accepts on a unique where.
  */
-function scopedUniqueWhere(where: unknown): Args {
+function scopedUniqueWhere(model: string, where: unknown): Args {
   const w = { ...((where ?? {}) as Args) };
   const platformBrand = brand();
 
-  if (typeof w.email === 'string' && w.id === undefined) {
+  if (model === 'user' && typeof w.email === 'string' && w.id === undefined) {
     const { email, ...rest } = w;
     return { ...rest, [BRAND_EMAIL_KEY]: { platformBrand, email } };
   }
@@ -128,7 +135,7 @@ function scopedUniqueWhere(where: unknown): Args {
  *  be loud. If a Better Auth upgrade starts calling something new, the first sign
  *  should be an error naming the method, not a person signing in to the wrong
  *  product. */
-function scopeArgs(method: string, rawArgs: unknown): unknown {
+function scopeArgs(model: string, method: string, rawArgs: unknown): unknown {
   const args = { ...((rawArgs ?? {}) as Args) };
 
   switch (method) {
@@ -146,7 +153,7 @@ function scopeArgs(method: string, rawArgs: unknown): unknown {
     case 'findUniqueOrThrow':
     case 'update':
     case 'delete':
-      return { ...args, where: scopedUniqueWhere(args.where) };
+      return { ...args, where: scopedUniqueWhere(model, args.where) };
 
     // The brand is written LAST, so it wins over anything in the payload. This
     // proxy is the guarantee that a row lands on the right product, and a
@@ -159,19 +166,19 @@ function scopeArgs(method: string, rawArgs: unknown): unknown {
     case 'upsert':
       return {
         ...args,
-        where: scopedUniqueWhere(args.where),
+        where: scopedUniqueWhere(model, args.where),
         create: { ...((args.create ?? {}) as Args), platformBrand: brand() },
       };
 
     default:
       throw new Error(
-        `brand-scoped auth: no brand scoping defined for user.${method}; refusing an unscoped query.`
+        `brand-scoped auth: no brand scoping defined for ${model}.${method}; refusing an unscoped query.`
       );
   }
 }
 
 /** A delegate whose every method is brand-scoped before it reaches Prisma. */
-function scopedDelegate(target: ModelDelegate): ModelDelegate {
+function scopedDelegate(model: string, target: ModelDelegate): ModelDelegate {
   return new Proxy<ModelDelegate>(
     {},
     {
@@ -185,7 +192,7 @@ function scopedDelegate(target: ModelDelegate): ModelDelegate {
 
         const fn = target[prop];
         if (typeof fn !== 'function') return fn;
-        return (args?: unknown) => fn.call(target, scopeArgs(prop, args));
+        return (args?: unknown) => fn.call(target, scopeArgs(model, prop, args));
       },
     }
   );
@@ -201,8 +208,13 @@ function scopedTx(tx: object): object {
   return new Proxy(tx, {
     get(target, prop) {
       const value = Reflect.get(target, prop) as unknown;
-      if (prop === SCOPED_MODEL && value && typeof value === 'object') {
-        return scopedDelegate(value as ModelDelegate);
+      if (
+        typeof prop === 'string' &&
+        SCOPED_MODELS.has(prop) &&
+        value &&
+        typeof value === 'object'
+      ) {
+        return scopedDelegate(prop, value as ModelDelegate);
       }
       return value;
     },
@@ -232,10 +244,10 @@ export const brandScopedAuthPrisma: PrismaClient = new Proxy(authPrisma, {
         );
       };
     }
-    if (prop === SCOPED_MODEL) {
+    if (typeof prop === 'string' && SCOPED_MODELS.has(prop)) {
       const delegate = Reflect.get(target, prop) as unknown;
       if (delegate && typeof delegate === 'object') {
-        return scopedDelegate(delegate as ModelDelegate);
+        return scopedDelegate(prop, delegate as ModelDelegate);
       }
       return delegate;
     }

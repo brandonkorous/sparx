@@ -5,15 +5,15 @@ import { Badge, Button, Switch, Text } from '@wizeworks/silicaui-react';
 import type { McpScopeMeta } from '@wizeworks/auth';
 
 export interface ConsentFormProps {
-  /** Hidden authorize params to echo back to the submit route. */
-  params: Record<string, string>;
+  /** The provider's signed authorization request, posted back verbatim. */
+  oauthQuery: string;
   /** Scopes this user's role may grant (already role-capped). */
   catalog: McpScopeMeta[];
   /** Scopes pre-checked (client's requested ∩ grantable). */
   defaultSelected: string[];
 }
 
-export function ConsentForm({ params, catalog, defaultSelected }: ConsentFormProps) {
+export function ConsentForm({ oauthQuery, catalog, defaultSelected }: ConsentFormProps) {
   const [selected, setSelected] = React.useState<Set<string>>(() => new Set(defaultSelected));
 
   const toggle = (scope: string, on: boolean) =>
@@ -42,9 +42,7 @@ export function ConsentForm({ params, catalog, defaultSelected }: ConsentFormPro
     // toolbar and the Deny/Authorize footer stay pinned while only the scope list
     // scrolls — the Authorize action is always on screen, no zooming out to reach it.
     <form method="post" action="/oauth/consent/submit" className="flex min-h-0 flex-1 flex-col">
-      {Object.entries(params).map(([k, v]) => (
-        <input key={k} type="hidden" name={k} value={v} />
-      ))}
+      <input type="hidden" name="oauth_query" value={oauthQuery} />
       <input type="hidden" name="scopes" value={[...selected].join(' ')} />
 
       <div className="border-base-300 flex shrink-0 flex-wrap items-center gap-2 border-b px-6 py-3 sm:px-8">
@@ -120,7 +118,13 @@ export function ConsentForm({ params, catalog, defaultSelected }: ConsentFormPro
         <Button type="submit" name="decision" value="deny" variant="ghost">
           Deny
         </Button>
-        <Button type="submit" name="decision" value="approve" color="primary">
+        <Button
+          type="submit"
+          name="decision"
+          value="approve"
+          color="primary"
+          disabled={selected.size === 0}
+        >
           Authorize{selected.size > 0 ? ` (${selected.size})` : ''}
         </Button>
       </div>

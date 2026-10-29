@@ -20,10 +20,12 @@
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {
+    "@better-auth/oauth-provider": "1.7.14",
     "@node-rs/argon2": "^2.0.2",
     "@wizeworks/db": "workspace:*",
     "@wizeworks/events": "workspace:*",
-    "better-auth": "~1.6.33",
+    "better-auth": "~1.7.14",
+    "jose": "^6.2.3",
     "zod": "^4.6.6"
   },
   "devDependencies": {

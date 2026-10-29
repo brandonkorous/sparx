@@ -1,8 +1,8 @@
 # sparx Platform — Customer Accounts & Site Authentication (Layer 2)
 
-**Version:** 2.3
+**Version:** 2.4
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-02
+**Last Updated:** 2026-10-29
 
 ---
 
@@ -102,12 +102,13 @@ it a **tenant-scoping Proxy** over the shared `@wizeworks/db` client instead of 
 Proxy does two things and nothing else, so all of Better Auth's audited where/select/join logic is
 reused verbatim:
 
-1. **Remaps the plugin OAuth model keys.** Better Auth's `mcp()` plugin addresses its tables by the
-   fixed keys `oauthApplication` / `oauthAccessToken` / `oauthConsent` (verified in the installed
-   source — plugin model names are NOT overridable via config, unlike the core four which use
-   `modelName`). The Proxy maps those three keys to the customer models
-   (`customerOauthApplication` / …), so the customer instance can never touch the **staff** OAuth
-   tables. The core four are remapped the supported way: `user/session/account/verification` →
+1. **Remaps the plugin OAuth model keys.** Better Auth 1.7's `@better-auth/oauth-provider` and
+   `jwt()` address their tables by fixed keys (`oauthClient`, `oauthResource`,
+   `oauthClientResource`, `oauthRefreshToken`, `oauthAccessToken`, `oauthConsent`,
+   `oauthClientAssertion`, `jwks`). The Proxy maps every one of them to its customer model
+   (`customerOauthClient` / … / `customerJwks`), so the customer instance can never touch the
+   **staff** OAuth tables or the staff signing keys. A key missing from the map would reach the
+   staff table of the same name, which is why the map lists all eight. The core four are remapped the supported way: `user/session/account/verification` →
    `customerUser/customerSession/customerAccount/customerVerification` via `modelName` options.
 2. **Sets the tenant GUC per operation.** Every model op runs inside the codebase's proven RLS
    transaction — `withTenant(tenantStore.getTenantIdOrThrow(), tx ⇒ tx.<model>.<op>(args))` on the
@@ -183,9 +184,11 @@ opaque `customer_sessions` (which is dropped first in the migration).
 | `session`         | `customer_sessions`      | `tenant_id`; `token @unique`; `ip_address`/`user_agent`                                                  |
 | `verification`    | `customer_verifications` | `tenant_id`; `@@index([tenant_id, identifier])`                                                          |
 
-Plus the customer-scoped OAuth tables the `mcp()` plugin needs (mirroring the staff
-`oauth_applications` / `oauth_access_tokens` / `oauth_consents`, prefixed `customer_oauth_*` and
-carrying `tenant_id`): a registered DCR client and its tokens belong to a shopper at a tenant.
+Plus the customer-scoped OAuth tables the OAuth provider needs (mirroring the staff `oauth_clients`
+/ `oauth_resources` / `oauth_client_resources` / `oauth_refresh_tokens` / `oauth_access_tokens` /
+`oauth_consents` / `oauth_client_assertions` / `jwks`, prefixed `customer_` and carrying `tenant_id`
+with `DEFAULT current_tenant_id()`, FORCE RLS and a `<table>_tenant_isolation` policy): a registered
+DCR client, its tokens and the signing keys belong to one store.
 
 `customers` change: drop the `identity_id` column + FK + `CustomerIdentity` relation; keep
 `auth_user_id` and add FK `auth_user_id → customer_users.id` (`onDelete: SetNull`). A `customers`
@@ -290,7 +293,7 @@ served by api-rest, not mounted in `wizeworks/apps/site`:
 
 ### 6.1 The finalized topology — the AS lives on the store's OWN origin (Phase 2G, built)
 
-The one load-bearing decision: Better Auth's `/mcp/authorize` must read the shopper's session cookie
+The one load-bearing decision: Better Auth's `/oauth2/authorize` must read the shopper's session cookie
 to know who is consenting, and a cookie is only sent to its own origin. So the AS is reached **on the
 store's own origin**, not on a shared api-rest host:
 
@@ -300,25 +303,46 @@ store's own origin**, not on a shared api-rest host:
   flow — discovery, DCR, authorize, consent, token — happens on `https://<store>`; the browser keeps
   its `sparx_customer_session` cookie throughout, and **tenant resolves from the Host**
   (`resolveSiteByHost`, `?tenant=` fallback for local dev).
+- **Every store is its own authorization server.** The customer instance uses a per-request base
+  URL (`baseURL: { allowedHosts: ['*'], fallback, protocol: 'auto' }`), so its issuer is
+  `https://<store>/v1/public/auth` and every endpoint it advertises is on the store's origin.
+  api-rest sets the `host` it hands Better Auth to the store host the tenant was resolved from.
 - **Discovery.** mcp-site answers an unauthenticated `customer`-tool call with `401` +
   `WWW-Authenticate: resource_metadata="…/mcp/.well-known/oauth-protected-resource"`; that doc's
-  `authorization_servers` points at the store's own origin (`siteUrl`, from `site-info`).
-  api-rest serves **our own** AS metadata at `<store>/.well-known/oauth-authorization-server` (Better
-  Auth's default only advertises the openid framing scopes, so we replace it) listing the real
-  shopper scope vocabulary + the store-origin `/v1/public/auth/mcp/{authorize,token,register}`
-  endpoints.
-- **Consent.** The `/mcp/authorize` guard (`@wizeworks/customer-auth` server.ts, mirroring the operator
-  `mcpAuthorizeGuard`) bounces any authorize without a valid grant to the **store-branded**
-  `<store>/account/authorize` page (`wizeworks/apps/site`). That page confirms the signed-in shopper (redirects
-  to the store `/account/login` otherwise), shows the scope picker, and POSTs to
-  `/v1/public/auth/consent`, which caps the selected scopes, mints a **signed, session-bound consent
-  grant** (HMAC on the customer secret, `signCustomerConsentGrant`), and returns the store-origin
-  `/mcp/authorize?…&sparx_grant=` URL. The guard verifies the grant binds the exact client + redirect
-  - scope + the signed-in user before Better Auth mints the code.
+  `authorization_servers` is the store's issuer, `<siteUrl>/v1/public/auth` (a client compares it
+  with the `issuer` in the document it fetches, character for character). api-rest serves the
+  provider's own document (`getOAuthServerConfig` / `getOpenIdConfig`, the shopper scope vocabulary
+  included) at both `<store>/.well-known/oauth-authorization-server/v1/public/auth` (the RFC 8414
+  path-inserted form for an issuer with a path) and the bare `/.well-known/oauth-authorization-server`,
+  plus the `openid-configuration` pair. Endpoints: `/v1/public/auth/oauth2/{authorize,token,register}`,
+  keys at `/v1/public/auth/jwks`.
+- **Resources.** The provider only issues a token for a resource it has a row for, and each store's
+  MCP endpoint is its own resource. A `before` hook on `/oauth2/authorize` (`registerStoreResource`)
+  refuses any `resource` whose origin is not the store's, and writes the store's row the first time
+  an assistant asks for it.
+- **Consent.** With no session or no consent on file, the provider redirects to the
+  **store-branded** `<store>/account/authorize` page (`wizeworks/apps/site`) with the authorization
+  request in the query string, **signed with the customer secret and stamped with an expiry**. The
+  page passes it to `GET /v1/public/auth/consent`, which verifies the signature and names the client;
+  it confirms the signed-in shopper (redirects to the store `/account/login` otherwise), shows the
+  scope picker, and POSTs the decision with the signed request to `/v1/public/auth/consent`. That
+  route re-verifies the signature and the session, limits the picks to what was requested, and calls
+  the provider's `/oauth2/consent`, which records the consent and returns the assistant's redirect
+  with a code (or `access_denied`).
+- **Tokens.** Access tokens are JWTs signed by the store's own key (`customer_jwks`), `aud` = the
+  store's `/mcp`. `verifyCustomerMcpToken` checks the signature against that store's keys (under
+  RLS, so another store's key is invisible), `typ`, the audience is a registered resource of the
+  store, `iss` = that resource's store, expiry, and that the shopper's consent still exists and
+  predates the token. An opaque token (no resource requested) is checked by its stored hash.
 - **api-rest ↔ Web bridge.** The Better Auth `handler(Request): Promise<Response>` is mounted via a
   Fastify↔Web adapter (`lib/customer-oauth.ts`) run inside `tenantStore.run(tenantId, …)`; a child
   route scope keeps RAW-string content-type parsers so BA re-parses the form-encoded token body
-  itself, without disturbing the JSON consent routes.
+  itself, without disturbing the JSON consent routes. **Only the OAuth endpoints are forwarded**
+  (`/oauth2/{authorize,token,register,userinfo,revoke,introspect,end-session}`, `/jwks`,
+  `/.well-known/*`): `allowedHosts: ['*']` makes every store origin trusted, which is right for
+  OAuth (redirects are checked against the registered client) and wrong for endpoints that take a
+  callback URL. Shoppers sign in through api-rest's own account routes, which call the instance
+  directly. The 1.6 `/v1/public/auth/mcp/*` addresses redirect to their successors.
 
 ---
 
