@@ -12,6 +12,7 @@ import { brandScopedAuthPrisma } from './brand-scoped-prisma';
 import { publishAuthEmail } from './email-events';
 import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioning';
 import { MCP_ALL_OAUTH_SCOPES } from './mcp-scopes';
+import { authOwnedColumns } from './auth-owned-columns';
 import { keepAccountsOnEmailProof } from './credential-retention';
 import { legacyMcpEndpoints } from './legacy-mcp-endpoints';
 import { ac, roles } from './org-roles';
@@ -725,6 +726,9 @@ function createAuth() {
         totpOptions: { digits: 6, period: 30 },
         backupCodeOptions: { amount: 10, length: 10, storeBackupCodes: 'encrypted' },
       }),
+      // jwks.platformBrand + tenant.email, which sparx fills in itself. Without
+      // them Better Auth's schema check refuses every request (./auth-owned-columns).
+      authOwnedColumns(),
       // nextCookies() must stay LAST so it can flush Set-Cookie for the
       // plugins registered before it.
       nextCookies(),

@@ -128,11 +128,44 @@ function txScopedClient(tx: TxClient): TxClient {
   });
 }
 
+interface RuntimeDataModel {
+  models: Record<string, unknown>;
+}
+
+/** Prisma's model name for a delegate key: `customerJwks` → `CustomerJwks`. */
+function modelName(delegateKey: string): string {
+  return delegateKey.charAt(0).toUpperCase() + delegateKey.slice(1);
+}
+
+/**
+ * The data model as Better Auth should see it: each plugin key answered by the
+ * model it is really written to. Better Auth 1.7 checks its tables against the
+ * client's `_runtimeDataModel` before its first query and refuses every request
+ * on a mismatch. Read through untouched, `jwks` named the STAFF key table, whose
+ * `platform_brand` this instance never writes, so the check failed although no
+ * write ever goes there. Exported for its test.
+ */
+export function remappedDataModel(real: RuntimeDataModel): RuntimeDataModel {
+  const models = { ...real.models };
+  for (const [baKey, realDelegate] of Object.entries(PLUGIN_MODEL_REMAP)) {
+    const target = real.models[modelName(realDelegate)];
+    if (target) models[modelName(baKey)] = target;
+  }
+  return { ...real, models };
+}
+
+let dataModel: RuntimeDataModel | undefined;
+
 /** The client handed to `prismaAdapter`. Intercepts model access + `$transaction`
  *  to enforce tenant scoping and plugin-key remapping; everything else is the
  *  real @wizeworks/db client. */
 export const tenantScopedClient: typeof prisma = new Proxy(prisma, {
   get(target, prop) {
+    if (prop === '_runtimeDataModel') {
+      const real = Reflect.get(target, prop) as RuntimeDataModel | undefined;
+      if (!real || typeof real !== 'object' || !('models' in real)) return real;
+      return (dataModel ??= remappedDataModel(real));
+    }
     if (prop === '$transaction') {
       return (arg: unknown) => {
         // Better Auth's adapter only uses the callback form (consumeOne).
