@@ -1016,6 +1016,49 @@ jobs:
                   kubectl -n "$NAMESPACE" rollout status deployment/caddy --timeout=1m
                   kubectl -n "$NAMESPACE" rollout status statefulset/typesense --timeout=10m
 
+            # -----------------------------------------------------------------------
+            # The WizeLens collector: node, pod and workload metrics of THIS cluster,
+            # sent to app.wizelens.com (project sparx-prod), so the Hosts and Kubernetes
+            # pages show the cluster beside the apps' traces.
+            #
+            # Installed by this release, not WizeLens's own deploy, because it reads
+            # every namespace (a cluster-wide, read-only ClusterRole), and product
+            # pipelines keep to their own namespace. It lives in `monitoring`.
+            #
+            # The ingest key is in the WIZELENS vault, not sparx's: every enabled secret
+            # in sparx's vault is copied into sparx-app-secrets (all app pods, and a
+            # change rolls them all). This identity is a Secrets Officer on that vault
+            # (bootstrap-azure/wizelens.tf, wizelens_sparx_release_kv).
+            #
+            # No key yet → a warning and no install, so the release never fails on it.
+            # The chart version is pinned; bump it to take a new collector chart.
+            # -----------------------------------------------------------------------
+            - name: Install the WizeLens collector
+              env:
+                  WIZELENS_VAULT: ${{ vars.WIZELENS_KEY_VAULT_NAME || 'kv-wizelens-prod-cus' }}
+                  COLLECTOR_CHART: oci://ghcr.io/brandonkorous/charts/wizelens-collector
+                  COLLECTOR_VERSION: 0.3.0-alpha.14
+              run: |
+                  set -euo pipefail
+                  KEY=$(az keyvault secret show --vault-name "$WIZELENS_VAULT" \
+                    --name wizelens-collector-ingest-key --query value -o tsv 2>/dev/null || true)
+                  if [ -z "$KEY" ]; then
+                    echo "::warning::wizelens-collector-ingest-key is not in $WIZELENS_VAULT, so the WizeLens collector is not installed."
+                    exit 0
+                  fi
+                  echo "::add-mask::$KEY"
+                  kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+                  kubectl create secret generic wizelens-ingest -n monitoring \
+                    --from-literal=ingest-key="$KEY" --dry-run=client -o yaml | kubectl apply -f -
+                  unset KEY
+                  helm upgrade --install wizelens-collector "$COLLECTOR_CHART" --version "$COLLECTOR_VERSION" \
+                    --namespace monitoring \
+                    --set existingSecret.name=wizelens-ingest \
+                    --set clusterName="$CLUSTER" \
+                    --set environment=production \
+                    --wait --timeout 5m
+                  kubectl -n monitoring get daemonset,deployment -l app.kubernetes.io/instance=wizelens-collector
+
             # The address the platform answers on. Reported here rather than after the
             # rollout because it belongs to the infrastructure that owns it, and
             # because a missing address is a stage-1 fault worth seeing before the

@@ -1,5 +1,20 @@
 # Monitoring
 
+## Now — the WizeLens collector (AKS)
+
+The release (`.github/workflows/release.yml`, step "Install the WizeLens collector") installs the WizeLens collector
+chart into the `monitoring` namespace on every run. It sends node, pod, container and workload metrics of
+`aks-sparx-prod-cus` to app.wizelens.com, project `sparx-prod`, so the Hosts and Kubernetes pages sit beside the apps'
+traces.
+
+- **Chart:** `oci://ghcr.io/brandonkorous/charts/wizelens-collector`, pinned by `COLLECTOR_VERSION` in that step.
+- **Access:** a read-only ClusterRole (get, list, watch on nodes, pods, workloads, events). It changes nothing.
+- **Key:** `wizelens-collector-ingest-key` in the WizeLens vault (`kv-wizelens-prod-cus`), never sparx's vault (every
+  secret there goes into all app pods). With no key the step warns and skips.
+- **Size:** one agent per node (128 Mi asked, 512 Mi cap) and one cluster collector.
+
+The sections below are the old GKE plan, kept for history.
+
 ## Phase 1 — GCP native (no manifests needed)
 
 Per [docs/03-infrastructure-deployment.md](../../docs/03-infrastructure-deployment.md) §9, Phase 1 monitoring uses:
