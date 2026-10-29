@@ -166,10 +166,13 @@ export async function verifyMcpOAuthTokenWith(
         : null;
   if (!userId || !UUID.test(userId) || !clientId || typeof payload.iat !== 'number') return null;
 
+  // `iat` is whole seconds and the consent row keeps milliseconds, so the token
+  // counts as issued at the END of its second: one minted in the same second as
+  // the approval is not "before" it.
   const tenantId = await store.findConsentedTenant({
     userId,
     clientId,
-    issuedAt: new Date(payload.iat * 1000),
+    issuedAt: new Date((payload.iat + 1) * 1000 - 1),
   });
   if (!tenantId) return null;
 

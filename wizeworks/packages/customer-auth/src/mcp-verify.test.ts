@@ -94,6 +94,20 @@ describe('verifyCustomerMcpTokenWith', () => {
     ).toBeNull();
   });
 
+  it('refuses a token minted before the current approval (remove, then reconnect)', async () => {
+    const token = await mint({ iat: nowSec - 1200 });
+    expect(await verifyCustomerMcpTokenWith(TENANT, token, connected(), NOW)).toBeNull();
+  });
+
+  it('accepts a token minted in the same second as the approval', async () => {
+    // `iat` is whole seconds and the consent row keeps milliseconds: approval at
+    // :00.500, token at :00.900 carries iat :00, which is BEFORE :00.500.
+    const iat = nowSec - 60;
+    const sameSecond = store({ consentedAt: new Date(iat * 1000 + 500) });
+    const token = await mint({ iat });
+    expect(await verifyCustomerMcpTokenWith(TENANT, token, sameSecond, NOW)).not.toBeNull();
+  });
+
   it('refuses a token signed by a key this store does not hold', async () => {
     const other = await generateKeyPair('EdDSA');
     const token = await new SignJWT({ client_id: CLIENT, scope: 'orders:read' })
