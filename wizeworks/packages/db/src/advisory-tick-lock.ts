@@ -42,10 +42,11 @@
 //
 // That pinned connection is why every call first passes a per-process TickGate
 // (./tick-gate): N ticks pinning all N connections of a pool leaves none for the
-// work inside them, and every one of them times out.
+// work inside them, and every one of them times out. A pool of one is refused
+// outright (assertTickPool): there the very first tick deadlocks on itself.
 
 import { prisma } from './client';
-import { TickGate, tickSlots } from './tick-gate';
+import { assertTickPool, TickGate, tickSlots } from './tick-gate';
 
 /** The Prisma client this helper takes the lock on. `typeof prisma` so a
  *  dependency-injected client (the automation tick passes its own) is accepted
@@ -58,6 +59,7 @@ const gates = new WeakMap<LockClient, TickGate>();
 function gateFor(client: LockClient): TickGate {
   let gate = gates.get(client);
   if (!gate) {
+    assertTickPool(process.env);
     gate = new TickGate(tickSlots(process.env));
     gates.set(client, gate);
   }

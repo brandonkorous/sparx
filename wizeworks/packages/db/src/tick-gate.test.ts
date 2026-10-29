@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { poolSize, TickGate, tickSlots } from './tick-gate';
+import { assertTickPool, poolSize, TickGate, tickSlots } from './tick-gate';
 
 // The outage this exists for (2026-10-21): api-rest at a pool of 4, ten aligned
 // ticks, each holding one connection for its lock and needing a second for its
@@ -109,5 +109,27 @@ describe('tickSlots', () => {
     expect(
       poolSize({ DB_CONNECTION_LIMIT: '4', DATABASE_URL: 'postgresql://h/db?connection_limit=12' })
     ).toBe(12);
+  });
+});
+
+describe('assertTickPool', () => {
+  it('refuses a pool of one, the pool api-graphql ran its webhook loop on', () => {
+    expect(() => assertTickPool({ DB_CONNECTION_LIMIT: '1' })).toThrow(
+      /at least 2, and this process has 1/
+    );
+    expect(() => assertTickPool({ DATABASE_URL: 'postgresql://h/db?connection_limit=1' })).toThrow(
+      /has 1/
+    );
+  });
+
+  it('accepts two or more, and the default', () => {
+    expect(() => assertTickPool({ DB_CONNECTION_LIMIT: '2' })).not.toThrow();
+    expect(() => assertTickPool({ DB_CONNECTION_LIMIT: '4' })).not.toThrow();
+    expect(() => assertTickPool({})).not.toThrow();
+  });
+
+  it('is right to: on a pool of one even a single gated tick times out', async () => {
+    const [result] = await startAligned(new FakePool(1), new TickGate(1), 1);
+    expect(result?.status).toBe('rejected');
   });
 });

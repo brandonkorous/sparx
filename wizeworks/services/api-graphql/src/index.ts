@@ -4,7 +4,6 @@
 // FIRST: sets the WizeLens Prisma hook before @wizeworks/db builds its client.
 import './wizelens.js';
 import { resolveTransport } from '@wizeworks/events';
-import { startWebhookDeliveryLoop } from '@wizeworks/api-core/webhook-delivery';
 import {
   installCrmWebhookFanout,
   preconnectWebhookFanout,
@@ -44,16 +43,14 @@ async function main(): Promise<void> {
 
   const app = await createApp();
 
-  // Background tick that POSTs pending webhook deliveries to their
-  // subscriber URLs with HMAC-SHA256 signatures. Singleton across pods via
-  // a Postgres advisory lock — see @wizeworks/api-core/webhook-delivery.
-  // api-rest runs the same loop; the advisory lock makes sure only one
-  // pod-of-any-service actually delivers at any given tick.
-  const stopWebhookDelivery = startWebhookDeliveryLoop(app.log);
+  // No webhook delivery loop here. The rows the fan-out above enqueues are POSTed
+  // by api-rest's loop (@wizeworks/api-core/webhook-delivery), which runs under an
+  // advisory lock so one process delivers at a time anyway. This process has a
+  // pool of ONE (k8s/azure/apps/db-budget.yaml), and a lock tick needs two: the
+  // loop it used to run here failed every 40 seconds with P2024 (2026-10-29).
 
   const shutdown = (signal: NodeJS.Signals): void => {
     app.log.info({ signal }, 'shutdown received');
-    stopWebhookDelivery();
     void app
       .close()
       .then(() => {

@@ -37,6 +37,23 @@ const config = {
   typescript: { tsconfigPath: './tsconfig.build.json' },
   // No `X-Powered-By: Next.js`: it tells a scanner which exploits to try.
   poweredByHeader: false,
+  // An ENFORCED baseline CSP of rules no page here can trip. The edge already
+  // allows framing only by this origin (X-Frame-Options SAMEORIGIN),
+  // and frame-ancestors says the same in CSP terms; base-uri and object-src close
+  // the <base> and plugin tricks (WizeLens, 2026-10-29).
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'",
+          },
+        ],
+      },
+    ];
+  },
   // @wizeworks/api-client ships raw TypeScript (main points at src/index.ts), so it
   // must be transpiled rather than treated as a prebuilt dependency. workbench
   // is its first consumer — it had never been through a bundler before.
