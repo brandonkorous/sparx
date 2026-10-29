@@ -8,6 +8,7 @@
 // dashboard preview-count all see it at the same time.
 
 import { withTenant } from '@wizeworks/db';
+import type { Prisma } from '@wizeworks/db';
 import type { RuleProjection } from '@wizeworks/crm-schemas';
 
 import type { ServiceContext } from '../errors';
@@ -15,9 +16,54 @@ import { CrmNotFoundError } from '../errors';
 import { asBag } from '../services/custom-properties';
 import { tierInEffect } from '../services/company-service';
 
+/** Opens and clicks in the last 30 days, the two `email.*` counts a rule reads. */
+export interface EmailEngagement {
+  opened: number;
+  clicked: number;
+}
+
+const ENGAGEMENT_WINDOW_MS = 30 * 24 * 3600 * 1000;
+
+/**
+ * Email engagement per customer, in ONE grouped read.
+ *
+ * `customerIds` narrows it to those people; left out, it covers every customer
+ * of the tenant, which is what the full recompute wants. It used to be two
+ * counts per customer inside the recompute's loop: 74 `CrmActivity.count` for
+ * 37 customers on a single nightly run. A customer with no row in the result
+ * opened and clicked nothing.
+ */
+export async function countEmailEngagement(
+  tx: Prisma.TransactionClient,
+  customerIds?: string[]
+): Promise<Map<string, EmailEngagement>> {
+  const since = new Date(Date.now() - ENGAGEMENT_WINDOW_MS);
+  const rows = await tx.crmActivity.groupBy({
+    by: ['customerId', 'type'],
+    where: {
+      customerId: customerIds ? { in: customerIds } : { not: null },
+      type: { in: ['email.opened', 'email.clicked'] },
+      occurredAt: { gte: since },
+    },
+    _count: { _all: true },
+  });
+  const byCustomer = new Map<string, EmailEngagement>();
+  for (const row of rows) {
+    if (!row.customerId) continue;
+    const entry = byCustomer.get(row.customerId) ?? { opened: 0, clicked: 0 };
+    if (row.type === 'email.opened') entry.opened = row._count._all;
+    else entry.clicked = row._count._all;
+    byCustomer.set(row.customerId, entry);
+  }
+  return byCustomer;
+}
+
+/** `prefetched.engagement` is the full recompute's tenant-wide read; without it
+ *  the projection reads this one customer's engagement itself. */
 export async function buildSegmentRuleProjection(
   ctx: ServiceContext,
-  customerId: string
+  customerId: string,
+  prefetched: { engagement?: ReadonlyMap<string, EmailEngagement> } = {}
 ): Promise<RuleProjection> {
   return withTenant(ctx, async (tx) => {
     const customer = await tx.customer.findUnique({ where: { id: customerId } });
@@ -47,15 +93,8 @@ export async function buildSegmentRuleProjection(
     // way a removed tier is no tier below.
     const account = linked?.deletedAt == null ? linked : null;
 
-    const since = new Date(Date.now() - 30 * 24 * 3600 * 1000);
-    const [opened, clicked] = await Promise.all([
-      tx.crmActivity.count({
-        where: { customerId, type: 'email.opened', occurredAt: { gte: since } },
-      }),
-      tx.crmActivity.count({
-        where: { customerId, type: 'email.clicked', occurredAt: { gte: since } },
-      }),
-    ]);
+    const engagement = prefetched.engagement ?? (await countEmailEngagement(tx, [customerId]));
+    const { opened, clicked } = engagement.get(customerId) ?? { opened: 0, clicked: 0 };
 
     const now = Date.now();
     const daysSinceLastOrder = customer.lastOrderAt

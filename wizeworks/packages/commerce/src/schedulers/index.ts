@@ -6,6 +6,8 @@ export {
   listCommerceActiveTenants,
   listDropshipActiveTenants,
   listTenantsWithDueReservations,
+  listTenantsWithDueSubscriptionWork,
+  listTenantsWithOpenCarts,
 } from './active-tenants';
 export { reapExpiredReservations } from './reservation-reaper';
 export { sweepAbandonedCarts, type CartAbandonmentSweepResult } from './cart-abandonment-sweep';

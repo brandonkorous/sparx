@@ -7,7 +7,7 @@
 // then advance the cursor. The deterministic order number per externalId makes the
 // re-poll overlap window safe — a boundary order seen twice commits once.
 
-import { withTenant } from '@wizeworks/db';
+import { prisma, withTenant } from '@wizeworks/db';
 import type { Prisma } from '@wizeworks/db';
 import { getChannel, type ChannelSlug } from '@wizeworks/channels';
 import { ingestChannelOrder } from '@wizeworks/commerce';
@@ -31,6 +31,15 @@ export interface ChannelPollResult {
   ingested: number;
   deduped: number;
   errors: number;
+}
+
+/** Tenants with an active connection, in one cross-tenant scan: the rows
+ *  listPollableConnections reads per tenant, before the adapter filter. */
+export async function listTenantsWithActiveChannels(): Promise<Set<string>> {
+  const rows = await prisma.$queryRaw<{ tenant_id: string }[]>`
+    SELECT tenant_id FROM find_tenants_with_active_channels()
+  `;
+  return new Set(rows.map((r) => r.tenant_id));
 }
 
 /** Active connections whose channel adapter can be polled for orders (implements

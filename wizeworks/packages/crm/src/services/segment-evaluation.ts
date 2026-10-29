@@ -9,7 +9,7 @@ import { withTenant } from '@wizeworks/db';
 import type { Prisma } from '@wizeworks/db';
 import { SegmentRuleSchema, evaluateSegmentRule, type SegmentRule } from '@wizeworks/crm-schemas';
 
-import { buildSegmentRuleProjection } from '../consumers/segment-projection';
+import { buildSegmentRuleProjection, countEmailEngagement } from '../consumers/segment-projection';
 import type { ServiceContext } from '../errors';
 import { CrmValidationError } from '../errors';
 
@@ -56,13 +56,21 @@ export async function previewCount(
       tx.customer.count({ where: scope }),
     ]);
 
+    // The sample's opens and clicks in one read, not two counts per person.
+    const engagement = await countEmailEngagement(
+      tx,
+      sample.map((c) => c.id)
+    );
+
     let matches = 0;
     for (const c of sample) {
       // Compose into the already-open transaction — a bare `ctx` here would
       // make buildSegmentRuleProjection's own withTenant open a SECOND,
       // nested $transaction (Prisma forbids nesting), which silently failed
       // and made every preview report 0 matches regardless of the rule.
-      const projection = await buildSegmentRuleProjection({ ...ctx, tx }, c.id).catch(() => null);
+      const projection = await buildSegmentRuleProjection({ ...ctx, tx }, c.id, {
+        engagement,
+      }).catch(() => null);
       if (!projection) continue;
       if (evaluateSegmentRule(rule, projection)) matches += 1;
     }
@@ -93,6 +101,10 @@ export async function recomputeFull(
     })
   );
 
+  // Everyone's opens and clicks in one grouped read up front, instead of two
+  // counts per customer inside the loop below.
+  const engagement = await withTenant(ctx, (tx) => countEmailEngagement(tx));
+
   // Process one customer at a time. evaluateCustomerForTenant lives in the
   // consumer module — we import lazily to avoid a service ↔ consumer cycle.
   const { evaluateCustomerForTenant } = await import('../consumers/segment-evaluator');
@@ -100,6 +112,7 @@ export async function recomputeFull(
   for (const { id } of customerIds) {
     const { entered, exited } = await evaluateCustomerForTenant(ctx.tenantId, id, {
       segmentId: args.segmentId,
+      engagement,
     });
     scanned += 1;
     if (args.segmentId) {

@@ -103,7 +103,7 @@ const tx = {
   b2bPricingTier: { findFirst: tierFindFirst },
   crmObjectDef: { findUnique: vi.fn(() => Promise.resolve(null)) },
   customer: { findUnique: customerFindUnique },
-  crmActivity: { count: vi.fn(() => Promise.resolve(0)) },
+  crmActivity: { groupBy: vi.fn(() => Promise.resolve([])) },
   // A save asks whether the account's set-up task can close; none waits here.
   task: { findMany: vi.fn(() => Promise.resolve([])) },
 };

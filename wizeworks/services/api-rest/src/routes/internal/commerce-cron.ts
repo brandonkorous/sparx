@@ -137,8 +137,12 @@ const commerceCronRoutes: FastifyPluginAsync = (app) => {
 
   app.post('/internal/commerce/cart-abandonment-sweep', async (request) => {
     authorize(request);
-    const summary = await forEachActiveTenant((tenantId) =>
-      commerceSchedulers.sweepAbandonedCarts({ tenantId })
+    // Only tenants holding a basket that could go quiet; each site's threshold
+    // is still applied per tenant inside the sweep.
+    const due = await commerceSchedulers.listTenantsWithOpenCarts();
+    const summary = await forEachActiveTenant(
+      (tenantId) => commerceSchedulers.sweepAbandonedCarts({ tenantId }),
+      due
     );
     return { success: true, data: summary };
   });
@@ -160,12 +164,19 @@ const commerceCronRoutes: FastifyPluginAsync = (app) => {
       authorize(request);
       const asOf = parseIsoDate(request.query.asOf);
       const limit = parsePositiveInt(request.query.limit);
-      const summary = await forEachActiveTenant((tenantId) =>
-        commerceSchedulers.runSubscriptionTick({
-          tenantId,
-          ...(asOf ? { asOf } : {}),
-          ...(limit !== undefined ? { limit } : {}),
-        })
+      // Only tenants with a renewal, a retry or a repeat start due, judged on the
+      // same clock the tick bills against.
+      const due = await commerceSchedulers.listTenantsWithDueSubscriptionWork(
+        asOf ? new Date(asOf) : new Date()
+      );
+      const summary = await forEachActiveTenant(
+        (tenantId) =>
+          commerceSchedulers.runSubscriptionTick({
+            tenantId,
+            ...(asOf ? { asOf } : {}),
+            ...(limit !== undefined ? { limit } : {}),
+          }),
+        due
       );
       return { success: true, data: summary };
     }
