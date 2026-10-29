@@ -108,6 +108,16 @@ describe('verifyMcpOAuthTokenWith', () => {
     expect(await verifyMcpOAuthTokenWith(token, EXPECTED, connected(), NOW)).toBeNull();
   });
 
+  it('accepts a token minted in the same second as the approval', async () => {
+    // `iat` is whole seconds and the consent row keeps milliseconds: approval at
+    // :00.500, token at :00.900 carries iat :00, which is BEFORE :00.500. A fast
+    // client exchanges its code inside that second, and its first call failed.
+    const iat = nowSec - 60;
+    const sameSecond = store({ consentedAt: new Date(iat * 1000 + 500) });
+    const token = await mint({ iat });
+    expect(await verifyMcpOAuthTokenWith(token, EXPECTED, sameSecond, NOW)).not.toBeNull();
+  });
+
   it('refuses an ID token signed with the same key', async () => {
     const token = await mint({ typ: 'JWT' });
     expect(await verifyMcpOAuthTokenWith(token, EXPECTED, connected(), NOW)).toBeNull();

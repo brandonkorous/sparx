@@ -148,7 +148,11 @@ export async function verifyCustomerMcpTokenWith(
         ? payload.azp
         : null;
   if (!userId || !UUID.test(userId) || !clientId || typeof payload.iat !== 'number') return null;
-  if (!(await store.hasConsent({ userId, clientId, issuedAt: new Date(payload.iat * 1000) }))) {
+  // `iat` is whole seconds and the consent row keeps milliseconds, so the token
+  // counts as issued at the END of its second: one minted in the same second as
+  // the approval is not "before" it.
+  const issuedAt = new Date((payload.iat + 1) * 1000 - 1);
+  if (!(await store.hasConsent({ userId, clientId, issuedAt }))) {
     return null;
   }
 
