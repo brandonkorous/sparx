@@ -33,7 +33,7 @@ import * as subscriptionService from './subscription-service';
 /** How far back a paid order is still looked at. A line older than this that
  *  never started has a reason that a retry will not fix, and re-reading it
  *  every 15 minutes for ever would only add noise. */
-const LOOKBACK_DAYS = 30;
+export const LOOKBACK_DAYS = 30;
 
 /** Passes a card read may fail before the repeat order starts on invoice. */
 const CARD_ATTEMPTS = 3;

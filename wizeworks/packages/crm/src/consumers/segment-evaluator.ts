@@ -25,7 +25,7 @@ import { evaluateSegmentRule, SegmentRuleSchema, type SegmentRule } from '@wizew
 
 import { publishCrmEvent } from '../events';
 import { gateHandler, type ConsumerContext } from './registry';
-import { buildSegmentRuleProjection } from './segment-projection';
+import { buildSegmentRuleProjection, type EmailEngagement } from './segment-projection';
 import type { PlatformEvent } from './platform-bus';
 
 interface EventPayload {
@@ -136,14 +136,19 @@ async function resolveCustomerId(event: PlatformEvent<EventPayload>): Promise<st
  *
  *  `opts.segmentId` narrows it to ONE segment — what the segment-driven pass
  *  wants, since re-cutting one group across every customer has no reason to
- *  re-derive the other groups for each of them. */
+ *  re-derive the other groups for each of them.
+ *
+ *  `opts.engagement` is the full recompute's one tenant-wide engagement read,
+ *  so a pass over every customer does not count each one's opens and clicks. */
 export async function evaluateCustomerForTenant(
   tenantId: string,
   customerId: string,
-  opts: { segmentId?: string } = {}
+  opts: { segmentId?: string; engagement?: ReadonlyMap<string, EmailEngagement> } = {}
 ): Promise<{ entered: string[]; exited: string[] }> {
   const ctx = { tenantId, userId: undefined };
-  const projection = await buildSegmentRuleProjection(ctx, customerId).catch(() => null);
+  const projection = await buildSegmentRuleProjection(ctx, customerId, {
+    engagement: opts.engagement,
+  }).catch(() => null);
   if (!projection) return { entered: [], exited: [] };
 
   const entered: string[] = [];
@@ -175,15 +180,24 @@ export async function evaluateCustomerForTenant(
       },
     });
 
+    // This customer's memberships across those segments in one read, not one
+    // lookup per segment (219 `SegmentMember.findUnique` on a 37-customer run).
+    const memberRows =
+      segments.length > 0
+        ? await tx.segmentMember.findMany({
+            where: { customerId, segmentId: { in: segments.map((s) => s.id) } },
+            select: { segmentId: true },
+          })
+        : [];
+    const memberOf = new Set(memberRows.map((m) => m.segmentId));
+
     for (const segment of segments) {
       const parsed = SegmentRuleSchema.safeParse(segment.rules);
       if (!parsed.success) continue;
       const rule = parsed.data satisfies SegmentRule;
 
       const shouldBeMember = evaluateSegmentRule(rule, projection);
-      const existing = await tx.segmentMember.findUnique({
-        where: { segmentId_customerId: { segmentId: segment.id, customerId } },
-      });
+      const existing = memberOf.has(segment.id);
 
       if (shouldBeMember && !existing) {
         await tx.segmentMember.create({

@@ -18,7 +18,7 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { commerceSchedulers } from '@wizeworks/commerce';
 
 import { env } from '../../env.js';
-import { pollTenantChannelOrders } from '../../lib/channel-poll.js';
+import { listTenantsWithActiveChannels, pollTenantChannelOrders } from '../../lib/channel-poll.js';
 
 const CRON_TOKEN_HEADER = 'x-sparx-internal-cron-token';
 
@@ -45,10 +45,13 @@ interface TenantOutcome {
   result?: unknown;
 }
 
+/** Runs `run` per active tenant, one at a time; `only` skips tenants with nothing due (WW-9). */
 async function forEachActiveTenant<T>(
-  run: (tenantId: string) => Promise<T>
-): Promise<{ tenants: number; outcomes: TenantOutcome[] }> {
-  const tenants = await commerceSchedulers.listCommerceActiveTenants();
+  run: (tenantId: string) => Promise<T>,
+  only?: ReadonlySet<string>
+): Promise<{ tenants: number; skipped: number; outcomes: TenantOutcome[] }> {
+  const active = await commerceSchedulers.listCommerceActiveTenants();
+  const tenants = only ? active.filter((t) => only.has(t.id)) : active;
   const outcomes: TenantOutcome[] = [];
   for (const t of tenants) {
     try {
@@ -62,13 +65,16 @@ async function forEachActiveTenant<T>(
       });
     }
   }
-  return { tenants: tenants.length, outcomes };
+  return { tenants: tenants.length, skipped: active.length - tenants.length, outcomes };
 }
 
 const channelsCronRoutes: FastifyPluginAsync = (app) => {
   app.post('/internal/channels/poll', async (request) => {
     authorize(request);
-    const summary = await forEachActiveTenant((tenantId) => pollTenantChannelOrders(tenantId));
+    // Only tenants with an active connection; a shop that never connected a
+    // channel costs no transaction.
+    const due = await listTenantsWithActiveChannels();
+    const summary = await forEachActiveTenant((tenantId) => pollTenantChannelOrders(tenantId), due);
     return { success: true, data: summary };
   });
 
