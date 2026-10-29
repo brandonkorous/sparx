@@ -1,7 +1,8 @@
-// A password survives signing in by email on an account whose address was
-// never confirmed. Runs a REAL Better Auth instance (memory adapter) with the
-// same hook server.ts registers, because the behavior being guarded lives in
-// Better Auth itself (revokeUnprovenAccountAccess), not in our code.
+// What is left after signing in by email on an account whose address was never
+// confirmed: the Google link stays, a password set before the proof does not.
+// Runs a REAL Better Auth instance (memory adapter) with the same hook
+// server.ts registers, because the behavior being guarded lives in Better Auth
+// itself (revokeUnprovenAccountAccess), not in our code.
 
 import { betterAuth } from 'better-auth';
 import { memoryAdapter } from 'better-auth/adapters/memory';
@@ -48,23 +49,42 @@ function makeInstance() {
   return { auth, outbox };
 }
 
-async function signUpUnconfirmed(auth: ReturnType<typeof makeInstance>['auth'], email: string) {
+type Auth = ReturnType<typeof makeInstance>['auth'];
+
+/** An unconfirmed account holding a password AND a Google link. */
+async function signUpUnconfirmed(auth: Auth, email: string) {
   const res = await auth.api.signUpEmail({ body: { email, password: PASSWORD, name: 'Dana' } });
   expect(res.user.emailVerified).toBe(false);
+  const ctx = await auth.$context;
+  await ctx.internalAdapter.linkAccount({
+    userId: res.user.id,
+    providerId: 'google',
+    accountId: `google-${res.user.id}`,
+  });
   return res.user.id;
 }
 
-async function credentialAccounts(auth: ReturnType<typeof makeInstance>['auth'], userId: string) {
+async function providers(auth: Auth, userId: string) {
   const ctx = await auth.$context;
   const accounts = await ctx.internalAdapter.findAccounts(userId);
-  return accounts.filter((a) => a.providerId === 'credential');
+  return accounts.map((a) => a.providerId).sort();
+}
+
+async function passwordSignInWorks(auth: Auth, email: string) {
+  try {
+    await auth.api.signInEmail({ body: { email, password: PASSWORD } });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 describe('keepAccountsOnEmailProof', () => {
-  it('keeps the password through a magic-link sign-in on an unconfirmed account', async () => {
+  it('drops the unproven password and keeps Google through a magic-link sign-in', async () => {
     const { auth, outbox } = makeInstance();
     const email = 'dana@example.com';
     const userId = await signUpUnconfirmed(auth, email);
+    expect(await providers(auth, userId)).toEqual(['credential', 'google']);
 
     await auth.api.signInMagicLink({ body: { email }, headers: new Headers() });
     expect(outbox.magicLinkToken).toBeTruthy();
@@ -73,16 +93,15 @@ describe('keepAccountsOnEmailProof', () => {
       headers: new Headers(),
     });
 
-    expect(await credentialAccounts(auth, userId)).toHaveLength(1);
+    expect(await providers(auth, userId)).toEqual(['google']);
     // The address IS confirmed now: the link proved the mailbox.
     const ctx = await auth.$context;
     expect((await ctx.internalAdapter.findUserById(userId))?.emailVerified).toBe(true);
-    // And the password still signs her in.
-    const signIn = await auth.api.signInEmail({ body: { email, password: PASSWORD } });
-    expect(signIn.user.id).toBe(userId);
+    // A password picked before that proof no longer signs anybody in.
+    expect(await passwordSignInWorks(auth, email)).toBe(false);
   });
 
-  it('keeps the password through an emailed-code sign-in on an unconfirmed account', async () => {
+  it('drops the unproven password and keeps Google through an emailed-code sign-in', async () => {
     const { auth, outbox } = makeInstance();
     const email = 'lee@example.com';
     const userId = await signUpUnconfirmed(auth, email);
@@ -91,13 +110,13 @@ describe('keepAccountsOnEmailProof', () => {
     expect(outbox.otp).toBeTruthy();
     await auth.api.signInEmailOTP({ body: { email, otp: outbox.otp ?? '' } });
 
-    expect(await credentialAccounts(auth, userId)).toHaveLength(1);
-    const signIn = await auth.api.signInEmail({ body: { email, password: PASSWORD } });
-    expect(signIn.user.id).toBe(userId);
+    expect(await providers(auth, userId)).toEqual(['google']);
+    expect(await passwordSignInWorks(auth, email)).toBe(false);
   });
 
   it('does not stop any other account deletion', async () => {
-    expect(await keepAccountsOnEmailProof({}, { path: '/unlink-account' })).toBeUndefined();
-    expect(await keepAccountsOnEmailProof({}, null)).toBeUndefined();
+    const google = { providerId: 'google' };
+    expect(await keepAccountsOnEmailProof(google, { path: '/unlink-account' })).toBeUndefined();
+    expect(await keepAccountsOnEmailProof(google, null)).toBeUndefined();
   });
 });

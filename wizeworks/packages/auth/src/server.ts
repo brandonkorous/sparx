@@ -251,8 +251,8 @@ function createAuth() {
     },
 
     databaseHooks: {
-      // Signing in by magic link or emailed code must not delete the person's
-      // password or their Google link (./credential-retention).
+      // Signing in by magic link or emailed code keeps a Google link but drops
+      // a password set before the email was proven (./credential-retention).
       account: {
         delete: { before: keepAccountsOnEmailProof },
       },
