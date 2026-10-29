@@ -4,7 +4,7 @@ import {
   staleFormActionRedirect,
   unknownActionResponse,
 } from '@wizeworks/app-kit/stale-form-action';
-import { malformedPathResponse } from '@wizeworks/app-kit/malformed-path';
+import { malformedRequestResponse } from '@wizeworks/app-kit/malformed-path';
 import { newVisitorId } from '@wizeworks/attribution';
 import { SPARX_ATTR } from './lib/attribution-cookies';
 import { facetFloodResponse } from './lib/facet-flood';
@@ -19,8 +19,9 @@ import { facetFloodResponse } from './lib/facet-flood';
 export async function proxy(request: NextRequest): Promise<Response> {
   // An unknown header-named action 500ed on prerendered pages, and a form posted
   // from an older build 500ed too. See @wizeworks/app-kit/stale-form-action.
-  // A broken percent escape (`/%c0`) is the client's 400, not Next's 500.
-  const malformed = malformedPathResponse(request);
+  // A broken percent escape (`/%c0`) or a multipart body with no boundary is the
+  // client's 400, not Next's 500.
+  const malformed = malformedRequestResponse(request);
   if (malformed) return malformed;
   const known = runningActionIds();
   const unknown = unknownActionResponse(request, known);

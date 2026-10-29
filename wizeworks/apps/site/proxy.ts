@@ -41,6 +41,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { runningActionIds, unknownActionResponse } from '@wizeworks/app-kit/stale-form-action';
+import { malformedRequestResponse } from '@wizeworks/app-kit/malformed-path';
 
 import { isCrawlablePath, siteIsDark } from './lib/dark-at-the-edge';
 import { isProbePath, probeNotFound } from './lib/probe-path';
@@ -154,6 +155,11 @@ async function localDevResponse(
 }
 
 export async function proxy(req: NextRequest) {
+  // A request Next cannot read (`/%c0`, a multipart body with no boundary) is the
+  // client's 400, not Next's 500. See @wizeworks/app-kit/malformed-path.
+  const malformed = malformedRequestResponse(req);
+  if (malformed) return malformed;
+
   // A header-named call to an unknown server action gets Next's own 404 here; on a
   // prerendered page Next's answer is a 500. See @wizeworks/app-kit/stale-form-action.
   const unknownAction = unknownActionResponse(req, runningActionIds());

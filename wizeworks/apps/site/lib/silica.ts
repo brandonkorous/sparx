@@ -414,27 +414,64 @@ export { hostKeysIn } from '@wizeworks/silica-catalog';
 // badges (sparx persona issue 086). Added on read, so pages stamped before fleets
 // existed show them with nothing to republish; hidden for everyone else because
 // every product record carries the badge keys. See lib/fleet-fit-tree.ts.
+//
+// A route's generateMetadata and its page both read the same body, and each read
+// was its own api-rest call: every tenant home view fetched `silica/home` twice
+// (WizeLens, 2026-10-29). React's `cache()` makes it one call per request. The keys
+// are the primitives, not `opts`: a fresh options object on each call never hits.
+
+const cachedSilicaHome = cache((tenantSlug: string, previewToken: string | undefined) =>
+  readPublishedSilicaHome(tenantSlug, { previewToken })
+);
+
+const cachedSilicaPage = cache(
+  (tenantSlug: string, slug: string, previewToken: string | undefined) =>
+    readPublishedSilicaPage(tenantSlug, slug, { previewToken })
+);
+
+const cachedSilicaCollection = cache(
+  (
+    tenantSlug: string,
+    recordType: string,
+    recordId: string | undefined,
+    previewToken: string | undefined,
+    recordSubtype: string | undefined
+  ) =>
+    readPublishedSilicaCollection(tenantSlug, recordType, recordId, { previewToken, recordSubtype })
+);
 
 /** The property's PUBLISHED silica home body; see `readPublishedSilicaHome`. */
 export async function getPublishedSilicaHome(
-  ...args: Parameters<typeof readPublishedSilicaHome>
+  tenantSlug: string,
+  opts: { previewToken?: string } = {}
 ): Promise<PublishedSilicaPageDto | null> {
-  const page = await readPublishedSilicaHome(...args);
+  const page = await cachedSilicaHome(tenantSlug, opts.previewToken);
   return page ? withFleetBadges(page) : page;
 }
 
 /** The PUBLISHED silica page body owning a slug; see `readPublishedSilicaPage`. */
 export async function getPublishedSilicaPage(
-  ...args: Parameters<typeof readPublishedSilicaPage>
+  tenantSlug: string,
+  slug: string,
+  opts: { previewToken?: string } = {}
 ): Promise<PublishedSilicaPageDto | null> {
-  const page = await readPublishedSilicaPage(...args);
+  const page = await cachedSilicaPage(tenantSlug, slug, opts.previewToken);
   return page ? withFleetBadges(page) : page;
 }
 
 /** The PUBLISHED silica record template; see `readPublishedSilicaCollection`. */
 export async function getPublishedSilicaCollection(
-  ...args: Parameters<typeof readPublishedSilicaCollection>
+  tenantSlug: string,
+  recordType: string,
+  recordId?: string,
+  opts: { previewToken?: string; recordSubtype?: string } = {}
 ): Promise<PublishedSilicaPageDto | null> {
-  const page = await readPublishedSilicaCollection(...args);
+  const page = await cachedSilicaCollection(
+    tenantSlug,
+    recordType,
+    recordId,
+    opts.previewToken,
+    opts.recordSubtype
+  );
   return page ? withFleetBadges(page) : page;
 }

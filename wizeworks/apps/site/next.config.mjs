@@ -6,6 +6,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  // No `X-Powered-By: Next.js`: it tells a scanner which exploits to try.
+  poweredByHeader: false,
   transpilePackages: [
     '@wizeworks/app-kit',
     '@wizeworks/ui',
@@ -26,9 +28,21 @@ const config = {
     loaderFile: './lib/image-loader.ts',
   },
   // Caddy adds nosniff at the edge; the app sends it too for in-cluster callers (WW-12).
+  //
+  // The CSP is an ENFORCED baseline of rules no tenant page can trip. The edge
+  // already allows framing only by this origin (X-Frame-Options SAMEORIGIN), and
+  // frame-ancestors says the same in CSP terms; base-uri closes the <base> trick
+  // (WizeLens, 2026-10-29). No object-src here: a tenant's own content is not ours
+  // to narrow without looking at it first.
   headers: () =>
     Promise.resolve([
-      { source: '/:path*', headers: [{ key: 'X-Content-Type-Options', value: 'nosniff' }] },
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'self'; base-uri 'self'" },
+        ],
+      },
     ]),
 };
 

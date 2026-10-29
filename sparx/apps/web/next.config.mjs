@@ -18,6 +18,11 @@ const CSP_REPORT_ONLY = [
   "object-src 'none'",
 ].join('; ');
 
+// Enforced alongside it: the three rules from that policy no page here can trip.
+// The edge already allows framing only by this origin (X-Frame-Options
+// SAMEORIGIN); base-uri and object-src close the <base> and plugin tricks.
+const CSP_ENFORCED = "frame-ancestors 'self'; base-uri 'self'; object-src 'none'";
+
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
@@ -45,7 +50,10 @@ const config = {
     return [
       {
         source: '/:path*',
-        headers: [{ key: 'Content-Security-Policy-Report-Only', value: CSP_REPORT_ONLY }],
+        headers: [
+          { key: 'Content-Security-Policy-Report-Only', value: CSP_REPORT_ONLY },
+          { key: 'Content-Security-Policy', value: CSP_ENFORCED },
+        ],
       },
     ];
   },
