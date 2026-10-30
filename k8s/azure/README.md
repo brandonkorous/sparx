@@ -60,7 +60,7 @@ this overlay's `--prune` can never delete it.
 
 |          | Local                                     | Azure                                                     |
 | -------- | ----------------------------------------- | --------------------------------------------------------- |
-| Images   | `sparx/*:local`, `imagePullPolicy: Never` | `ghcr.io/brandonkorous/sparx/*`, pinned to the commit SHA |
+| Images   | `sparx/*:local`, `imagePullPolicy: Never` | `ghcr.io/wizeworksllc/sparx/*`, pinned to the commit SHA |
 | Postgres | in-cluster StatefulSet                    | **managed** `psql-sparx-prod-cus`, VNet-private           |
 | Redis    | in-cluster                                | **dropped** — see `infra/platform.yaml`                   |
 | Storage  | Docker Desktop default                    | `managed-csi` (Azure StandardSSD)                         |

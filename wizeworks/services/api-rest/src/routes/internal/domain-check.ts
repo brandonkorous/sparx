@@ -148,7 +148,7 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   'www.rocketease.com',
   'app.rocketease.com',
   // ── WizeLens ─────────────────────────────────────────────────────────────
-  // The profiler from brandonkorous/wizelens, in the `wizelens` namespace. The
+  // The profiler from wizeworksllc/wizelens, in the `wizelens` namespace. The
   // apex is the static marketing site, `app.` is WizeLens Cloud, `mcp.` is
   // Cloud's MCP endpoint alone. Both `www.` names and the wizelens.dev pair
   // only 301 to wizelens.com, but they terminate TLS to do it, so each needs a
@@ -216,7 +216,7 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   'mcp.jotacular.com',
   // ── WizeWorks ────────────────────────────────────────────────────────────
   // The PARENT COMPANY's marketing site, in the `wizeworks` namespace from the
-  // brandonkorous/wizeworks repository. Same shape as silicaui above: a static
+  // wizeworksllc/wizeworks repository. Same shape as silicaui above: a static
   // Next.js site that is not a sparx tenant, so resolveSiteByHost cannot
   // authorize it and it must be listed here or on-demand TLS 403s the apex.
   //

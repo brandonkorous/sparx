@@ -7,7 +7,7 @@
 # as the Deployments they are supposed to run BEFORE.
 #
 # What differs from the k8s/local workstation overlay:
-#   1. images     → ghcr.io/brandonkorous/sparx/*, pulled from a registry rather
+#   1. images     → ghcr.io/wizeworksllc/sparx/*, pulled from a registry rather
 #                   than read out of a local Docker daemon
 #   2. Postgres   → MANAGED (psql-sparx-prod-cus). No in-cluster StatefulSet.
 #   3. Redis      → dropped entirely. api-rest's two replicas share socket.io
@@ -58,40 +58,40 @@ resources:
 # deployed — the release FAILS if any of these survives the rewrite.
 images:
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/api-rest
-    newName: ghcr.io/brandonkorous/sparx/api-rest
+    newName: ghcr.io/wizeworksllc/sparx/api-rest
     newTag: latest
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/api-graphql
-    newName: ghcr.io/brandonkorous/sparx/api-graphql
+    newName: ghcr.io/wizeworksllc/sparx/api-graphql
     newTag: latest
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/api-mcp
-    newName: ghcr.io/brandonkorous/sparx/api-mcp
+    newName: ghcr.io/wizeworksllc/sparx/api-mcp
     newTag: latest
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/mcp-site
-    newName: ghcr.io/brandonkorous/sparx/mcp-site
+    newName: ghcr.io/wizeworksllc/sparx/mcp-site
     newTag: latest
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/workbench
-    newName: ghcr.io/brandonkorous/sparx/workbench
+    newName: ghcr.io/wizeworksllc/sparx/workbench
     newTag: latest
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/web
-    newName: ghcr.io/brandonkorous/sparx/web
+    newName: ghcr.io/wizeworksllc/sparx/web
     newTag: latest
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/site
-    newName: ghcr.io/brandonkorous/sparx/site
+    newName: ghcr.io/wizeworksllc/sparx/site
     newTag: latest
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/market
-    newName: ghcr.io/brandonkorous/sparx/market
+    newName: ghcr.io/wizeworksllc/sparx/market
     newTag: latest
   # Piggles. Same registry and the same `sparx/` package path — the repository
   # is the unit GHCR names, not the brand, and inventing a second package path
   # would mean a second set of package permissions to keep public.
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/piggles-web
-    newName: ghcr.io/brandonkorous/sparx/piggles-web
+    newName: ghcr.io/wizeworksllc/sparx/piggles-web
     newTag: latest
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/piggles-account
-    newName: ghcr.io/brandonkorous/sparx/piggles-account
+    newName: ghcr.io/wizeworksllc/sparx/piggles-account
     newTag: latest
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/piggles-console
-    newName: ghcr.io/brandonkorous/sparx/piggles-console
+    newName: ghcr.io/wizeworksllc/sparx/piggles-console
     newTag: latest
   # The workers carry `sparx/<name>:local` in the shared base, since that base
   # is written for the workstation case. Rewrite them the same way.
@@ -101,13 +101,13 @@ images:
   # packages still exist and are still pullable, which is what makes rolling
   # back to a pre-consolidation SHA work — nothing here references them.
   - name: sparx/event-worker
-    newName: ghcr.io/brandonkorous/sparx/event-worker
+    newName: ghcr.io/wizeworksllc/sparx/event-worker
     newTag: latest
   - name: sparx/media-worker
-    newName: ghcr.io/brandonkorous/sparx/media-worker
+    newName: ghcr.io/wizeworksllc/sparx/media-worker
     newTag: latest
   - name: sparx/import-worker
-    newName: ghcr.io/brandonkorous/sparx/import-worker
+    newName: ghcr.io/wizeworksllc/sparx/import-worker
     newTag: latest
 
 replicas:

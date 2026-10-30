@@ -9,7 +9,7 @@ only sparx; to change its version or its key, change that repository. It sends n
 `aks-sparx-prod-cus` to app.wizelens.com, project `sparx-prod`, so the Hosts and Kubernetes pages sit beside the apps'
 traces.
 
-- **Chart:** `oci://ghcr.io/brandonkorous/charts/wizelens-collector`, pinned by `COLLECTOR_VERSION` in that step.
+- **Chart:** `oci://ghcr.io/wizeworksllc/charts/wizelens-collector`, pinned by `COLLECTOR_VERSION` in that step.
 - **Access:** a read-only ClusterRole (get, list, watch on nodes, pods, workloads, events). It changes nothing.
 - **Key:** `wizelens-collector-ingest-key` in the WizeLens vault (`kv-wizelens-prod-cus`), never sparx's vault (every
   secret there goes into all app pods). With no key the step warns and skips.

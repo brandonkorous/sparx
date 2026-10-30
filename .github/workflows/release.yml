@@ -1636,13 +1636,23 @@ jobs:
                     exit 0
                   fi
 
+                  # The packages live under the OWNER, and the package API has a
+                  # different root for an org than for a user. The repository moved from
+                  # the brandonkorous user to the wizeworksllc org on 2026-10-30; a
+                  # hard-coded /users/ root would answer 404 for every org package.
+                  if [ "$(gh api "/users/$OWNER" --jq .type)" = Organization ]; then
+                    ROOT="/orgs/$OWNER"
+                  else
+                    ROOT="/users/$OWNER"
+                  fi
+
                   # Packages are named `sparx/<service>` because the images are pushed
                   # as ghcr.io/<owner>/sparx/<service>. The API wants that slash encoded.
                   #
                   # Captured, not piped: a 401/403 here must not be mistaken for an
                   # empty registry.
                   if ! listing=$(gh api --paginate \
-                    "/users/$OWNER/packages?package_type=container&per_page=100" \
+                    "$ROOT/packages?package_type=container&per_page=100" \
                     --jq '.[].name' 2>&1); then
                     echo "::error::Could not list container packages for $OWNER. \
                   Check GHCR_CLEANUP_TOKEN has read:packages + delete:packages and has \
@@ -1674,7 +1684,7 @@ jobs:
 
                     # Newest first, so everything past $KEEP_IMAGES is a candidate.
                     ids=$(gh api --paginate \
-                      "/users/$OWNER/packages/container/$enc/versions?per_page=100" \
+                      "$ROOT/packages/container/$enc/versions?per_page=100" \
                       --jq 'sort_by(.created_at) | reverse | .[].id')
                     count=$(echo "$ids" | grep -c . || true)
 
@@ -1688,7 +1698,7 @@ jobs:
                       # a package, and a version can vanish between listing and delete.
                       # Neither is a reason to abandon the other twenty-one packages.
                       gh api -X DELETE \
-                        "/users/$OWNER/packages/container/$enc/versions/$id" \
+                        "$ROOT/packages/container/$enc/versions/$id" \
                         >/dev/null 2>&1 || echo "  skip $pkg#$id"
                     done
 

@@ -83,7 +83,7 @@ the client the running dev stack holds open.
 ## Open items
 
 1. ~~Set jotDOJO's four repo variables.~~ **DONE** — all four are set on
-   `brandonkorous/jotacular` (`gh variable list -R brandonkorous/jotacular`).
+   `wizeworksllc/jotdojo` (`gh variable list -R wizeworksllc/jotdojo`).
    For the record: `terraform output jotacular_github_setup` in
    `terraform/bootstrap-azure` (in the wize-infrastructure checkout since
    2026-10-29) prints them verbatim, and
