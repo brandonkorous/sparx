@@ -1,4 +1,4 @@
-# Deployed with wrangler, NOT Terraform — terraform/envs/prod/cloudflare.tf is
+# Deployed with wrangler, NOT Terraform — wize-infrastructure's terraform/envs/prod/cloudflare.tf is
 # the right long-term home, but its state lives in gs://sparx-terraform-state and
 # is unreachable while the GCP project is shut down. Move it into cloudflare.tf
 # when that state is re-established or re-imported into a local backend.

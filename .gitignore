@@ -86,12 +86,12 @@ wb-auth.json
 k8s/local/secrets.env
 k8s/local/tunnel-credentials.json
 
-# Terraform. Never mattered before — terraform/envs/prod uses a GCS backend, so
-# no state ever landed on disk. terraform/envs/azure now uses an azurerm backend,
-# but a local `terraform.tfstate` still appears from the pre-migration runs, and
-# state contains the generated Postgres admin password in plaintext. State is
-# also not something to version: it is a lock-managed database, not source, and
-# committing it is how two applies overwrite each other.
+# Terraform. It moved to wize-infrastructure on 2026-10-29 and nothing here runs
+# it any more. These stay because checkouts from before the move still hold a
+# local `terraform.tfstate.backup` from the pre-migration runs under
+# terraform/envs/azure, and state contains the Postgres admin password in
+# plaintext: the directory is gone from the tree, the file is not gone from
+# disk, and this is what keeps it from being committed.
 **/.terraform/
 *.tfstate
 *.tfstate.*

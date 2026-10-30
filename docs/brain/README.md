@@ -41,7 +41,7 @@ Almost every UI mistake starts by conflating them. Every design/component note d
 - [[activity]] — the awareness layer (product name: **Pulse**): Jobs ("is it running?"), Audit/Activity ("what happened?"), Notifications ("what needs me?"). The four-term taxonomy, built on the event firehose.
 - [[data]] — Prisma schema, RLS mechanics, the customer/contact spine, the migration pipeline.
 - [[api-events]] — our REST surface, the MCP server, the Pub/Sub event catalog, the email pipeline.
-- [[infrastructure]] — AKS, phased infra, the four-stage release pipeline, Terraform, Caddy, cost.
+- [[infrastructure]] — AKS, phased infra, the four-stage release pipeline, cost; and the line between this repo and [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure), which owns the Terraform, DNS and the Caddy ingress.
 - [[integrations]] — registry of every external service & tool (Stripe, kanNINJA, Mailgun, GCP, …) and the ones we rejected.
 
 **Process & memory**
@@ -64,7 +64,9 @@ Don't build from memory. Enter these nodes first.
 | Add an **API endpoint or MCP tool** | [[api-events]] → [[architecture]] |
 | Build a **jobs / activity / audit / notification** surface | [[activity]] — use the four-term taxonomy; read-spine over ledgers, don't add a table |
 | Wire up an **external service** | [[integrations]] → [[infrastructure]] |
-| Deploy / infra / cost change | [[infrastructure]] → [[conventions]] (cost discipline) |
+| Deploy / sparx release / cost change | [[infrastructure]] → [[deploy-workflows]] → [[conventions]] (cost discipline) |
+| Change **Terraform, DNS, a Caddy route, a database, a vault, an identity**, or stand up a **new product** on the cluster | NOT this repo: [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure) (local `G:/code/@wizeworks/wize-infrastructure`), released by its own pipeline FIRST. Read [[terraform]] + [[topology]] for where things live |
+| Add an **event** | [[api-events]] → [[event-driven]] (the literal here, its Pub/Sub topic in wize-infrastructure) |
 | Add a **program/feature** that isn't a module (like partner) | [[features]] (classify it) → [[design]] → [[components]] |
 | Understand the **why** / business context | [[business]] |
 | Need an exact **color / hue / size / radius** | [[dashboard-tokens]] — the materialized dashboard values |

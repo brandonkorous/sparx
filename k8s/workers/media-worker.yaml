@@ -1,6 +1,6 @@
 # media-worker has moved to Cloud Run.
 #
-# The service is now provisioned by terraform/envs/prod/serverless.tf via
+# The service is now provisioned by wize-infrastructure's terraform/envs/prod/serverless.tf via
 # the cloud-run-worker module, and Pub/Sub delivers messages via the push
 # subscription `media.uploaded.media-worker-cloudrun`. The old pull
 # subscription `media.uploaded.media-worker` is left in place during the
@@ -17,7 +17,7 @@
 # A follow-up PR after a stable week on Cloud Run will:
 #   - Delete this file
 #   - Remove the entry from kustomization.yaml
-#   - Drop `media-worker` from the topics map in terraform/envs/prod/main.tf
+#   - Drop `media-worker` from the topics map in wize-infrastructure's terraform/envs/prod/main.tf
 #
 # ─── Preserved manifest ───────────────────────────────────────────────────
 #

@@ -222,7 +222,13 @@ leaving them in a file that will read as sparx's would have been misleading.
 - **There is ONE release pipeline and its stages are the deployment:**
   infrastructure → data → containers → cleanup, on every push to `main`. That
   order is load-bearing — if the seed fails, the old containers are still
-  serving. **The destination is a variable, never a filename**; adding an
+  serving. Stage 1 is only this repo's own cluster resources (the app secrets
+  from Key Vault, then `k8s/azure/infra`: namespace, `sparx-app-env`, the media
+  volume, Typesense, PgBouncer). **No Terraform runs here.** The cluster, the
+  shared Postgres server, vaults, DNS, identities and the Caddy ingress belong to
+  `wizeworksllc/wize-infrastructure`, which has its own release; when a change
+  here needs a new route, database, vault or event topic, that repo ships it
+  first. **The destination is a variable, never a filename**; adding an
   environment is setting variables. Never put a task name in the release —
   chores belong in the manual ops workflow. The tag is cut **last**, gated on
   the stages, so a `v*` tag means the version actually shipped.

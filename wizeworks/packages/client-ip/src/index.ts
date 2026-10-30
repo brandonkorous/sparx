@@ -17,9 +17,11 @@
 // so every visitor through one edge shared one rate-limit bucket. On 2026-10-18
 // all of it was fixed at once, and the trusted ranges now live here and nowhere
 // else in code: the services pass TRUSTED_PROXIES to Fastify, the apps call
-// clientIpFromChain(), and index.test.ts fails if the Cloudflare ranges drift
-// from the ones Caddy trusts (k8s/ingress/Caddyfile, global `trusted_proxies`).
-// Refresh both from https://www.cloudflare.com/ips together.
+// clientIpFromChain(), and CI fails if the Cloudflare ranges drift from the ones
+// Caddy trusts (wize-infrastructure: k8s/ingress/Caddyfile, global
+// `trusted_proxies`; compared by that repository's
+// scripts/check-cloudflare-ranges.mjs, which sparx's CI runs too). Refresh both
+// from https://www.cloudflare.com/ips together.
 
 import ipaddr from 'ipaddr.js';
 

@@ -1,8 +1,8 @@
 # Local self-hosted deployment
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-31
+**Last Updated:** 2026-10-29
 
 Runs the whole platform on a workstation's Docker Desktop Kubernetes, reachable
 at its real public hostnames through a Cloudflare Tunnel. Replaces the GKE
@@ -13,6 +13,16 @@ This is a **kustomize overlay on the production manifests**, not a parallel copy
 `k8s/apps/` and `k8s/cronjobs/` are consumed verbatim; this directory expresses
 only what a laptop does differently. A change to an app's probes, security
 context or env in the base manifests lands here automatically.
+
+**The ingress is a remote base.** Caddy and THE routing table live in
+wize-infrastructure (they route every product on the cluster, not only sparx),
+so `kustomization.yaml` pulls them as
+`https://github.com/wizeworksllc/wize-infrastructure//k8s/ingress?ref=main`.
+`kubectl apply -k` clones that, so bringing the overlay up needs network and git.
+To try a Caddyfile change on the laptop before it merges there, point that line
+at your local checkout (for example `../../../wize-infrastructure/k8s/ingress`)
+and put it back afterwards. This overlay still owns the workstation delta:
+`mode.caddy`, the two `SX_*` env vars, and a ClusterIP Service.
 
 ## What replaced what
 
@@ -202,9 +212,12 @@ then `local-up.ps1` until those are rewritten.
 ## Not carried over
 
 `kanninja.com`, `silicaui.com` and `admin.wize.works` proxied through the same
-shared GKE ingress but their workloads live in other namespaces. They are absent
-from the shared Caddyfile (`../self-hosted/Caddyfile`) and are still down. Add them back alongside their own
-Deployments if they should live here too.
+shared ingress but their workloads live in other namespaces. The shared
+Caddyfile (wize-infrastructure's
+[`k8s/ingress/Caddyfile`](https://github.com/wizeworksllc/wize-infrastructure/blob/main/k8s/ingress/Caddyfile))
+routes them, but this overlay deploys none of their workloads, so on a
+workstation those hosts have nothing behind them. Add their Deployments here if
+they should live here too.
 
 ## Teardown
 
@@ -214,7 +227,7 @@ kubectl delete pvc --all -n sparx-prod   # also drops the database
 ```
 
 Terraform state lived in `gs://sparx-terraform-state` and is unreachable while
-GCP billing is off. `terraform/envs/prod/cloudflare.tf` still holds the real
+GCP billing is off. wize-infrastructure's `terraform/envs/prod/cloudflare.tf` still holds the real
 zone definitions, so DNS can be re-imported into a local backend when the
 Cloudflare records need managing again — nothing there was lost with the
 project.

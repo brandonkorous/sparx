@@ -1,5 +1,5 @@
 # TLS policy — the WORKSTATION copy. Mounted beside the Caddyfile as
-# `mode.caddy`, replacing k8s/ingress/mode.caddy.
+# `mode.caddy`, replacing wize-infrastructure's k8s/ingress/mode.caddy.
 #
 # A laptop cluster has no public IP and no inbound path, so an ACME challenge
 # can never reach Caddy — issuance could not succeed here even if it were
@@ -15,7 +15,7 @@
 # SSL/TLS mode to "Full (strict)" — do NOT use Flexible.
 #
 # THIS FILE IS THE ONLY DIFFERENCE between a workstation deployment and a cloud
-# one. The routing table itself (k8s/ingress/Caddyfile) is byte-identical.
+# one. The routing table itself (wize-infrastructure's k8s/ingress/Caddyfile) is byte-identical.
 
 (tls_policy) {
 }

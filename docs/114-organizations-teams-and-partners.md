@@ -404,7 +404,7 @@ POST  /internal/partners/referrals             signup hook
 GET   /internal/partners  · PATCH /:id/approve · PATCH /:id/tier · PATCH /:id/suspend
 ```
 
-## B.9 Events (Bus A — `@wizeworks/events`; provision topics in `terraform/envs/prod/main.tf`)
+## B.9 Events (Bus A — `@wizeworks/events`; provision topics in wize-infrastructure's `terraform/envs/prod/main.tf`)
 
 `partner.application.submitted`, `partner.activated`, `partner.referral.created`,
 `partner.commission.accrued`, `partner.payout.paid`, `bootcamp.published`,

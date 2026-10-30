@@ -149,7 +149,7 @@ authorized by the on-demand-TLS ask (`internal/domain-check.ts`). The store's MC
 at the store's address and is advertised in its own `llms.txt`.
 
 ```
-# k8s/ingress/Caddyfile — inside the catch-all :443 block, BEFORE `reverse_proxy … site`
+# wize-infrastructure: k8s/ingress/Caddyfile — inside the catch-all :443 block, BEFORE `reverse_proxy … site`
 handle_path /mcp* { reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200 }
 ```
 
@@ -158,7 +158,7 @@ for stores without a custom domain. Needs: an explicit Caddy host block →
 `mcp-site`; `'mcp.sparx.zone'` added to `PLATFORM_HOSTNAMES` in
 `internal/domain-check.ts` (else the on-demand ask 403s, since no tenant owns slug
 `mcp`); optionally an explicit `cloudflare_record.sparx_zone_mcp` (A → ingress IP,
-`proxied = false`) in `terraform/envs/prod/cloudflare.tf` (the `*` wildcard already
+`proxied = false`) in wize-infrastructure's `terraform/modules/dns/main.tf` (the `*` wildcard already
 resolves it).
 
 **Rejected:** `mcp.<tenant>.sparx.zone` — the first label is parsed as a _property_

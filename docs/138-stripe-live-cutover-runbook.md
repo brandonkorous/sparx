@@ -1,8 +1,8 @@
 # Stripe test → live cutover runbook
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-10-03
+**Last Updated:** 2026-10-29
 
 ---
 
@@ -161,7 +161,8 @@ isn't registered (docs/92 §1). When you turn this on **in live**:
    (done 2026-07-25 — 25 `stripe-price-*` names across all 12 billable modules ×
    {monthly,annual} + managed hosting). `priceIdFor()` reads them from env; a
    missing/undefined value → that module silently isn't billable (warned, not failed).
-   Run `terraform apply` once to create the empty containers, then add the versions.
+   If the containers are missing, they are created by `terraform apply` in wize-infrastructure
+   (the Terraform moved there on 2026-10-29), then add the versions.
 3. Register the **live** billing webhook `…/v1/public/webhooks/stripe/billing`
    (subscription + invoice events, docs/92 §6) → `stripe-webhook-secret-billing`.
 4. Apply the `20260813000000_platform_billing` migration via the DB Migrate workflow if
@@ -175,12 +176,14 @@ isn't registered (docs/92 §1). When you turn this on **in live**:
 ## 6. Terraform / infra state
 
 The secret **containers** (`stripe-webhook-secret-sparx-pay`, `-billing`, `stripe-client-id`)
-are declared in [terraform/envs/prod/main.tf](../terraform/envs/prod/main.tf) L459–482 and
-should already exist from the last `terraform apply`. Cutover only changes their **values**
+are declared in wize-infrastructure's
+[terraform/envs/prod/main.tf](https://github.com/wizeworksllc/wize-infrastructure/blob/main/terraform/envs/prod/main.tf)
+(the Terraform moved out of this repository on 2026-10-29) and should already exist from the
+last `terraform apply`. Cutover only changes their **values**
 (§1b), which is a `gcloud secrets versions add`, **not** a terraform change. Run
-`terraform plan` in `terraform/envs/prod` to confirm no drift; only `apply` if it shows the
+`terraform plan` in `terraform/envs/prod` of the wize-infrastructure checkout to confirm no drift; only `apply` if it shows the
 containers missing. (Adding the §5 `STRIPE_PRICE_*` secrets later is the one change that
-touches both terraform + bootstrap.)
+touches both terraform + bootstrap; the terraform half is a pull request to wize-infrastructure.)
 
 ---
 

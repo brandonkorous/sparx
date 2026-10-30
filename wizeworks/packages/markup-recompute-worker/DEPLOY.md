@@ -17,11 +17,13 @@ dropship sync ─────┘   (Pub/Sub topic)      worker
 
 - **Runtime:** Cloud Run (Pub/Sub PUSH), scale-to-zero. Same shape as
   `push-worker` / `email-worker`.
-- **Terraform:** `module "markup_recompute_worker_cloudrun"` + the
+- **Terraform** (in [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure)
+  since 2026-10-29, same paths): `module "markup_recompute_worker_cloudrun"` + the
   `sparx-markup-recompute-worker` runtime SA in
   `terraform/envs/prod/serverless.tf`; the `variant.cost.updated`,
   `price.recomputed`, and `price.recompute.staged` topics in
-  `terraform/envs/prod/main.tf`.
+  `terraform/envs/prod/main.tf`. A new topic for this worker is a pull request
+  there; `pnpm check:events` here fails until it exists.
 - **Image:** built by `.github/workflows/build-images-gcp.yml` (matrix entry
   `markup-recompute-worker`) and rolled by the standard tag → deploy pipeline.
 

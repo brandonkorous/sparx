@@ -2,17 +2,17 @@
 
 ## `migrate.yaml`
 
-Applied by [deploy-prod.yml](../../.github/workflows/deploy-prod.yml) on each release. Runs `prisma migrate deploy` against Cloud SQL via PgBouncer.
+**GCP-era.** On AKS, migrations do not use this file: stage 2 (data) of [release.yml](../../.github/workflows/release.yml) runs `prisma migrate deploy` from the `db` image as an in-cluster Job (`db-migrate`), connected as the owner role, after the `db-roles` Job and before the platform seed. See [wizeworks/packages/db/CLAUDE.md](../../wizeworks/packages/db/CLAUDE.md). The `deploy-prod.yml` workflow that used to apply this template is deleted.
 
-The Job runs in-cluster (where the Cloud SQL private IP is reachable) so we don't need the Cloud SQL Auth Proxy. The image is the latest `api-rest` build — migrations live alongside the API code in the `@wizeworks/db` workspace.
+The template ran `prisma migrate deploy` against Cloud SQL via PgBouncer, in-cluster (where the Cloud SQL private IP is reachable) so it needed no Cloud SQL Auth Proxy.
 
-### Manual run
+### Manual run (GCP only)
 
-If you need to apply migrations outside of a deploy:
+The GCP Terraform now lives in [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure), so the project id comes from that checkout:
 
 ```powershell
 $tag = "v1.2.3"
-$project = terraform -chdir=terraform/envs/prod output -raw project_id
+$project = terraform -chdir=../wize-infrastructure/terraform/envs/prod output -raw project_id
 $suffix = (Get-Date -UFormat %s).Substring(5)
 
 (Get-Content k8s/jobs/migrate.yaml) `

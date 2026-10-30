@@ -2,7 +2,7 @@
   "name": "@wizeworks/client-ip",
   "version": "0.0.0",
   "private": true,
-  "description": "Who a request is from: the proxies the platform trusts (private ranges + Cloudflare) and the right-to-left X-Forwarded-For resolution every service and app uses. One copy of the Cloudflare ranges, checked against the Caddyfile by its test.",
+  "description": "Who a request is from: the proxies the platform trusts (private ranges + Cloudflare) and the right-to-left X-Forwarded-For resolution every service and app uses. One copy of the Cloudflare ranges, checked against the Caddyfile in wize-infrastructure by scripts/check-cloudflare-ranges.mjs there.",
   "type": "module",
   "exports": {
     ".": {

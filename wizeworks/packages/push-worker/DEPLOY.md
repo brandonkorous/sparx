@@ -1,5 +1,13 @@
 # push-worker — provisioning
 
+> **GCP-era, and the Terraform has moved.** On AKS, push is a handler inside
+> `event-worker` (no Cloud Run service), and every Terraform file named below
+> now lives in [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure)
+> under the same path (moved 2026-10-29). Run any `terraform` command from that
+> checkout, or make the change as a pull request there and let its release apply
+> it. The `platform-apply`, Build & push, DB Migrate and Bootstrap workflows named
+> below are deleted; sparx's `release.yml` now builds, migrates and syncs config.
+
 > **STATUS: PROVISIONED & LIVE IN PROD (2026-06-10).** VAPID pair generated;
 > `vapid-private-key` secret v1 set; `VAPID_PUBLIC_KEY` populated in the app-env
 > ConfigMap + `vapid_public_key` in terraform.tfvars; push-worker Cloud Run
@@ -17,7 +25,7 @@ Until they're done the feature **degrades gracefully**: the dashboard toggle
 shows "not configured", and push-worker acks every `push.send` as a no-op.
 
 > **NOTE on "Apply":** there is **no `platform-apply` CI workflow** — Terraform
-> is run **locally** against the GCS backend (`terraform -chdir=terraform/envs/prod apply`).
+> is run **locally** against the GCS backend (`terraform -chdir=../wize-infrastructure/terraform/envs/prod apply`, run from this checkout with wize-infrastructure cloned beside it).
 > First bring-up used a targeted, creates-only apply to stay isolated:
 > `apply -target='module.secrets.google_secret_manager_secret.secrets["vapid-private-key"]'`
 > (container) → `gcloud secrets versions add` (value) →
@@ -41,7 +49,7 @@ npx web-push generate-vapid-keys
     | gcloud secrets versions add vapid-private-key --data-file=- --project=sparxworks
   ```
 - **Public key** (non-secret) → two plain config spots, same value:
-  - `terraform/envs/prod/terraform.tfvars` → `vapid_public_key = "<public-key>"`
+  - wize-infrastructure's `terraform/envs/prod/terraform.tfvars` → `vapid_public_key = "<public-key>"`
     (push-worker's Cloud Run env).
   - `k8s/sparx-prod/app-env-configmap.yaml` → `VAPID_PUBLIC_KEY: '<public-key>'`
     (the dashboard reads it at runtime).

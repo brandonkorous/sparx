@@ -1,8 +1,8 @@
 # WizeWorks Platform — Operational Runbook
 
-**Version:** 1.4  
+**Version:** 1.5  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-10-29
 
 ---
 
@@ -49,8 +49,13 @@
 
 1. Merge PR to `main`. That push IS the release — `release.yml` runs
    **infrastructure → data → containers → cleanup** against `prod`.
-2. Watch the run summary: it reports the Terraform plan, the ingress address,
-   and a **row count per catalog** so "ran green and wrote nothing" is visible.
+2. Watch the run summary: it reports the destination, whether the app secrets
+   changed, and a **row count per catalog** so "ran green and wrote nothing" is
+   visible. It does **not** run Terraform or apply the ingress any more: those
+   ship from [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure)'s
+   own release (its run summary carries the Terraform plan and the ingress
+   address). If your change needs a new route, DNS record, database or vault,
+   merge and release that repository FIRST, then merge here.
 3. The release's own `tag` job cuts the semver tag **last**, and only if the
    stages succeeded — so a `v*` tag means the version actually shipped.
 4. Monitor: error rate and latency for 15 minutes post-release.
@@ -58,8 +63,9 @@
 
 There is no staging environment today. `release.yml` takes an `environment`
 input and resolves its destination from environment variables, so adding one is
-setting `AKS_RESOURCE_GROUP` / `AKS_CLUSTER` / `K8S_NAMESPACE` / `K8S_OVERLAY` /
-`TERRAFORM_DIR` on a new GitHub environment — not forking the workflow.
+setting `AKS_RESOURCE_GROUP` / `AKS_CLUSTER` / `K8S_NAMESPACE` / `K8S_OVERLAY` on
+a new GitHub environment — not forking the workflow. (The cloud for a new
+environment is Terraform in wize-infrastructure, where `TERRAFORM_DIR` now lives.)
 
 ### Rollback Procedure
 
@@ -235,7 +241,7 @@ kubectl -n sparx-prod set resources deployment/api-rest --limits=memory=2Gi
 | `google-oauth-client-secret` | `GOOGLE_OAUTH_CLIENT_SECRET` | its secret                                                                                                                                  |
 | `search-console-token-key`   | `SEARCH_CONSOLE_TOKEN_KEY`   | 32-byte AES-256-GCM key encrypting stored GSC grants                                                                                        |
 
-All three are declared in `terraform/envs/prod/main.tf` (`module.secrets.secret_ids`) and synced by the bootstrap `app-secrets` component + `k8s/scripts/sync-secrets.ps1`.
+On GCP all three were declared in `terraform/envs/prod/main.tf` (`module.secrets.secret_ids`), which now lives in wize-infrastructure; on Azure they are entries in the app secret bundle (Key Vault `kv-sparx-prod-cus` once `AZURE_KEY_VAULT_NAME` is set, loaded with `k8s/scripts/sync-secrets.ps1`, otherwise the `SPARX_APP_SECRETS_ENV` blob below).
 
 **1 — Google Cloud Console (one-time, manual):**
 

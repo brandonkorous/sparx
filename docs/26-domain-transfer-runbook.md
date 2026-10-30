@@ -1,14 +1,16 @@
 # sparx Platform — Domain Transfer Runbook
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-10-29
 
 ---
 
 ## 1. What this runbook covers
 
 Moving eight sparx-owned domains from GoDaddy (current registrar) to Cloudflare (new registrar + DNS). After this is complete, Cloudflare manages all platform DNS via Terraform.
+
+> **The Terraform is in another repository.** Since 2026-10-29 every Terraform file this runbook names lives in [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure) (local checkout `G:/code/@wizeworks/wize-infrastructure`), under the same paths. Run the `terraform` commands below from that checkout, or better, make the change as a pull request there and let its release apply it. The live platform's DNS is `terraform/envs/azure` (through the shared `modules/dns`); the `envs/prod` steps below are the original GCP procedure.
 
 | Domain           | Purpose                                                                                                     | Priority            |
 | ---------------- | ----------------------------------------------------------------------------------------------------------- | ------------------- |
@@ -38,7 +40,7 @@ Before transferring **any** domain:
 - [ ] Payment method on file at Cloudflare (transfers cost ~$10/yr each at registrar cost)
 - [ ] Each domain is at least 60 days old at GoDaddy (ICANN rule — new registrations are transfer-locked for 60 days)
 - [ ] You have GoDaddy account access with permission to unlock + retrieve EPP codes
-- [ ] You have the GCP `ingress_ip` from `terraform output` (so Cloudflare DNS points somewhere real before you flip `cloudflare_enabled=true`)
+- [ ] You have the ingress IP from `terraform output` in wize-infrastructure (so Cloudflare DNS points somewhere real before you flip `cloudflare_enabled=true`)
 
 ---
 
@@ -105,8 +107,8 @@ Copy the token — it shows once.
 # Add to Secret Manager so it's not in plaintext anywhere on disk
 echo $CLOUDFLARE_TOKEN | gcloud secrets versions add cloudflare-api-token --data-file=-
 
-# Set the Terraform variables
-cd terraform/envs/prod
+# Set the Terraform variables (in the wize-infrastructure checkout)
+cd ../wize-infrastructure/terraform/envs/prod
 $env:TF_VAR_cloudflare_enabled = "true"
 $env:TF_VAR_cloudflare_api_token = $CLOUDFLARE_TOKEN
 
@@ -116,7 +118,7 @@ terraform apply
 
 Terraform will create:
 
-- `sparx.works` records: `@`, `www`, `app`, `api`, `mcp`, `*`, `customers` — all pointing at the ingress IP from [terraform/envs/prod/main.tf](../terraform/envs/prod/main.tf)
+- `sparx.works` records: `@`, `www`, `app`, `api`, `mcp`, `*`, `customers` — all pointing at the ingress IP from wize-infrastructure's [terraform/envs/prod/main.tf](https://github.com/wizeworksllc/wize-infrastructure/blob/main/terraform/envs/prod/main.tf)
 - Cloudflare proxy ON for `app`/`api`/`mcp`/`@`/`www`; OFF for `*` and `customers` (Caddy on-demand TLS needs to terminate)
 
 ### 4c. Flip the monitoring switch
@@ -124,7 +126,7 @@ Terraform will create:
 After DNS resolves, set `public_domains_active = true` so Cloud Monitoring uptime checks come online:
 
 ```hcl
-# terraform/envs/prod/terraform.tfvars
+# wize-infrastructure: terraform/envs/prod/terraform.tfvars
 cloudflare_enabled = true   # this currently doubles as the uptime-check trigger
 ```
 
@@ -165,7 +167,7 @@ Expected:
 `sparx.email` is the email sending domain (after the `sparx.mx` plan fell through). After transferring it:
 
 1. Get the Postal SMTP service's external IP (after `helm install postal` per [k8s/postal/README.md](../k8s/postal/README.md))
-2. Add to Terraform (`terraform/envs/prod/cloudflare.tf` — currently stubbed with TODOs):
+2. Add to Terraform (wize-infrastructure's `terraform/envs/prod/cloudflare.tf` — currently stubbed with TODOs), as a pull request there:
    - `mail.sparx.email` A → Postal SMTP IP
    - `@` MX → `mail.sparx.email` priority 10
    - `@` TXT (SPF) → `v=spf1 ip4:<postal-ip> ~all`

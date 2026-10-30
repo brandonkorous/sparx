@@ -6,12 +6,12 @@ status: active
 sources:
   - services/
   - k8s/apps/
-  - terraform/envs/prod/serverless.tf
+  - wize-infrastructure:terraform/envs/prod/serverless.tf
 ---
 
 **18 services**, all real (Fastify / Node TS, `tsx`, `main: src/index.ts`).
 
-**API services (in-cluster GKE Deployments):**
+**API services (in-cluster Deployments on AKS; each public hostname is a host block in wize-infrastructure's Caddyfile, so a new public service needs a PR there, released first):**
 
 - **api-rest** `@wizeworks/api-rest` — the primary REST write path; also hosts `/ws/chat` + the Layer-2 customer Better Auth. env 3100 / k8s 3000. (replicas clamped to 1 — SSD quota; see [[cost-and-ops-guardrails]].)
 - **api-graphql** — GraphQL transport over the shared service layer. 3200.

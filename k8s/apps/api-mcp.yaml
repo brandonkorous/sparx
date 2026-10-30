@@ -2,7 +2,7 @@
 # differences are:
 #   - Image tag `api-mcp`
 #   - Hosts mcp.sparx.works AND mcp.mypiggles.com via the Caddy reverse-proxy
-#     (k8s/ingress/Caddyfile). One pod, one hostname per brand: RFC 9728
+#     (wize-infrastructure's k8s/ingress/Caddyfile). One pod, one hostname per brand: RFC 9728
 #     discovery runs before any token exists, so there is no tenant to read
 #     `platform_brand` from and the request HOST is the only thing carrying the
 #     brand. `PLATFORM_BRANDS` + `<BRAND>_MCP_URL` in sparx-app-env build the

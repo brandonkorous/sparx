@@ -221,7 +221,7 @@ the stage and goal shapes for the workbench editor.
 
 `funnel.entered`, `funnel.converted`, `funnel.abandoned` — which is what lets an
 automation react to a funnel rather than only drive one. Topic name == event
-type, so each needs a topic in `terraform/envs/prod/main.tf`. `check:events`
+type, so each needs a topic in wize-infrastructure's `terraform/envs/prod/main.tf`. `check:events`
 unions both code-side catalogs and fails the push on a declared-but-unprovisioned
 name; the failure it prevents is invisible in production, because publishing to a
 missing topic throws a not-found that every publisher catches and logs.

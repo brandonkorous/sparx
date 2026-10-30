@@ -7,9 +7,6 @@ coverage
 pnpm-lock.yaml
 *.tsbuildinfo
 
-# Terraform-managed directories
-**/.terraform/**
-
 # Prisma-generated SQL migrations
 wizeworks/packages/db/prisma/migrations/**
 

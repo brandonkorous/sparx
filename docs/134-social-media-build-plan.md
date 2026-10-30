@@ -22,7 +22,7 @@ Last Updated: 2026-07-22
   run `prisma migrate`/`generate` against the shared stack. New-model TypeScript will
   not typecheck until the client is regenerated — expected.
 - **Terraform + code in the same slice.** Any new Pub/Sub topic/subscriber is mirrored
-  into `terraform/envs/prod/main.tf` in the slice that introduces it (no drift).
+  into wize-infrastructure's `terraform/envs/prod/main.tf` in the slice that introduces it (no drift).
 
 ---
 

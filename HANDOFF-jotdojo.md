@@ -85,7 +85,8 @@ the client the running dev stack holds open.
 1. ~~Set jotDOJO's four repo variables.~~ **DONE** — all four are set on
    `brandonkorous/jotacular` (`gh variable list -R brandonkorous/jotacular`).
    For the record: `terraform output jotacular_github_setup` in
-   `terraform/bootstrap-azure` prints them verbatim, and
+   `terraform/bootstrap-azure` (in the wize-infrastructure checkout since
+   2026-10-29) prints them verbatim, and
    `TF_VAR_subscription_id` must be set first — in PowerShell that is
    `$env:TF_VAR_subscription_id='...'`, because bash `VAR=x cmd` prefixing is
    not valid PowerShell.
@@ -158,6 +159,11 @@ the client the running dev stack holds open.
    the cluster, which means the FIRST run still uses `sparx_owner` and hands over
    before the second. That bootstrap-once shape is the decision to make.
 
+   Update 2026-10-29: the owner role is now minted by wize-infrastructure's
+   release (`cluster` job, "Ensure jotDOJO owns its database on the shared
+   server", running `sql/jotdojo-bootstrap.sql`, which moved there from
+   `wizeworks/packages/db/sql/`).
+
 7. **Three stale worktrees** registered from earlier sessions, two pointing into
    temp scratchpad dirs, each carrying a full `node_modules` if it still exists:
    `.../3e8bb81e-.../push-head`, `.../4a2a693d-.../push-gate`,
@@ -166,10 +172,12 @@ the client the running dev stack holds open.
 ## Rules learned the hard way today
 
 - **Per-deploy work belongs in a workflow; anything granting Azure privilege
-  belongs in the human-applied bootstrap.** CI holds subscription Contributor and
-  no Graph rights, deliberately — Contributor cannot grant roles, which is what
-  stops the pipeline minting its own successor identities. DNS records ARE
-  automatable (Cloudflare token, not Azure RBAC) and run in the release.
+  belongs in `bootstrap-azure`.** The infrastructure identity holds subscription
+  Contributor and no Graph rights, deliberately — Contributor cannot grant roles,
+  which is what stops the pipeline minting its own successor identities. DNS
+  records ARE automatable (Cloudflare token, not Azure RBAC). Since 2026-10-29
+  all of this (Terraform, `bootstrap-azure` under its own identity, DNS, Caddy)
+  runs in wize-infrastructure's release, not sparx's.
 - **Key Vault naming is `tr 'a-z-' 'A-Z_'`** — kebab in the vault, SCREAMING_SNAKE
   in the env, bijective.
 - Git Bash mangles a leading `/` in an Azure resource ID into `C:/Program Files/Git/...`.

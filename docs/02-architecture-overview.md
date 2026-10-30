@@ -1,8 +1,8 @@
 # sparx Platform — Architecture Overview
 
-**Version:** 2.1
+**Version:** 2.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-05
+**Last Updated:** 2026-10-29
 
 ---
 
@@ -79,14 +79,14 @@ EMAIL INFRASTRUCTURE (Postal)
 
 ### Infrastructure
 
-| Component               | Technology                               |
-| ----------------------- | ---------------------------------------- |
-| Container orchestration | Google Kubernetes Engine (GKE Autopilot) |
-| Infrastructure as code  | Terraform                                |
-| CI/CD                   | GitHub Actions + Cloud Build             |
-| Container registry      | Google Artifact Registry                 |
-| Secret management       | Google Secret Manager                    |
-| DNS / Edge              | Cloudflare                               |
+| Component               | Technology                                                                                                                                     |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Container orchestration | Azure Kubernetes Service (AKS), shared by every WizeWorks product (GKE Autopilot until the Azure move)                                         |
+| Infrastructure as code  | Terraform, in the separate [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure) repository, released by its own pipeline |
+| CI/CD                   | GitHub Actions (`release.yml` here for sparx; wize-infrastructure's release for the cloud and the ingress)                                     |
+| Container registry      | GitHub Container Registry (GHCR)                                                                                                               |
+| Secret management       | Azure Key Vault (`kv-sparx-prod-cus`), synced into the cluster by the release                                                                  |
+| DNS / Edge              | Cloudflare (records managed in wize-infrastructure's Terraform)                                                                                |
 
 ### Authentication
 
@@ -197,6 +197,13 @@ Next.js site (reads tenant_id + property_id, loads theme, renders)
     ↓
 API (tenant context from Better Auth JWT or host lookup)
 ```
+
+Caddy and its routing table (the Caddyfile) live in the
+[wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure) repository
+(`k8s/ingress/`), because the same ingress routes every product on the cluster. Tenant
+domains need no Caddyfile change (on-demand TLS asks api-rest's `/internal/domain-check`);
+a new platform hostname is a pull request there, released before the sparx change that
+needs it.
 
 The host lookup resolves to a **tenant AND a web property (site)** — a tenant can
 run multiple sites over one back office ([49-multi-site-per-tenant.md](archive/49-multi-site-per-tenant.md)).

@@ -40,7 +40,14 @@ resources:
   # Caddy + THE routing table, shared verbatim with every cloud overlay. The
   # workstation delta is three things and nothing else: mode.caddy below, the
   # two SX_* env vars, and a ClusterIP Service instead of a LoadBalancer.
-  - ../ingress
+  #
+  # A REMOTE base since 2026-10-29: the ingress moved to wize-infrastructure,
+  # because it routes every product on the cluster, not only sparx. Still one
+  # copy of the routing table, now read from where it lives (`kubectl apply -k`
+  # clones it, so this needs network and git). To try a Caddyfile change on the
+  # laptop BEFORE it merges there, point this line at your local checkout
+  # (e.g. `../../../wize-infrastructure/k8s/ingress`) and put it back after.
+  - https://github.com/wizeworksllc/wize-infrastructure//k8s/ingress?ref=main
   # The tunnel. This is the ONLY deployment that needs one, because it is the
   # only one with no public IP for an ACME challenge to arrive on. It used to
   # live in ../self-hosted, which is how it ended up fronting AKS and taking
@@ -100,7 +107,7 @@ configMapGenerator:
     envs:
       - piggles-app-env.env
   # The workstation TLS policy. `behavior: merge` overwrites the `mode.caddy`
-  # KEY inside the ConfigMap ../ingress generated, leaving the Caddyfile key
+  # KEY inside the ConfigMap the ingress base generated, leaving the Caddyfile key
   # untouched — so the routing table is shared byte-for-byte and only the
   # eight-line policy file differs.
   #

@@ -9,7 +9,7 @@
 # address, via the `database-url-cloudrun` secret whose host is set to it.
 #
 # loadBalancerIP is the reserved internal address from Terraform
-# (google_compute_address.pgbouncer_internal in terraform/envs/prod/main.tf).
+# (google_compute_address.pgbouncer_internal in wize-infrastructure's terraform/envs/prod/main.tf).
 # Both are pinned to the SAME value so the reservation and the LB can't drift.
 # Internal-only — never assigned a public IP.
 apiVersion: v1

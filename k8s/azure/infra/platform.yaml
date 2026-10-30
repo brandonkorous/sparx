@@ -3,7 +3,7 @@
 # Much smaller than the workstation equivalent, because two things moved out:
 #
 #   Postgres  → MANAGED. psql-sparx-prod-cus, Flexible Server 18, Burstable
-#               B1ms, VNet-private. See terraform/envs/azure. Worth $16/mo over
+#               B1ms, VNet-private. See wize-infrastructure's terraform/envs/azure. Worth $16/mo over
 #               a StatefulSet for point-in-time restore, and it keeps 1-2 GiB
 #               free on an 8 GiB node.
 #

@@ -167,7 +167,7 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   //
   // Without these entries the failure is total and looks like nothing to do with
   // this file: their Caddy blocks `import tls_policy`, which is `tls { on_demand }`
-  // (k8s/ingress/mode.caddy), so every first HTTPS request asks this endpoint,
+  // (wize-infrastructure's k8s/ingress/mode.caddy), so every first HTTPS request asks this endpoint,
   // gets 403 unknown_host, and Cloudflare answers 525 — for the whole brand.
   // That is exactly what happened to `workbench.sparx.works` and
   // `media.sparx.works`, both of which are in this list for the same reason.
@@ -202,8 +202,8 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   // one — jotDOJO is not a sparx tenant), returns 403 `unknown_host`, and
   // Cloudflare answers 525 for the entire product.
   //
-  // Routing lives in k8s/ingress/Caddyfile; the Azure side is
-  // terraform/envs/azure/jotacular.tf.
+  // Routing lives in wize-infrastructure's k8s/ingress/Caddyfile; the Azure side is
+  // wize-infrastructure's terraform/envs/azure/jotacular.tf.
   // FIVE names, not four. `app.jotacular.com` is the PWA and the apex is the
   // marketing site — the same Deployment, split on Host inside the app — so the
   // apex being present here says nothing about `app.` being covered. Missing it

@@ -27,7 +27,7 @@
 #   ./sync-secrets.ps1 -VaultName kv-sparx-prod-cus -List
 #
 # The vault, and the roles that let you write to it, come from
-# terraform/bootstrap-azure. Being subscription Owner does NOT grant data-plane
+# wize-infrastructure's terraform/bootstrap-azure. Being subscription Owner does NOT grant data-plane
 # access — if `az keyvault secret set` returns 403, the missing piece is the
 # `Key Vault Secrets Officer` assignment that module makes.
 

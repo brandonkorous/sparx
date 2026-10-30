@@ -461,7 +461,7 @@ rather than two (the console did not exist when that list was written).
 | Dockerfiles     | `piggles/apps/{web,account,workbench}/Dockerfile`                   |
 | Release matrix  | `release.yml` — `piggles-web`, `piggles-account`, `piggles-console` |
 | Manifests       | `k8s/apps/piggles-{web,account,console}.yaml` + both kustomizations |
-| Routing         | `k8s/ingress/Caddyfile` — four host blocks                          |
+| Routing         | wize-infrastructure's `k8s/ingress/Caddyfile` — four host blocks    |
 | Brand env       | `piggles-app-env`, generated per overlay                            |
 | The dep checker | `scripts/check-dockerfile-deps.mjs` now reads `piggles/*`           |
 
@@ -597,7 +597,8 @@ answer is a bigger node, not smaller requests.
 
 ### DNS is Terraform, not the Cloudflare dashboard
 
-`terraform/modules/dns` holds every record and is shared VERBATIM between the GCP
+`terraform/modules/dns` (in the wize-infrastructure repository since 2026-10-29,
+released by its own pipeline) holds every record and is shared VERBATIM between the GCP
 and Azure envs — the only thing that varies is `var.ingress_ip`. The Piggles
 records are in it now: three zones (apex + www, proxied), `api.mypiggles.com`,
 and the `piggles.site` tenant zone. `terraform validate` passes and
@@ -613,7 +614,7 @@ Two gates, neither of them code:
 - **The zones must exist in the Cloudflare account.** The module looks each one
   up with `data "cloudflare_zone"`, so a zone that is not there fails the PLAN —
   loudly, before anything changes, which is the good failure.
-- **`CLOUDFLARE_ENABLED` must be `true`** (a repo variable; `cloudflare_enabled`
+- **`CLOUDFLARE_ENABLED` must be `true`** (a repo variable on wize-infrastructure, which runs the Terraform now; `cloudflare_enabled`
   defaults to FALSE and counts every DNS resource to zero). Flipping it repoints
   the platform's live public DNS, which is why it is a deliberate act.
 
@@ -630,7 +631,7 @@ the certificate issues. Tenant sites were never blocked.
 
 **The real blocker was the opposite of the guess: the three BRAND domains.**
 Their Caddy blocks `import tls_policy`, and `tls_policy` is `tls { on_demand }`
-(k8s/ingress/mode.caddy) — so every first HTTPS request asks that endpoint.
+(`k8s/ingress/mode.caddy`, in wize-infrastructure) — so every first HTTPS request asks that endpoint.
 meetpiggles.com, getpiggles.com, mypiggles.com and api.mypiggles.com are
 PLATFORM hosts with no `domains` row and never will have one, so all four would
 have returned 403 `unknown_host` → no certificate → **Cloudflare 525 for the
@@ -695,7 +696,7 @@ parameter is typed.
 - **The Google Cloud project for Piggles** still has to be created — see the
   section below on why it cannot be another client in sparx's.
 - **DNS is written; two switches are not flipped.** The records are in
-  `terraform/modules/dns` — see the section above. What remains is confirming the
+  wize-infrastructure's `terraform/modules/dns` — see the section above. What remains is confirming the
   four zones are in the Cloudflare account and setting `CLOUDFLARE_ENABLED=true`.
 
 ## Neither Piggles app is deployable — four missing pieces

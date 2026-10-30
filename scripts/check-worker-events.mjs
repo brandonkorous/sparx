@@ -84,8 +84,9 @@ function stripLineComments(src) {
   // barely 800 characters in. On a CRLF working tree this check read SIX event
   // names out of 169 and then failed 78 perfectly healthy workers. `.gitattributes`
   // says LF, so the COMMITTED file is fine and CI passed while every Windows
-  // pre-push went red — the sibling `check-event-topics.mjs` hit the identical bug
-  // the same day. Fix it in both or in neither.
+  // pre-push went red — the sibling `check-event-topics.mjs` (in
+  // wize-infrastructure since 2026-10-29) hit the identical bug the same day. Fix
+  // it in both or in neither.
   return src
     .replace(/\r/g, '')
     .split('\n')

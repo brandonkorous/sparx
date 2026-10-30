@@ -3,9 +3,6 @@
 // clientIpFromChain() — and both must give the same answer, so each case runs
 // through both.
 
-import { readFileSync, existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import Fastify from 'fastify';
 import { describe, expect, it } from 'vitest';
 import {
@@ -129,27 +126,16 @@ describe('isInClusterCaller', () => {
   });
 });
 
+// Whether these match the ranges CADDY trusts is checked across repositories:
+// the Caddyfile lives in wize-infrastructure (k8s/ingress/Caddyfile), and that
+// repository's scripts/check-cloudflare-ranges.mjs compares the two from both
+// sides' CI. This file only proves the list is one the code can use.
 describe('the Cloudflare ranges', () => {
-  it('match the ones Caddy trusts', () => {
-    // If Caddy trusts a range this does not, that edge becomes every visitor's
-    // address here; the other way round, a client could prepend an address in it.
-    const caddyfile = join(
-      dirname(fileURLToPath(import.meta.url)),
-      '../../../../k8s/ingress/Caddyfile'
-    );
-    expect(existsSync(caddyfile), `${caddyfile} must exist — a moved file makes this blind`).toBe(
-      true
-    );
-    const line = readFileSync(caddyfile, 'utf8')
-      .split(/\r?\n/)
-      .find((l) => l.trim().startsWith('trusted_proxies static'));
-    expect(line, 'Caddy no longer declares `trusted_proxies static`').toBeDefined();
-
-    const caddyRanges = line!
-      .trim()
-      .split(/\s+/)
-      .slice(2)
-      .filter((token) => token !== 'private_ranges');
-    expect(new Set(caddyRanges)).toEqual(new Set(CLOUDFLARE_RANGES));
+  it('are distinct, valid CIDRs that every hop check trusts', () => {
+    expect(new Set(CLOUDFLARE_RANGES).size).toBe(CLOUDFLARE_RANGES.length);
+    for (const range of CLOUDFLARE_RANGES) {
+      const [network] = range.split('/');
+      expect(isTrustedHop(network!), `${range} is not trusted`).toBe(true);
+    }
   });
 });

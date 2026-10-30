@@ -135,7 +135,7 @@ Separate from GAP 1 and worse, because it covers every failure mode, not just to
 
 1. The worker publishes `social.post.failed` and `social.post.published` at
    [publish.ts:271](../../services/social-worker/src/publish.ts#L271). ✅
-2. Both topics are declared in [terraform/envs/prod/main.tf:243](../../terraform/envs/prod/main.tf#L243)
+2. Both topics are declared in [terraform/envs/prod/main.tf:243](https://github.com/wizeworksllc/wize-infrastructure/blob/main/terraform/envs/prod/main.tf)
    as `= []` — **topic-only, no subscriber**. Nothing anywhere consumes either. ❌
 3. There is no email, no `email.send`, no in-app alert on the failure path — a grep of
    [social-worker/src/](../../services/social-worker/src/) for `notify` / `email.send` returns
@@ -463,7 +463,7 @@ Two scorecard rows were wrong when written:
      **The flags live in TWO planes, and both are required.** api-rest runs on GKE and decides
      which scopes the OAuth grant asks for; the drains that actually call Meta run on **Cloud Run**
      (`social-worker`), whose env comes from
-     [terraform/envs/prod/serverless.tf](../../terraform/envs/prod/serverless.tf), not from the k8s
+     [terraform/envs/prod/serverless.tf](https://github.com/wizeworksllc/wize-infrastructure/blob/main/terraform/envs/prod/serverless.tf), not from the k8s
      ConfigMap. Set it in one plane only and the two disagree silently: the grant would carry
      `pages_read_user_content`, and `syncInbox` would still mark every destination `unsupported`
      and stamp the cursor, with no call and no error. Both planes are now set.
