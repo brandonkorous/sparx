@@ -9,7 +9,7 @@
 // updates the same contact + deal.
 //
 // Cloud SQL is private-IP, so this runs as a Cloud Run JOB on the worker's own
-// image (terraform/envs/prod/serverless.tf) — same VPC connector, same DB
+// image (wize-infrastructure's terraform/envs/prod/serverless.tf) — same VPC connector, same DB
 // secret, same service account. That matters: the mirror writes THROUGH the CRM
 // service layer under RLS, so it must run as the same role the worker does, not
 // as the migration owner.

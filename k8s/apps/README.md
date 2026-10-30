@@ -57,8 +57,13 @@ apps run on two different origins.
 4. Add its Dockerfile to the build matrix in `.github/workflows/release.yml`.
    `scripts/check-dockerfile-deps.mjs` reads that matrix, so this is also what
    puts the image under dependency checking.
-5. Give it a host block in `k8s/ingress/Caddyfile`. A running pod with no route
-   is unreachable, and nothing reports a fault — the cluster is healthy.
+5. Give it a host block in wize-infrastructure's
+   [`k8s/ingress/Caddyfile`](https://github.com/wizeworksllc/wize-infrastructure/blob/main/k8s/ingress/Caddyfile),
+   as a pull request there, plus any DNS record it needs in that repository's
+   Terraform. A running pod with no route is unreachable, and nothing reports a
+   fault — the cluster is healthy. The ingress ships through wize-infrastructure's
+   own release (minutes, no app images), so merge and release it **before** the
+   sparx change that adds the app. Until it does, the new pod simply has no route.
 
 ## Shared env & secrets
 

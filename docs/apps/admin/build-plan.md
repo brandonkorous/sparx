@@ -57,7 +57,7 @@ Everything the admin app needs to _reuse_ exists; everything that would _weaken 
 | Billing substrate             | tenant `stripe*` fields + `BillingSubscriptionItem` (docs/67), api-rest billing routes                                                                                               | Billing-ops endpoints read/act through these; no new billing engine.                                   |
 | Domains substrate             | `Domain[]` / `DomainPurchase[]` on tenant, `@wizeworks/godaddy`, `@wizeworks/registrar`, `services/domain-worker`                                                                    | Domain endpoints read these; force-reverify re-triggers the worker path.                               |
 | Deploy machinery              | [build-images.yml](../../../.github/workflows/build-images.yml) matrix + [deploy-prod.yml](../../../.github/workflows/deploy-prod.yml) rollout loop + [k8s/apps/](../../../k8s/apps) | Add `admin` to one matrix + one loop + one manifest (§6).                                              |
-| Cloudflare (same account)     | [terraform/envs/prod/cloudflare.tf](../../../terraform/envs/prod)                                                                                                                    | `wize.works` is in the same Cloudflare account — add a record + Access app (no new zone provisioning). |
+| Cloudflare (same account)     | [terraform/envs/prod/cloudflare.tf](https://github.com/wizeworksllc/wize-infrastructure/tree/main/terraform/envs/prod)                                                               | `wize.works` is in the same Cloudflare account — add a record + Access app (no new zone provisioning). |
 
 ### What does NOT exist (net-new, and deliberately so)
 

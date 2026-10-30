@@ -1,78 +1,45 @@
 # Sparx Kubernetes Manifests
 
-**Version:** 1.0
+**Version:** 2.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-10-29
 
-Workloads that run inside the GKE Autopilot cluster provisioned by [terraform/](../terraform/). Terraform owns the platform (cluster, DB, networking); kubectl/kustomize owns the workloads.
+The workloads sparx runs on the shared AKS cluster `aks-sparx-prod-cus`. The cloud underneath them (the cluster, the managed Postgres server, networking, DNS, the vaults, the identities) and the Caddy ingress in front of them are **not in this repository**: they live in [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure) (local checkout `G:/code/@wizeworks/wize-infrastructure`) and ship through its own release, because they serve every WizeWorks product on the cluster. Terraform there owns the platform; kubectl/kustomize here owns sparx's workloads.
 
 ## Layout
 
 ```
 k8s/
-├── 00-namespaces.yaml       # sparx-prod, monitoring
-├── 01-service-accounts.yaml # KSAs (Workload Identity)
-├── caddy/                   # Reverse proxy + on-demand TLS — the LB origin
-├── redis/                   # Cache + BullMQ broker (Phase 1: GKE pod, not Memorystore)
-├── pgbouncer/               # Transaction-mode pooling (required for RLS SET LOCAL)
-├── postal/                  # Email — install via Helm chart; see postal/README.md
-├── apps/                    # Application Deployments (one example, copy for the rest)
-├── workers/                 # Background workers (one example, copy for the rest)
-└── monitoring/              # Phase 1: GCP-native; Phase 2: self-hosted Prometheus
+├── azure/                   # The deployed overlays: infra (stage 1), jobs (stage 2), apps (stage 3)
+├── apps/                    # App + API Deployments, consumed verbatim by every overlay
+├── cronjobs/                # Every CronJob (`curl` containers, no per-service image)
+├── self-hosted/             # The worker fleet + the NATS broker, shared with local
+├── typesense/               # Search
+├── pgbouncer/               # GCP-era pooler copy; on AKS see azure/infra/pgbouncer.yaml
+├── local/                   # Docker Desktop overlay (pulls the ingress from wize-infrastructure)
+├── monitoring/              # Alerting notes; the WizeLens collector is wize-infrastructure's
+├── postal/                  # Decommissioned (email runs on Mailgun)
+├── redis/                   # GCP-era; dropped on Azure, where NATS carries its job
+├── jobs/, workers/          # GCP-era notes
+└── scripts/                 # sync-secrets.ps1 (loads Key Vault)
 ```
+
+The Caddy ingress used to be `k8s/ingress/` here. It is now wize-infrastructure's [`k8s/ingress/`](https://github.com/wizeworksllc/wize-infrastructure/blob/main/k8s/ingress), applied by that repository's release into namespace `sparx-prod` under the label `app.kubernetes.io/managed-by: wize-infrastructure`. A new host block is a pull request there.
 
 ## Phase 1 acceptable trade-offs
 
 These match [docs/03-infrastructure-deployment.md](../docs/03-infrastructure-deployment.md) §4 — start cheap, upgrade on observable signal:
 
-- **Redis runs as a single-replica StatefulSet with AOF.** Pod restart = brief queue interruption. Upgrade trigger: first customer-visible missed automation.
-- **Postal is recommended via the official Helm chart**, not hand-rolled YAML. See [postal/README.md](postal/README.md).
-- **No External Secrets Operator yet.** App pods use Workload Identity and read Secret Manager directly at boot (or via the bundled `sparx-app-env` k8s Secret that's synced from Secret Manager — see [apps/README.md](apps/README.md)).
-- **Caddy is single-replica.** Cert storage is local to the PVC. Multi-replica Caddy needs distributed cert storage (Redis backend) — Phase 2.
+- **No External Secrets Operator.** The release syncs `sparx-app-secrets` from Key Vault `kv-sparx-prod-cus` on every run (see [azure/README.md](azure/README.md)).
+- **Caddy is single-replica.** Cert storage is local to its PVC. Multi-replica Caddy needs distributed cert storage: Phase 2, and a change to wize-infrastructure.
 - **One shared PgBouncer Deployment**, not per-app sidecar. Lower complexity; if it becomes a hotspot, move to sidecars.
 
 ## Apply order
 
-After `terraform apply` in `envs/prod`, get cluster credentials:
-
-```powershell
-$creds = terraform -chdir=../../terraform/envs/prod output -raw gke_get_credentials_command
-Invoke-Expression $creds
-```
-
-Then apply:
-
-```powershell
-# 1. Namespaces and service accounts
-kubectl apply -f 00-namespaces.yaml
-kubectl apply -f 01-service-accounts.yaml
-
-# 2. Annotate the sparx-app KSA with the GSA email from Terraform
-$gsa = terraform -chdir=../../terraform/envs/prod output -raw app_gsa_email
-kubectl annotate serviceaccount sparx-app -n sparx-prod `
-  iam.gke.io/gcp-service-account=$gsa --overwrite
-
-# 3. Manual secret sync (Cloud SQL password from Terraform, app env from Secret Manager)
-./scripts/sync-secrets.ps1   # see apps/README.md
-
-# 4. Infra workloads
-kubectl apply -k redis/
-kubectl apply -k pgbouncer/
-kubectl apply -k caddy/
-
-# 5. Patch the Caddy Service to bind to the ingress IP
-$ip = terraform -chdir=../../terraform/envs/prod output -raw ingress_ip
-kubectl patch service caddy -n sparx-prod -p "{\"spec\":{\"loadBalancerIP\":\"$ip\"}}"
-
-# 6. Application workloads (once images exist in Artifact Registry)
-kubectl apply -k apps/
-kubectl apply -k workers/
-```
+There is no hand-run apply order any more. [release.yml](../.github/workflows/release.yml) applies `azure/infra`, then runs the data Jobs from `azure/jobs`, then applies `azure/apps`, every push to `main`. See [azure/README.md](azure/README.md) for the overlays and [.github/workflows/README.md](../.github/workflows/README.md) for the stages. If the change you are shipping needs new cloud resources or a new route, release wize-infrastructure first.
 
 ## What's still TODO
 
-- [ ] Real app Deployments — example template provided in `apps/api-rest.example.yaml`; copy per app
-- [ ] Postal Helm install — see `postal/README.md`
-- [ ] External Secrets Operator (when manual sync becomes painful)
+- [ ] External Secrets Operator (when the release-time sync becomes painful)
 - [ ] PodMonitor / ServiceMonitor when Prometheus lands (Phase 2)
 - [ ] NetworkPolicies (when tenant isolation testing demands it)

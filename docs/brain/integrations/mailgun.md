@@ -5,12 +5,12 @@ type: reference
 status: active
 sources:
   - wizeworks/packages/email/src/providers/mailgun.ts
-  - terraform/envs/prod/serverless.tf
+  - wize-infrastructure:terraform/envs/prod/serverless.tf
 ---
 
 The **production email provider** — transactional send on `sparx.email` via the Mailgun HTTP API. `SPARX_EMAIL_PROVIDER=mailgun`, `SPARX_MAILGUN_DOMAIN=sparx.email`, region us; secret `mailgun-api-key`. `console` in dev/CI. Wired at [[email-pipeline]].
 
 - **Postal is decommissioned** — `wizeworks/packages/email/src/providers/postal.ts` + `k8s/postal/*` linger as a smoke-test fallback + cleanup candidate. Root CLAUDE.md still says Postal ([[claude-md-drifted]]).
-- Cloudflare `sparx.email` MX / SPF / DKIM / DMARC records are still stubbed TODO.
+- Cloudflare `sparx.email` MX / SPF / DKIM / DMARC records are still stubbed TODO. They belong in wize-infrastructure's Terraform (the DNS moved there 2026-10-29), so finishing them is a PR to that repository.
 
 Related: [[email-pipeline]], [[phased-infra]], [[rejected]]

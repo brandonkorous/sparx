@@ -1,14 +1,14 @@
 # Workflows
 
-**Version:** 2.1
+**Version:** 2.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-10-03
+**Last Updated:** 2026-10-29
 
 There are four, and each is a different KIND of thing:
 
 | File                                               | Trigger              | What it is                                                       |
 | -------------------------------------------------- | -------------------- | ---------------------------------------------------------------- |
-| [ci.yml](ci.yml)                                   | every PR + push      | Is the change valid? Lint, typecheck, test, format, Terraform.   |
+| [ci.yml](ci.yml)                                   | every PR + push      | Is the change valid? Lint, typecheck, test, format, parity.      |
 | [release.yml](release.yml)                         | every push to `main` | **The pipeline.** Infrastructure → data → containers → cleanup.  |
 | [ops.yml](ops.yml)                                 | manual               | One-off chores that are deliberately NOT part of a release.      |
 | [restore-from-export.yml](restore-from-export.yml) | manual               | Disaster recovery. Restores the Postgres dump and media tarball. |
@@ -18,7 +18,9 @@ There are four, and each is a different KIND of thing:
 ```
 push to main
   build            16 images → ghcr.io/<repo>/<image>:<sha>
-  1 infrastructure terraform apply, then namespace + secrets + k8s/azure/infra
+  1 infrastructure namespace + secrets (Key Vault) → hand the ingress over
+                   → k8s/azure/infra (sparx-app-env, media volume, Typesense,
+                   PgBouncer)
   2 data           roles → migrate → seed platform rows
   3 containers     pin every image to <sha>, apply k8s/azure/apps, wait,
                    then re-sync system automations from the new code
@@ -26,7 +28,15 @@ push to main
   4 cleanup        prune old image versions + obsolete workflow-run history
 ```
 
-That is the whole deployment, in the order it has to happen, in one file.
+That is the whole deployment of sparx, in the order it has to happen, in one file.
+
+**What this release does NOT do any more** (since 2026-10-29): run Terraform,
+grant identities, install the WizeLens collector, apply the Caddy ingress, or
+make jotDOJO's database owner role. Those serve every product on the cluster, so
+they moved to [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure)
+and its own [release](https://github.com/wizeworksllc/wize-infrastructure/blob/main/.github/workflows/release.yml)
+(jobs `infrastructure`, `bootstrap`, `cluster`), which ships no app images and
+takes minutes. See "Infrastructure is another repository's release" below.
 
 ### Why data comes before containers
 
@@ -98,7 +108,7 @@ first — which is exactly why the data stage used to run last, after the
 containers it is supposed to precede.
 
 The dividing line is **replacement**. `infra` holds things created once that
-then converge: a namespace, a config map, a disk, a load balancer, a search
+then converge: a namespace, a config map, a disk, a connection pooler, a search
 engine holding an index. `apps` holds container images thrown away and replaced
 on every release. Different lifecycles, different blast radii, different stages.
 
@@ -125,42 +135,68 @@ Actions minutes are free, and each image restores from its own `type=gha` cache
 scope when nothing under it changed. The cost was never money; it was two SHAs
 and a class of "merged but never deployed" bugs.
 
-### Terraform runs in the pipeline
+### Infrastructure is another repository's release
 
-Until 2026-08-02, nothing did. `terraform/envs/azure` was applied by hand from a
-laptop, so the state of production depended on someone having remembered, and a
-manifest referencing `pip-ingress-sparx-prod-cus` could be deployed against a
-subscription where no such address existed. The remote state backend and the
-OIDC identity to use it had existed since `terraform/bootstrap-azure`; the only
-missing piece was a job.
+From 2026-08-02 to 2026-10-29, stage 1 of this release ran `terraform apply` on
+`terraform/envs/azure`, a `bootstrap` job applied `terraform/bootstrap-azure`
+under its own identity, and stage 1 also applied the Caddy ingress, installed the
+WizeLens collector and made jotDOJO's owner role. All of it now lives in
+[wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure)
+(local checkout `G:/code/@wizeworks/wize-infrastructure`), under the same paths
+and the same state keys. The reason is the same one that put Terraform in a
+pipeline in the first place, one level up: those resources serve every product
+on the cluster (kanNINJA, jotDOJO, RocketEase, AgConnect, WizeLens, wize.works),
+and a Caddy route for one of them used to wait about two hours behind twenty
+sparx images and a sparx rollout.
 
-**An additive plan applies unattended. A destructive plan stops the release.**
-Terraform records an intent per resource; `delete` alone is a destroy, and
-`["delete","create"]` is a REPLACEMENT, which is the more dangerous of the two
-because a casual read of the summary says "1 to change". Both are refused, the
-resources are named in the run summary, and proceeding takes a manual dispatch
-with `allow_infrastructure_destroy`.
+What that means here:
 
-A `delete` nobody asked for is almost always a Terraform **variable** unset in
-the environment rather than a real intent to remove something — an unset
-variable takes the default in `variables.tf`, and several of those defaults turn
-features off. Check those first.
+- **Stage 1 assumes the cloud exists.** The cluster, the Postgres server, the
+  reserved ingress IP, DNS and `kv-sparx-prod-cus` are wize-infrastructure's.
+  Its Terraform also writes the media storage pair (`azure-storage-account`,
+  `azure-storage-key`) into that vault, and stage 1 reads them from there.
+- **A change that needs infra ships there first.** A new Caddy route, DNS
+  record, database, vault, or the Pub/Sub topic for a new event is a pull request
+  to wize-infrastructure, released by its pipeline, before the sparx change that
+  relies on it merges.
+- **"Hand the ingress over to wize-infrastructure"** is a step in stage 1. Caddy
+  still runs in `sparx-prod` (its certificate disk and reserved IP make moving it
+  a planned migration), but this overlay no longer emits it. Any Caddy object
+  still labelled `app.kubernetes.io/managed-by: sparx-release-infra` is relabelled
+  to `wize-infrastructure` before the `--prune`, so this release can never delete
+  the ingress. Once wize-infrastructure has applied it, the step matches nothing.
+  wize-infrastructure's overlay renders Caddy exactly as this one did (including
+  `serviceAccountName: default`), so the handover is a pure relabel and Caddy
+  does not restart.
+- **The destroy guard moved with the Terraform.** An additive plan applies
+  unattended and a destructive one stops wize-infrastructure's release until a
+  manual dispatch with `allow_infrastructure_destroy`. Read
+  [its workflow](https://github.com/wizeworksllc/wize-infrastructure/blob/main/.github/workflows/release.yml)
+  for the details.
+- **CI still guards the seams.** The `event-topics` job in [ci.yml](ci.yml)
+  checks wize-infrastructure out beside this tree and runs its
+  `check-event-topics.mjs` and `check-cloudflare-ranges.mjs` with `--sparx .`, so
+  the pull request that adds an event without a topic, or changes the trusted
+  Cloudflare ranges on one side only, is the one that fails. Locally,
+  `pnpm check:events` does the same through
+  [scripts/infra-check.mjs](../../scripts/infra-check.mjs).
 
 ### The destination is a variable
 
 A release pipeline describes how to ship, not where. The `target` job resolves
 the destination once and every other job reads its outputs:
 
-| Variable              | Default                | What it is                           |
-| --------------------- | ---------------------- | ------------------------------------ |
-| `AKS_RESOURCE_GROUP`  | `rg-sparx-prod-cus`    | Azure resource group                 |
-| `AKS_CLUSTER`         | `aks-sparx-prod-cus`   | AKS cluster name                     |
-| `K8S_NAMESPACE`       | `sparx-prod`           | Namespace every `kubectl` uses       |
-| `K8S_OVERLAY`         | `k8s/azure`            | Overlay root (`infra`/`apps`/`jobs`) |
-| `TERRAFORM_DIR`       | `terraform/envs/azure` | Which environment to apply           |
-| `AZURE_LOCATION`      | `centralus`            | Region                               |
-| `KEEP_IMAGE_VERSIONS` | `5`                    | Image versions kept per package      |
-| `KEEP_WORKFLOW_RUNS`  | `50`                   | Runs kept per live workflow          |
+| Variable              | Default              | What it is                           |
+| --------------------- | -------------------- | ------------------------------------ |
+| `AKS_RESOURCE_GROUP`  | `rg-sparx-prod-cus`  | Azure resource group                 |
+| `AKS_CLUSTER`         | `aks-sparx-prod-cus` | AKS cluster name                     |
+| `K8S_NAMESPACE`       | `sparx-prod`         | Namespace every `kubectl` uses       |
+| `K8S_OVERLAY`         | `k8s/azure`          | Overlay root (`infra`/`apps`/`jobs`) |
+| `KEEP_IMAGE_VERSIONS` | `5`                  | Image versions kept per package      |
+| `KEEP_WORKFLOW_RUNS`  | `50`                 | Runs kept per live workflow          |
+
+`TERRAFORM_DIR` and `AZURE_LOCATION` are wize-infrastructure's variables now;
+nothing here reads them.
 
 Adding an environment is setting these on it, not forking the file. The
 namespace is named in two places that must agree — this variable and the
@@ -226,29 +262,34 @@ run at the same time.
 
 Repository or environment **variables** (ids, not secrets):
 
-| Variable                | Source                             |
-| ----------------------- | ---------------------------------- |
-| `AZURE_CLIENT_ID`       | `terraform/bootstrap-azure` output |
-| `AZURE_TENANT_ID`       | `terraform/bootstrap-azure` output |
-| `AZURE_SUBSCRIPTION_ID` | the subscription sparx runs in     |
+| Variable                | Source                                                                                                                                              |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AZURE_CLIENT_ID`       | wize-infrastructure's [`terraform/bootstrap-azure`](https://github.com/wizeworksllc/wize-infrastructure/blob/main/terraform/bootstrap-azure) output |
+| `AZURE_TENANT_ID`       | the same output                                                                                                                                     |
+| `AZURE_SUBSCRIPTION_ID` | the subscription sparx runs in                                                                                                                      |
+| `AZURE_KEY_VAULT_NAME`  | `kv-sparx-prod-cus`, the vault stage 1 reads the app secrets from                                                                                   |
+| `INFRA_REPOSITORY`      | optional; the repo CI checks out for the parity checks (default `wizeworksllc/wize-infrastructure`)                                                 |
+
+This identity holds Contributor, AKS access and `Key Vault Secrets User` on
+`kv-sparx-prod-cus`, and nothing more: it no longer reads the Terraform state or
+writes other products' vaults. `BOOTSTRAP_AZURE_CLIENT_ID` is no longer used
+here; the `bootstrap` identity trusts wize-infrastructure's `bootstrap`
+environment instead.
 
 Repository **secrets**:
 
-| Secret                  | What it carries                                  |
-| ----------------------- | ------------------------------------------------ |
-| `SPARX_APP_SECRETS_ENV` | the whole app secret bundle as one dotenv blob   |
-| `TYPESENSE_API_KEY`     | search                                           |
-| `CLOUDFLARE_API_TOKEN`  | DNS + origin CA, read by Terraform as `TF_VAR_…` |
+| Secret                  | What it carries                                |
+| ----------------------- | ---------------------------------------------- |
+| `SPARX_APP_SECRETS_ENV` | the whole app secret bundle as one dotenv blob |
+| `TYPESENSE_API_KEY`     | search                                         |
+
+`CLOUDFLARE_API_TOKEN` fed Terraform's DNS and origin certificate; Terraform
+runs in wize-infrastructure now, so that is where it is needed.
 
 No JSON key files and no client secret anywhere: authentication is OIDC
 federation, and Entra matches the credential subject **exactly**, so a fork's
 pull-request run executes under a different subject and cannot assume the
 identity.
-
-Terraform variables are passed explicitly from variables and secrets in the
-`plan` step. **An unset one is not "leave it alone" — it is the default in
-`variables.tf`**, and several of those defaults disable things. That is what the
-destroy guard is for.
 
 ## Rollback
 
@@ -272,9 +313,9 @@ The GCP set — `bootstrap`, `build-images-gcp`, `deploy-gcp`, `db-migrate-gcp`,
 `platform-crm-backfill` — is **deleted**. The platform runs on Azure. They were
 already inert (trigger-blocked behind a `__disabled__` sentinel) and keeping a
 second, unexercised copy of every mechanic is what produced pairs that drifted
-apart. `terraform/envs/prod` and `terraform/bootstrap` remain as code and stay
-`validate`-clean in CI, because "we still have the GKE definition" is only true
-while it is valid HCL.
+apart. `terraform/envs/prod` and `terraform/bootstrap` remain as code in
+wize-infrastructure, whose CI keeps them `validate`-clean, because "we still have
+the GKE definition" is only true while it is valid HCL.
 
 The Azure set — `build-images-ghcr`, `deploy-azure`, `db-migrate-azure`,
 `cleanup-images-ghcr`, `marketplace-ingest-azure` — is folded into

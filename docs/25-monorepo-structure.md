@@ -1,8 +1,8 @@
 # sparx Platform — Monorepo Structure
 
-**Version:** 1.3  
+**Version:** 1.4  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-08-08
+**Last Updated:** 2026-10-29
 
 ---
 
@@ -57,17 +57,21 @@ sparx/
 │   # wizeworks/services/media-worker and wizeworks/services/import-worker are the two handlers
 │   # that still get their own pod. See services/CLAUDE.md.
 │
-├── k8s/
-│   ├── sparx-prod/           # Kubernetes manifests (namespace, redis, typesense, postal, caddy, api, dashboard, site, web, workers)
-│   └── sparx-staging/        # mirrors prod
-│
-├── infrastructure/           # Terraform (gke, cloudsql, pubsub, gcs, secrets modules)
+├── k8s/                      # sparx's workloads: azure/{infra,apps,jobs} overlays, apps/, cronjobs/,
+│                             # self-hosted/ (workers + NATS), typesense/, local/. See k8s/README.md.
 │
 └── .github/workflows/
-    ├── ci.yml                # lint + typecheck + test on PR
-    ├── deploy-staging.yml    # auto on merge to main
-    └── deploy-prod.yml       # auto on release tag
+    ├── ci.yml                # lint + typecheck + test + format + cross-repo parity, on every PR and push
+    ├── release.yml           # every push to main: infrastructure → data → containers → cleanup
+    ├── ops.yml               # manual one-off chores
+    └── restore-from-export.yml
 ```
+
+There is no `infrastructure/` or `terraform/` directory. The Terraform (cluster,
+database servers, vaults, DNS, identities) and the Caddy ingress live in the
+separate [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure)
+repository, with their own release, because they serve every product on the
+cluster.
 
 ---
 
@@ -262,4 +266,4 @@ NEXT_PUBLIC_APP_URL | NEXT_PUBLIC_API_URL | NEXT_PUBLIC_SITE_URL
 9. `sparx/apps/web` — Next.js marketing site, `@wizeworks/ui` components
 10. `wizeworks/apps/site` — Next.js, tenant resolution middleware, theme CSS vars
 11. `packages/*-worker` — event handlers, each exporting `createSubscription(logger)`; `wizeworks/services/event-worker` is the one process that runs them
-12. `k8s/` and `infrastructure/` — manifests and Terraform
+12. `k8s/` — manifests (the Terraform and the ingress are in wize-infrastructure)

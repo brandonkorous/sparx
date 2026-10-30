@@ -2,8 +2,10 @@
 
 ## Now — the WizeLens collector (AKS)
 
-The release (`.github/workflows/release.yml`, step "Install the WizeLens collector") installs the WizeLens collector
-chart into the `monitoring` namespace on every run. It sends node, pod, container and workload metrics of
+wize-infrastructure's release ([`.github/workflows/release.yml`](https://github.com/wizeworksllc/wize-infrastructure/blob/main/.github/workflows/release.yml),
+job `cluster`, step "Install the WizeLens collector") installs the WizeLens collector chart into the `monitoring`
+namespace on every run. It moved there from sparx's release on 2026-10-29, because it watches the whole cluster, not
+only sparx; to change its version or its key, change that repository. It sends node, pod, container and workload metrics of
 `aks-sparx-prod-cus` to app.wizelens.com, project `sparx-prod`, so the Hosts and Kubernetes pages sit beside the apps'
 traces.
 

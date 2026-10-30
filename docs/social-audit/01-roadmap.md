@@ -76,7 +76,7 @@ roughly **6.5 → 8**.
 - [x] **2. Failure reaches the owner.** A subscriber on `social.post.failed` and on partial success
       that sends an email naming the post, the destination and the plain-language reason, with a deep
       link into the composer. Add the connection-expired email from slice 1 to the same path. Topics
-      exist in [main.tf:243](../../terraform/envs/prod/main.tf#L243) with `= []` subscribers — this
+      exist in [main.tf:243](https://github.com/wizeworksllc/wize-infrastructure/blob/main/terraform/envs/prod/main.tf) with `= []` subscribers — this
       is the subscriber. — _in-our-control · M_
 
   > Acceptance: a scheduled post that fails at 6am is in the owner's inbox by 6:01, in words they

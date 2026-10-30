@@ -185,7 +185,7 @@ data:
   # route; GraphQL at graphql.sparx.works doesn't serve bytes). Distinct from the
   # internal SPARX_API_REST_URL, which is unreachable from a mail client/browser.
   SPARX_PUBLIC_API_REST_URL: https://api.sparx.works
-  # Media storage. Bucket names match terraform/modules/storage:
+  # Media storage. Bucket names match wize-infrastructure's terraform/modules/storage:
   #   GCS_MEDIA_BUCKET        → private bucket — originals
   #   GCS_MEDIA_PUBLIC_BUCKET → public bucket — variants
   #

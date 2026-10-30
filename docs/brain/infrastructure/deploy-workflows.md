@@ -6,6 +6,7 @@ status: active
 sources:
   - .github/workflows/
   - k8s/azure/
+  - wize-infrastructure:.github/workflows/release.yml
 ---
 
 **There is ONE release pipeline and its stages ARE the deployment.**
@@ -14,7 +15,8 @@ every push to `main`:
 
 ```
 build            22 images → ghcr.io/<repo>/<image>:<sha>
-1 infrastructure terraform apply, then namespace + secrets + k8s/azure/infra
+1 infrastructure namespace + secrets (Key Vault) → hand the ingress over
+                 → k8s/azure/infra (sparx-app-env, media volume, Typesense, PgBouncer)
 2 data           roles → migrate → seed platform rows
 3 containers     pin every image to <sha>, apply k8s/azure/apps, wait
 4 cleanup        prune old image versions + obsolete workflow-run history
@@ -25,6 +27,16 @@ valid), `release.yml` (the pipeline), `ops.yml` (manual chores),
 `restore-from-export.yml` (disaster recovery). The SemVer tag is cut by
 `release.yml`'s own `tag` job, LAST and only if the release shipped —
 [[releases-are-automated]].
+
+**What sparx's release does NOT do** (since 2026-10-29): run Terraform, grant
+identities, apply the Caddy ingress, install the WizeLens collector, or make
+jotDOJO's database owner role. Those serve every product on the cluster, so they
+ship from
+[wize-infrastructure's release](https://github.com/wizeworksllc/wize-infrastructure/blob/main/.github/workflows/release.yml)
+(jobs `infrastructure`, `bootstrap`, `cluster`), which builds no app images and
+takes minutes. **When a sparx change needs new infra (a route, a DNS record, a
+database, a vault, an event topic), merge and release wize-infrastructure
+FIRST.** See [[terraform]].
 
 ## Data comes before containers
 
@@ -48,7 +60,7 @@ those lived with the Deployments, the only way to have them was to roll the
 whole platform first.
 
 The dividing line is **replacement**: `infra` is created once and converges
-(namespace, config, disk, load balancer, Typesense); `apps` is images thrown
+(namespace, config, disk, PgBouncer, Typesense); `apps` is images thrown
 away every release. `k8s/azure/jobs` holds the two `envsubst`-templated Job
 manifests the data stage applies.
 
@@ -66,25 +78,29 @@ had images. The repo is **public**, so Actions minutes are free and per-image
 `type=gha` cache scopes make the unfiltered build cheap. The cost was never
 money; it was two SHAs and a class of "merged but never deployed" bugs.
 
-## Terraform is a pipeline stage
+## The ingress is handed over, not pruned
 
-Until 2026-08-02 nothing ran it — `terraform/envs/azure` was applied from a
-laptop. Remote state (`stsparxprodcustfstate`, `use_azuread_auth`) and the OIDC
-identity had existed since `terraform/bootstrap-azure`; only the job was
-missing.
+Caddy still runs in `sparx-prod` (its certificate disk and reserved IP make
+moving it a planned migration), but wize-infrastructure owns and applies it,
+labelled `app.kubernetes.io/managed-by: wize-infrastructure`. `k8s/azure/infra`
+no longer emits it. Stage 1's **"Hand the ingress over to wize-infrastructure"**
+step relabels any Caddy object still carrying `sparx-release-infra` BEFORE the
+`--prune`, because a prune that matched them would delete the LoadBalancer
+(releasing the reserved IP every product's DNS points at) and `caddy-data`
+(every on-demand certificate). wize-infrastructure renders Caddy exactly as
+sparx did, including `serviceAccountName: default`, so the handover is a pure
+relabel and Caddy does not restart. Once that repository has applied the
+ingress, the step matches nothing.
 
-**Additive plans apply unattended; destructive plans stop the release.** A
-`delete` action alone is a destroy and `["delete","create"]` is a replacement —
-more dangerous, because the summary reads "1 to change". Both are refused, the
-resources are named in the run summary, and proceeding needs a manual dispatch
-with `allow_infrastructure_destroy`. A `delete` nobody asked for is almost
-always an unset Terraform **variable** taking a feature-disabling default.
+Terraform ran as stage 1 here from 2026-08-02 to 2026-10-29; the destroy guard
+(additive plans apply, destructive plans stop the release) moved with it to
+wize-infrastructure. See [[terraform]].
 
 ## The destination is a variable, never a filename
 
-The `target` job resolves resource group / cluster / namespace / overlay /
-terraform dir once from environment variables (`AKS_RESOURCE_GROUP`,
-`AKS_CLUSTER`, `K8S_NAMESPACE`, `K8S_OVERLAY`, `TERRAFORM_DIR`, …) and every
+The `target` job resolves resource group / cluster / namespace / overlay once
+from environment variables (`AKS_RESOURCE_GROUP`, `AKS_CLUSTER`,
+`K8S_NAMESPACE`, `K8S_OVERLAY`) and every
 other job reads its outputs. Adding an environment is setting variables, not
 forking a file. The namespace appears in two places that must agree — the
 variable and the overlays' `namespace:` field — so `target` checks and fails
@@ -118,7 +134,8 @@ not because one exists.
 The nine GCP workflows are gone. They were already inert behind `__disabled__`
 trigger sentinels, and a second unexercised copy of every mechanic is what
 produced pairs that drifted apart. `terraform/envs/prod` and
-`terraform/bootstrap` remain **as code** and stay `validate`-clean in CI —
+`terraform/bootstrap` remain **as code** in wize-infrastructure and stay
+`validate`-clean in its CI —
 "we still have the GKE definition" is only true while it is valid HCL.
 
 **Cluster mutations go through the pipeline** — never manual `kubectl apply`

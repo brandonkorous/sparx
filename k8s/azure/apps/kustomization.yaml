@@ -263,7 +263,7 @@ patches:
   # DaemonSet tax, and split free memory into two pools — while buying no
   # availability at all, since every Deployment here was `replicas: 1` and
   # sku_tier is "Free". (api-rest now runs two, on the same node on purpose;
-  # that protects against a pod restarting, not a node going away.) Reasoning in terraform/envs/azure/variables.tf.
+  # that protects against a pod restarting, not a node going away.) Reasoning in wize-infrastructure's terraform/envs/azure/variables.tf.
   #
   # NONE OF THE NUMBERS BELOW CHANGED WITH THE NODE, ON PURPOSE. They are
   # measured steady-state RSS (see the memory note further down), not a division

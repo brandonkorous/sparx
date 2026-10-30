@@ -127,7 +127,7 @@ export function zoneOf(host: string): string | null {
  *  non-primary site of every multi-site tenant was unreachable over HTTPS, and
  *  it presented as a browser SSL error rather than a 404, which is why it read
  *  like a certificate problem rather than a routing one. Ingress is a
- *  `Service type=LoadBalancer` (`k8s/ingress`) precisely so that cannot recur:
+ *  `Service type=LoadBalancer` (wize-infrastructure's `k8s/ingress`) precisely so that cannot recur:
  *  the tunnel had no inbound path, so Caddy could never complete an ACME
  *  challenge behind it. `*.sparx.zone` must stay DNS-only for the same reason.
  *

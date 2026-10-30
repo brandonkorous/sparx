@@ -182,14 +182,14 @@ deal rather than duplicating them.
 
 ## 8. Configuration
 
-| Setting                      | Where                                            | Notes                                         |
-| ---------------------------- | ------------------------------------------------ | --------------------------------------------- |
-| `SPARX_PLATFORM_TENANT_ID`   | `var.platform_tenant_id` → the Cloud Run service | The immutable UUID; wins over the slug        |
-| `SPARX_PLATFORM_TENANT_SLUG` | dev `.env` (`wizeworks`)                         | Dev default; the seed creates this tenant     |
-| `DATABASE_URL`               | Secret Manager (`database-url-cloudrun`)         | Required — every message reads and writes     |
-| Subscriptions                | `terraform/envs/prod/serverless.tf`              | One primary + four `additional_subscriptions` |
-| Backfill job                 | `google_cloud_run_v2_job.platform_crm_backfill`  | Dry-run by default; `--apply` to write        |
-| Backfill trigger             | `.github/workflows/platform-crm-backfill.yml`    | `workflow_dispatch`, `mode=dry-run \| apply`  |
+| Setting                      | Where                                                   | Notes                                         |
+| ---------------------------- | ------------------------------------------------------- | --------------------------------------------- |
+| `SPARX_PLATFORM_TENANT_ID`   | `var.platform_tenant_id` → the Cloud Run service        | The immutable UUID; wins over the slug        |
+| `SPARX_PLATFORM_TENANT_SLUG` | dev `.env` (`wizeworks`)                                | Dev default; the seed creates this tenant     |
+| `DATABASE_URL`               | Secret Manager (`database-url-cloudrun`)                | Required — every message reads and writes     |
+| Subscriptions                | wize-infrastructure `terraform/envs/prod/serverless.tf` | One primary + four `additional_subscriptions` |
+| Backfill job                 | `google_cloud_run_v2_job.platform_crm_backfill`         | Dry-run by default; `--apply` to write        |
+| Backfill trigger             | `.github/workflows/platform-crm-backfill.yml`           | `workflow_dispatch`, `mode=dry-run \| apply`  |
 
 ## 9. Decisions
 
@@ -212,5 +212,5 @@ deal rather than duplicating them.
   tenant to write into.
 - [services/platform-crm-worker/](../services/platform-crm-worker/) — the Cloud Run push entry
   point and the topic router, plus the backfill script.
-- [terraform/envs/prod/serverless.tf](../terraform/envs/prod/serverless.tf) — the service, its
+- [wize-infrastructure terraform/envs/prod/serverless.tf](https://github.com/wizeworksllc/wize-infrastructure/blob/main/terraform/envs/prod/serverless.tf) — the service, its
   service account, and the five subscriptions.

@@ -9,8 +9,8 @@
 #
 # WHAT LEFT THIS DIRECTORY, and why:
 #
-#   Caddyfile + caddy.yaml → k8s/ingress. They were a SECOND copy of the routing
-#   table, forked from k8s/caddy/Caddyfile to strip TLS for the tunnel. The two
+#   Caddyfile + caddy.yaml → wize-infrastructure's k8s/ingress. They were a SECOND copy of the routing
+#   table, forked from the Caddyfile (wize-infrastructure's k8s/ingress/Caddyfile) to strip TLS for the tunnel. The two
 #   had already drifted — this copy silently dropped kanninja.com, silicaui.com
 #   and admin.wize.works — which is exactly the failure this base was created to
 #   prevent, reproduced one level up. There is now one Caddyfile, parameterised

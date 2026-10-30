@@ -3,7 +3,7 @@
 #
 # THIS CAPABILITY HAS NEVER RUN. The handler has existed since the domain-worker
 # was written, and its own docblock says "called by a Cloud Scheduler job" — but
-# no such job was ever created. terraform/envs/prod/serverless.tf still carries
+# no such job was ever created. wize-infrastructure's terraform/envs/prod/serverless.tf still carries
 # the note "NOT wired yet: the nightly renewal-reminder cron", and the service
 # account there was granted the Pub/Sub permission for events it never published.
 # The move off Cloud Run then carried the HTTP route onto event-worker, so the

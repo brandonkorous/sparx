@@ -3,7 +3,7 @@
 # the in-cluster ClusterIP and kube-DNS names aren't routable from there.
 #
 # loadBalancerIP is the reserved internal address from Terraform
-# (google_compute_address.typesense_internal in terraform/envs/prod/main.tf).
+# (google_compute_address.typesense_internal in wize-infrastructure's terraform/envs/prod/main.tf).
 # The indexer's TYPESENSE_HOST (serverless.tf) points at the same address.
 # Internal-only — never assigned a public IP.
 apiVersion: v1

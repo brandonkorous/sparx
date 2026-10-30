@@ -19,6 +19,7 @@ The brain is the **durable, primary store** of project knowledge — consulted f
 - **Code is the one thing that stays.** `tokens.css`, the Prisma schema, k8s / Terraform *run*, so they persist and remain the runtime source of truth for *live values*. The brain **materializes** what you build with (values, mechanisms, gotchas) because code is referenced last — as a **mirror** (below).
 - **Substance over thinness.** A note is as full as its knowledge requires. `docs/23`'s stale token table drifted because it was an unmaintained *copy with no owner and no re-sync rule* — not because "duplication" is inherently wrong. The cure is a single **living home** per fact: the brain (for absorbed docs) or code + its mirror (for live values).
 - **`sources:`** records where a note's knowledge came from. A code source persists (and is re-synced); a doc source is temporary — its link dies when the doc is deleted, which is fine, because by then the knowledge lives here.
+- **Code in a sibling repository is still code.** The shared Terraform, the Caddy ingress and their release moved to `wizeworksllc/wize-infrastructure` on 2026-10-29. Write such a source as `wize-infrastructure:<path>` (for example `wize-infrastructure:terraform/envs/azure/`), and in the note body link it by GitHub URL (`https://github.com/wizeworksllc/wize-infrastructure/blob/main/<path>`), never as a relative path into this tree, which would be a dead link.
 
 ### Mirrors of code
 

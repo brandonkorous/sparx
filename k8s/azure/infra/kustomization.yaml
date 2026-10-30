@@ -38,7 +38,9 @@ namespace: sparx-prod
 # reasoning; the one thing that must never change is the VALUE. It differs from
 # the apps overlay on purpose — both stages apply into `sparx-prod`, so a shared
 # value would mean applying infra prunes every app Deployment and applying apps
-# prunes Caddy, Typesense and the media volume.
+# prunes Typesense, PgBouncer and the media volume. wize-infrastructure applies
+# the ingress into the same namespace under a THIRD value
+# (`wize-infrastructure`), for the same reason.
 #
 # `includeSelectors: false` because `spec.selector` is immutable on live
 # workloads.
@@ -52,11 +54,13 @@ resources:
   # Typesense + the sparx-media volume. NOT Postgres (managed, psql-sparx-prod-cus)
   # and NOT Redis (dropped entirely on this provider; NATS carries its old job).
   - platform.yaml
-  # Caddy + the ONE routing table + a `type: LoadBalancer` Service. Shared
-  # verbatim with every other overlay — there is no Azure-specific ingress
-  # config, which is the point. AKS provisions a Standard LB and public IP from
-  # that Service exactly as GKE provisions a Network LB.
-  - ../../ingress
+  # NOT the ingress. Caddy still runs in this namespace, but since 2026-10-29 it
+  # is owned and applied by wize-infrastructure (its k8s/azure overlay, labelled
+  # `app.kubernetes.io/managed-by: wize-infrastructure`), because it routes every
+  # product on the cluster and a route for one of them must not wait on a sparx
+  # release. The release's "Hand the ingress over" step relabels any Caddy
+  # object still carrying THIS overlay's label before the prune below runs, so
+  # dropping it from this list can never delete it.
   # PgBouncer for sparx_app (SI-1); see the file header for when apps use it.
   - pgbouncer.yaml
 
@@ -83,46 +87,6 @@ generatorOptions:
   disableNameSuffixHash: true
 
 patches:
-  # --- Pin the ingress to the RESERVED public IP ------------------------------
-  # `azure-pip-name` is the AKS-supported way to attach an existing public IP,
-  # and it is Azure-specific — which is why it lives in this overlay and not in
-  # k8s/ingress/service.yaml. The base Service stays a plain
-  # `type: LoadBalancer` that GKE and EKS accept unchanged; each provider adds
-  # its own hint here.
-  #
-  # Without it the Service takes an EPHEMERAL address, which changes whenever
-  # the Service is recreated — a namespace rebuild, a rename, a bad delete. DNS
-  # then points at an address Azure has reassigned, and nothing in the cluster
-  # reports a fault, because the cluster is healthy. The IP is reserved in
-  # terraform/envs/azure/ingress.tf, which the release applies immediately
-  # before this — `terraform output ingress_pip_name` is the value below.
-  #
-  # NOT `spec.loadBalancerIP`: deprecated since Kubernetes 1.24 and slated for
-  # removal, and it hard-codes the address where this hard-codes only its name.
-  - target: { kind: Service, name: caddy }
-    patch: |-
-      apiVersion: v1
-      kind: Service
-      metadata:
-        name: caddy
-        annotations:
-          service.beta.kubernetes.io/azure-pip-name: pip-ingress-sparx-prod-cus
-
-  # --- Storage class for the ACME certificate volume --------------------------
-  # k8s/ingress/pvc.yaml deliberately omits storageClassName so it binds to
-  # whatever the cluster's default is — portable, but on AKS the default is
-  # `managed-csi` anyway and being explicit documents the choice. StandardSSD,
-  # not `managed-csi-premium`: this volume stores a few kilobytes of
-  # certificates and its IOPS profile is "written once per issuance".
-  - target: { kind: PersistentVolumeClaim, name: caddy-data }
-    patch: |-
-      apiVersion: v1
-      kind: PersistentVolumeClaim
-      metadata:
-        name: caddy-data
-      spec:
-        storageClassName: managed-csi
-
   # --- Same deletions as every other single-node overlay ----------------------
   # One node cannot satisfy a PodDisruptionBudget, and there is nothing for an
   # HPA to scale onto.
@@ -160,8 +124,8 @@ patches:
             serviceAccountName: default
 
   # --- Registry pull -----------------------------------------------------------
-  # Nothing in THIS overlay pulls from a private registry — Caddy is
-  # `caddy:2-alpine` and Typesense is `typesense/typesense`, both public — and
+  # Nothing in THIS overlay pulls from a private registry — Typesense is
+  # `typesense/typesense` and PgBouncer is public too — and
   # nothing anywhere else does either, so there is no pull secret to carry.
   #
   # It used to patch `ghcr` onto these Deployments, kept on the argument that

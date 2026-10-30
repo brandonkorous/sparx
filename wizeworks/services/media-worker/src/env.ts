@@ -20,7 +20,7 @@ const EnvSchema = z.object({
   // backend — the same switch `wizeworks/packages/media` and api-rest already use
   // (`if (env.GCS_MEDIA_BUCKET)` in both). When set, originals are read from
   // the private bucket and variants written to the public one (world-readable
-  // behind the CDN); both names come from terraform/modules/storage, and in dev
+  // behind the CDN); both names come from wize-infrastructure's terraform/modules/storage, and in dev
   // they can be the same value.
   //
   // This used to be `.min(1)` — required, with a comment claiming the worker had

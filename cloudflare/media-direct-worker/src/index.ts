@@ -35,7 +35,7 @@
  * No `cacheTtl` / `cacheEverything` override. api-rest owns cache semantics
  * per-path — `immutable` on finished variant bytes, but a deliberate 60s while
  * an image is still transcoding. Pinning a TTL here would re-create the exact
- * bug called out in k8s/caddy/Caddyfile: a mid-transcode original cached for a
+ * bug called out in the Caddyfile (wize-infrastructure's k8s/ingress/Caddyfile): a mid-transcode original cached for a
  * year, and 404s cached at the edge so a variant that was not ready on first
  * fetch stayed permanently broken. Origin `Cache-Control` governs; we only
  * remove the range semantics.

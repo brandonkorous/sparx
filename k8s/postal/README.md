@@ -111,11 +111,11 @@ This syncs `postal-api-key` into `sparx-app-secrets` as `POSTAL_API_KEY` and rol
 From step 5 you have the DKIM TXT value (full `v=DKIM1; k=rsa; p=...` string). Set it as the `sparx_email_dkim_value` variable:
 
 ```hcl
-# terraform/envs/prod/terraform.tfvars (or wherever you keep secrets)
+# wize-infrastructure: terraform/envs/prod/terraform.tfvars (or wherever you keep secrets)
 sparx_email_dkim_value = "v=DKIM1; k=rsa; p=MIGfMA0G..."
 ```
 
-Then `terraform apply` from `terraform/envs/prod/`.
+Then `terraform apply` from `terraform/envs/prod/` in the wize-infrastructure checkout (the Terraform moved there on 2026-10-29).
 
 ### 8. Flip the email provider
 
@@ -170,7 +170,8 @@ gh workflow run bootstrap.yml -f components=postal
 
 - **Brand decision:** Postal on `sparx.email`, not SendGrid/Postmark/SES — see [CLAUDE.md](../../CLAUDE.md) → "Email goes through self-hosted Postal".
 - **Pub/Sub-default email flow:** publishers → `email.send` topic → `email-worker` → Postal HTTP API. Direct `sendTemplate()` from `@wizeworks/email` is the OTP escape hatch only.
-- **DNS / Cloudflare records:** [terraform/envs/prod/cloudflare.tf](../../terraform/envs/prod/cloudflare.tf) → `sparx_email_*` resources.
+- **DNS / Cloudflare records:** wize-infrastructure's [terraform/envs/prod/cloudflare.tf](https://github.com/wizeworksllc/wize-infrastructure/blob/main/terraform/envs/prod/cloudflare.tf) → `sparx_email_*` resources.
 - **Caddy routing:** the `postal.sparx.email` block was REMOVED from
-  [k8s/ingress/Caddyfile](../ingress/Caddyfile) when Postal was decommissioned in favour of
-  Mailgun. Re-add it there if this stack is ever revived.
+  the Caddyfile when Postal was decommissioned in favour of Mailgun. The Caddyfile now
+  lives in wize-infrastructure ([k8s/ingress/Caddyfile](https://github.com/wizeworksllc/wize-infrastructure/blob/main/k8s/ingress/Caddyfile));
+  re-add the block there, as a pull request to that repository, if this stack is ever revived.

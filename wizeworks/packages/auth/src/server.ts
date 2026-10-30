@@ -492,7 +492,7 @@ function createAuth() {
       // address with every password guess and never be limited.
       //
       // X-Client-IP is set by Caddy on every request to the visitor's address
-      // as it resolves it (k8s/ingress/Caddyfile, `security_headers`), overwriting
+      // as it resolves it (wize-infrastructure's k8s/ingress/Caddyfile, `security_headers`), overwriting
       // anything the client sent. X-Forwarded-For stays as the fallback for the
       // one place that header is absent — a workstation without Caddy, where
       // nobody but the developer can reach the server.

@@ -17,7 +17,7 @@
 import type { Topic } from '@google-cloud/pubsub';
 
 /** The single fan-in topic. NOT an `EventType` — a meta-topic carrying every
- *  event. Provisioned in terraform/envs/prod/main.tf; the automation-worker's
+ *  event. Provisioned in wize-infrastructure's terraform/envs/prod/main.tf; the automation-worker's
  *  push subscription lives in automation.tf. */
 export const AUTOMATION_FANIN_TOPIC = 'automation.trigger';
 

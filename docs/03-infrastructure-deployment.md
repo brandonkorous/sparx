@@ -1,10 +1,12 @@
 # sparx Platform — Infrastructure & Deployment
 
-**Version:** 3.2
+**Version:** 3.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-10-29
 
 ---
+
+> **Where infrastructure lives now.** The platform runs on Azure (AKS `aks-sparx-prod-cus`), not GKE. Since 2026-10-29 all Terraform (the cluster, the shared Postgres server, every product's vault and storage, DNS, identities) and the Caddy ingress live in the separate [wize-infrastructure](https://github.com/wizeworksllc/wize-infrastructure) repository, with their own release. This repository's [release.yml](../.github/workflows/release.yml) ships sparx only: secrets and sparx's own cluster resources, then data, then containers. A sparx change that needs new infrastructure (a route, a DNS record, a database, a vault, an event topic) is a pull request to wize-infrastructure, released first. The phasing rules below still hold; the GCP specifics are the original plan.
 
 ## 1. Philosophy — Start Cheap, Scale When Revenue Justifies It
 
@@ -215,7 +217,7 @@ api-graphql       # Pothos/Mercurius GraphQL
 api-mcp           # MCP server (AI integration)
 dashboard         # Next.js tenant admin
 site        # Next.js multi-tenant sites
-caddy             # Reverse proxy + on-demand TLS
+caddy             # Reverse proxy + on-demand TLS (owned and applied by wize-infrastructure)
 redis             # Cache + BullMQ (Phase 1: pod, Phase 2: Memorystore)
 postal            # Self-hosted email delivery
 email-worker      # Pub/Sub consumer → Postal
@@ -247,27 +249,16 @@ Total cluster footprint: ~4 vCPU, ~4GB RAM. On GKE Autopilot this provisions aut
 
 ### GitHub Actions
 
-**`ci.yml`** — every PR:
+**`ci.yml`** runs on every PR and push: lint, typecheck, test, format, the structural checks, and the cross-repository parity checks (it checks wize-infrastructure out to confirm every event has a Pub/Sub topic and both sides trust the same Cloudflare ranges).
+
+**`release.yml`** runs on every push to `main`, and its stages are the deployment:
 
 ```
-lint → type check → unit tests → integration tests (testcontainers) → Docker build → Trivy scan
+build images → 1 infrastructure (secrets + sparx's own cluster resources) → 2 data (roles → migrate → seed)
+             → 3 containers (pin to the commit SHA, roll) → tag → 4 cleanup
 ```
 
-**`deploy-staging.yml`** — merge to `main`:
-
-```
-build images → push to Artifact Registry → DB migrations → deploy to sparx-staging → E2E smoke tests → Slack notify
-```
-
-**`deploy-prod.yml`** — release tag (semver):
-
-```
-build images → push → DB migrations → rolling deploy to sparx-prod → health check → E2E smoke → Slack + PagerDuty
-```
-
-### Cloud Build (alternative for GCP-native builds)
-
-Cloud Build free tier: 120 minutes/day. Sufficient for Phase 1. Integrates directly with Artifact Registry and GKE.
+No Terraform runs here. The cloud and the Caddy ingress ship from wize-infrastructure's own release (Terraform plan/apply with a destroy guard, the bootstrap identities, then the ingress), which builds no app images and takes minutes. The full map is [.github/workflows/README.md](../.github/workflows/README.md).
 
 ### Rollback
 
@@ -312,7 +303,7 @@ Tenant adds "shop.acme.com"
     → acme-parts.sparx.zone → 301 redirect to shop.acme.com
 ```
 
-No manual cert management. No per-tenant Caddy config. One Caddyfile serves all tenants.
+No manual cert management. No per-tenant Caddy config. One Caddyfile serves all tenants. That Caddyfile lives in wize-infrastructure ([`k8s/ingress/Caddyfile`](https://github.com/wizeworksllc/wize-infrastructure/blob/main/k8s/ingress/Caddyfile)), because it routes every product on the cluster; adding a platform hostname is a pull request there.
 
 ---
 
@@ -373,12 +364,12 @@ Phase 1 monitoring is intentionally minimal. Don't pay for Datadog or New Relic 
 
 ## 10. Backup Strategy (Phase 1)
 
-| Data            | Method                           | Retention    | Cost         |
-| --------------- | -------------------------------- | ------------ | ------------ |
-| PostgreSQL      | Cloud SQL automated daily backup | 7 days       | Free         |
-| GCS media       | Object versioning enabled        | Indefinite   | ~$0.02/GB/mo |
-| Redis           | Append-only file (AOF) on pod    | Restart-safe | $0           |
-| Terraform state | GCS bucket with versioning       | Indefinite   | ~$0          |
+| Data            | Method                                              | Retention    | Cost         |
+| --------------- | --------------------------------------------------- | ------------ | ------------ |
+| PostgreSQL      | Cloud SQL automated daily backup                    | 7 days       | Free         |
+| GCS media       | Object versioning enabled                           | Indefinite   | ~$0.02/GB/mo |
+| Redis           | Append-only file (AOF) on pod                       | Restart-safe | $0           |
+| Terraform state | Azure Storage (wize-infrastructure's state account) | Indefinite   | ~$0          |
 
 **Restore test:** Run quarterly. Clone Cloud SQL to a test instance, verify row counts, delete test instance. Document actual RTO (target: < 1 hour).
 

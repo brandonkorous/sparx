@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: sparx-prod
 # email-worker and media-worker have moved to Cloud Run — their manifests
 # are preserved (commented) in *-worker.yaml as a rollback path. See
-# terraform/envs/prod/serverless.tf for the live config.
+# wize-infrastructure's terraform/envs/prod/serverless.tf for the live config.
 resources: []
 # Example once images exist:
 #   - domain-worker.yaml

@@ -1,12 +1,15 @@
 # AKS deployment
 
-**Version:** 2.2
+**Version:** 2.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-10-18
+**Last Updated:** 2026-10-29
 
 The deployed platform, on `aks-sparx-prod-cus` in centralus. Infrastructure comes
-from [terraform/envs/azure](../../terraform/envs/azure); this is the workload on
-top of it.
+from wize-infrastructure's
+[terraform/envs/azure](https://github.com/wizeworksllc/wize-infrastructure/blob/main/terraform/envs/azure),
+released by that repository's own pipeline, and so does the Caddy ingress in
+front of it; this is the workload on top of it. If a change here needs a new
+route, vault, database or DNS record, release wize-infrastructure first.
 
 **Deployed by the release, not by hand** —
 [release.yml](../../.github/workflows/release.yml). Running `kubectl apply -k`
@@ -21,13 +24,13 @@ deployed:
 
 | Path          | Applied by  | Holds                                                            |
 | ------------- | ----------- | ---------------------------------------------------------------- |
-| `azure/infra` | **stage 1** | namespace, `sparx-app-env`, media PVC, Typesense, Caddy ingress  |
+| `azure/infra` | **stage 1** | namespace, `sparx-app-env`, media PVC, Typesense, PgBouncer      |
 | `azure/jobs`  | **stage 2** | the seed + ingest Job templates (`envsubst`, not kustomize)      |
 | `azure/apps`  | **stage 3** | the 9 apps, 15 CronJobs, 12 workers + NATS — everything replaced |
 
 The dividing line is **replacement**. `infra` is created once and then
-converges: a namespace, a config map, a disk, a load balancer, a search engine
-holding an index. `apps` is container images thrown away on every release.
+converges: a namespace, a config map, a disk, a connection pooler, a search
+engine holding an index. `apps` is container images thrown away on every release.
 
 The data stage runs Jobs that need the namespace, `sparx-app-env` and the
 `sparx-media` PVC to already exist. While those lived in one overlay with the
@@ -42,7 +45,16 @@ Bases consumed by both, unchanged:
 | `k8s/apps`        | The 9 app/API manifests — consumed verbatim               |
 | `k8s/cronjobs`    | All 15 CronJobs — `curl` containers, no per-service image |
 | `k8s/self-hosted` | The workers + the NATS broker — shared with `k8s/local`   |
-| `k8s/ingress`     | Caddy, the ONE routing table, the LoadBalancer Service    |
+
+The ingress is **not** a base of this overlay any more. Caddy, the ONE routing
+table and the LoadBalancer Service are wize-infrastructure's
+[`k8s/ingress`](https://github.com/wizeworksllc/wize-infrastructure/blob/main/k8s/ingress),
+with the AKS-specific patches (the reserved public IP annotation, the
+`managed-csi` storage class, the PDB deletion) in its `k8s/azure/kustomization.yaml`.
+It still runs in `sparx-prod`, labelled
+`app.kubernetes.io/managed-by: wize-infrastructure`. Stage 1's "Hand the ingress
+over" step relabels any Caddy object still carrying `sparx-release-infra`, so
+this overlay's `--prune` can never delete it.
 
 ## What differs from `k8s/local`
 
@@ -58,8 +70,8 @@ roughly double for IOPS neither Typesense nor the media volume needs.
 
 ## Required repository configuration
 
-**Variables** (ids, not secrets — set by `terraform/bootstrap-azure`'s
-`gh_cli_commands` output):
+**Variables** (ids, not secrets — from wize-infrastructure's
+`terraform/bootstrap-azure` `gh_cli_commands` output):
 
 - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`
 - `AZURE_KEY_VAULT_NAME` — the vault holding the app secrets. **Setting this is
@@ -73,7 +85,8 @@ roughly double for IOPS neither Typesense nor the media volume needs.
 
 ## Where the app secrets live
 
-**Azure Key Vault** (`kv-sparx-prod-cus`, created by `terraform/bootstrap-azure`).
+**Azure Key Vault** (`kv-sparx-prod-cus`, created by wize-infrastructure's
+`terraform/bootstrap-azure`).
 Each secret is its own object, so adding one is a single command:
 
 ```bash
@@ -150,12 +163,18 @@ gh secret delete SPARX_APP_SECRETS_ENV
 Start from [../local/secrets.example.env](../local/secrets.example.env), which
 documents where every value comes from.
 
+### In the vault, but never typed by hand
+
+`AZURE_STORAGE_ACCOUNT` / `AZURE_STORAGE_KEY`. wize-infrastructure's Terraform
+owns the storage account and writes both into `kv-sparx-prod-cus` as
+`azure-storage-account` and `azure-storage-key` (`media_storage` in its
+`terraform/envs/azure/main.tf`), so a key rotation is an apply there and the next
+sparx release picks it up. The release fails if either is missing rather than
+letting media fall back to the local-disk backend, which has already cost months
+of production media on a single ReadWriteOnce disk.
+
 ### What is NOT in the vault
 
-- `AZURE_STORAGE_ACCOUNT` / `AZURE_STORAGE_KEY` — read from Terraform output each
-  release. Vaulting them would mean a key rotation silently reverts media to the
-  local-disk backend, which has already cost months of production media on a
-  single ReadWriteOnce disk.
 - `OPERATOR_DATABASE_URL` — derived from `DATABASE_URL` unless supplied.
 - `AZURE_CLIENT_ID` / `TENANT_ID` / `SUBSCRIPTION_ID` — repo variables, not
   secrets, and they are the credential that _unlocks_ the vault.
@@ -189,7 +208,7 @@ release.
 
 ## The node has one disk, and 20 images have to fit on it
 
-`os_disk_size_gb = 110` in [terraform/envs/azure/main.tf](../../terraform/envs/azure/main.tf)
+`os_disk_size_gb = 110` in wize-infrastructure's [terraform/envs/azure/main.tf](https://github.com/wizeworksllc/wize-infrastructure/blob/main/terraform/envs/azure/main.tf)
 is load-bearing, not generous. The three API images are **~820 MB each** — they
 ship the whole pnpm workspace because api-rest boots through runtime `tsx` — and
 the 11 workers are built the same way. The Next.js apps are small (76–121 MB,

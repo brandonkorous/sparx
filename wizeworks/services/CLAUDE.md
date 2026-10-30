@@ -38,4 +38,4 @@ Don't bundle functionality into a service whose name/docs exclude it (e.g. Graph
 
 ## Deploys
 
-Cluster mutations route through `bootstrap.yml` / `deploy-prod.yml` / `db-migrate.yml` — never raw `kubectl` apply/edit (`kubectl get`/`logs` for reads are fine). "Deploy to production" only rolls app images; platform-apply is a separate workflow. Any imperative change to a TF-managed resource must be mirrored into Terraform the same session.
+Cluster mutations route through the release pipeline ([.github/workflows/release.yml](../../.github/workflows/release.yml), stages infrastructure, data, containers, cleanup) or the manual `ops.yml`, never raw `kubectl` apply/edit (`kubectl get`/`logs` for reads are fine). The Terraform (cluster, database servers, vaults, DNS, identities) and the Caddy ingress are not in this repo: they live in `wizeworksllc/wize-infrastructure` and ship through its own release. Any imperative change to a TF-managed resource must be mirrored into that repo's Terraform the same session, and a service that needs a new route, database or vault gets it from a wize-infrastructure change released before the service relies on it.
