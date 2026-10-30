@@ -58,12 +58,12 @@ this overlay's `--prune` can never delete it.
 
 ## What differs from `k8s/local`
 
-|          | Local                                     | Azure                                                     |
-| -------- | ----------------------------------------- | --------------------------------------------------------- |
+|          | Local                                     | Azure                                                    |
+| -------- | ----------------------------------------- | -------------------------------------------------------- |
 | Images   | `sparx/*:local`, `imagePullPolicy: Never` | `ghcr.io/wizeworksllc/sparx/*`, pinned to the commit SHA |
-| Postgres | in-cluster StatefulSet                    | **managed** `psql-sparx-prod-cus`, VNet-private           |
-| Redis    | in-cluster                                | **dropped** — see `infra/platform.yaml`                   |
-| Storage  | Docker Desktop default                    | `managed-csi` (Azure StandardSSD)                         |
+| Postgres | in-cluster StatefulSet                    | **managed** `psql-sparx-prod-cus`, VNet-private          |
+| Redis    | in-cluster                                | **dropped** — see `infra/platform.yaml`                  |
+| Storage  | Docker Desktop default                    | `managed-csi` (Azure StandardSSD)                        |
 
 `managed-csi-premium` would also work — the node supports Premium — but costs
 roughly double for IOPS neither Typesense nor the media volume needs.
