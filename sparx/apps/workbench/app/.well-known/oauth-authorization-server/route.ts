@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { mcpDiscoveryDocument, OAUTH_DISCOVERY_HEADERS } from '../../../lib/mcp-oauth-metadata';
 
 // RFC 8414 — OAuth 2.0 Authorization Server Metadata (docs/07 §5). Public,
@@ -7,8 +7,8 @@ import { mcpDiscoveryDocument, OAUTH_DISCOVERY_HEADERS } from '../../../lib/mcp-
 // this origin.
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
-  const metadata = await mcpDiscoveryDocument('oauth', request);
+export async function GET() {
+  const metadata = await mcpDiscoveryDocument('oauth');
   return NextResponse.json(metadata, { headers: OAUTH_DISCOVERY_HEADERS });
 }
 

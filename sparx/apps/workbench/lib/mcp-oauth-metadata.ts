@@ -5,12 +5,24 @@
 // SPARX's, specifically: api-mcp resolves the brand from the request host, so
 // mcp.mypiggles.com advertises getpiggles.com instead (docs/07 §5).
 //
-// The workbench is the authorization server: it holds the staff Better Auth
-// instance (the MCP provider lives in the shared @wizeworks/auth), and
-// app.sparx.works resolves to this app. Better Auth mounts its handler under
-// /api/auth, so the root /.well-known documents have to be served here.
+// The workbench's origin is the authorization server: app.sparx.works resolves
+// to this app, which serves Better Auth's routes under /api/auth (proxied to
+// api-rest, which runs the staff instance and the MCP provider, docs/154). So
+// the root /.well-known documents have to be served here.
+//
+// The document is the provider's own, built by `@better-auth/mcp` in api-rest
+// from the live configuration rather than written out here: the endpoints
+// (`/api/auth/oauth2/*`), the signing keys (`/api/auth/jwks`), the grant types
+// and the scope list (our whole MCP vocabulary, `MCP_ALL_OAUTH_SCOPES`) all come
+// from the same options the provider enforces, so the document cannot advertise
+// something the server does not do. The hand-written 1.6 version listed `/mcp/*`
+// endpoints and no key set, which was true then and would be wrong now.
+// `issuer` is this origin because the jwt() plugin is configured with it
+// (@wizeworks/auth server.ts), and that is the authorization server api-mcp
+// names for this brand. `openid` is the OpenID Provider Metadata alias some MCP
+// clients probe instead; it carries the same endpoints plus the OIDC fields.
 
-import { auth } from '@wizeworks/auth';
+export { mcpDiscoveryDocument } from '@wizeworks/auth-client-server';
 
 /** Shared response headers so clients on any origin can read the discovery
  *  document and preflight it. */
@@ -22,28 +34,3 @@ export const OAUTH_DISCOVERY_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Max-Age': '86400',
 };
-
-/**
- * The provider's own discovery document, as JSON.
- *
- * Built by `@better-auth/mcp` from the live configuration rather than written
- * out here: the endpoints (`/api/auth/oauth2/*`), the signing keys
- * (`/api/auth/jwks`), the grant types and the scope list (our whole MCP
- * vocabulary, `MCP_ALL_OAUTH_SCOPES`) all come from the same options the
- * provider enforces, so the document cannot advertise something the server
- * does not do. The hand-written 1.6 version listed `/mcp/*` endpoints and no
- * key set, which was true then and would be wrong now. `issuer` is this origin
- * because the jwt() plugin is configured with it (@wizeworks/auth server.ts),
- * and that is the authorization server api-mcp names for this brand.
- *
- * `openid` is the OpenID Provider Metadata alias some MCP clients probe
- * instead; it carries the same endpoints plus the OIDC fields.
- */
-export async function mcpDiscoveryDocument(
-  kind: 'oauth' | 'openid',
-  request: Request
-): Promise<unknown> {
-  return kind === 'openid'
-    ? await auth.api.getOpenIdConfig({ request })
-    : await auth.api.getOAuthServerConfig({ request });
-}

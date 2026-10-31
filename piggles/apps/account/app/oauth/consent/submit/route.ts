@@ -14,7 +14,11 @@
 // provider refuses anything that was not in the signed request.
 
 import { type NextRequest, NextResponse } from 'next/server';
-import { CONSENT_ERROR_PARAM, readMcpConsentRequest, submitMcpConsent } from '@/lib/mcp-consent';
+import {
+  CONSENT_ERROR_PARAM,
+  readMcpConsentRequest,
+  submitMcpConsent,
+} from '@wizeworks/auth-client-server';
 import { sameOriginRedirect } from '@/lib/same-origin-redirect';
 
 const str = (v: FormDataEntryValue | null): string => (typeof v === 'string' ? v : '');

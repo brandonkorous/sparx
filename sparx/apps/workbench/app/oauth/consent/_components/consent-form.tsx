@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Badge, Button, Switch, Text } from '@wizeworks/silicaui-react';
-import type { McpScopeMeta } from '@wizeworks/auth';
+import type { McpScopeMeta } from '@wizeworks/auth/mcp-scopes';
 
 export interface ConsentFormProps {
   /** The provider's signed authorization request, posted back verbatim. */

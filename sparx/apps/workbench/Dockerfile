@@ -20,10 +20,12 @@ FROM base AS builder
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY sparx/apps/workbench/package.json sparx/apps/workbench/
 # The workbench's direct workspace deps are deliberately few — it is a browser-
-# rendered app whose only server surface is Better Auth + the /api/token BFF:
+# rendered app whose only server surface is the /api/auth proxy + the
+# /api/token BFF, both forwarding to api-rest (docs/154):
 COPY wizeworks/packages/app-kit/package.json wizeworks/packages/app-kit/
 COPY wizeworks/packages/api-client/package.json wizeworks/packages/api-client/
 COPY wizeworks/packages/auth/package.json wizeworks/packages/auth/
+COPY wizeworks/packages/auth-client-server/package.json wizeworks/packages/auth-client-server/
 COPY wizeworks/packages/brand-core/package.json wizeworks/packages/brand-core/
 COPY sparx/packages/brand/package.json sparx/packages/brand/
 COPY wizeworks/packages/client-ip/package.json wizeworks/packages/client-ip/
@@ -96,6 +98,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 COPY wizeworks/packages/app-kit wizeworks/packages/app-kit
 COPY wizeworks/packages/api-client wizeworks/packages/api-client
 COPY wizeworks/packages/auth wizeworks/packages/auth
+COPY wizeworks/packages/auth-client-server wizeworks/packages/auth-client-server
 COPY wizeworks/packages/brand-core wizeworks/packages/brand-core
 COPY sparx/packages/brand sparx/packages/brand
 COPY wizeworks/packages/client-ip wizeworks/packages/client-ip

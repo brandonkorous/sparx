@@ -256,33 +256,7 @@ const COLLAPSE = [
  * `only` is the side that has it. A reason that amounts to "the other one just
  * doesn't" is not a reason — it is the gap, written down and waved past.
  */
-/** The apps come off the database one release at a time (docs/154 "Rollout"):
- *  the Piggles console has switched, and sparx workbench is next. Every entry
- *  that carries this reason goes when workbench switches. */
-const OFF_THE_DATABASE_ROLLOUT =
-  'docs/154 rollout: the Piggles console reaches accounts through api-rest, sparx workbench has not switched yet. Delete when it does.';
-
 const EXCEPTIONS = [
-  ...[
-    'app/api/account/password',
-    'app/api/account/sessions',
-    'app/api/account/sign-in-methods',
-    // Its three child routes go with it: an exception covers what is under it.
-    'app/api/account/two-factor',
-  ].map((path) => ({ axis: 'routes', only: 'sparx', path, why: OFF_THE_DATABASE_ROLLOUT })),
-  {
-    axis: 'routes',
-    only: 'piggles',
-    path: 'app/api/account/[...op]',
-    why: OFF_THE_DATABASE_ROLLOUT,
-  },
-  { axis: 'deps', only: 'sparx', path: '@wizeworks/db', why: OFF_THE_DATABASE_ROLLOUT },
-  {
-    axis: 'deps',
-    only: 'piggles',
-    path: '@wizeworks/auth-client-server',
-    why: OFF_THE_DATABASE_ROLLOUT,
-  },
   // ── Windows mode: what maximize means on a floating window ─────────────
   {
     axis: 'lib',
@@ -417,12 +391,6 @@ const EXCEPTIONS = [
     why: 'the consent screen belongs beside the authorization server — account app for Piggles.',
   },
   {
-    axis: 'routes',
-    only: 'sparx',
-    path: 'app/api/internal/partner-provision',
-    why: 'partner-provisioned tenants are a sparx go-to-market motion, not a console capability.',
-  },
-  {
     axis: 'components',
     only: 'piggles',
     path: 'components/all-apps-dialog',
@@ -474,12 +442,6 @@ const EXCEPTIONS = [
     why: 'Piggles-specific compositions over silicaui.',
   },
   { axis: 'deps', only: 'piggles', path: '@piggles/config', why: 'Piggles runtime configuration.' },
-  {
-    axis: 'deps',
-    only: 'sparx',
-    path: '@wizeworks/client-ip',
-    why: 'the password sign-up action (components/auth/sign-up-action.ts) resolves the address on the legal-acceptance record with it. sparx creates accounts inside the workbench; Piggles creates them on its account app, which depends on @wizeworks/client-ip for the same record (piggles/apps/account/app/signup/actions.ts).',
-  },
   { axis: 'deps', only: 'piggles', path: '@piggles/auth-handoff', why: 'see lib/session.' },
   {
     axis: 'deps',

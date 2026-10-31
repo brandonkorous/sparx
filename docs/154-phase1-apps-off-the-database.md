@@ -169,15 +169,19 @@ Built on branch `phase1/apps-off-the-database`, committed, not pushed:
 - The brand request scope, `createAuth(brandConfig)`, and api-rest serving
   both brands at `/auth/<brand>/*`.
 - The session read, the API token, account security, the handoff and sign-out.
-- The Piggles console (`piggles/apps/workbench`) and the Piggles account app
-  (`piggles/apps/account`) are both on `scripts/check-app-data-access.mjs`'s
-  list: neither imports the database or the auth server, and neither depends
-  on `@wizeworks/db`.
+- Endpoints 1 to 11, with the flows (sign-up, verification email, invitations,
+  MCP consent and discovery) as typed calls in `@wizeworks/auth-client-server`
+  shared by both brands' sign-in apps.
+- All three apps switched: the Piggles console, the Piggles account app and
+  sparx's workbench. `scripts/check-app-data-access.mjs` now reads every app
+  under `*/apps/*` from the tree, and none imports the database or the auth
+  server or depends on `@wizeworks/db`.
+- Partner provisioning runs on api-rest's own sparx instance;
+  `app/api/internal/partner-provision` and `SPARX_DASHBOARD_INTERNAL_URL` are
+  gone.
 
-Still to do: sparx's workbench (about 28 files, plus moving
-`app/api/internal/partner-provision` into api-rest), step 8 (the pods drop
-`sparx-app-secrets` and the `BETTER_AUTH_*` values), and the test pass on both
-brands.
+Still to do: step 8 (the frontend pods drop `sparx-app-secrets` and the
+`BETTER_AUTH_*` values), and the test pass on both brands.
 
 ## Definition of done
 

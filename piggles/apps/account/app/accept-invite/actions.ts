@@ -4,10 +4,10 @@ import { revalidatePath } from 'next/cache';
 import {
   platformRequest,
   PlatformRequestError,
+  requestConfirmLink,
   setSessionCookies,
   type SessionCookie,
 } from '@wizeworks/auth-client-server';
-import { requestConfirmLink } from '@/lib/confirm-link';
 
 // Accepting a team invitation (docs/114 §A.4).
 //

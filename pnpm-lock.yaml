@@ -711,15 +711,15 @@ importers:
       '@wizeworks/auth':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/auth
+      '@wizeworks/auth-client-server':
+        specifier: workspace:*
+        version: link:../../../wizeworks/packages/auth-client-server
       '@wizeworks/automation-schemas':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/automation-schemas
       '@wizeworks/builder-schemas':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/builder-schemas
-      '@wizeworks/client-ip':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/client-ip
       '@wizeworks/cms-editor':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/cms-editor
@@ -729,9 +729,6 @@ importers:
       '@wizeworks/crm-schemas':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/crm-schemas
-      '@wizeworks/db':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/db
       '@wizeworks/email-sequences':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/email-sequences

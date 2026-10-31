@@ -1,8 +1,8 @@
 # Organizations, Teams & the Partner Program
 
-**Version:** 0.3
+**Version:** 0.4
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-03
+**Last Updated:** 2026-10-30
 
 > Status: **planning / not yet built.** This doc is the reconciled blueprint for two
 > coupled bodies of work decided in the 2026-07-02 build session:
@@ -255,11 +255,10 @@ partner_payout_runs              (organization_id = partner's org)
     Staff approve via `/internal/partners/:id/approve` (through the operator console), which
     provisions/activates the `partners` row at the requested (or overridden) tier.
     - **Accountless applicants** (public form, email only): a partner IS a tenant, so there
-      must be an account to key the `partners` row to. Approval **provisions one** — account
-      creation runs only where Better Auth lives, so api-rest delegates to the dashboard's
-      token-gated `POST /api/internal/partner-provision` (authenticated with the shared
-      `SPARX_INTERNAL_JWT_SECRET`; api-rest reaches it at `SPARX_DASHBOARD_INTERNAL_URL`). That
-      route runs `@wizeworks/auth`'s `provisionInvitedOwner`, which mints the tenant + owner login
+      must be an account to key the `partners` row to. Approval **provisions one**: api-rest
+      runs `@wizeworks/auth`'s `provisionInvitedOwner` on its own sparx Better Auth instance
+      (`lib/partners/provision-account.ts`; it was a token-gated call into the workbench until
+      the apps came off the database, docs/154), which mints the tenant + owner login
       (module-less, so $0 under modules-not-plans), skips platform-legal acceptance (the
       invitee never clicked the checkbox — the dashboard's legal banner prompts them at first
       sign-in), and emails a **set-password invite** (Better Auth's reset flow; the

@@ -27,3 +27,17 @@ export {
   setSessionCookies,
   type PlatformRequestInit,
 } from './platform-request';
+export {
+  CONSENT_ERROR_PARAM,
+  mcpDiscoveryDocument,
+  readInvitation,
+  readMcpConsentRequest,
+  requestConfirmLink,
+  submitMcpConsent,
+  toSearchParams,
+  type InvitationDetail,
+  type McpConsentAnswer,
+  type McpConsentRead,
+  type McpConsentRequest,
+  type SendLinkResult,
+} from './platform-flows';

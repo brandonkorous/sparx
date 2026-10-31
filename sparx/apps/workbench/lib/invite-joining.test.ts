@@ -3,8 +3,8 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-const getInvitationDetail = vi.fn();
-vi.mock('@wizeworks/auth', () => ({ getInvitationDetail }));
+const { readInvitation } = vi.hoisted(() => ({ readInvitation: vi.fn() }));
+vi.mock('@wizeworks/auth-client-server', () => ({ readInvitation }));
 
 const { invitationIdFrom, joiningFrom } = await import('./invite-joining');
 
@@ -26,7 +26,7 @@ describe('invitationIdFrom', () => {
 
 describe('joiningFrom', () => {
   it('names the business and the invited address for a live invitation', async () => {
-    getInvitationDetail.mockResolvedValue({
+    readInvitation.mockResolvedValue({
       status: 'pending',
       expiresAt: new Date(Date.now() + 86_400_000),
       orgName: 'Gillett Diesel Service, Inc.',
@@ -39,7 +39,7 @@ describe('joiningFrom', () => {
   });
 
   it('says nothing about an invitation already used', async () => {
-    getInvitationDetail.mockResolvedValue({
+    readInvitation.mockResolvedValue({
       status: 'accepted',
       expiresAt: new Date(Date.now() + 86_400_000),
       orgName: 'Gillett Diesel Service, Inc.',

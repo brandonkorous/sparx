@@ -1,4 +1,4 @@
-import { readInvitation } from './invitations';
+import { readInvitation } from '@wizeworks/auth-client-server';
 
 // Whether a sign-in or sign-up is on its way to accept an invitation, and to
 // which business.

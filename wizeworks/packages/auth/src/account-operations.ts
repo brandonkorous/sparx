@@ -2,7 +2,7 @@
 //
 // These ran as route handlers in each console (`app/api/account/*`,
 // `app/api/businesses`), byte-identical between the two brands. They run in
-// api-rest now (`/auth/<brand>/account/<op>`), so the consoles hold no auth
+// api-rest now (`/auth/<brand>/platform/account/<op>`), so the consoles hold no auth
 // instance. The table is the allowlist: an operation exists because a row
 // here names it, never because a handler exposed a surface wholesale.
 //

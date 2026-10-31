@@ -109,7 +109,7 @@ export function ResendVerificationButton({
   function onResend() {
     setError(null);
     startTransition(async () => {
-      const result = await resendInviteVerification(email, invitationId);
+      const result = await resendInviteVerification(invitationId);
       if (result.ok) setSent(true);
       else setError(result.error ?? 'Could not send the verification email.');
     });

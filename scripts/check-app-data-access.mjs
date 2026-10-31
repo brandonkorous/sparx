@@ -34,16 +34,20 @@
  * (`import { type A, b }`) is still read as a value import, because it is one.
  *
  * ---------------------------------------------------------------------------
- * The list of apps
+ * Which apps
  * ---------------------------------------------------------------------------
  *
- * Apps join it as they switch (docs/154 "Rollout"). When every app is on it,
- * the list is the whole of `*\/apps/*`.
+ * Every app: each directory under `*\/apps/*` that has a package.json. Apps
+ * joined one release at a time (docs/154 "Rollout"); since every app switched,
+ * the list is read from the tree, so a new app is covered from its first
+ * commit rather than from whenever somebody remembers to add it. A directory
+ * with no package.json (a placeholder holding a .gitkeep) is not an app.
  *
- * A listed app with no source files fails, and so does a package map in which
- * `@wizeworks/auth` does not read as reaching the database: a check that scans
- * nothing prints the same "ok" as one that found nothing, which is how a
- * renamed directory turns a guard off without anybody noticing.
+ * Finding fewer than three apps fails, and so does an app with no source files
+ * or a package map in which `@wizeworks/auth` does not read as reaching the
+ * database: a check that scans nothing prints the same "ok" as one that found
+ * nothing, which is how a renamed directory turns a guard off without anybody
+ * noticing.
  *
  * Pure Node, no dependencies. Runs in CI and in the pre-push guard.
  */
@@ -53,8 +57,10 @@ import path from 'node:path';
 
 const ROOT = process.cwd();
 
-/** Apps that reach data only through api-rest. */
-const OFF_THE_DATABASE = ['piggles/apps/workbench', 'piggles/apps/account'];
+const APP_ROOTS = ['wizeworks/apps', 'sparx/apps', 'piggles/apps'];
+
+/** The workbench and account apps of both brands, and the marketing sites. */
+const FEWEST_APPS = 3;
 
 /** Entry points of database-using packages that import neither the database
  *  nor the auth server. */
@@ -142,8 +148,29 @@ function sourceFiles(dir) {
   return out;
 }
 
+/** Every app in the tree, as a repo-relative path. */
+function appDirectories() {
+  const out = [];
+  for (const root of APP_ROOTS) {
+    const dir = path.join(ROOT, root);
+    if (!fs.existsSync(dir)) continue;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory() && fs.existsSync(path.join(dir, entry.name, 'package.json'))) {
+        out.push(`${root}/${entry.name}`);
+      }
+    }
+  }
+  return out;
+}
+
 function main() {
   const problems = [];
+  const apps = appDirectories();
+  if (apps.length < FEWEST_APPS) {
+    problems.push(
+      `found ${apps.length} app(s) under ${APP_ROOTS.join(', ')}; expected at least ${FEWEST_APPS}, so it is reading the wrong place`
+    );
+  }
   const reachesDatabase = databasePackages();
   if (!reachesDatabase.has('@wizeworks/auth')) {
     problems.push(
@@ -152,15 +179,11 @@ function main() {
   }
 
   let scanned = 0;
-  for (const app of OFF_THE_DATABASE) {
+  for (const app of apps) {
     const dir = path.join(ROOT, app);
-    if (!fs.existsSync(dir)) {
-      problems.push(`${app}: listed, but the directory does not exist`);
-      continue;
-    }
     const files = sourceFiles(dir);
     if (files.length === 0) {
-      problems.push(`${app}: listed, but no source files were found under it`);
+      problems.push(`${app}: has a package.json, but no source files were found under it`);
       continue;
     }
     scanned += files.length;
@@ -199,7 +222,7 @@ function main() {
     process.exit(1);
   }
   console.log(
-    `check-app-data-access: ${OFF_THE_DATABASE.length} app(s), ${scanned} source files, nothing reaches the database or the auth server.`
+    `check-app-data-access: ${apps.length} app(s), ${scanned} source files, nothing reaches the database or the auth server.`
   );
 }
 

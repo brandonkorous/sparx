@@ -12,26 +12,19 @@
 // So: this route is the trust boundary. It authenticates the caller by their
 // same-origin session cookie, then hands the browser a narrowly-scoped, short-
 // lived token. Crucially `tid` is stamped SERVER-SIDE from the session — the
-// browser cannot choose its own tenant, so tenant isolation survives intact and
-// api-rest needs no change at all.
+// browser cannot choose its own tenant, so tenant isolation survives intact.
 //
-// This mirrors apps/dashboard/app/api/chat/ws-token/route.ts, which has been
-// doing exactly this in production for the chat socket.
+// api-rest mints the token (`/auth/sparx/platform/api-token`, docs/154 §4)
+// from the forwarded session cookie, so the signing secret never reaches this
+// pod. This route adds the two values that are the console's own: the public
+// API origin and the active site.
 
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { SignJWT } from 'jose';
-import { requireSession } from '@wizeworks/auth';
+import { cookies, headers } from 'next/headers';
+import { fetchApiToken } from '@wizeworks/auth-client-server';
 import { ACTIVE_PROPERTY_COOKIE, readActiveSite } from '../../../lib/active-site-cookie';
 
 export const dynamic = 'force-dynamic';
-
-/**
- * Ten minutes. Long enough that a normal working session refreshes rarely, short
- * enough that a leaked token from a shared screen or a stale devtools copy dies
- * quickly. The client refreshes at 80% of life — see lib/api/token.ts.
- */
-const TOKEN_TTL_SECONDS = 10 * 60;
 
 export interface WorkbenchTokenResponse {
   token: string;
@@ -68,29 +61,22 @@ export interface WorkbenchTokenResponse {
 }
 
 export async function GET(): Promise<NextResponse> {
-  const session = await requireSession();
-
-  const secret = process.env.SPARX_INTERNAL_JWT_SECRET;
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (!secret || !apiUrl) {
-    // Fail loudly rather than handing back a token the browser can't use, or a
-    // usable token aimed at an empty origin.
+  if (!apiUrl) {
+    // Fail loudly rather than handing back a usable token aimed at an empty
+    // origin.
     return NextResponse.json({ error: 'misconfigured' }, { status: 500 });
   }
 
-  const now = Math.floor(Date.now() / 1000);
-  const token = await new SignJWT({
-    tid: session.user.tenantId,
-    role: session.user.role,
-    ev: session.user.emailVerified,
-    // For traces only: api-rest's WizeLens shows the name on its Users page.
-    name: session.user.name ?? undefined,
-  })
-    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-    .setSubject(session.user.id)
-    .setIssuedAt(now)
-    .setExpirationTime(now + TOKEN_TTL_SECONDS)
-    .sign(new TextEncoder().encode(secret));
+  // Ten minutes, minted by api-rest. The client refreshes at 80% of life — see
+  // lib/api/token.ts.
+  const minted = await fetchApiToken(await headers());
+  if (!minted) {
+    return NextResponse.json(
+      { error: 'unauthenticated' },
+      { status: 401, headers: { 'Cache-Control': 'no-store, private' } }
+    );
+  }
 
   // api-rest fails closed to the tenant's primary property and resolves the
   // lookup under RLS, so a stale or spoofed value can only ever name one of this
@@ -100,18 +86,18 @@ export async function GET(): Promise<NextResponse> {
   // operator on this computer is never forwarded (sparx persona issue 011).
   const propertyId = readActiveSite(
     cookieStore.get(ACTIVE_PROPERTY_COOKIE)?.value,
-    session.user.tenantId
+    minted.tenantId
   );
 
   const body: WorkbenchTokenResponse = {
-    token,
-    expiresAt: (now + TOKEN_TTL_SECONDS) * 1000,
+    token: minted.token,
+    expiresAt: minted.expiresAt,
     apiUrl,
     propertyId,
-    userId: session.user.id,
-    role: session.user.role,
-    email: session.user.email,
-    emailVerified: session.user.emailVerified,
+    userId: minted.userId,
+    role: minted.role,
+    email: minted.email,
+    emailVerified: minted.emailVerified,
   };
 
   // Never cache a bearer token — not in the browser, not at Cloudflare.

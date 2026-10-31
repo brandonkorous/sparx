@@ -61,7 +61,6 @@ const config = {
     '@wizeworks/app-kit',
     // The sign-up action resolves the legal-acceptance record's address with it;
     // ships source from ./src like app-kit.
-    '@wizeworks/client-ip',
     '@wizeworks/silicaui-react',
     '@wizeworks/silicaui-charts',
     // The rich-text editor (bootcamp description) ships a client TipTap surface.

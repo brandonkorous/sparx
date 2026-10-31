@@ -1,22 +1,25 @@
-// Client for the dashboard's internal partner account-provisioning route
-// (docs/114 §B.2). Account creation runs only where Better Auth lives — the
-// dashboard — so approving an accountless partner (the operator seam has no
-// account-creation power of its own) delegates the tenant + owner + set-password
-// invite to POST {dashboard}/api/internal/partner-provision. Authenticated with
-// the shared internal secret (SPARX_INTERNAL_JWT_SECRET, already trusted both
-// ways). The dashboard owns the Better Auth writes; api-rest owns the partner row.
+// Provisioning an operator-approved partner's account (docs/114 §B.2).
+//
+// Approving an accountless partner needs a tenant + owner login + a
+// set-password invite. That is Better Auth's work, and Better Auth lives in
+// this process now (docs/154), so it runs here, on the sparx instance. It used
+// to POST to the workbench's `/api/internal/partner-provision` with a shared
+// secret, because the workbench held the only instance; an app holds no auth
+// instance any more, and the hop is gone with it. api-rest owns the partner
+// row either way.
+//
+// The partner program is sparx-only (see service.ts), so the brand is the
+// default one rather than an unexamined constant.
 
-import { env } from '../../env.js';
+import { provisionInvitedOwner, SignUpError } from '@wizeworks/auth';
+import { DEFAULT_PLATFORM_BRAND } from '@wizeworks/brand-core';
+import { runAsBrand } from '@wizeworks/brand-core/request-scope';
 
-const TOKEN_HEADER = 'x-sparx-internal-provision-token';
-const TIMEOUT_MS = 15_000;
+export type ProvisionAccountErrorCode = 'EMAIL_TAKEN' | 'INVALID_INPUT' | 'PROVISION_FAILED';
 
-export type ProvisionAccountErrorCode =
-  'EMAIL_TAKEN' | 'INVALID_INPUT' | 'UNAVAILABLE' | 'PROVISION_FAILED';
-
-/** A typed failure from the dashboard provisioning call — the approve path maps
- *  these to operator-facing errors (EMAIL_TAKEN → a clear "already has an account"
- *  conflict, the rest → a generic bad-gateway). */
+/** A typed provisioning failure. The approve path maps these to operator-facing
+ *  errors (EMAIL_TAKEN → a clear "already has an account" conflict, the rest →
+ *  a generic failure). */
 export class ProvisionAccountError extends Error {
   constructor(
     public code: ProvisionAccountErrorCode,
@@ -33,61 +36,37 @@ export interface ProvisionedAccount {
   slug: string;
 }
 
-/** Provision a tenant + owner login for an approved-but-accountless applicant and
- *  trigger their set-password invite. Delegates to the dashboard; throws a typed
- *  ProvisionAccountError on any non-2xx (mapping the dashboard's 409 EMAIL_TAKEN). */
+/** Provision a tenant + owner login for an approved-but-accountless applicant
+ *  and trigger their set-password invite. Throws a typed ProvisionAccountError:
+ *  EMAIL_TAKEN and INVALID_INPUT from the sign-up rules, PROVISION_FAILED for
+ *  anything else. */
 export async function provisionPartnerAccount(input: {
   email: string;
   name: string;
 }): Promise<ProvisionedAccount> {
-  const secret = env.SPARX_INTERNAL_JWT_SECRET;
-  const base = env.SPARX_DASHBOARD_INTERNAL_URL.replace(/\/$/, '');
-  const url = `${base}/api/internal/partner-provision`;
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-  let res: Response;
   try {
-    res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        [TOKEN_HEADER]: secret,
-      },
-      body: JSON.stringify({ email: input.email, name: input.name }),
-      signal: controller.signal,
-    });
-  } catch (err) {
-    throw new ProvisionAccountError(
-      'UNAVAILABLE',
-      `Could not reach the account-provisioning service: ${
-        err instanceof Error ? err.message : String(err)
-      }`
+    const result = await runAsBrand(DEFAULT_PLATFORM_BRAND, () =>
+      provisionInvitedOwner({ email: input.email, name: input.name })
     );
-  } finally {
-    clearTimeout(timer);
-  }
-
-  if (res.ok) {
-    const data = (await res.json()) as Partial<ProvisionedAccount>;
-    if (!data.tenantId || !data.userId || !data.slug) {
-      throw new ProvisionAccountError(
-        'PROVISION_FAILED',
-        'Provisioning returned an invalid result.'
-      );
+    return { tenantId: result.tenantId, userId: result.userId, slug: result.slug };
+  } catch (err) {
+    if (err instanceof SignUpError) {
+      if (err.code === 'EMAIL_TAKEN') throw new ProvisionAccountError('EMAIL_TAKEN', err.message);
+      if (err.code === 'INVALID_INPUT') {
+        throw new ProvisionAccountError('INVALID_INPUT', err.message);
+      }
     }
-    return { tenantId: data.tenantId, userId: data.userId, slug: data.slug };
+    process.stderr.write(
+      JSON.stringify({
+        severity: 'ERROR',
+        source: 'api-rest.partner-provision',
+        message: 'provisionInvitedOwner failed',
+        err: err instanceof Error ? { name: err.name, message: err.message } : String(err),
+      }) + '\n'
+    );
+    throw new ProvisionAccountError(
+      'PROVISION_FAILED',
+      err instanceof SignUpError ? err.message : 'Could not provision the account.'
+    );
   }
-
-  let code: ProvisionAccountErrorCode = 'PROVISION_FAILED';
-  let message = `Provisioning failed (HTTP ${res.status}).`;
-  try {
-    const body = (await res.json()) as { code?: string; message?: string };
-    if (body.code === 'EMAIL_TAKEN') code = 'EMAIL_TAKEN';
-    else if (body.code === 'INVALID_INPUT') code = 'INVALID_INPUT';
-    if (body.message) message = body.message;
-  } catch {
-    // non-JSON error body — keep the status-derived defaults
-  }
-  throw new ProvisionAccountError(code, message);
 }

@@ -1,35 +1,32 @@
-// THE CONSENT ANSWER IS WRITTEN WHERE THE PERSON'S ROW LIVES.
+// The consent route takes only a real answer, and leaves the write to api-rest.
 //
-// Measured 2026-10-06 on Gillett Diesel: Mike Van Der Berg, invited as an editor,
-// answered "No thanks" to the analytics question and got "That did not save". The
-// question came back on every page load. His `users` row belongs to his home
-// business, and RLS refuses a write to it from a business he joined. The route ran
-// under the business he was acting in (sparx persona issue 122).
+// Where the answer is written (the person's HOME business, sparx persona issue
+// 122) is api-rest's rule now, and tested there:
+// wizeworks/services/api-rest/src/routes/auth/platform-business.test.ts. What
+// stays here is the part that is this route's: a value that is not a boolean is
+// a malformed request, never a "no", and a signed-out caller is told so.
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const getSession = vi.fn();
-const tenantsWritten: string[] = [];
+// Hoisted with the mock: `vi.mock` runs before this file's own top level.
+const { platformRequest, PlatformRequestError } = vi.hoisted(() => {
+  class PlatformRequestError extends Error {
+    constructor(
+      readonly path: string,
+      readonly status: number | null,
+      readonly body: Record<string, unknown> = {}
+    ) {
+      super(path);
+    }
+  }
+  return { platformRequest: vi.fn(), PlatformRequestError };
+});
 
-vi.mock('@wizeworks/auth', () => ({ getSession }));
-vi.mock('@wizeworks/db', () => ({
-  withTenant: (ctx: { tenantId: string }, fn: (tx: unknown) => Promise<unknown>) => {
-    tenantsWritten.push(ctx.tenantId);
-    return fn({
-      user: {
-        findUnique: () => Promise.resolve({ preferences: { defaultDetailView: 'drawer' } }),
-        update: () => Promise.resolve({}),
-      },
-    });
-  },
-}));
+vi.mock('@wizeworks/auth-client-server', () => ({ platformRequest, PlatformRequestError }));
 
 const { POST } = await import('./route');
 
-const HOME = '305ad459-0000-4000-8000-000000000001';
-const JOINED = '5944fe23-be83-4ce5-aafc-ef56b8594508';
-
-function answer(analytics: boolean): Request {
+function answer(analytics: unknown): Request {
   return new Request('http://localhost:3011/api/consent', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -39,17 +36,35 @@ function answer(analytics: boolean): Request {
 
 describe('POST /api/consent', () => {
   beforeEach(() => {
-    tenantsWritten.length = 0;
+    // In braces: a function returned from beforeEach is run as teardown, and
+    // `mockReset()` returns the mock, which would then be called once more.
+    platformRequest.mockReset();
   });
 
-  it('writes an invited member answer under their home business', async () => {
-    getSession.mockResolvedValue({
-      user: { id: 'user-mike', tenantId: JOINED, homeTenantId: HOME, role: 'editor' },
-    });
+  it('sends a real answer to api-rest', async () => {
+    platformRequest.mockResolvedValue({ consent: { analytics: false, at: '' } });
 
     const response = await POST(answer(false));
 
     expect(response.status).toBe(200);
-    expect(tenantsWritten).toEqual([HOME]);
+    expect(platformRequest).toHaveBeenCalledWith(
+      'consent',
+      expect.objectContaining({ body: { analytics: false } })
+    );
+  });
+
+  it('refuses a value that is not a boolean, and records nothing', async () => {
+    const response = await POST(answer('no'));
+
+    expect(response.status).toBe(400);
+    expect(platformRequest).not.toHaveBeenCalled();
+  });
+
+  it('tells a signed-out caller so', async () => {
+    platformRequest.mockRejectedValue(new PlatformRequestError('/platform/consent', 401));
+
+    const response = await POST(answer(true));
+
+    expect(response.status).toBe(401);
   });
 });

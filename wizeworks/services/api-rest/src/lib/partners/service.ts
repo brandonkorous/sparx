@@ -586,8 +586,8 @@ export const partnerService = {
    *  A partner IS a tenant, so approval needs a Sparx account to attach the row to.
    *  If the applicant applied from an account, it's already linked. If they applied
    *  via the public form (email only), we PROVISION one now — mint the tenant +
-   *  owner login + a set-password invite (docs/114 §B.2). Provisioning runs in the
-   *  dashboard (the only Better Auth host) via provisionPartnerAccount; we link the
+   *  owner login + a set-password invite (docs/114 §B.2). Provisioning runs on
+   *  this process's own Better Auth instance via provisionPartnerAccount; we link the
    *  new tenant back onto the application immediately so a retry after a partial
    *  failure reuses it instead of minting a second account. */
   async approveApplication(raw: unknown) {
@@ -619,7 +619,7 @@ export const partnerService = {
           }
           if (err.code === 'INVALID_INPUT') throw badRequest(err.message);
         }
-        throw err; // UNAVAILABLE / PROVISION_FAILED / unexpected → surfaced as 500
+        throw err; // PROVISION_FAILED / unexpected → surfaced as 500
       }
       await withTenant({ tenantId: platformTenantId }, (tx) =>
         tx.partnerApplication.update({

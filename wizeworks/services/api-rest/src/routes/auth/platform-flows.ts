@@ -148,12 +148,13 @@ const platformFlowRoutes: FastifyPluginAsync = (app) => {
       );
       return reply.send({
         ok: true,
+        userId: account.userId,
         signedIn: true,
         cookies: sessionCookiesFromSetCookie(signedIn.headers.getSetCookie()),
       });
     } catch (err) {
       request.log.warn({ err, userId: account.userId }, 'sign-up: signing the new owner in failed');
-      return reply.send({ ok: true, signedIn: false, cookies: [] });
+      return reply.send({ ok: true, userId: account.userId, signedIn: false, cookies: [] });
     }
   });
 

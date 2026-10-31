@@ -4,14 +4,18 @@ import { Alert, Text } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
 import { AppearanceControl } from '@/components/appearance-control';
 import { APP_BY_ID, MODULE_TO_APP, moduleTerm } from '@piggles/config';
-import { getSession } from '@wizeworks/auth-client-server';
+import {
+  CONSENT_ERROR_PARAM,
+  getSession,
+  readMcpConsentRequest,
+  toSearchParams,
+} from '@wizeworks/auth-client-server';
 import {
   grantableScopesForRole,
   capBusinessScopes,
   MCP_SCOPE_CATALOG,
   type StaffRole,
 } from '@wizeworks/auth/mcp-scopes';
-import { CONSENT_ERROR_PARAM, readMcpConsentRequest, toSearchParams } from '@/lib/mcp-consent';
 import { ConsentForm } from './_components/consent-form';
 
 // "Do you want to let this app in?" — the MCP OAuth consent screen (docs/07 §5).

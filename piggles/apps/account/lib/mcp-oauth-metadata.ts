@@ -34,7 +34,7 @@
 // documents have to be served here. api-rest builds them, against this brand's
 // sign-in origin, because only it holds the auth instance.
 
-import { platformRequest } from '@wizeworks/auth-client-server';
+export { mcpDiscoveryDocument } from '@wizeworks/auth-client-server';
 
 /** Shared response headers so clients on any origin can read the discovery
  *  document and preflight it. */
@@ -46,9 +46,3 @@ export const OAUTH_DISCOVERY_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Max-Age': '86400',
 };
-
-/** The discovery document, as api-rest built it for this brand. Asked without
- *  the visitor's cookies: it describes the server, not anybody's session. */
-export function mcpDiscoveryDocument(kind: 'oauth' | 'openid'): Promise<unknown> {
-  return platformRequest<unknown>(`mcp-discovery/${kind}`, { requestHeaders: new Headers() });
-}

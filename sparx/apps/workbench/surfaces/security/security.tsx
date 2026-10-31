@@ -43,7 +43,7 @@ export function SecuritySurface() {
   // carries `twoFactorEnabled` only until the session is next re-issued — and on
   // the Piggles console, which does not serve /api/auth/get-session at all, it
   // resolved to undefined and the card's badge read a flat "Off" on accounts
-  // that had it switched on. See app/api/account/shared.ts.
+  // that had it switched on. See wizeworks/packages/auth/src/account-operations.ts.
   const signIn = useSignInMethods();
   const twoFactorEnabled = signIn.data?.twoFactorEnabled === true;
 
