@@ -23,6 +23,12 @@ const EnvSchema = z
     // to sign + verify short-lived internal-trust JWTs that carry the staff
     // session's {tenantId, userId, role} from the dashboard to api-rest.
     SPARX_INTERNAL_JWT_SECRET: z.string().min(32),
+    // The brands whose staff sign-in this process serves, comma-separated
+    // (`sparx,piggles`). Each needs `<BRAND>_BETTER_AUTH_SECRET` and
+    // `<BRAND>_BETTER_AUTH_URL` (the default brand may use the unprefixed
+    // names), and the process must run with PLATFORM_BRAND_SOURCE=request.
+    // Unset → no `/auth/*` routes (routes/auth/brand-auth.ts).
+    PLATFORM_AUTH_BRANDS: z.string().optional(),
     // Shared secret for the CRM scheduled-job CronJobs. k8s CronJobs POST
     // to /internal/crm/* with this in the X-sparx-Internal-Cron-Token
     // header. Optional in dev so a fresh checkout boots; missing-in-prod

@@ -1,0 +1,274 @@
+// Staff sign-in for every brand, served from api-rest (docs/154 §2-4).
+//
+// Each brand's Better Auth instance used to run inside that brand's Next.js app.
+// It now runs here, so the apps hold no database connection and no auth secret.
+// The public address does NOT move: each app rewrites its own `/api/auth/*` to
+// `/auth/<brand>/*` on this service, so cookies stay first-party on the app's
+// domain, emailed links keep working, and the redirect URIs registered with
+// Google and the MCP issuer stay byte-identical.
+//
+//   ALL  /auth/<brand>/*          the brand's Better Auth handler
+//   GET  /auth/<brand>/session    the request's SparxSession, for server renders
+//   POST /auth/<brand>/api-token  the short-lived internal JWT a console's browser
+//                                 calls api-rest with
+//
+// INTERNAL ONLY. api.sparx.works proxies every path to this service, so the
+// routes refuse any request whose Host is a public name. A Next.js rewrite
+// sends the Host of its target (`api-rest.<ns>.svc.cluster.local`), and Caddy
+// sends the public Host it matched, so the Host header tells the two apart. It
+// is read raw, never through `request.hostname`: with `trustProxy` on, Fastify
+// prefers X-Forwarded-Host, which a rewrite sets to the APP's public host.
+//
+// Brands are opt-in through PLATFORM_AUTH_BRANDS. Unset, nothing is mounted and
+// api-rest behaves exactly as before, which is what lets this ship ahead of the
+// apps switching over (docs/154 "Rollout").
+
+import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
+import { SignJWT } from 'jose';
+import {
+  authBrandConfigForBrand,
+  brandAuthHandler,
+  registerAuthBrands,
+  registeredAuthBrands,
+  resolveSession,
+  type SparxSession,
+} from '@wizeworks/auth';
+import { normalizeBrandKey } from '@wizeworks/brand-core';
+import { runAsBrand } from '@wizeworks/brand-core/request-scope';
+import { env } from '../../env.js';
+
+/** Better Auth's own mount point under each brand's base URL. */
+const BETTER_AUTH_BASE_PATH = '/api/auth';
+
+/** Ten minutes, as the consoles minted it. The client refreshes at 80% of life. */
+const API_TOKEN_TTL_SECONDS = 10 * 60;
+
+const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] as const;
+
+/** Never forwarded either way: they describe one connection, not the message. */
+const HOP_BY_HOP = new Set([
+  'connection',
+  'keep-alive',
+  'transfer-encoding',
+  'upgrade',
+  'content-length',
+  'host',
+]);
+
+/** `sparx,piggles` → `['sparx', 'piggles']`. Exported for its test. */
+export function parseBrandList(raw: string | undefined): string[] {
+  if (!raw) return [];
+  return [
+    ...new Set(
+      raw
+        .split(',')
+        .map((b) => b.trim())
+        .filter(Boolean)
+        .map(normalizeBrandKey)
+    ),
+  ];
+}
+
+/**
+ * Whether a raw Host header names this service from inside the cluster (or a
+ * developer's machine), as opposed to a public hostname. Exported for its test.
+ */
+export function isInternalHost(host: string | undefined): boolean {
+  if (!host) return false;
+  const name = host
+    .trim()
+    .toLowerCase()
+    .replace(/:\d+$/, '')
+    .replace(/^\[(.*)\]$/, '$1');
+  return (
+    name === 'localhost' ||
+    name === '127.0.0.1' ||
+    name === '::1' ||
+    name === 'api-rest' ||
+    name.endsWith('.svc') ||
+    name.endsWith('.svc.cluster.local')
+  );
+}
+
+/**
+ * The URL Better Auth must see for a proxied request: the brand's PUBLIC
+ * address, so its origin check, its callback URLs and its cookie attributes all
+ * derive from what the browser used. `rest` is the path after
+ * `/auth/<brand>/`; `rawUrl` is the request's own URL, for its query string.
+ * Exported for its test.
+ */
+export function betterAuthUrl(baseURL: string, rest: string, rawUrl: string): string {
+  const base = new URL(baseURL);
+  const q = rawUrl.indexOf('?');
+  const query = q === -1 ? '' : rawUrl.slice(q);
+  return `${base.origin}${BETTER_AUTH_BASE_PATH}/${rest}${query}`;
+}
+
+function requestHeaders(request: FastifyRequest): Headers {
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(request.headers)) {
+    if (HOP_BY_HOP.has(key.toLowerCase())) continue;
+    if (Array.isArray(value)) for (const v of value) headers.append(key, v);
+    else if (typeof value === 'string') headers.set(key, value);
+  }
+  return headers;
+}
+
+function requestBody(request: FastifyRequest): string | undefined {
+  const method = request.method.toUpperCase();
+  if (method === 'GET' || method === 'HEAD') return undefined;
+  // The scoped parsers below keep json and form bodies as the raw string, so
+  // Better Auth parses exactly what the browser sent.
+  if (typeof request.body === 'string') return request.body;
+  return request.body != null ? JSON.stringify(request.body) : undefined;
+}
+
+async function relay(reply: FastifyReply, response: Response): Promise<void> {
+  reply.status(response.status);
+  response.headers.forEach((value, key) => {
+    const lower = key.toLowerCase();
+    if (lower === 'set-cookie' || HOP_BY_HOP.has(lower)) return;
+    reply.header(key, value);
+  });
+  // getSetCookie(), never forEach: forEach joins several cookies with commas,
+  // and a cookie's Expires attribute contains a comma.
+  const cookies = response.headers.getSetCookie();
+  if (cookies.length > 0) reply.header('set-cookie', cookies);
+  await reply.send(Buffer.from(await response.arrayBuffer()));
+}
+
+/** The brand in the path, if this process serves it. */
+function servedBrand(request: FastifyRequest): string | null {
+  const raw = (request.params as { brand?: string }).brand;
+  if (!raw) return null;
+  const brand = normalizeBrandKey(raw);
+  return registeredAuthBrands().includes(brand) ? brand : null;
+}
+
+/** The body of `POST /auth/<brand>/api-token`. A console adds its own `apiUrl`
+ *  and `propertyId`, which come from its own configuration and cookie. */
+export interface ApiTokenResponse {
+  token: string;
+  /** Absolute epoch-ms expiry, so the client schedules refresh without clock-skew maths. */
+  expiresAt: number;
+  userId: string;
+  role: string;
+  /** Empty when the account has no name set. Display only, never a control. */
+  userName: string;
+  email: string;
+  emailVerified: boolean;
+}
+
+/** Mints the internal JWT api-rest's auth plugin verifies. Exported for its test. */
+export async function mintApiToken(
+  session: SparxSession,
+  secret: string,
+  nowSeconds = Math.floor(Date.now() / 1000)
+): Promise<ApiTokenResponse> {
+  const token = await new SignJWT({
+    // `tid` is stamped HERE, from the session. The browser cannot choose its
+    // own tenant, which is what keeps tenant isolation intact.
+    tid: session.user.tenantId,
+    role: session.user.role,
+    ev: session.user.emailVerified,
+    // For traces only: WizeLens shows the name on its Users page.
+    name: session.user.name ?? undefined,
+  })
+    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+    .setSubject(session.user.id)
+    .setIssuedAt(nowSeconds)
+    .setExpirationTime(nowSeconds + API_TOKEN_TTL_SECONDS)
+    .sign(new TextEncoder().encode(secret));
+  return {
+    token,
+    expiresAt: (nowSeconds + API_TOKEN_TTL_SECONDS) * 1000,
+    userId: session.user.id,
+    role: session.user.role,
+    userName: session.user.name ?? '',
+    email: session.user.email,
+    emailVerified: session.user.emailVerified,
+  };
+}
+
+const brandAuthRoutes: FastifyPluginAsync = async (app) => {
+  const brands = parseBrandList(env.PLATFORM_AUTH_BRANDS);
+  if (brands.length === 0) return;
+
+  // Fail at boot, not on a request. In a process serving two brands, an auth
+  // call outside a brand scope must throw rather than answer as the default
+  // brand, and that only holds in request mode.
+  if (process.env.PLATFORM_BRAND_SOURCE !== 'request') {
+    throw new Error(
+      'PLATFORM_AUTH_BRANDS is set, so api-rest serves more than one brand, but ' +
+        'PLATFORM_BRAND_SOURCE is not "request". Set it, or an unscoped auth call ' +
+        'would silently answer as the default brand.'
+    );
+  }
+  // Throws for a brand with no secret or base URL: refuse to start rather than
+  // serve sign-in that cannot verify a cookie.
+  registerAuthBrands(brands.map(authBrandConfigForBrand));
+
+  app.addHook('onRequest', async (request, reply) => {
+    if (!isInternalHost(request.headers.host)) {
+      await reply.code(404).send({ error: 'not_found' });
+      return reply;
+    }
+    if (!servedBrand(request)) {
+      await reply.code(404).send({ error: 'unknown_brand' });
+      return reply;
+    }
+    return undefined;
+  });
+
+  app.get('/auth/:brand/session', async (request, reply) => {
+    const brand = servedBrand(request)!;
+    const session = await runAsBrand(brand, () => resolveSession(requestHeaders(request)));
+    reply.header('cache-control', 'no-store, private');
+    if (!session) return reply.code(401).send({ error: 'unauthenticated' });
+    return reply.send({ session });
+  });
+
+  app.post('/auth/:brand/api-token', async (request, reply) => {
+    const brand = servedBrand(request)!;
+    const session = await runAsBrand(brand, () => resolveSession(requestHeaders(request)));
+    // Never cache a bearer token — not in a browser, not at Cloudflare.
+    reply.header('cache-control', 'no-store, private');
+    if (!session) return reply.code(401).send({ error: 'unauthenticated' });
+    return reply.send(await mintApiToken(session, env.SPARX_INTERNAL_JWT_SECRET));
+  });
+
+  // The handler itself, in a child scope whose parsers keep json and form
+  // bodies as raw strings (the parsers above it would hand over an object).
+  // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
+  await app.register(async (scoped) => {
+    for (const ct of ['application/json', 'application/x-www-form-urlencoded']) {
+      scoped.addContentTypeParser(ct, { parseAs: 'string' }, (_req, body, done) =>
+        done(null, body)
+      );
+    }
+    scoped.route({
+      method: [...METHODS],
+      url: '/auth/:brand/*',
+      handler: async (request, reply) => {
+        const brand = servedBrand(request)!;
+        await runAsBrand(brand, async () => {
+          const { baseURL, handler } = brandAuthHandler(brand);
+          const url = betterAuthUrl(baseURL, (request.params as { '*': string })['*'], request.url);
+          const headers = requestHeaders(request);
+          headers.set('host', new URL(baseURL).host);
+          const response = await handler(
+            new Request(url, {
+              method: request.method,
+              headers,
+              body: requestBody(request),
+              redirect: 'manual',
+            })
+          );
+          await relay(reply, response);
+        });
+      },
+    });
+  });
+};
+
+export default brandAuthRoutes;

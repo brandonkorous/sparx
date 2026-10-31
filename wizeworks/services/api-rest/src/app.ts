@@ -105,6 +105,7 @@ import operatorPartnerRoutes from './routes/internal/operator-partners.js';
 import operatorUserRoutes from './routes/internal/operator-users.js';
 import operatorSiteRoutes from './routes/internal/operator-sites.js';
 import operatorAnnouncementRoutes from './routes/internal/operator-announcements.js';
+import brandAuthRoutes from './routes/auth/brand-auth.js';
 import contentTypeRoutes from './routes/v1/content/types.js';
 import entryRoutes from './routes/v1/content/entries.js';
 import publishRoutes from './routes/v1/content/publish.js';
@@ -971,6 +972,9 @@ export async function createApp(): Promise<FastifyInstance> {
         // self-authorising via the in-URL object key. Skipping the Bearer
         // check here mirrors the GCS signed-URL contract.
         '/v1/media/_local/',
+        // Staff sign-in, per brand: cookie-authenticated and internal only
+        // (routes/auth/brand-auth.ts). A Bearer header has no meaning there.
+        '/auth/',
       ],
     })
   );
@@ -979,6 +983,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(responseHeadersPlugin);
 
   await app.register(healthRoutes);
+  await app.register(brandAuthRoutes);
   await app.register(domainCheckRoutes);
   await app.register(crmCronRoutes);
   await app.register(commerceCronRoutes);
