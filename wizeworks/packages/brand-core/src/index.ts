@@ -279,6 +279,16 @@ function varName(key: string, suffix: string): string {
     .replace(/[^A-Z0-9]+/g, '_')}_${suffix}`;
 }
 
+/**
+ * The configuration variable one brand's value lives in:
+ * `PIGGLES_BETTER_AUTH_SECRET` from (`piggles`, `BETTER_AUTH_SECRET`). The same
+ * derivation this file uses for every brand value, exported for packages that
+ * keep their own per-brand settings.
+ */
+export function brandEnvName(brand: string, suffix: string): string {
+  return varName(normalizeBrandKey(brand), suffix);
+}
+
 function readEnv(name: string): string | null {
   if (typeof process === 'undefined') return null;
   const value = process.env[name];

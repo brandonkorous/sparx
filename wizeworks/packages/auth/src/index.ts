@@ -2,7 +2,12 @@
 // '@wizeworks/auth/client' explicitly to keep the React/browser-only surface out
 // of server bundles.
 
-export { auth, type Auth } from './server';
+export { auth, authForBrand, registerAuthBrands, registeredAuthBrands, type Auth } from './server';
+export {
+  authBrandConfigForBrand,
+  authBrandConfigFromEnv,
+  type AuthBrandConfig,
+} from './brand-config';
 // The auth-layer Prisma client (connects as `sparx_owner`, so it is NOT subject
 // to the ENABLE-but-not-FORCE RLS on the auth tables). Exported ONLY so callers
 // outside this package can read `members` / `invitations` and their joined
