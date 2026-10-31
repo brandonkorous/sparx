@@ -1,6 +1,6 @@
 # Phase 1: the apps stop touching the database
 
-**Version:** 0.1
+**Version:** 0.2
 **Author:** Brandon Korous
 **Last Updated:** 2026-10-30
 
@@ -58,12 +58,14 @@ the MCP OAuth server. Changing it signs out every connected AI tool and breaks
 Google sign-in. So it stays where it is: `https://app.sparx.works/api/auth` and
 `https://getpiggles.com/api/auth`.
 
-- api-rest mounts each brand's handler at `/auth/<brand>/*`, internal only
-  (Caddy routes no public host to it).
-- Each app's `next.config.mjs` rewrites `/api/auth/:path*` to
-  `${PLATFORM_API_INTERNAL_URL}/auth/<brand>/:path*`. Cookies, redirects and
-  response headers pass through, so sessions stay first-party on the app's own
-  domain.
+- api-rest mounts each brand's handler at `/auth/<brand>/*`, internal only:
+  an `onRequest` hook answers only the internal Host and a served brand, so
+  Caddy routes no public host to it.
+- Each app's `app/api/auth/[...all]/route.ts` forwards to
+  `${SPARX_API_REST_URL}/auth/<brand>/:path*` (`authProxyHandlers` from
+  `@wizeworks/auth-client-server`). A route handler, not a `next.config`
+  rewrite: it relays every `Set-Cookie` line and the redirect untouched, so
+  sessions stay first-party on the app's own domain.
 - The client IP headers Better Auth reads (`x-client-ip`, `x-forwarded-for`)
   are forwarded by the rewrite.
 - The `.well-known` OpenID and OAuth discovery routes proxy the same way.
@@ -90,9 +92,14 @@ Google sign-in. So it stays where it is: `https://app.sparx.works/api/auth` and
 
 ### 5. Every other operation becomes an api-rest endpoint
 
-All under `/auth/<brand>/*`, authenticated by the forwarded session cookie
-unless noted. Each app call site becomes a typed call through
-`@wizeworks/auth-client-server`.
+All under `/auth/<brand>/platform/*`, authenticated by the forwarded session
+cookie unless noted, and acting on the session's own business, never one named
+in the request. The `/platform` prefix keeps them apart from Better Auth's own
+paths: an unknown `/platform/...` path is a 404, never Better Auth. Each app
+call site becomes a typed call through `platformRequest` in
+`@wizeworks/auth-client-server`. A step that writes a session (sign-up,
+accepting an invitation) answers with the cookies as `cookies`, and the app
+sets them with `setSessionCookies`.
 
 | #   | Operation                                                                                                                      | Callers today                                                                                                                                       |
 | --- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -115,6 +122,14 @@ unless noted. Each app call site becomes a typed call through
 routes. With the auth instance in api-rest, both call it directly, and the two
 app routes are deleted.
 
+Done for password reset: it runs `auth.api.requestPasswordReset` in-process
+under the brand's scope, and both apps' `user-password-reset` routes and
+`accountInternalOrigin` are gone. The other direction went too:
+`/internal/tenant/furnish` and `/internal/tenant/billing` (the account app's
+shared-secret calls into api-rest) are now `/platform/business/furnish` and
+`/platform/business/billing`, as the signed-in owner, and
+`SPARX_INTERNAL_FURNISH_TOKEN` is unused.
+
 ### 7. Pure helpers move to a pure entry point
 
 Role constants, `isFriendlySlug`, `SAMPLE_DATA_PACKS`,
@@ -128,7 +143,7 @@ pull in no Prisma and no auth server.
   `AUTH_DATABASE_URL`. Read as `<BRAND>_BETTER_AUTH_*` through brand-core's
   existing `<BRAND>_*` derivation.
 - The frontend pods lose `sparx-app-secrets` and get only what they still use:
-  `PLATFORM_API_INTERNAL_URL`, `NEXT_ACTIONS_KEY_*`, their WizeLens key.
+  `SPARX_API_REST_URL`, `NEXT_ACTIONS_KEY_*`, their WizeLens key.
 
 ## Rollout without signing anyone out
 
@@ -146,6 +161,23 @@ Each step gets a test pass before it ships: sign-up, sign-in (password, email
 code, magic link, passkey, Google), two-step verification, password reset,
 invitation accept, switching business, the getpiggles.com to mypiggles.com
 handoff, an MCP connector authorization, and sign-out.
+
+## Progress (2026-10-30)
+
+Built on branch `phase1/apps-off-the-database`, committed, not pushed:
+
+- The brand request scope, `createAuth(brandConfig)`, and api-rest serving
+  both brands at `/auth/<brand>/*`.
+- The session read, the API token, account security, the handoff and sign-out.
+- The Piggles console (`piggles/apps/workbench`) and the Piggles account app
+  (`piggles/apps/account`) are both on `scripts/check-app-data-access.mjs`'s
+  list: neither imports the database or the auth server, and neither depends
+  on `@wizeworks/db`.
+
+Still to do: sparx's workbench (about 28 files, plus moving
+`app/api/internal/partner-provision` into api-rest), step 8 (the pods drop
+`sparx-app-secrets` and the `BETTER_AUTH_*` values), and the test pass on both
+brands.
 
 ## Definition of done
 

@@ -28,7 +28,7 @@
 // bigint, so the alternative to a string is a 500. Callers parse what they need.
 
 import type { FastifyPluginAsync } from 'fastify';
-import { capacityReport, type MeterReading } from '@wizeworks/usage';
+import { capacityReport, type CapacityReport, type MeterReading } from '@wizeworks/usage';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireAuth } from '@wizeworks/api-core/auth';
 import { prisma, withSystem } from '@wizeworks/db';
@@ -51,6 +51,20 @@ function serialise(meter: MeterReading) {
     // over they are and therefore how much expansion they need.
     fraction: meter.fraction === null ? null : Math.round(meter.fraction * 10_000) / 10_000,
     state: meter.state,
+  };
+}
+
+/** The report as it goes on the wire. Shared with the account app's route
+ *  (routes/auth/platform-business.ts), so the two cannot disagree on a field. */
+export function capacityWire(report: CapacityReport) {
+  return {
+    meters: report.meters.map(serialise),
+    // ISO, or null when this tenant has never been snapshotted. The surface
+    // says "not measured yet" rather than drawing empty bars: a tenant
+    // provisioned this afternoon has no row, and a bar at zero would tell them
+    // they had used nothing when the truth is that nobody has looked.
+    measuredAt: report.measuredAt?.toISOString() ?? null,
+    allowanceSource: report.allowanceSource,
   };
 }
 
@@ -81,15 +95,7 @@ const usageRoutes: FastifyPluginAsync = (app) => {
       );
     }
 
-    return ok({
-      meters: report.meters.map(serialise),
-      // ISO, or null when this tenant has never been snapshotted. The surface
-      // says "not measured yet" rather than drawing empty bars: a tenant
-      // provisioned this afternoon has no row, and a bar at zero would tell them
-      // they had used nothing when the truth is that nobody has looked.
-      measuredAt: report.measuredAt?.toISOString() ?? null,
-      allowanceSource: report.allowanceSource,
-    });
+    return ok(capacityWire(report));
   });
 
   return Promise.resolve();

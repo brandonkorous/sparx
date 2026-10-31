@@ -21,3 +21,9 @@ export {
   platformApiUrl,
   PlatformAuthUnavailableError,
 } from './platform-api';
+export {
+  platformRequest,
+  PlatformRequestError,
+  setSessionCookies,
+  type PlatformRequestInit,
+} from './platform-request';

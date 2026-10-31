@@ -41,7 +41,6 @@ import {
   authBrandConfigForBrand,
   brandAuthHandler,
   registerAuthBrands,
-  registeredAuthBrands,
   resolveSession,
   runAccountOperation,
   mintSessionHandoff,
@@ -52,6 +51,9 @@ import {
 import { normalizeBrandKey } from '@wizeworks/brand-core';
 import { runAsBrand } from '@wizeworks/brand-core/request-scope';
 import { env } from '../../env.js';
+import platformBusinessRoutes from './platform-business.js';
+import platformFlowRoutes from './platform-flows.js';
+import { HOP_BY_HOP, jsonBody, requestHeaders, servedBrand } from './platform-scope.js';
 
 /** Better Auth's own mount point under each brand's base URL. */
 const BETTER_AUTH_BASE_PATH = '/api/auth';
@@ -60,16 +62,6 @@ const BETTER_AUTH_BASE_PATH = '/api/auth';
 const API_TOKEN_TTL_SECONDS = 10 * 60;
 
 const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] as const;
-
-/** Never forwarded either way: they describe one connection, not the message. */
-const HOP_BY_HOP = new Set([
-  'connection',
-  'keep-alive',
-  'transfer-encoding',
-  'upgrade',
-  'content-length',
-  'host',
-]);
 
 /** `sparx,piggles` → `['sparx', 'piggles']`. Exported for its test. */
 export function parseBrandList(raw: string | undefined): string[] {
@@ -120,16 +112,6 @@ export function betterAuthUrl(baseURL: string, rest: string, rawUrl: string): st
   return `${base.origin}${BETTER_AUTH_BASE_PATH}/${rest}${query}`;
 }
 
-function requestHeaders(request: FastifyRequest): Headers {
-  const headers = new Headers();
-  for (const [key, value] of Object.entries(request.headers)) {
-    if (HOP_BY_HOP.has(key.toLowerCase())) continue;
-    if (Array.isArray(value)) for (const v of value) headers.append(key, v);
-    else if (typeof value === 'string') headers.set(key, value);
-  }
-  return headers;
-}
-
 function requestBody(request: FastifyRequest): string | undefined {
   const method = request.method.toUpperCase();
   if (method === 'GET' || method === 'HEAD') return undefined;
@@ -151,22 +133,6 @@ async function relay(reply: FastifyReply, response: Response): Promise<void> {
   const cookies = response.headers.getSetCookie();
   if (cookies.length > 0) reply.header('set-cookie', cookies);
   await reply.send(Buffer.from(await response.arrayBuffer()));
-}
-
-/** A parsed JSON body as a plain record; anything else reads as empty. */
-function jsonBody(request: FastifyRequest): Record<string, unknown> {
-  const body = request.body;
-  return body && typeof body === 'object' && !Array.isArray(body)
-    ? (body as Record<string, unknown>)
-    : {};
-}
-
-/** The brand in the path, if this process serves it. */
-function servedBrand(request: FastifyRequest): string | null {
-  const raw = (request.params as { brand?: string }).brand;
-  if (!raw) return null;
-  const brand = normalizeBrandKey(raw);
-  return registeredAuthBrands().includes(brand) ? brand : null;
 }
 
 /** The body of `POST /auth/<brand>/platform/api-token`. A console adds its own `apiUrl`
@@ -307,6 +273,13 @@ const brandAuthRoutes: FastifyPluginAsync = async (app) => {
       await runAsBrand(brand, () => consumeSessionHandoff(brand, body.token, audience))
     );
   });
+
+  // The person's own business (consent, setup, billing) and the sign-in flows
+  // that need more than Better Auth's endpoints (sign-up, invitations, MCP
+  // consent). Registered after the hook above, so they answer only to the
+  // internal Host and a served brand.
+  await app.register(platformBusinessRoutes);
+  await app.register(platformFlowRoutes);
 
   app.post('/auth/:brand/platform/sign-out', async (request, reply) => {
     const brand = servedBrand(request)!;

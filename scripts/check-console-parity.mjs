@@ -256,7 +256,33 @@ const COLLAPSE = [
  * `only` is the side that has it. A reason that amounts to "the other one just
  * doesn't" is not a reason — it is the gap, written down and waved past.
  */
+/** The apps come off the database one release at a time (docs/154 "Rollout"):
+ *  the Piggles console has switched, and sparx workbench is next. Every entry
+ *  that carries this reason goes when workbench switches. */
+const OFF_THE_DATABASE_ROLLOUT =
+  'docs/154 rollout: the Piggles console reaches accounts through api-rest, sparx workbench has not switched yet. Delete when it does.';
+
 const EXCEPTIONS = [
+  ...[
+    'app/api/account/password',
+    'app/api/account/sessions',
+    'app/api/account/sign-in-methods',
+    // Its three child routes go with it: an exception covers what is under it.
+    'app/api/account/two-factor',
+  ].map((path) => ({ axis: 'routes', only: 'sparx', path, why: OFF_THE_DATABASE_ROLLOUT })),
+  {
+    axis: 'routes',
+    only: 'piggles',
+    path: 'app/api/account/[...op]',
+    why: OFF_THE_DATABASE_ROLLOUT,
+  },
+  { axis: 'deps', only: 'sparx', path: '@wizeworks/db', why: OFF_THE_DATABASE_ROLLOUT },
+  {
+    axis: 'deps',
+    only: 'piggles',
+    path: '@wizeworks/auth-client-server',
+    why: OFF_THE_DATABASE_ROLLOUT,
+  },
   // ── Windows mode: what maximize means on a floating window ─────────────
   {
     axis: 'lib',
@@ -337,12 +363,6 @@ const EXCEPTIONS = [
     only: 'sparx',
     path: 'app/api/auth',
     why: 'Better Auth is mounted by the app that owns the credential screens — workbench for sparx, the account app for Piggles.',
-  },
-  {
-    axis: 'routes',
-    only: 'sparx',
-    path: 'app/api/internal/user-password-reset',
-    why: 'staff-initiated reset, issued by whichever app mounts Better Auth.',
   },
   {
     axis: 'routes',

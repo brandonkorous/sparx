@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getSession } from '@wizeworks/auth';
+import { getSession } from '@wizeworks/auth-client-server';
 import { mintHandoffUrl } from '@piggles/auth-handoff';
 import { safeInternalPath } from '@piggles/config';
 import { readConsent } from '@/lib/consent';
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
   // never resolve to "carry on and start the tracker" — the ask is cheap and
   // idempotent, so an unreadable record costs one screen rather than one
   // unconsented session.
-  const consent = await readConsent(session.user.id, session.user.homeTenantId);
+  const consent = await readConsent();
   if (!consent) {
     return sameOriginRedirectWithNext('/cookie-choices', `/handoff${request.nextUrl.search}`);
   }

@@ -98,15 +98,9 @@ importers:
       '@wizeworks/auth':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/auth
-      '@wizeworks/client-ip':
+      '@wizeworks/auth-client-server':
         specifier: workspace:*
-        version: link:../../../wizeworks/packages/client-ip
-      '@wizeworks/db':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/db
-      '@wizeworks/events':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/events
+        version: link:../../../wizeworks/packages/auth-client-server
       '@wizeworks/lens-node':
         specifier: 0.3.0-alpha.11
         version: 0.3.0-alpha.11

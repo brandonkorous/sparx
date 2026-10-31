@@ -185,6 +185,65 @@ interface HandoffPayload {
 }
 
 /**
+ * Better Auth's `Set-Cookie` lines, as cookies an app can set exactly as given.
+ *
+ * A flow that signs somebody in or changes their session in api-rest (sign-up,
+ * accepting an invitation) answers with `Set-Cookie` lines meant for the
+ * browser. The app in front of it sets cookies through Next, which takes a
+ * name, a value and options, and URI-encodes the value itself; Better Auth
+ * wrote the value already encoded. So each value is decoded here, or it would
+ * reach the browser encoded twice and fail to verify. When a cookie is set more
+ * than once (a session written, then replaced), the last line wins, as it would
+ * in the browser. Exported for its test.
+ */
+export function sessionCookiesFromSetCookie(
+  lines: readonly string[],
+  now: number = Date.now()
+): SessionCookie[] {
+  const byName = new Map<string, SessionCookie>();
+  for (const line of lines) {
+    const [pair = '', ...attributes] = line.split(';').map((part) => part.trim());
+    const eq = pair.indexOf('=');
+    if (eq <= 0) continue;
+    const name = pair.slice(0, eq);
+    let value = pair.slice(eq + 1);
+    try {
+      value = decodeURIComponent(value);
+    } catch {
+      // Not encoded after all: keep it as written.
+    }
+    const options: SessionCookie['options'] = {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'lax',
+      path: '/',
+    };
+    let expires: number | null = null;
+    for (const attribute of attributes) {
+      const at = attribute.indexOf('=');
+      const key = (at === -1 ? attribute : attribute.slice(0, at)).toLowerCase();
+      const raw = at === -1 ? '' : attribute.slice(at + 1);
+      if (key === 'httponly') options.httpOnly = true;
+      else if (key === 'secure') options.secure = true;
+      else if (key === 'path') options.path = raw || '/';
+      else if (key === 'domain' && raw) options.domain = raw;
+      else if (key === 'max-age' && /^-?\d+$/.test(raw)) options.maxAge = Number(raw);
+      else if (key === 'expires') expires = Date.parse(raw);
+      else if (key === 'samesite') {
+        const same = raw.toLowerCase();
+        if (same === 'strict' || same === 'none' || same === 'lax') options.sameSite = same;
+      }
+    }
+    // Max-Age wins over Expires, as it does in the browser.
+    if (options.maxAge === undefined && expires !== null && !Number.isNaN(expires)) {
+      options.maxAge = Math.max(0, Math.round((expires - now) / 1000));
+    }
+    byName.set(name, { name, value, options });
+  }
+  return [...byName.values()];
+}
+
+/**
  * Mint a one-time token for the session these headers carry. Null when there
  * is no session.
  */

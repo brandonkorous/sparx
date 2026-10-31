@@ -14,8 +14,9 @@
 // session (piggles/CLAUDE.md, "The three surfaces"). Every advertised endpoint
 // would have been a 404.
 //
-// So the authorization server is this app, which is the one place in Piggles that
-// mounts Better Auth. The consent screen lives here for the same reason: it has
+// So the authorization server is this app's origin, the one place in Piggles
+// that serves Better Auth's routes (proxied to api-rest, which runs it,
+// docs/154). The consent screen lives here for the same reason: it has
 // to be able to send an unauthenticated visitor to a sign-in page that exists.
 //
 // ── AND AS OF 2026-08-23 SOMETHING ACTUALLY ARRIVES HERE ────────────────────
@@ -30,9 +31,10 @@
 // origin. See docs/07 §5 and piggles/STATUS.md.
 //
 // Better Auth mounts its handler under /api/auth, so the root /.well-known
-// documents have to be served here.
+// documents have to be served here. api-rest builds them, against this brand's
+// sign-in origin, because only it holds the auth instance.
 
-import { auth } from '@wizeworks/auth';
+import { platformRequest } from '@wizeworks/auth-client-server';
 
 /** Shared response headers so clients on any origin can read the discovery
  *  document and preflight it. */
@@ -45,27 +47,8 @@ export const OAUTH_DISCOVERY_HEADERS: Record<string, string> = {
   'Access-Control-Max-Age': '86400',
 };
 
-/**
- * The provider's own discovery document, as JSON.
- *
- * Built by `@better-auth/mcp` from the live configuration rather than written
- * out here: the endpoints (`/api/auth/oauth2/*`), the signing keys
- * (`/api/auth/jwks`), the grant types and the scope list (our whole MCP
- * vocabulary, `MCP_ALL_OAUTH_SCOPES`) all come from the same options the
- * provider enforces, so the document cannot advertise something the server
- * does not do. The hand-written 1.6 version listed `/mcp/*` endpoints and no
- * key set, which was true then and would be wrong now. `issuer` is this origin
- * because the jwt() plugin is configured with it (@wizeworks/auth server.ts),
- * and that is the authorization server api-mcp names for this brand.
- *
- * `openid` is the OpenID Provider Metadata alias some MCP clients probe
- * instead; it carries the same endpoints plus the OIDC fields.
- */
-export async function mcpDiscoveryDocument(
-  kind: 'oauth' | 'openid',
-  request: Request
-): Promise<unknown> {
-  return kind === 'openid'
-    ? await auth.api.getOpenIdConfig({ request })
-    : await auth.api.getOAuthServerConfig({ request });
+/** The discovery document, as api-rest built it for this brand. Asked without
+ *  the visitor's cookies: it describes the server, not anybody's session. */
+export function mcpDiscoveryDocument(kind: 'oauth' | 'openid'): Promise<unknown> {
+  return platformRequest<unknown>(`mcp-discovery/${kind}`, { requestHeaders: new Headers() });
 }

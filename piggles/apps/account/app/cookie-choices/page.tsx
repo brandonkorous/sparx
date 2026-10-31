@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { requireSession } from '@wizeworks/auth';
+import { requireSession } from '@wizeworks/auth-client-server';
 import { safeInternalPath, PRODUCT } from '@piggles/config';
 import { AuthShell } from '@/components/auth-shell';
 import { ConsentChoice } from '@/components/consent-choice';
@@ -42,11 +42,11 @@ export default async function CookieChoicesPage({
 }: {
   searchParams: Promise<{ next?: string }>;
 }) {
-  const session = await requireSession();
+  await requireSession();
   const params = await searchParams;
   const next = safeInternalPath(params.next, '/account');
 
-  const consent = await readConsent(session.user.id, session.user.homeTenantId);
+  const consent = await readConsent();
   const first = consent === null;
 
   // An older record can carry an empty `at`, and `new Date('')` renders the

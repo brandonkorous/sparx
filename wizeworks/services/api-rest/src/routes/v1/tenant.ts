@@ -1011,7 +1011,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     //
     // `state.completed.template` is written by the dashboard wizard's template
     // step and by nothing else — so a tenant furnished through
-    // `/internal/tenant/furnish` (which is how a template is actually chosen
+    // the account app's furnish call (which is how a template is actually chosen
     // during signup) had a blueprint installed and a flag still reading false.
     // The checklist then asked them to choose a template they had already
     // chosen, with a CTA that would install a second one over the top.

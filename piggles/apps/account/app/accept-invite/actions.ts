@@ -1,22 +1,18 @@
 'use server';
 
-import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import {
-  auth,
-  authEmailsCanLeave,
-  authPrisma,
-  getSession,
-  invitationMatchesUserBrand,
-  publishAuthEmail,
-} from '@wizeworks/auth';
-import { appOrigin } from '@wizeworks/links/server';
+  platformRequest,
+  PlatformRequestError,
+  setSessionCookies,
+  type SessionCookie,
+} from '@wizeworks/auth-client-server';
+import { requestConfirmLink } from '@/lib/confirm-link';
 
 // Accepting a team invitation (docs/114 §A.4).
 //
-// These run through the Better Auth organization plugin, which lives in THIS
-// app's process (app/api/auth/[...all]) — the only Piggles app that mounts it.
-// That is also why the whole invite flow is here rather than in the console: an
+// These run in api-rest, which holds the Better Auth organization plugin
+// (docs/154). The flow's screens are here rather than in the console because an
 // invitee is not signed in yet, and the console has no sign-in page.
 //
 // Accepting adds the signed-in user to the inviting business and makes it
@@ -27,115 +23,38 @@ export interface InviteActionResult {
   error?: string;
 }
 
+/** api-rest's own sentence when it sent one, else the fallback. */
 function errorMessage(err: unknown, fallback: string): string {
-  if (err && typeof err === 'object' && 'body' in err) {
-    const body = (err as { body?: { message?: string } }).body;
-    if (body?.message) return body.message;
+  if (err instanceof PlatformRequestError) {
+    if (err.status === 401) return 'You are signed out. Sign in again to accept the invitation.';
+    const message = err.body.error;
+    if (typeof message === 'string' && message) return message;
   }
-  if (err instanceof Error && err.message) return err.message;
   return fallback;
 }
 
-/** Accept an invitation — the accepting session must be the invited address —
- *  then make that business the active one. */
 export async function acceptInvitation(invitationId: string): Promise<InviteActionResult> {
-  // An account belongs to one product and so does a business, so joining one to
-  // the other is a membership nothing can render. Better Auth's accept only
-  // compares the two email addresses, and those legitimately match — the same
-  // person may hold an account on each product under one address. So the check
-  // has to happen here, before the membership is written.
-  //
-  // Reachable by opening the other product's invitation link while signed in
-  // here. Rare, and cheap to refuse.
-  const session = await getSession();
-  if (session && !(await invitationMatchesUserBrand(invitationId, session.user.id))) {
-    return {
-      ok: false,
-      error:
-        'That invitation was sent from somewhere else and cannot be accepted with this account. Ask whoever invited you to send it again.',
-    };
-  }
-
-  let organizationId: string | null = null;
   try {
-    const result = (await auth.api.acceptInvitation({
-      body: { invitationId },
-      headers: await headers(),
-    })) as { member?: { organizationId?: string }; invitation?: { organizationId?: string } };
-    organizationId = result?.member?.organizationId ?? result?.invitation?.organizationId ?? null;
+    // Joining switches the session to the business, so the new session cookie
+    // comes back with the answer; without it the next hop lands somewhere else.
+    const { cookies } = await platformRequest<{ ok: true; cookies: SessionCookie[] }>(
+      `invitations/${encodeURIComponent(invitationId)}/accept`,
+      { body: {} }
+    );
+    await setSessionCookies(cookies);
   } catch (err) {
     return { ok: false, error: errorMessage(err, 'We could not accept that invitation.') };
-  }
-
-  if (organizationId) {
-    // Close the loop for whoever sent it. Best-effort: joining already
-    // succeeded, so a failed notification must not fail the join.
-    try {
-      const invitation = await authPrisma.invitation.findUnique({
-        where: { id: invitationId },
-        select: {
-          email: true,
-          organizationId: true,
-          organization: { select: { name: true, platformBrand: true } },
-          inviter: { select: { name: true, email: true } },
-        },
-      });
-      if (invitation?.inviter?.email) {
-        await publishAuthEmail({
-          tenantId: invitation.organizationId,
-          actorId: null,
-          template: 'invitation-accepted',
-          to: invitation.inviter.email,
-          props: {
-            inviterName: invitation.inviter.name ?? undefined,
-            inviteeEmail: invitation.email,
-            orgName: invitation.organization.name,
-            // The INVITER's console, resolved from the business's own brand.
-            // This used to read BETTER_AUTH_URL, which on this app is the
-            // account domain — so the "they joined" email pointed the owner at a
-            // sign-in page rather than at their team.
-            dashboardUrl: appOrigin(invitation.organization.platformBrand),
-          },
-        });
-      }
-    } catch {
-      /* non-fatal — the invitation was still accepted */
-    }
-
-    // Best-effort: joining succeeded; if this hiccups they can still switch
-    // businesses from the picker.
-    try {
-      await auth.api.setActiveOrganization({
-        body: { organizationId },
-        headers: await headers(),
-      });
-    } catch {
-      /* non-fatal */
-    }
   }
   revalidatePath('/', 'layout');
   return { ok: true };
 }
 
-/** Resend the verification link for an invitee whose address matches but is not
- *  verified yet. The link returns them to this same invitation. */
-export async function resendInviteVerification(
-  email: string,
-  invitationId: string
-): Promise<InviteActionResult> {
-  // Better Auth swallows a send that cannot leave (sparx persona issue 337).
-  if (!authEmailsCanLeave()) {
-    return { ok: false, error: 'Email cannot be sent from here right now, so no link went.' };
-  }
-  try {
-    await auth.api.sendVerificationEmail({
-      body: {
-        email,
-        callbackURL: `/accept-invite?invitation=${encodeURIComponent(invitationId)}`,
-      },
-    });
-    return { ok: true };
-  } catch (err) {
-    return { ok: false, error: errorMessage(err, 'We could not send that email.') };
-  }
+/** A fresh confirm link that comes back to this invitation. It goes to the
+ *  signed-in person's own address, which the page has already checked is the
+ *  one invited. */
+export async function resendInviteVerification(invitationId: string): Promise<InviteActionResult> {
+  const sent = await requestConfirmLink(
+    `/accept-invite?invitation=${encodeURIComponent(invitationId)}`
+  );
+  return sent.ok ? { ok: true } : { ok: false, error: sent.error };
 }

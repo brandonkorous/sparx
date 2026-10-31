@@ -68,6 +68,7 @@ export {
 export {
   consumeSessionHandoff,
   mintSessionHandoff,
+  sessionCookiesFromSetCookie,
   signOutSession,
   type ConsumeHandoffResult,
   type SessionCookie,

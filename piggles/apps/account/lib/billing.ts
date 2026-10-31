@@ -1,16 +1,14 @@
 import 'server-only';
 
-import { headers } from 'next/headers';
-import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
+import { platformRequest } from '@wizeworks/auth-client-server';
 
-// Paying for Piggles: the account app asks api-rest's internal billing routes,
-// which hold the Stripe key. This app checks the session and role first.
+// Paying for Piggles: api-rest holds the Stripe key, and acts on the business
+// of the person whose session this request carries (docs/154). It checks the
+// role itself too; this app checks it first only to say so kindly.
 //
-// Every call is one signed-in person's live request (an account page render or a
-// billing action), so it carries their client chain: api-rest then rate-limits
-// and records that person rather than this pod, whose address everyone shares.
-
-const TOKEN_HEADER = 'X-sparx-Internal-Furnish-Token';
+// Every call is one signed-in person's live request, so it carries their client
+// chain: api-rest then rate-limits and records that person rather than this
+// pod, whose address everyone shares.
 
 export interface HeldDiscount {
   coupon: string;
@@ -39,56 +37,24 @@ export interface BillingSummary {
 export type CheckoutReason = 'unconfigured' | 'no_paid_modules' | 'already_active';
 export type CheckoutResult = { url: string } | { url: null; reason: CheckoutReason };
 
-/** Base URL and token, or null when this environment has no route to billing. */
-function internal(): { base: string; token: string } | null {
-  const base = process.env.PIGGLES_API_REST_URL;
-  const token = process.env.SPARX_INTERNAL_FURNISH_TOKEN;
-  return base && token ? { base: base.replace(/\/$/, ''), token } : null;
-}
-
-async function call<T>(path: string, init: { method: 'GET' | 'POST'; body?: unknown }) {
-  const target = internal();
-  if (!target) throw new Error('Billing is not wired: PIGGLES_API_REST_URL or its token is unset.');
-  const response = await fetch(`${target.base}${path}`, {
-    method: init.method,
-    headers: {
-      'content-type': 'application/json',
-      [TOKEN_HEADER]: target.token,
-      ...forwardedFor(await headers()),
-    },
-    ...(init.body ? { body: JSON.stringify(init.body) } : {}),
-    signal: AbortSignal.timeout(20_000),
-    cache: 'no-store',
-  });
-  if (!response.ok) throw new Error(`Billing request failed: ${String(response.status)}`);
-  return ((await response.json()) as { data: T }).data;
-}
-
-/** What the account page says about paying. Null when billing cannot be read,
- *  which the page shows as its own state rather than as "nothing to pay". */
-export async function readBilling(tenantId: string): Promise<BillingSummary | null> {
+/** What the account page shows, or null when billing could not be read. The
+ *  page renders without it rather than failing. */
+export async function readBilling(): Promise<BillingSummary | null> {
   try {
-    const q = `?tenantId=${encodeURIComponent(tenantId)}`;
-    const data = await call<{ billing: BillingSummary | null }>(`/internal/tenant/billing${q}`, {
-      method: 'GET',
-    });
-    return data.billing;
+    return (await platformRequest<{ billing: BillingSummary | null }>('business/billing')).billing;
   } catch {
     return null;
   }
 }
 
-export function openCheckout(tenantId: string, returnUrl: string): Promise<CheckoutResult> {
-  return call<CheckoutResult>('/internal/tenant/billing/checkout', {
-    method: 'POST',
-    body: { tenantId, returnUrl },
-  });
+export function openCheckout(returnUrl: string): Promise<CheckoutResult> {
+  return platformRequest<CheckoutResult>('business/billing/checkout', { body: { returnUrl } });
 }
 
-export async function openPortal(tenantId: string, returnUrl: string): Promise<string | null> {
-  const data = await call<{ url: string | null }>('/internal/tenant/billing/portal', {
-    method: 'POST',
-    body: { tenantId, returnUrl },
-  });
-  return data.url;
+export async function openPortal(returnUrl: string): Promise<string | null> {
+  return (
+    await platformRequest<{ url: string | null }>('business/billing/portal', {
+      body: { returnUrl },
+    })
+  ).url;
 }

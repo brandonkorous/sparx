@@ -1,17 +1,20 @@
 'use server';
 
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { auth, signUpMerchant, SignUpError } from '@wizeworks/auth';
-import { clientIpFromChain } from '@wizeworks/client-ip';
+import {
+  platformRequest,
+  PlatformRequestError,
+  setSessionCookies,
+  type SessionCookie,
+} from '@wizeworks/auth-client-server';
 import { normalizeEmail, PRODUCT, safeInternalPath } from '@piggles/config';
 import { acquisitionFrom } from '@/lib/attribution';
-import { writeConsent } from '@/lib/consent';
 import { text } from '@/lib/form';
 
 // Account creation for Piggles.
 //
-// Reuses the platform's `signUpMerchant`, which is the ONE place that knows a
+// Reuses the platform's `signUpMerchant` (in api-rest, which holds the database
+// and the auth instance, docs/154), which is the ONE place that knows a
 // new account means: a tenant row, its primary site, an always-on subdomain,
 // the owner user, the owner membership, the legal acceptance record, the trial
 // clock and the welcome email. Piggles must not reimplement any of that — a
@@ -94,67 +97,52 @@ export async function signUpAction(_prev: SignUpState, formData: FormData): Prom
   // collects an agreement nobody made.
   const analytics = formData.get('analytics') === 'on';
 
-  const h = await headers();
-
-  let account: { userId: string; tenantId: string };
+  let created: { signedIn: boolean; cookies: SessionCookie[] };
   try {
-    account = await signUpMerchant({
-      email,
-      password,
-      name,
-      // The legal-acceptance record's address, read from the right past Caddy and
-      // Cloudflare. The first hop is the one the client writes.
-      ipAddress: clientIpFromChain(h.get('x-forwarded-for')),
-      userAgent: h.get('user-agent'),
-      acquisition: acquisitionFrom(from, attribution),
-      platformBrand: 'piggles',
-      zoneDomain: PRODUCT.tenantSites.suffix,
+    created = await platformRequest('sign-up', {
+      body: {
+        email,
+        password,
+        name,
+        acquisition: acquisitionFrom(from, attribution),
+        // The analytics answer, recorded as consent. Best-effort in api-rest,
+        // and the ONE thing there that is allowed to be: if it fails the
+        // account is still correct and nothing is measured; the record is
+        // simply absent, which reads as "never asked", so /handoff asks on the
+        // next screen. Failing the signup over it would throw away a working
+        // account to re-ask a question the person has already answered.
+        analytics,
+        zoneDomain: PRODUCT.tenantSites.suffix,
+      },
     });
   } catch (err) {
-    if (err instanceof SignUpError) {
+    if (err instanceof PlatformRequestError && err.status === 409) {
       // EMAIL_TAKEN is the one worth wording carefully: it confirms an address
       // has an account, which is unavoidable on a signup form (the alternative
       // is letting somebody believe they have signed up when they have not).
       // So it is stated plainly and paired with the way forward.
-      if (err.code === 'EMAIL_TAKEN') {
-        return { error: 'There is already an account with that email. Try signing in instead.' };
-      }
-      return { error: err.message };
+      return { error: 'There is already an account with that email. Try signing in instead.' };
+    }
+    if (err instanceof PlatformRequestError && err.status === 400) {
+      const message = err.body.message;
+      if (typeof message === 'string' && message) return { error: message };
     }
     // Anything else is ours, not theirs. Say so rather than showing a stack
     // trace's worth of nothing.
     return { error: 'Something went wrong at our end. Please try again in a moment.' };
   }
 
-  // Best-effort, and the ONE thing in this file that is allowed to be. If this
-  // write fails the account is still correct and nothing is being measured —
-  // the record is simply absent, which reads as "never asked", so /handoff asks
-  // on the next screen. Failing the signup over it would throw away a working
-  // account to re-ask a question the person has already answered.
-  try {
-    await writeConsent(account.userId, account.tenantId, analytics);
-  } catch (err) {
-    console.error(
-      JSON.stringify({
-        level: 'error',
-        userId: account.userId,
-        err: err instanceof Error ? err.message : String(err),
-        msg: 'piggles signup: recording the analytics consent answer failed',
-      })
-    );
-  }
-
-  // Provisioning succeeded; now establish the session. Separate call on purpose
-  // — `signUpMerchant` writes the rows and deliberately does not mint a session,
-  // so the same function backs the OAuth path where Better Auth owns sign-in.
-  try {
-    await auth.api.signInEmail({ body: { email, password }, headers: h });
-  } catch {
+  // Provisioning succeeded and api-rest signed them in. Separate steps on its
+  // side on purpose: `signUpMerchant` writes the rows and does not mint a
+  // session, so the same function backs the OAuth path where Better Auth owns
+  // sign-in.
+  if (!created.signedIn) {
     // The account genuinely exists at this point, so sending them to sign in is
     // accurate and recoverable. Claiming failure would be a lie that makes them
     // try to sign up a second time and hit EMAIL_TAKEN on their own address.
     return { error: 'Your account was created, but signing you in failed. Please sign in.' };
   }
+  await setSessionCookies(created.cookies);
 
   // OUTSIDE every try/catch: `redirect()` works by throwing a control-flow
   // signal, so a `catch` around it swallows the navigation and the form appears

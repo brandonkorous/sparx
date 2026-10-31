@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
-import { getSession } from '@wizeworks/auth';
-import { prisma } from '@wizeworks/db';
+import { getSession } from '@wizeworks/auth-client-server';
+import { readBusiness } from '@/lib/account-load';
 import { acquisitionFrom } from '@/lib/attribution';
 import { recordAcquisitionOnce } from '@/lib/late-acquisition';
 import { needsSetup } from '@/lib/needs-setup';
@@ -19,17 +19,13 @@ export default async function AccountRoot({ searchParams }: { searchParams: Prom
   const session = await getSession();
   if (!session) redirect('/sign-in');
 
-  const tenantId = session.user.tenantId;
   // A Google account made from the sign-in page arrives with its source here
   // (lib/signup-source). Written once, on a fresh business only; never blocks.
   const params = await searchParams;
-  await recordAcquisitionOnce(tenantId, acquisitionFrom(one(params.from), one(params.a))).catch(
+  await recordAcquisitionOnce(acquisitionFrom(one(params.from), one(params.a))).catch(
     () => undefined
   );
 
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { settings: true },
-  });
-  redirect(tenant && needsSetup(tenant.settings) ? '/onboarding' : '/account');
+  const business = await readBusiness();
+  redirect(business && needsSetup(business) ? '/onboarding' : '/account');
 }

@@ -1,6 +1,6 @@
 # Piggles — build status
 
-**Last updated:** 2026-08-17
+**Last updated:** 2026-10-30
 
 Where the Piggles build actually is, what is decided, and what is known-broken.
 Read [CLAUDE.md](CLAUDE.md) for the rules and [DESIGN.md](DESIGN.md) for the
@@ -240,10 +240,11 @@ removed, it is a different flow. `step-payments` differs too (no card at signup)
 
 **Superseded 2026-08-15.** `apps/account/lib/activate-modules.ts` is DELETED and
 onboarding no longer activates anything itself. It names the business, records
-`settings.piggles.railGroups`, and calls
-`POST /internal/tenant/furnish` (`lib/furnish.ts`, shared-secret
-`SPARX_INTERNAL_FURNISH_TOKEN`). That endpoint does the whole second half, in
-order: **modules → industry starter → blueprint → sample data.**
+`settings.piggles.railGroups`, and calls `POST /auth/piggles/platform/business/furnish`
+(`lib/furnish.ts`, as the signed-in owner; it was `/internal/tenant/furnish`
+with a shared secret until the apps came off the database on 2026-10-30, see
+docs/154). That endpoint does the whole second half, in order:
+**modules → industry starter → blueprint → sample data.**
 
 **`module.activated` RIDES TWO BUSES, AND THIS APP WAS ONLY ON ONE.** That is why
 the work moved, and it is the defect worth remembering. `lib/module-toggle.ts`
@@ -1466,7 +1467,7 @@ it needs the pipeline, or a local `migrate dev`. A look's history is empty until
 ## Next
 
 1. **Sign up once, and watch what a new business actually gets.** The whole
-   furnishing path — onboarding → `/internal/tenant/furnish` → modules → starter
+   furnishing path — onboarding → `/platform/business/furnish` → modules → starter
    → blueprint → sample data → handoff → the workbench — has NEVER been run by a
    person. It is typechecked, linted, schema-validated and swept; not one signup
    has gone through it. Everything below "how to resume" applies with force here:

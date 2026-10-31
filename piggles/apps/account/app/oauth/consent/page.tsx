@@ -4,16 +4,14 @@ import { Alert, Text } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
 import { AppearanceControl } from '@/components/appearance-control';
 import { APP_BY_ID, MODULE_TO_APP, moduleTerm } from '@piggles/config';
+import { getSession } from '@wizeworks/auth-client-server';
 import {
-  CONSENT_ERROR_PARAM,
-  getSession,
   grantableScopesForRole,
   capBusinessScopes,
   MCP_SCOPE_CATALOG,
-  readMcpConsentRequest,
-  toSearchParams,
   type StaffRole,
-} from '@wizeworks/auth';
+} from '@wizeworks/auth/mcp-scopes';
+import { CONSENT_ERROR_PARAM, readMcpConsentRequest, toSearchParams } from '@/lib/mcp-consent';
 import { ConsentForm } from './_components/consent-form';
 
 // "Do you want to let this app in?" — the MCP OAuth consent screen (docs/07 §5).
@@ -97,7 +95,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
     redirect(`/sign-in?callbackURL=${encodeURIComponent(`/oauth/consent?${sp.toString()}`)}`);
   }
 
-  const { client, redirectUri, requestedScopes, oauthQuery } = read.request;
+  const { clientName: rawClientName, redirectUri, requestedScopes, oauthQuery } = read.request;
   const role = session.user.role as StaffRole;
   // Only what the client asked for AND this role may give: the provider refuses
   // to approve a scope that was not in the signed request.
@@ -107,7 +105,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
   );
   const defaultSelected = capBusinessScopes(requestedScopes, role);
 
-  const rawName = client.name?.trim();
+  const rawName = rawClientName?.trim();
   const clientName = rawName?.length ? rawName : 'An assistant';
   let redirectHost = redirectUri;
   try {

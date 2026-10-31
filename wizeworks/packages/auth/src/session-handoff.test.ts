@@ -14,6 +14,7 @@ import {
   clearedSessionCookies,
   readsAsRemembered,
   sessionCookiesFor,
+  sessionCookiesFromSetCookie,
   signCookieValue,
 } from './session-handoff';
 
@@ -115,5 +116,42 @@ describe('readsAsRemembered', () => {
     expect(
       inPiggles(() => readsAsRemembered('piggles', '__Secure-piggles-account.dont_remember=true.s'))
     ).toBe(false);
+  });
+});
+
+describe('sessionCookiesFromSetCookie', () => {
+  it('decodes the value once, because Next encodes it again on the way out', () => {
+    const [cookie] = sessionCookiesFromSetCookie([
+      '__Secure-piggles-account.session_token=abc.de%2Bf%2Fg%3D; Max-Age=604800; Path=/; HttpOnly; Secure; SameSite=Lax',
+    ]);
+    expect(cookie).toEqual({
+      name: '__Secure-piggles-account.session_token',
+      value: 'abc.de+f/g=',
+      options: { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 604800 },
+    });
+  });
+
+  it('turns Expires into a lifetime, and an expired cookie into a deletion', () => {
+    const now = Date.parse('2026-10-30T00:00:00Z');
+    const [later, gone] = sessionCookiesFromSetCookie(
+      [
+        'a=1; Expires=Fri, 30 Oct 2026 01:00:00 GMT; Path=/',
+        'b=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/',
+      ],
+      now
+    );
+    expect(later?.options.maxAge).toBe(3600);
+    expect(gone?.options.maxAge).toBe(0);
+  });
+
+  it('keeps the last of a cookie set twice, as the browser would', () => {
+    const cookies = sessionCookiesFromSetCookie(['s=first; Path=/', 's=second; Path=/']);
+    expect(cookies).toHaveLength(1);
+    expect(cookies[0]?.value).toBe('second');
+  });
+
+  it('leaves a session cookie with no lifetime as one the browser forgets', () => {
+    const [cookie] = sessionCookiesFromSetCookie(['s=v; Path=/; HttpOnly']);
+    expect(cookie?.options.maxAge).toBeUndefined();
   });
 });

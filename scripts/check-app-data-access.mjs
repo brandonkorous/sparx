@@ -29,6 +29,10 @@
  *   3. A direct dependency on `@wizeworks/db` or `@prisma/client` in the app's
  *      package.json.
  *
+ * A whole-statement `import type` / `export type` is allowed from anywhere: the
+ * compiler erases it, so it cannot open a connection. A mixed import
+ * (`import { type A, b }`) is still read as a value import, because it is one.
+ *
  * ---------------------------------------------------------------------------
  * The list of apps
  * ---------------------------------------------------------------------------
@@ -50,7 +54,7 @@ import path from 'node:path';
 const ROOT = process.cwd();
 
 /** Apps that reach data only through api-rest. */
-const OFF_THE_DATABASE = ['piggles/apps/workbench'];
+const OFF_THE_DATABASE = ['piggles/apps/workbench', 'piggles/apps/account'];
 
 /** Entry points of database-using packages that import neither the database
  *  nor the auth server. */
@@ -60,6 +64,7 @@ const PURE_ENTRIES = new Set([
   '@wizeworks/auth/module-access',
   '@wizeworks/auth/property-access',
   '@wizeworks/auth/friendly-slug',
+  '@wizeworks/auth/mcp-scopes',
   '@wizeworks/email-sequences/schemas',
   '@wizeworks/social/cadence',
 ]);
@@ -105,9 +110,13 @@ function packageOf(specifier) {
 
 /** Every module specifier in a source file: static and dynamic imports,
  *  re-exports, and require(). Comments are stripped first, so a sentence that
- *  names a package is not an import of it. */
+ *  names a package is not an import of it, and so are type-only statements,
+ *  which the compiler erases. */
 function importsIn(source) {
-  const code = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1');
+  const code = source
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:'"`])\/\/.*$/gm, '$1')
+    .replace(/\b(?:import|export)\s+type\s[^;'"`]*?\bfrom\s*['"][^'"]+['"]/g, '');
   const found = [];
   const patterns = [
     /\b(?:import|export)\s[^'"`;]*?\bfrom\s*['"]([^'"]+)['"]/g,

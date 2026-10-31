@@ -92,8 +92,6 @@ import staffCronRoutes from './routes/internal/staff-cron.js';
 import channelsCronRoutes from './routes/internal/channels-cron.js';
 import marketCronRoutes from './routes/internal/market-cron.js';
 import acquisitionReportRoutes from './routes/internal/acquisition-report.js';
-import furnishTenantRoutes from './routes/internal/furnish-tenant.js';
-import tenantBillingRoutes from './routes/internal/tenant-billing.js';
 import internalPartnerRoutes from './routes/internal/partners.js';
 import operatorInternalRoutes from './routes/internal/operator.js';
 import operatorBillingRoutes from './routes/internal/operator-billing.js';
@@ -1000,8 +998,6 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(channelsCronRoutes);
   await app.register(marketCronRoutes);
   await app.register(acquisitionReportRoutes);
-  await app.register(furnishTenantRoutes);
-  await app.register(tenantBillingRoutes);
   await app.register(internalPartnerRoutes);
   await app.register(operatorInternalRoutes);
   await app.register(operatorBillingRoutes);

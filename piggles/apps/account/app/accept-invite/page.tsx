@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import * as React from 'react';
 import Link from 'next/link';
 import { Alert, Badge, Button, Text } from '@wizeworks/silicaui-react';
-import { getInvitationDetail, getSession, type InvitationDetail } from '@wizeworks/auth';
+import { getSession } from '@wizeworks/auth-client-server';
+import { readInvitation, type InvitationDetail } from '@/lib/invitations';
 import { AuthShell } from '@/components/auth-shell';
 import {
   AcceptInviteButton,
@@ -61,7 +62,7 @@ export default async function AcceptInvitePage({
     );
   }
 
-  const invite = await getInvitationDetail(invitationId);
+  const invite = await readInvitation(invitationId);
   const isLive = invite?.status === 'pending' && invite.expiresAt.getTime() > Date.now();
 
   if (!invite || !isLive) {
