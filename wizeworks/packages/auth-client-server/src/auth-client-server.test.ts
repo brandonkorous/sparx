@@ -6,8 +6,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('next/headers', () => ({ headers: () => Promise.resolve(new Headers()) }));
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
 
-const { readSession, fetchApiToken, proxyAuthRequest, proxiedPath, PlatformAuthUnavailableError } =
-  await import('./index');
+const {
+  readSession,
+  fetchApiToken,
+  proxyAuthRequest,
+  proxiedPath,
+  forwardAccountOperation,
+  accountOperationPath,
+  PlatformAuthUnavailableError,
+} = await import('./index');
 
 const saved = { url: process.env.SPARX_API_REST_URL, brand: process.env.PLATFORM_BRAND };
 
@@ -60,7 +67,7 @@ describe('readSession', () => {
     const session = await readSession(incoming, fetchImpl);
 
     const [url, init] = fetchImpl.mock.calls[0]!;
-    expect(url).toBe('http://api-rest.test:3000/auth/piggles/session');
+    expect(url).toBe('http://api-rest.test:3000/auth/piggles/platform/session');
     const sent = new Headers(init?.headers);
     expect(sent.get('cookie')).toBe('piggles-account.session_token=abc');
     expect(sent.get('x-forwarded-for')).toBe('203.0.113.9');
@@ -104,7 +111,7 @@ describe('fetchApiToken', () => {
     const fetchImpl = fakeFetch(Response.json(body));
     expect(await fetchApiToken(new Headers({ cookie: 'c=1' }), fetchImpl)).toEqual(body);
     const [url, init] = fetchImpl.mock.calls[0]!;
-    expect(url).toBe('http://api-rest.test:3000/auth/piggles/api-token');
+    expect(url).toBe('http://api-rest.test:3000/auth/piggles/platform/api-token');
     expect(init?.method).toBe('POST');
   });
 
@@ -154,6 +161,21 @@ describe('the /api/auth proxy', () => {
     expect(await res.text()).toBe('{"ok":true}');
   });
 
+  it.each([
+    '/api/auth/platform/session',
+    '/api/auth/Platform/handoff/consume',
+    '/api/auth//platform/api-token',
+    '/api/auth/%70latform/session',
+  ])('never forwards %s, which only app servers may call', async (path) => {
+    const fetchImpl = fakeFetch(Response.json({}));
+    const res = await proxyAuthRequest(
+      new Request(`https://getpiggles.com${path}`, { method: 'POST' }),
+      fetchImpl
+    );
+    expect(res.status).toBe(404);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
   it('passes a redirect through instead of following it', async () => {
     const fetchImpl = fakeFetch(
       new Response(null, { status: 302, headers: { location: 'https://accounts.example/x' } })
@@ -165,5 +187,45 @@ describe('the /api/auth proxy', () => {
     expect(fetchImpl.mock.calls[0]![1]?.redirect).toBe('manual');
     expect(res.status).toBe(302);
     expect(res.headers.get('location')).toBe('https://accounts.example/x');
+  });
+});
+
+describe('account operations', () => {
+  it('maps the console path onto the operation name', () => {
+    expect(
+      accountOperationPath(new URL('https://mypiggles.com/api/account/two-factor/verify/'))
+    ).toBe('two-factor/verify');
+  });
+
+  it('forwards the body and the session cookie, and relays the answer as it came', async () => {
+    const fetchImpl = fakeFetch(Response.json({ error: 'Invalid password' }, { status: 400 }));
+    const res = await forwardAccountOperation(
+      new Request('https://mypiggles.com/api/account/password', {
+        method: 'POST',
+        headers: {
+          cookie: 'piggles-account.session_token=abc',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ currentPassword: 'a', newPassword: 'b' }),
+      }),
+      fetchImpl
+    );
+    const [url, init] = fetchImpl.mock.calls[0]!;
+    expect(url).toBe('http://api-rest.test:3000/auth/piggles/platform/account/password');
+    expect(JSON.parse(init?.body as string)).toEqual({ currentPassword: 'a', newPassword: 'b' });
+    expect(new Headers(init?.headers).get('cookie')).toBe('piggles-account.session_token=abc');
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: 'Invalid password' });
+    expect(res.headers.get('cache-control')).toBe('no-store, private');
+  });
+
+  it('answers in a sentence when api-rest cannot be reached', async () => {
+    const down = vi.fn<typeof fetch>(() => Promise.reject(new TypeError('fetch failed')));
+    const res = await forwardAccountOperation(
+      new Request('https://mypiggles.com/api/account/sessions'),
+      down
+    );
+    expect(res.status).toBe(503);
+    expect(((await res.json()) as { error: string }).error).toMatch(/did not answer/);
   });
 });

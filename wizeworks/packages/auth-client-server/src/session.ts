@@ -11,7 +11,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { brandAuthUrl, forwardedHeaders, PlatformAuthUnavailableError } from './platform-api';
 
-/** The wire shape of `GET /auth/<brand>/session`. Mirrors `@wizeworks/auth`'s SparxSession. */
+/** The wire shape of `GET /auth/<brand>/platform/session`. Mirrors `@wizeworks/auth`'s SparxSession. */
 export interface SparxSession {
   user: {
     id: string;
@@ -50,7 +50,7 @@ export async function readSession(
   requestHeaders: Headers,
   fetchImpl: typeof fetch = fetch
 ): Promise<SparxSession | null> {
-  const path = '/session';
+  const path = '/platform/session';
   let res: Response;
   try {
     res = await fetchImpl(brandAuthUrl(path), {

@@ -1,14 +1,14 @@
 // The short-lived token a console's browser calls api-rest with.
 //
 // The console used to mint it with its own copy of SPARX_INTERNAL_JWT_SECRET.
-// api-rest mints it now (`POST /auth/<brand>/api-token`), stamping the tenant
+// api-rest mints it now (`POST /auth/<brand>/platform/api-token`), stamping the tenant
 // from the session, so the secret leaves the console. The console's own
 // `/api/token` route forwards here and adds the two values that are its own:
 // the public API origin and the active-site cookie.
 
 import { brandAuthUrl, forwardedHeaders, PlatformAuthUnavailableError } from './platform-api';
 
-/** The body of `POST /auth/<brand>/api-token`. */
+/** The body of `POST /auth/<brand>/platform/api-token`. */
 export interface ApiToken {
   token: string;
   /** Absolute epoch-ms expiry. */
@@ -26,7 +26,7 @@ export async function fetchApiToken(
   requestHeaders: Headers,
   fetchImpl: typeof fetch = fetch
 ): Promise<ApiToken | null> {
-  const path = '/api-token';
+  const path = '/platform/api-token';
   let res: Response;
   try {
     res = await fetchImpl(brandAuthUrl(path), {

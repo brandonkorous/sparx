@@ -3,7 +3,7 @@
 // `resolveSession(headers)` turns a request's cookies into a SparxSession. The
 // Next.js apps reach it through ./session (`getSession()` reads the headers of
 // the request being rendered). api-rest reaches it directly: it serves
-// `GET /auth/<brand>/session` for apps that no longer hold an auth instance,
+// `GET /auth/<brand>/platform/session` for apps that no longer hold an auth instance,
 // and it has no `next/headers` to read from.
 
 import { auth } from './server';

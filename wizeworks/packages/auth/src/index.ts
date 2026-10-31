@@ -58,6 +58,20 @@ export {
 export { isFriendlySlug, randomFriendlySlug } from './friendly-slug';
 export { getSession, requireSession, type SparxSession } from './session';
 export { resolveSession } from './session-core';
+export {
+  isAccountOperation,
+  runAccountOperation,
+  type AccountBusiness,
+  type AccountOperationResult,
+  type SignInMethods,
+} from './account-operations';
+export {
+  consumeSessionHandoff,
+  mintSessionHandoff,
+  signOutSession,
+  type ConsumeHandoffResult,
+  type SessionCookie,
+} from './session-handoff';
 export { ORG_ROLES, ASSIGNABLE_ORG_ROLES, type OrgRole, type AssignableOrgRole } from './org-roles';
 export {
   MODULE_ACCESS_MODES,

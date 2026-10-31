@@ -4,6 +4,16 @@ export { getSession, readSession, requireSession, type SparxSession } from './se
 export { fetchApiToken, type ApiToken } from './api-token';
 export { authProxyHandlers, proxyAuthRequest, proxiedPath } from './proxy';
 export {
+  accountOperationHandlers,
+  accountOperationPath,
+  consumeHandoff,
+  forwardAccountOperation,
+  mintHandoff,
+  signOutSession,
+  type ConsumeHandoffResult,
+  type SessionCookie,
+} from './platform-calls';
+export {
   brandAuthUrl,
   forwardedHeaders,
   platformApiUrl,

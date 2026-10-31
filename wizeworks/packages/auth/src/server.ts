@@ -834,6 +834,23 @@ export function brandAuthHandler(brand: string): BrandAuthHandler {
   return { baseURL: config.baseURL, handler: (request) => instance.handler(request) };
 }
 
+/**
+ * What signing one brand's session cookie takes: the brand's secret, and the
+ * instance options Better Auth derives cookie names and attributes from
+ * (`getCookies(options)`). For a process that writes a session cookie itself,
+ * which is the cross-domain handoff (./session-handoff). Same scope rules as
+ * `authForBrand`.
+ */
+export function brandCookieContext(brand: string): {
+  secret: string;
+  options: ReturnType<typeof createAuth>['options'];
+} {
+  const instance = authForBrand(brand);
+  const secret = brandConfigs.get(normalizeBrandKey(brand))?.secret;
+  if (!secret) throw new Error(`auth: brand "${normalizeBrandKey(brand)}" has no secret.`);
+  return { secret, options: instance.options };
+}
+
 function getAuth(): ReturnType<typeof createAuth> {
   if (brandConfigs.size > 0) return authForBrand(currentPlatformBrand());
   if (cachedAuth) return cachedAuth;

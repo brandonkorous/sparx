@@ -7,10 +7,22 @@
 // domain, emailed links keep working, and the redirect URIs registered with
 // Google and the MCP issuer stay byte-identical.
 //
-//   ALL  /auth/<brand>/*          the brand's Better Auth handler
-//   GET  /auth/<brand>/session    the request's SparxSession, for server renders
-//   POST /auth/<brand>/api-token  the short-lived internal JWT a console's browser
-//                                 calls api-rest with
+//   ALL  /auth/<brand>/*                    the brand's Better Auth handler
+//
+// and, for the app's SERVER only, under `/platform` (a segment Better Auth
+// does not use, so nothing here can shadow one of its paths):
+//
+//   GET  /platform/session                  the request's SparxSession
+//   POST /platform/api-token                the internal JWT a console's browser
+//                                           calls api-rest with
+//   ANY  /platform/account/<op>             the person's own account security
+//                                           and businesses (account-operations)
+//   POST /platform/handoff                  mint a cross-domain session token
+//   POST /platform/handoff/consume          redeem one for the console's cookies
+//   POST /platform/sign-out                 end the session, return cookies to clear
+//
+// An app's public `/api/auth/*` proxy refuses `/platform` (auth-client-server),
+// so a browser reaches these only through the app's own server code.
 //
 // INTERNAL ONLY. api.sparx.works proxies every path to this service, so the
 // routes refuse any request whose Host is a public name. A Next.js rewrite
@@ -31,6 +43,10 @@ import {
   registerAuthBrands,
   registeredAuthBrands,
   resolveSession,
+  runAccountOperation,
+  mintSessionHandoff,
+  consumeSessionHandoff,
+  signOutSession,
   type SparxSession,
 } from '@wizeworks/auth';
 import { normalizeBrandKey } from '@wizeworks/brand-core';
@@ -137,6 +153,14 @@ async function relay(reply: FastifyReply, response: Response): Promise<void> {
   await reply.send(Buffer.from(await response.arrayBuffer()));
 }
 
+/** A parsed JSON body as a plain record; anything else reads as empty. */
+function jsonBody(request: FastifyRequest): Record<string, unknown> {
+  const body = request.body;
+  return body && typeof body === 'object' && !Array.isArray(body)
+    ? (body as Record<string, unknown>)
+    : {};
+}
+
 /** The brand in the path, if this process serves it. */
 function servedBrand(request: FastifyRequest): string | null {
   const raw = (request.params as { brand?: string }).brand;
@@ -145,7 +169,7 @@ function servedBrand(request: FastifyRequest): string | null {
   return registeredAuthBrands().includes(brand) ? brand : null;
 }
 
-/** The body of `POST /auth/<brand>/api-token`. A console adds its own `apiUrl`
+/** The body of `POST /auth/<brand>/platform/api-token`. A console adds its own `apiUrl`
  *  and `propertyId`, which come from its own configuration and cookie. */
 export interface ApiTokenResponse {
   token: string;
@@ -220,7 +244,7 @@ const brandAuthRoutes: FastifyPluginAsync = async (app) => {
     return undefined;
   });
 
-  app.get('/auth/:brand/session', async (request, reply) => {
+  app.get('/auth/:brand/platform/session', async (request, reply) => {
     const brand = servedBrand(request)!;
     const session = await runAsBrand(brand, () => resolveSession(requestHeaders(request)));
     reply.header('cache-control', 'no-store, private');
@@ -228,13 +252,60 @@ const brandAuthRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ session });
   });
 
-  app.post('/auth/:brand/api-token', async (request, reply) => {
+  app.post('/auth/:brand/platform/api-token', async (request, reply) => {
     const brand = servedBrand(request)!;
     const session = await runAsBrand(brand, () => resolveSession(requestHeaders(request)));
     // Never cache a bearer token — not in a browser, not at Cloudflare.
     reply.header('cache-control', 'no-store, private');
     if (!session) return reply.code(401).send({ error: 'unauthenticated' });
     return reply.send(await mintApiToken(session, env.SPARX_INTERNAL_JWT_SECRET));
+  });
+
+  app.route({
+    method: ['GET', 'POST'],
+    url: '/auth/:brand/platform/account/*',
+    handler: async (request, reply) => {
+      const brand = servedBrand(request)!;
+      const op = (request.params as { '*': string })['*'].replace(/\/+$/, '');
+      const result = await runAsBrand(brand, () =>
+        runAccountOperation(request.method, op, requestHeaders(request), jsonBody(request))
+      );
+      reply.header('cache-control', 'no-store, private');
+      return reply.code(result.status).send(result.body);
+    },
+  });
+
+  app.post('/auth/:brand/platform/handoff', async (request, reply) => {
+    const brand = servedBrand(request)!;
+    const body = jsonBody(request);
+    const audience = typeof body.audience === 'string' ? body.audience : '';
+    reply.header('cache-control', 'no-store, private');
+    if (!audience) return reply.code(400).send({ error: 'audience is required' });
+    const minted = await runAsBrand(brand, () =>
+      mintSessionHandoff(brand, requestHeaders(request), { audience, next: body.next })
+    );
+    if (!minted) return reply.code(401).send({ error: 'unauthenticated' });
+    return reply.send(minted);
+  });
+
+  // No session cookie here, by design: the console has none yet, and the token
+  // is what proves the person. Single use, sixty seconds, internal Host only.
+  app.post('/auth/:brand/platform/handoff/consume', async (request, reply) => {
+    const brand = servedBrand(request)!;
+    const body = jsonBody(request);
+    const audience = typeof body.audience === 'string' ? body.audience : '';
+    reply.header('cache-control', 'no-store, private');
+    if (!audience) return reply.code(400).send({ error: 'audience is required' });
+    return reply.send(
+      await runAsBrand(brand, () => consumeSessionHandoff(brand, body.token, audience))
+    );
+  });
+
+  app.post('/auth/:brand/platform/sign-out', async (request, reply) => {
+    const brand = servedBrand(request)!;
+    const cookies = await runAsBrand(brand, () => signOutSession(brand, requestHeaders(request)));
+    reply.header('cache-control', 'no-store, private');
+    return reply.send({ cookies });
   });
 
   // The handler itself, in a child scope whose parsers keep json and form
@@ -251,6 +322,9 @@ const brandAuthRoutes: FastifyPluginAsync = async (app) => {
       url: '/auth/:brand/*',
       handler: async (request, reply) => {
         const brand = servedBrand(request)!;
+        // An unknown `/platform/...` path is ours and not found, never Better Auth's.
+        const rest = (request.params as { '*': string })['*'];
+        if (/^platform(\/|$)/i.test(rest)) return reply.code(404).send({ error: 'not_found' });
         await runAsBrand(brand, async () => {
           const { baseURL, handler } = brandAuthHandler(brand);
           const url = betterAuthUrl(baseURL, (request.params as { '*': string })['*'], request.url);

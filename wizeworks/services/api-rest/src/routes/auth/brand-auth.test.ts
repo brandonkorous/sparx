@@ -166,7 +166,7 @@ describe('the routes', () => {
   it('answers 401 to a session read with no session cookie', async () => {
     const res = await app.inject({
       method: 'GET',
-      url: '/auth/sparx/session',
+      url: '/auth/sparx/platform/session',
       headers: { host: INTERNAL },
     });
     expect(res.statusCode).toBe(401);
@@ -176,9 +176,81 @@ describe('the routes', () => {
   it('mints no API token without a session', async () => {
     const res = await app.inject({
       method: 'POST',
-      url: '/auth/sparx/api-token',
+      url: '/auth/sparx/platform/api-token',
       headers: { host: INTERNAL },
     });
     expect(res.statusCode).toBe(401);
+  });
+  it('answers an account operation with no session as signed out, in a sentence', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/auth/piggles/platform/account/password',
+      headers: { host: INTERNAL, 'content-type': 'application/json' },
+      payload: JSON.stringify({ currentPassword: 'a', newPassword: 'b' }),
+    });
+    expect(res.statusCode).toBe(401);
+    expect(res.json<{ error: string }>().error).toMatch(/signed out/);
+  });
+
+  it('does not find an account operation nobody listed', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/auth/piggles/platform/account/delete-user',
+      headers: { host: INTERNAL },
+    });
+    expect(res.statusCode).toBe(404);
+  });
+
+  it('does not hand an unknown /platform path to Better Auth', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      url: '/auth/piggles/platform/ok',
+      headers: { host: INTERNAL },
+    });
+    expect(res.statusCode).toBe(404);
+    expect(res.json()).toEqual({ error: 'not_found' });
+  });
+
+  it('mints a handoff only for a named audience and a signed-in session', async () => {
+    const noAudience = await app.inject({
+      method: 'POST',
+      url: '/auth/piggles/platform/handoff',
+      headers: { host: INTERNAL },
+      payload: {},
+    });
+    expect(noAudience.statusCode).toBe(400);
+    const noSession = await app.inject({
+      method: 'POST',
+      url: '/auth/piggles/platform/handoff',
+      headers: { host: INTERNAL },
+      payload: { audience: 'console' },
+    });
+    expect(noSession.statusCode).toBe(401);
+  });
+
+  it('refuses to redeem a handoff with no token', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/auth/piggles/platform/handoff/consume',
+      headers: { host: INTERNAL },
+      payload: { audience: 'console' },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ ok: false, reason: 'missing' });
+  });
+
+  it("signs out with the brand's own cookie names, emptied", async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/auth/piggles/platform/sign-out',
+      headers: { host: INTERNAL },
+    });
+    expect(res.statusCode).toBe(200);
+    const names = res.json<{ cookies: { name: string }[] }>().cookies.map((c) => c.name);
+    // `__Secure-` because the brand's address is https, as in production.
+    expect(names.sort()).toEqual([
+      '__Secure-piggles-account.dont_remember',
+      '__Secure-piggles-account.session_token',
+    ]);
   });
 });

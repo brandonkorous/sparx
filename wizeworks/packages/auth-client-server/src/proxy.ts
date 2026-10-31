@@ -42,12 +42,29 @@ export function proxiedPath(url: URL): string {
   return `${rest}${url.search}`;
 }
 
+/** Also true for a spelling that only decodes to `/platform` (`/%70latform`),
+ *  and for a path that will not decode at all. */
+function isPlatformPath(path: string): boolean {
+  let pathname: string;
+  try {
+    pathname = decodeURIComponent(path.split('?')[0]!);
+  } catch {
+    return true;
+  }
+  const normal = pathname.replace(/\/+/g, '/').toLowerCase();
+  return normal === '/platform' || normal.startsWith('/platform/');
+}
+
 /** Forwards one request. Exported for its test. */
 export async function proxyAuthRequest(
   request: Request,
   fetchImpl: typeof fetch = fetch
 ): Promise<Response> {
   const path = proxiedPath(new URL(request.url));
+  // api-rest's own endpoints for app servers sit beside the handler under
+  // `/platform`. They trust the caller to be this app's server, so a browser
+  // must never reach them through this public path.
+  if (isPlatformPath(path)) return new Response(null, { status: 404 });
   const headers = new Headers();
   request.headers.forEach((value, key) => {
     if (!HOP_BY_HOP.has(key.toLowerCase())) headers.append(key, value);
