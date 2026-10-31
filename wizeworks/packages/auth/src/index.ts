@@ -2,7 +2,15 @@
 // '@wizeworks/auth/client' explicitly to keep the React/browser-only surface out
 // of server bundles.
 
-export { auth, authForBrand, registerAuthBrands, registeredAuthBrands, type Auth } from './server';
+export {
+  auth,
+  authForBrand,
+  brandAuthHandler,
+  registerAuthBrands,
+  registeredAuthBrands,
+  type Auth,
+  type BrandAuthHandler,
+} from './server';
 export {
   authBrandConfigForBrand,
   authBrandConfigFromEnv,
@@ -49,6 +57,7 @@ export {
 } from './provision-invited-owner';
 export { isFriendlySlug, randomFriendlySlug } from './friendly-slug';
 export { getSession, requireSession, type SparxSession } from './session';
+export { resolveSession } from './session-core';
 export { ORG_ROLES, ASSIGNABLE_ORG_ROLES, type OrgRole, type AssignableOrgRole } from './org-roles';
 export {
   MODULE_ACCESS_MODES,

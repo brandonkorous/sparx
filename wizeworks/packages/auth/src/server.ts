@@ -729,9 +729,10 @@ function createAuth(config: AuthBrandConfig) {
       // them Better Auth's schema check refuses every request (./auth-owned-columns).
       authOwnedColumns(),
       // nextCookies() must stay LAST so it can flush Set-Cookie for the
-      // plugins registered before it. Only inside Next.js: api-rest returns
-      // Set-Cookie on its own response and has no `next/headers` to flush to.
-      ...(config.nextCookies ? [nextCookies()] : []),
+      // plugins registered before it. Registered in api-rest too, where it does
+      // nothing: a handler request skips it, and a direct `auth.api.*` call
+      // finds no Next request scope and returns.
+      nextCookies(),
     ],
   });
 }
@@ -786,9 +787,6 @@ export function registerAuthBrands(configs: readonly AuthBrandConfig[]): void {
     if (key !== config.brand) {
       throw new Error(`registerAuthBrands(): brand "${config.brand}" is not a normalized key.`);
     }
-    if (config.nextCookies) {
-      throw new Error(`registerAuthBrands(): brand "${key}" asks for nextCookies outside Next.js.`);
-    }
     brandConfigs.set(key, config);
     brandInstances.delete(key);
   }
@@ -816,6 +814,24 @@ export function authForBrand(brand: string): ReturnType<typeof createAuth> {
   const instance = createAuth(config);
   brandInstances.set(key, instance);
   return instance;
+}
+
+/**
+ * What a process serving several brands needs to put one brand's handler on
+ * the wire, and nothing more. Typed by hand so the consumer (api-rest) depends
+ * on two plain members, not on Better Auth's inferred instance type.
+ */
+export interface BrandAuthHandler {
+  /** The brand's public base URL, as configured. */
+  baseURL: string;
+  handler: (request: Request) => Promise<Response>;
+}
+
+/** One brand's Better Auth handler. Same scope rules as `authForBrand`. */
+export function brandAuthHandler(brand: string): BrandAuthHandler {
+  const instance = authForBrand(brand);
+  const config = brandConfigs.get(normalizeBrandKey(brand))!;
+  return { baseURL: config.baseURL, handler: (request) => instance.handler(request) };
 }
 
 function getAuth(): ReturnType<typeof createAuth> {

@@ -34,12 +34,6 @@ export interface AuthBrandConfig {
   googleClientSecret: string | undefined;
   /** WebAuthn relying party id, only when the auth host differs from the app host. */
   passkeyRpId: string | undefined;
-  /**
-   * Register Better Auth's `nextCookies()` plugin. True inside a Next.js app,
-   * where server actions set cookies through `next/headers`. False in api-rest,
-   * which has no Next runtime and returns Set-Cookie on the response itself.
-   */
-  nextCookies: boolean;
 }
 
 const DEFAULT_BASE_URL = 'http://localhost:3001';
@@ -60,7 +54,6 @@ export function authBrandConfigFromEnv(): AuthBrandConfig {
     googleClientId: env('GOOGLE_CLIENT_ID'),
     googleClientSecret: env('GOOGLE_CLIENT_SECRET'),
     passkeyRpId: env('PASSKEY_RP_ID'),
-    nextCookies: true,
   };
 }
 
@@ -100,6 +93,5 @@ export function authBrandConfigForBrand(brand: string): AuthBrandConfig {
     googleClientId: read('GOOGLE_CLIENT_ID'),
     googleClientSecret: read('GOOGLE_CLIENT_SECRET'),
     passkeyRpId: read('PASSKEY_RP_ID'),
-    nextCookies: false,
   };
 }

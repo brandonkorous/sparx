@@ -207,14 +207,22 @@ export type PlatformIdentity = NonNullable<BrandTokens['platform']>;
  * process, where `email-worker` always supplies the overlay from the tenant's
  * `platform_brand` and this branch is never reached.
  *
- * Resolved once, lazily: it reads environment variables, and an email renders a
- * few hundred elements.
+ * api-rest is the one shared process that does reach it: it serves both brands'
+ * sign-in, and a direct send there runs inside the request's brand scope
+ * (`runAsBrand`), so `currentPlatformBrand()` answers per request. That is why
+ * the cache is keyed by brand. One process-wide slot would keep whichever brand
+ * rendered first and put its name on the other brand's mail.
+ *
+ * Resolved once per brand, lazily: it reads environment variables, and an email
+ * renders a few hundred elements.
  */
-let processIdentity: PlatformIdentity | null = null;
+const processIdentities = new Map<string, PlatformIdentity>();
 
 function currentProcessIdentity(): PlatformIdentity {
+  const brand = currentPlatformBrand();
+  let processIdentity = processIdentities.get(brand);
   if (!processIdentity) {
-    const id = platformBrandIdentity(currentPlatformBrand());
+    const id = platformBrandIdentity(brand);
     processIdentity = {
       name: id.name,
       url: id.siteUrl,
@@ -226,6 +234,7 @@ function currentProcessIdentity(): PlatformIdentity {
       // catches that throw); this floor does not invent one.
       palette: currentProcessPalette(),
     };
+    processIdentities.set(brand, processIdentity);
   }
   return processIdentity;
 }
@@ -273,14 +282,20 @@ export function platformNameOf(brand?: Partial<BrandTokens>): string {
  *     reached in a shared process, because step 1 always answers there.
  *  3. **`PLAIN_EMAIL_PALETTE`**, if that brand has published none.
  *
- * Resolved once per process, not per render: it reads environment variables, and
- * an email renders a few hundred elements.
+ * Resolved once per brand, not per render: it reads environment variables, and
+ * an email renders a few hundred elements. Keyed by brand for the same reason
+ * the identity above is.
  */
-let processPalette: EmailPalette | null = null;
+const processPalettes = new Map<string, EmailPalette>();
 
 function currentProcessPalette(): EmailPalette {
-  processPalette ??= resolveEmailPalette(currentPlatformBrand()).palette;
-  return processPalette;
+  const brand = currentPlatformBrand();
+  let palette = processPalettes.get(brand);
+  if (!palette) {
+    palette = resolveEmailPalette(brand).palette;
+    processPalettes.set(brand, palette);
+  }
+  return palette;
 }
 
 export function usePalette(): EmailPalette {

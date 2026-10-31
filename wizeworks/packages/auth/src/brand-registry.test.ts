@@ -44,7 +44,6 @@ describe('authBrandConfigForBrand', () => {
       baseURL: 'https://getpiggles.com/api/auth',
       cookiePrefix: 'piggles-account',
       appName: 'Piggles',
-      nextCookies: false,
     });
   });
 
@@ -79,7 +78,6 @@ describe('registered brands', () => {
     googleClientId: undefined,
     googleClientSecret: undefined,
     passkeyRpId: undefined,
-    nextCookies: false,
   });
 
   beforeAll(() => {
@@ -118,12 +116,6 @@ describe('registered brands', () => {
   it('refuses a brand it was not given', () => {
     expect(() => runAsBrand('acme', () => authForBrand('acme'))).toThrow(
       /does not serve brand "acme"/
-    );
-  });
-
-  it('refuses nextCookies outside Next.js', () => {
-    expect(() => registerAuthBrands([{ ...config('sparx'), nextCookies: true }])).toThrow(
-      /nextCookies/
     );
   });
 });
