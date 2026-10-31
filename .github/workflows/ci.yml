@@ -69,7 +69,7 @@ jobs:
           - { name: sparx-packages, scope: './sparx/packages/*' }
           - { name: piggles-packages, scope: './piggles/packages/*' }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-workspace
         with:
           turbo-cache-key: lint-${{ matrix.name }}
@@ -133,7 +133,7 @@ jobs:
     # piling up behind a generous ceiling.
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-workspace
         with:
           turbo-cache-key: typecheck
@@ -161,7 +161,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-workspace
         with:
           turbo-cache-key: test
@@ -178,7 +178,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-workspace
         with:
           turbo-cache-key: format
@@ -226,7 +226,7 @@ jobs:
     # request that adds an event is the one that fails; that repository runs
     # it against sparx's main from its own CI and on a daily schedule.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/checkout@v4
         with:
@@ -266,7 +266,7 @@ jobs:
     # `/?surface=social.composer` in production email for months. Pure Node, no
     # install, so it fails on the first PR that adds a surface without a route.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
@@ -290,7 +290,7 @@ jobs:
     # that was knowable from two package.json files. Pure Node, no install, so it
     # fails before anything is built.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
@@ -331,7 +331,7 @@ jobs:
     # (piggles/CLAUDE.md RULE #0). Pure Node, no install, so it fails in seconds
     # rather than after a build.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
@@ -392,7 +392,7 @@ jobs:
     # the box stays ticked, the endpoint is never called, and whoever set it up
     # concludes their own server is broken. Pure Node, no install.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
@@ -411,7 +411,7 @@ jobs:
     # one that no longer exists sends somebody to build against a 404 and blame
     # their own code. Pure Node, no install.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
@@ -434,7 +434,7 @@ jobs:
     # the quietest possible failure: the fix exists, the tests pass, the issue
     # closes, and the tenant keeps the defect. See scripts/check-blueprint-versions.mjs.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # The check compares against the base branch, so one commit is not
           # enough history to find it.
@@ -469,7 +469,7 @@ jobs:
     # can only be kept monotonic, which is what this enforces. See
     # scripts/check-migration-order.mjs.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # The check compares against the base branch, so one commit is not
           # enough history to find it.
@@ -505,7 +505,7 @@ jobs:
     # a review checklist. No install needed, so it fails fast beside the heavy
     # jobs.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Lint workflow heredocs
         run: bash .github/scripts/lint-workflow-heredocs.sh
@@ -517,7 +517,7 @@ jobs:
     # Checks over k8s/ and the release; no pnpm install. The ingress and the
     # Terraform are wize-infrastructure's, and so are their checks.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v6
         with:
