@@ -53,11 +53,13 @@ spec:
             - name: http
               containerPort: 3000
           # Order is the design — see piggles-account.yaml.
+          # No `sparx-app-secrets` in envFrom (docs/154): this app holds no
+          # database connection and no auth instance, so it reads only config.
+          # The two keyed values below (the server-actions key and the WizeLens
+          # key) are the only secrets it takes, by name.
           envFrom:
             - configMapRef:
                 name: sparx-app-env
-            - secretRef:
-                name: sparx-app-secrets
             - configMapRef:
                 name: piggles-app-env
           env:
@@ -95,27 +97,6 @@ spec:
               value: 0.0.0.0
             - name: NEXT_TELEMETRY_DISABLED
               value: '1'
-            # This app's own origin. Per-pod for the same reason the account
-            # app's is: two Piggles surfaces, two origins, and Better Auth
-            # derives its trusted origin from this exact string. The console
-            # serves no sign-in, but it READS the session server-side and calls
-            # the organization endpoints for the business switcher, so the
-            # instance still has to know where it is running.
-            - name: BETTER_AUTH_URL
-              value: https://mypiggles.com
-            # The SAME value the account app carries, and that is not a
-            # convenience — the two read and write the same Better Auth session
-            # rows, so a differing secret makes every handed-off session
-            # unverifiable at this end. One key, two pods.
-            - name: BETTER_AUTH_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: sparx-app-secrets
-                  key: PIGGLES_BETTER_AUTH_SECRET
-            # NO GOOGLE_CLIENT_* here, deliberately. This domain gets no OAuth
-            # client at all: a callback here would be a second thing able to mint
-            # sessions, which is precisely what the three-domain split exists to
-            # prevent.
           securityContext:
             runAsNonRoot: true
             runAsUser: 1001

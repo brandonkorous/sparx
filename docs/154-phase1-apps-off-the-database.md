@@ -180,8 +180,15 @@ Built on branch `phase1/apps-off-the-database`, committed, not pushed:
   `app/api/internal/partner-provision` and `SPARX_DASHBOARD_INTERNAL_URL` are
   gone.
 
-Still to do: step 8 (the frontend pods drop `sparx-app-secrets` and the
-`BETTER_AUTH_*` values), and the test pass on both brands.
+- Step 8: the workbench, Piggles console and Piggles account pods no longer
+  load `sparx-app-secrets` or carry `BETTER_AUTH_*` / `GOOGLE_CLIENT_*`. Each
+  takes only its own `NEXT_ACTIONS_KEY_*` and `WIZELENS_KEY_*` by name. Google
+  One Tap's public client id comes from api-rest's sign-in options, read off
+  the brand's own configuration (`brandSignInOptions`).
+
+Still to do: the test pass on both brands, after the release. No `kubectl`
+or secret change is needed by hand: api-rest already carries both brands'
+auth values, and the release applies the pod files.
 
 ## Definition of done
 

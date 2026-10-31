@@ -5,6 +5,26 @@
 
 import { platformRequest, PlatformRequestError } from './platform-request';
 
+// ── Which social sign-ins to offer ──────────────────────────────────────────
+
+export interface SignInOptions {
+  /** The social providers this brand can sign somebody in with. */
+  social: string[];
+  /** Google's public client id, for One Tap. Null when Google is not set up. */
+  googleClientId: string | null;
+}
+
+/** The brand's social sign-ins, from api-rest, which holds the credentials.
+ *  Never throws: if api-rest cannot be asked, sign-in through it cannot work
+ *  either, so no button is offered rather than one drawn dead. */
+export async function readSignInOptions(): Promise<SignInOptions> {
+  try {
+    return await platformRequest<SignInOptions>('sign-in-options');
+  } catch {
+    return { social: [], googleClientId: null };
+  }
+}
+
 // ── The confirm-your-email link ─────────────────────────────────────────────
 
 // A fresh confirm-your-email link for the person signed in. api-rest builds and

@@ -23,6 +23,7 @@ import { redactingLogger } from './redacting-logger';
 import { isPasswordStep } from './sign-in-step';
 import { startingBusinessFor } from './starting-business';
 import { authBrandConfigFromEnv, type AuthBrandConfig } from './brand-config';
+import { configuredSocialProviders, type SocialProvider } from './social-providers';
 import { scopedPlatformBrand } from '@wizeworks/brand-core/request-scope';
 
 /**
@@ -849,6 +850,34 @@ export function brandCookieContext(brand: string): {
   const secret = brandConfigs.get(normalizeBrandKey(brand))?.secret;
   if (!secret) throw new Error(`auth: brand "${normalizeBrandKey(brand)}" has no secret.`);
   return { secret, options: instance.options };
+}
+
+/**
+ * The social sign-ins one brand can offer, and the Google client id One Tap
+ * needs in the browser. Read off the BRAND's configuration, never this
+ * process's environment: a process serving several brands holds several Google
+ * clients, and the environment's is only the default brand's. Same condition
+ * as everywhere else (./social-providers), so the button and the registered
+ * provider cannot disagree.
+ *
+ * The client id is public by design (Google puts it in every sign-in link);
+ * the secret never leaves this process.
+ */
+export function brandSignInOptions(brand: string): {
+  social: SocialProvider[];
+  googleClientId: string | null;
+} {
+  const key = normalizeBrandKey(brand);
+  const config = brandConfigs.get(key);
+  if (!config) throw new Error(`auth: this process does not serve brand "${key}".`);
+  const social = configuredSocialProviders({
+    GOOGLE_CLIENT_ID: config.googleClientId,
+    GOOGLE_CLIENT_SECRET: config.googleClientSecret,
+  });
+  return {
+    social,
+    googleClientId: social.includes('google') ? (config.googleClientId ?? null) : null,
+  };
 }
 
 function getAuth(): ReturnType<typeof createAuth> {

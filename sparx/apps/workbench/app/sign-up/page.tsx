@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { getSession } from '@wizeworks/auth-client-server';
+import { getSession, readSignInOptions } from '@wizeworks/auth-client-server';
 import { AuthWrapper } from '../../components/auth/auth-wrapper';
 import { safeInternalPath } from '../../lib/safe-path';
 import { joiningFrom } from '../../lib/invite-joining';
@@ -25,11 +25,13 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
 
   // On the way to accept an invitation: name the business being joined.
   const joining = await joiningFrom(next);
+  // Google One Tap needs the brand's public client id, which api-rest holds.
+  const { googleClientId } = await readSignInOptions();
 
   return (
     <AuthWrapper
       initialMode="signUp"
-      googleClientId={process.env.GOOGLE_CLIENT_ID}
+      googleClientId={googleClientId ?? undefined}
       callbackURL={next}
       joining={joining}
     />

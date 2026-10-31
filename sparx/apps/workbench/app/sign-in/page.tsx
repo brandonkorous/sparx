@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { getSession } from '@wizeworks/auth-client-server';
+import { getSession, readSignInOptions } from '@wizeworks/auth-client-server';
 import { AuthWrapper } from '../../components/auth/auth-wrapper';
 import { safeInternalPath } from '../../lib/safe-path';
 import { joiningFrom } from '../../lib/invite-joining';
@@ -15,8 +15,8 @@ export const dynamic = 'force-dynamic';
 //
 // /sign-in and /sign-up render the SAME AuthWrapper (which toggles between the
 // two in place); the route only sets the initial mode and guards the session.
-// googleClientId is read from the server env at request time — no NEXT_PUBLIC
-// bake — so the portable image resolves it per environment and can drive One Tap.
+// googleClientId is asked of api-rest at request time — no NEXT_PUBLIC bake —
+// so the portable image resolves it per environment and can drive One Tap.
 //
 // `callbackURL` funnels the MCP OAuth consent flow: an operator who isn't signed
 // in when they hit /oauth/consent is sent here with the consent path attached,
@@ -33,11 +33,13 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
 
   // On the way to accept an invitation: name the business being joined.
   const joining = await joiningFrom(next);
+  // Google One Tap needs the brand's public client id, which api-rest holds.
+  const { googleClientId } = await readSignInOptions();
 
   return (
     <AuthWrapper
       initialMode="signIn"
-      googleClientId={process.env.GOOGLE_CLIENT_ID}
+      googleClientId={googleClientId ?? undefined}
       callbackURL={next}
       joining={joining}
     />

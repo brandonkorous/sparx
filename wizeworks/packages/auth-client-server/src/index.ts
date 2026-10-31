@@ -32,6 +32,7 @@ export {
   mcpDiscoveryDocument,
   readInvitation,
   readMcpConsentRequest,
+  readSignInOptions,
   requestConfirmLink,
   submitMcpConsent,
   toSearchParams,
@@ -40,4 +41,5 @@ export {
   type McpConsentRead,
   type McpConsentRequest,
   type SendLinkResult,
+  type SignInOptions,
 } from './platform-flows';

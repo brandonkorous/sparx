@@ -7,7 +7,13 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { runAsBrand } from '@wizeworks/brand-core/request-scope';
 
 import { authBrandConfigForBrand } from './brand-config';
-import { auth, authForBrand, registerAuthBrands, registeredAuthBrands } from './server';
+import {
+  auth,
+  authForBrand,
+  brandSignInOptions,
+  registerAuthBrands,
+  registeredAuthBrands,
+} from './server';
 
 const TOUCHED = [
   'PLATFORM_BRAND_SOURCE',
@@ -117,5 +123,49 @@ describe('registered brands', () => {
     expect(() => runAsBrand('acme', () => authForBrand('acme'))).toThrow(
       /does not serve brand "acme"/
     );
+  });
+});
+
+describe('brandSignInOptions', () => {
+  // Registered on its own: the brands above have no Google client, and a
+  // brand's registration replaces the earlier one under the same key.
+  beforeAll(() => {
+    registerAuthBrands([
+      {
+        brand: 'sparx',
+        appName: 'sparx',
+        baseURL: 'https://sparx.example/api/auth',
+        secret: 'sparx-secret-that-is-long-enough-for-better-auth',
+        cookiePrefix: 'sparx-cookie',
+        googleClientId: 'sparx-google-id',
+        googleClientSecret: 'sparx-google-secret',
+        passkeyRpId: undefined,
+      },
+      {
+        brand: 'piggles',
+        appName: 'piggles',
+        baseURL: 'https://piggles.example/api/auth',
+        secret: 'piggles-secret-that-is-long-enough-for-better-auth',
+        cookiePrefix: 'piggles-cookie',
+        googleClientId: 'piggles-google-id',
+        googleClientSecret: undefined,
+        passkeyRpId: undefined,
+      },
+    ]);
+  });
+
+  it("answers with the brand's own Google client, never the process's", () => {
+    expect(brandSignInOptions('sparx')).toEqual({
+      social: ['google'],
+      googleClientId: 'sparx-google-id',
+    });
+  });
+
+  it('offers no Google for a brand missing half of its credentials', () => {
+    expect(brandSignInOptions('Piggles')).toEqual({ social: [], googleClientId: null });
+  });
+
+  it('refuses a brand it was not given', () => {
+    expect(() => brandSignInOptions('acme')).toThrow(/does not serve brand "acme"/);
   });
 });

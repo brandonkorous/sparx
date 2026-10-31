@@ -1,6 +1,6 @@
 // The person's own business, for the app that signs them up and sets it up.
 //
-//   GET  /auth/<brand>/platform/sign-in-options       → { social }
+//   GET  /auth/<brand>/platform/sign-in-options       → { social, googleClientId }
 //   GET  /auth/<brand>/platform/consent               → { consent }
 //   POST /auth/<brand>/platform/consent               → { analytics } → { consent }
 //   GET  /auth/<brand>/platform/business              → { business }
@@ -31,7 +31,7 @@
 
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { ALL_MODULES, configuredSocialProviders, type ModuleSlug } from '@wizeworks/auth';
+import { ALL_MODULES, brandSignInOptions, type ModuleSlug } from '@wizeworks/auth';
 import {
   createCheckoutSession,
   createPortalSession,
@@ -54,7 +54,7 @@ import { furnishTenant } from '../../lib/furnish-tenant.js';
 import { capacityWire } from '../v1/usage.js';
 import { blueprintSlugsHiddenFrom } from '../../lib/marketplace/brand-scope.js';
 import { readConsent, writeConsent } from '../../lib/user-consent.js';
-import { AcquisitionBody, platformSession } from './platform-scope.js';
+import { AcquisitionBody, platformSession, servedBrand } from './platform-scope.js';
 
 /** Roles that may pay for, set up, or furnish a business. */
 const MANAGING_ROLES = new Set(['owner', 'admin']);
@@ -197,9 +197,12 @@ async function blueprintChoices(brand: string) {
 const platformBusinessRoutes: FastifyPluginAsync = (app) => {
   // Which sign-in buttons can work. The credentials live in this process, so
   // only this process can say; an app that guessed would draw a dead button.
-  app.get('/auth/:brand/platform/sign-in-options', async (_request, reply) => {
+  // The BRAND's providers, not this process's: the environment's Google client
+  // is the default brand's, and answering with it told Piggles' sign-in screen
+  // about sparx's Google setup.
+  app.get('/auth/:brand/platform/sign-in-options', async (request, reply) => {
     reply.header('cache-control', 'no-store, private');
-    return reply.send({ social: configuredSocialProviders() });
+    return reply.send(brandSignInOptions(servedBrand(request)!));
   });
 
   app.get('/auth/:brand/platform/consent', async (request, reply) => {

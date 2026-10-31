@@ -6,6 +6,7 @@ export {
   auth,
   authForBrand,
   brandAuthHandler,
+  brandSignInOptions,
   registerAuthBrands,
   registeredAuthBrands,
   type Auth,

@@ -21,16 +21,10 @@ import 'server-only';
 // decide whether to register the provider at all, so the button and the
 // provider can never disagree. The credentials live only there (docs/154).
 
-import { platformRequest } from '@wizeworks/auth-client-server';
+import { readSignInOptions } from '@wizeworks/auth-client-server';
 
-/** True only when api-rest, which holds the Google credentials, says it can
- *  sign somebody in with Google. If it cannot be asked, sign-in cannot work
- *  either, so the button is left off rather than drawn dead. */
+/** True only when api-rest, which holds the Google credentials, says this brand
+ *  can sign somebody in with Google. */
 export async function googleSignInAvailable(): Promise<boolean> {
-  try {
-    const { social } = await platformRequest<{ social: string[] }>('sign-in-options');
-    return social.includes('google');
-  } catch {
-    return false;
-  }
+  return (await readSignInOptions()).social.includes('google');
 }
