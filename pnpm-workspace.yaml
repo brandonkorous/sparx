@@ -27,7 +27,7 @@ catalog:
   '@wizeworks/silicaui-behaviors': ^0.60.3
   '@wizeworks/silicaui-mcp': ^0.60.3
   '@wizeworks/silicaui-editor': ^0.60.3
-  '@wizeworks/silicaui-dnd': ^0.60.3
+  '@wizeworks/silicaui-dnd': ^0.61.0
   '@wizeworks/silicaui-panels': ^0.60.3
   '@wizeworks/silicaui-charts': ^0.60.3
   '@wizeworks/silicaui-table': ^0.60.3
