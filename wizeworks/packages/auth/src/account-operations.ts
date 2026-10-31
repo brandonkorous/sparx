@@ -75,11 +75,6 @@ function text(body: Body, key: string): string {
   return typeof value === 'string' ? value : '';
 }
 
-async function sessionToken(headers: Headers): Promise<string | null> {
-  const current = await auth.api.getSession({ headers });
-  return (current as { session?: { token?: string } } | null)?.session?.token ?? null;
-}
-
 /** The person's own businesses, in the shape the console's switcher reads. */
 export interface AccountBusiness {
   id: string;
@@ -108,12 +103,35 @@ const OPERATIONS: Record<string, Run> = {
       })
     ),
 
+  // Read straight from the session store, not through `auth.api.listSessions`.
+  // Better Auth 1.7 put that endpoint behind its "fresh session" rule (signed
+  // in within the last day), so the Security screen's device list failed with
+  // SESSION_NOT_FRESH for everybody who had stayed signed in, which is nearly
+  // everybody. Seeing your own devices changes nothing. Signing one out still
+  // goes through Better Auth's own checks (`POST sessions`).
   'GET sessions': async (headers) => {
-    const [rows, token] = await Promise.all([
-      auth.api.listSessions({ headers }),
-      sessionToken(headers),
-    ]);
-    return { value: (rows ?? []).map((row) => ({ ...row, current: row.token === token })) };
+    const current = (await auth.api.getSession({ headers })) as {
+      user?: { id?: string };
+      session?: { token?: string };
+    } | null;
+    const userId = current?.user?.id;
+    if (!userId) throw new OperationRefused(401, { message: SIGNED_OUT });
+    const ctx = await auth.$context;
+    const now = Date.now();
+    const rows = await ctx.internalAdapter.listSessions(userId, { onlyActiveSessions: true });
+    return {
+      value: rows
+        .filter((row) => new Date(row.expiresAt).getTime() > now)
+        .map((row) => ({
+          token: row.token,
+          createdAt: row.createdAt,
+          updatedAt: row.updatedAt,
+          expiresAt: row.expiresAt,
+          ipAddress: row.ipAddress ?? null,
+          userAgent: row.userAgent ?? null,
+          current: row.token === current?.session?.token,
+        })),
+    };
   },
 
   'POST sessions': (headers, body) => {
