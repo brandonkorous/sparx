@@ -300,18 +300,56 @@ export function normalizeBrandKey(brand: string | null | undefined): string {
  * is how a Google signup learns which brand it is — the OAuth hook has a user
  * and no tenant yet, so the tenant's own column does not exist to read.
  *
- * WRONG for a **shared process**. api-rest and the event workers serve every
- * brand from one container, and there this returns whatever the deployment was
- * labelled — one answer to a question that has a different answer per request.
- * Those read `tenants.platform_brand` instead. Getting this backwards would
- * stamp one brand's identity onto the other's mail, which is the exact failure
- * this package was written for.
+ * WRONG for a **shared process** reading the environment. api-rest and the event
+ * workers serve every brand from one container, and there the environment holds
+ * whatever the deployment was labelled — one answer to a question that has a
+ * different answer per request. Getting this backwards would stamp one brand's
+ * identity onto the other's mail, which is the exact failure this package was
+ * written for. So a shared process does one of two things:
  *
- * Unset → the default brand, which is correct for every deployment that existed
- * before there was a second one.
+ *   - reads `tenants.platform_brand` where it has a tenant, or
+ *   - runs the work inside `runAsBrand(brand, fn)` from
+ *     `@wizeworks/brand-core/request-scope`, which this function answers from
+ *     first. api-rest does this around every call into a brand's auth instance,
+ *     because sign-up and Google sign-in run before any tenant exists to read.
+ *
+ * A shared process also sets `PLATFORM_BRAND_SOURCE=request`. Then a call with
+ * no scope THROWS instead of returning the default brand: an unscoped auth
+ * query in a process serving two brands is a bug that must stop, and quietly
+ * answering "sparx" is the one outcome that leaks.
+ *
+ * Unset (and not in request mode) → the default brand, which is correct for
+ * every deployment that existed before there was a second one.
  */
 export function currentPlatformBrand(): string {
+  const scoped = requestScopedBrand();
+  if (scoped) return normalizeBrandKey(scoped);
+  if (readEnv('PLATFORM_BRAND_SOURCE') === 'request') {
+    throw new Error(
+      'currentPlatformBrand(): this process serves every brand (PLATFORM_BRAND_SOURCE=request) ' +
+        'and the call is outside runAsBrand(). Refusing to guess a brand.'
+    );
+  }
   return normalizeBrandKey(readEnv('PLATFORM_BRAND'));
+}
+
+// The request scope lives in `./request-scope.ts`, which imports
+// `node:async_hooks`. This file also runs in the browser and at the edge, so it
+// must not import that module itself; the scope registers a resolver here
+// instead. A global symbol rather than a module variable, so a second copy of
+// this module (two bundles in one process) still sees the one resolver.
+const REQUEST_BRAND_RESOLVER = Symbol.for('@wizeworks/brand-core/request-brand-resolver');
+
+type RequestBrandResolver = () => string | null;
+
+/** Registered by `./request-scope.ts`. Not for direct use. */
+export function setRequestBrandResolver(resolver: RequestBrandResolver | null): void {
+  (globalThis as Record<symbol, unknown>)[REQUEST_BRAND_RESOLVER] = resolver ?? undefined;
+}
+
+function requestScopedBrand(): string | null {
+  const resolver = (globalThis as Record<symbol, unknown>)[REQUEST_BRAND_RESOLVER];
+  return typeof resolver === 'function' ? (resolver as RequestBrandResolver)() : null;
 }
 
 /**
