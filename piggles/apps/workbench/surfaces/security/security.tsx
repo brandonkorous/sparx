@@ -57,7 +57,7 @@ function ListCards({ sessions, activity, activityLimit, onShowMore }: ListCardsP
 
 // Read from the console's own account route: Better Auth's `useSession()` hit an
 // endpoint this origin does not serve, so the badge read "Off" on accounts that
-// had it on. See app/api/account/shared.ts.
+// had it on. See wizeworks/packages/auth/src/account-operations.ts.
 function useTwoFactorEnabled(): boolean {
   const signIn = useSignInMethods();
   return signIn.data?.twoFactorEnabled === true;

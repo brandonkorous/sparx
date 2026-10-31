@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { getSession } from '@wizeworks/auth';
+import { getSession } from '@wizeworks/auth-client-server';
 import { marketingUrl, PRODUCT } from '@piggles/config';
 import { returnPath } from '@piggles/auth-handoff';
 import { AuthShell } from '@/components/auth-shell';
@@ -112,7 +112,7 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
         from={from}
         attribution={attribution}
         next={next}
-        google={googleSignInAvailable()}
+        google={await googleSignInAvailable()}
       />
     </AuthShell>
   );

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Card, CardBody } from '@wizeworks/silicaui-react';
-import { requireSession } from '@wizeworks/auth';
+import { requireSession } from '@wizeworks/auth-client-server';
 import { PRODUCT } from '@piggles/config';
 import { AccountBar } from '@/components/account/account-bar';
 import { BillingNotice } from '@/components/account/billing-notice';
@@ -24,12 +24,13 @@ export default async function AccountPage({
   searchParams: Promise<{ billing?: string }>;
 }) {
   const session = await requireSession();
-  const [{ billing: marker }, home] = await Promise.all([
-    searchParams,
-    loadAccountHome(session.user),
-  ]);
-  const { tenant, siteAddress, billing, consent, capacity } = home;
-  const plan = planState(tenant?.subscriptionStatus, tenant?.trialEndsAt, !!billing?.subscribed);
+  const [{ billing: marker }, home] = await Promise.all([searchParams, loadAccountHome()]);
+  const { business, billing, consent, capacity } = home;
+  const plan = planState(
+    business?.subscriptionStatus,
+    business?.trialEndsAt,
+    !!billing?.subscribed
+  );
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
@@ -37,7 +38,7 @@ export default async function AccountPage({
       <BillingNotice marker={marker} />
 
       <h1 className="mt-12 text-3xl font-extrabold sm:text-4xl">
-        {tenant?.name ?? 'Your account'}
+        {business?.name ?? 'Your account'}
       </h1>
       <p className="mt-2 text-lg">
         Signed in as {session.user.email}. This is where you deal with {PRODUCT.name}. Your business
@@ -54,7 +55,7 @@ export default async function AccountPage({
               you are ready.
             </p>
             <p className="mt-4 text-lg font-bold break-all">
-              {siteAddress?.host ?? `${tenant?.slug}.${PRODUCT.tenantSites.suffix}`}
+              {business?.siteHost ?? `${business?.slug}.${PRODUCT.tenantSites.suffix}`}
             </p>
           </CardBody>
         </Card>

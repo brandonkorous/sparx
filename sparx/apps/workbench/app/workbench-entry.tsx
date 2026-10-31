@@ -1,6 +1,6 @@
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getSession } from '@wizeworks/auth';
+import { getSession } from '@wizeworks/auth-client-server';
 import { ACTIVE_PROPERTY_COOKIE, readActiveSite } from '../lib/active-site-cookie';
 import { COMPACT_COOKIE, guessCompact } from '../lib/compact';
 import { WorkbenchShell } from '../components/workbench-shell';

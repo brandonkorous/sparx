@@ -7,13 +7,16 @@
 // transaction — with the request IP + user-agent captured for that record
 // (docs/42 §6) — then fires the welcome / verification / tenant.created events.
 // Doing this on the server is what makes the "accepted the ToS at sign-up"
-// record auditable; the client can't be trusted to write it. signUpMerchant
-// leaves the user signed OUT, so we sign them in here to set the session cookie.
+// record auditable; the client can't be trusted to write it. It runs in
+// api-rest (docs/154), which then signs the new owner in and hands back the
+// session cookies; this action sets them.
 
-import { headers } from 'next/headers';
-import { signUpMerchant, SignUpError } from '@wizeworks/auth';
-import { auth } from '@wizeworks/auth/server';
-import { clientIpFromChain } from '@wizeworks/client-ip';
+import {
+  platformRequest,
+  PlatformRequestError,
+  setSessionCookies,
+  type SessionCookie,
+} from '@wizeworks/auth-client-server';
 
 export interface SignUpActionInput {
   name: string;
@@ -47,25 +50,23 @@ export async function signUpAction(input: SignUpActionInput): Promise<SignUpActi
   // Captured for the legal-acceptance record. NOT x-forwarded-for's first hop:
   // that is the one the client writes, so the record held whatever address the
   // signer typed. The chain is read from the right, past Caddy and Cloudflare.
-  const hdrs = await headers();
-  const ipAddress = clientIpFromChain(hdrs.get('x-forwarded-for'));
-  const userAgent = hdrs.get('user-agent');
-
-  let userId: string;
+  // api-rest makes the account (`signUpMerchant`, with the client address and
+  // browser it reads off the forwarded request) and signs the new owner in.
+  let created: { userId: string; signedIn: boolean; cookies: SessionCookie[] };
   try {
-    ({ userId } = await signUpMerchant({ email, password, name, ipAddress, userAgent }));
+    created = await platformRequest('sign-up', { body: { email, password, name } });
   } catch (err) {
-    if (err instanceof SignUpError) return { ok: false, error: err.message };
+    if (err instanceof PlatformRequestError && (err.status === 400 || err.status === 409)) {
+      const message = err.body.message;
+      if (typeof message === 'string' && message) return { ok: false, error: message };
+    }
     return { ok: false, error: 'Could not create account. Please try again.' };
   }
 
-  // Establish the session cookie (signUpMerchant only writes rows). nextCookies()
-  // flushes the Set-Cookie from this server action.
-  try {
-    await auth.api.signInEmail({ body: { email, password }, headers: hdrs, asResponse: false });
-  } catch {
+  if (!created.signedIn) {
     return { ok: false, error: 'Account created, but sign-in failed. Try signing in.' };
   }
+  await setSessionCookies(created.cookies);
 
-  return { ok: true, userId };
+  return { ok: true, userId: created.userId };
 }

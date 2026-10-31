@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { mcpDiscoveryDocument, OAUTH_DISCOVERY_HEADERS } from '../../../lib/mcp-oauth-metadata';
 
 // OpenID Provider Metadata alias (docs/07 §5). Some MCP clients probe
@@ -6,8 +6,8 @@ import { mcpDiscoveryDocument, OAUTH_DISCOVERY_HEADERS } from '../../../lib/mcp-
 // serve the same document so discovery succeeds either way.
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
-  const metadata = await mcpDiscoveryDocument('openid', request);
+export async function GET() {
+  const metadata = await mcpDiscoveryDocument('openid');
   return NextResponse.json(metadata, { headers: OAUTH_DISCOVERY_HEADERS });
 }
 

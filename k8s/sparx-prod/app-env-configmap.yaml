@@ -159,27 +159,6 @@ data:
   NEXT_PUBLIC_MARKETING_URL: https://sparx.works
   # Staff app → api-rest in-cluster URL. Avoids going out through Caddy.
   SPARX_API_REST_URL: http://api-rest.sparx-prod.svc.cluster.local:3000
-  # api-rest → staff-app in-cluster URL, used ONLY for the two internal
-  # service-to-service calls that must run where Better Auth lives: partner
-  # account provisioning (POST /api/internal/partner-provision, docs/114 §B.2)
-  # and staff password reset (POST /api/internal/user-password-reset). Better
-  # Auth now lives in the workbench (it replaced the dashboard), so this points
-  # at the workbench Service. Authenticated with the shared
-  # SPARX_INTERNAL_JWT_SECRET (already in sparx-app-secrets). Private ClusterIP
-  # address, distinct from the browser-facing app origin. NOTE: the var name is
-  # legacy (predates the dashboard→workbench cutover); its value is the workbench.
-  SPARX_DASHBOARD_INTERNAL_URL: http://workbench.sparx-prod.svc.cluster.local:3000
-  # Where each product's Better Auth can be reached from inside the cluster.
-  #
-  # A login belongs to exactly ONE product, so only that product's auth instance
-  # can see it — an operator's password reset aimed at the wrong one finds
-  # nothing AND reports success, because "we never say whether an address has an
-  # account" is correct for the endpoint and identical to this failure. So the
-  # address is per brand and api-rest picks it from the user's own row.
-  #
-  # Adding a product is adding a line here, never a code change.
-  SPARX_ACCOUNT_INTERNAL_URL: http://workbench.sparx-prod.svc.cluster.local:3000
-  PIGGLES_ACCOUNT_INTERNAL_URL: http://piggles-account.sparx-prod.svc.cluster.local:3000
   # PUBLIC origin of api-rest — baked into rendered email media URLs (logos,
   # product images), which resolve via GET /v1/public/media/:id (a REST-only
   # route; GraphQL at graphql.sparx.works doesn't serve bytes). Distinct from the

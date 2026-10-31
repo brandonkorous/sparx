@@ -8,9 +8,6 @@
 # dashboard and other services use. The internal-trust JWT secret +
 # Pub/Sub project id are expected to be in sparx-app-secrets:
 #   - SPARX_INTERNAL_JWT_SECRET — shared with dashboard for the JWT bridge
-#   - SPARX_INTERNAL_FURNISH_TOKEN — shared with the app that runs signup; gates
-#     POST /internal/tenant/furnish. Unset → 401, which stops onboarding rather
-#     than letting businesses arrive unfurnished and look normal.
 #   - GCP_PROJECT_ID            — enables the real Pub/Sub publisher
 #   - PUBSUB_TOPIC              — defaults to sparx.events
 #
@@ -94,6 +91,37 @@ spec:
               value: '3000'
             - name: LOG_LEVEL
               value: info
+            # ── Staff sign-in for every brand (docs/154) ──────────────────────
+            #
+            # api-rest serves each brand's Better Auth handler at the internal
+            # `/auth/<brand>/*`; each app rewrites its own `/api/auth/*` here.
+            # Every value below must EQUAL what that brand's app runs with
+            # today: the secret signs live session cookies, the URL is in every
+            # emailed link and Google redirect URI, and the cookie prefix is
+            # the session's address. A different value signs that brand out.
+            #
+            # sparx reads the unprefixed names it always used, all already in
+            # sparx-app-env / sparx-app-secrets (BETTER_AUTH_SECRET,
+            # BETTER_AUTH_URL, GOOGLE_CLIENT_*). Piggles reads PIGGLES_*: its
+            # secret and Google client are keys in sparx-app-secrets; the three
+            # plain values are here because piggles-app-env cannot be loaded
+            # into this pod (it overrides shared names with Piggles values).
+            #
+            # A brand with no secret or URL stops the pod at boot, on purpose.
+            - name: PLATFORM_AUTH_BRANDS
+              value: sparx,piggles
+            # Two brands in one process: an auth call outside a brand scope
+            # must throw, never answer as the default brand.
+            - name: PLATFORM_BRAND_SOURCE
+              value: request
+            # Same as piggles-account's BETTER_AUTH_URL.
+            - name: PIGGLES_BETTER_AUTH_URL
+              value: https://getpiggles.com
+            # Same as piggles-app-env.
+            - name: PIGGLES_BETTER_AUTH_APP_NAME
+              value: Piggles
+            - name: PIGGLES_BETTER_AUTH_COOKIE_PREFIX
+              value: piggles-account
             # api-rest loads its ~50-package workspace graph at boot via runtime
             # tsx (no precompiled bundle), so its boot heap outgrew Node's default
             # cgroup-derived ceiling (~256MB in a 512Mi container) and the process

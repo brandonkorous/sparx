@@ -1,144 +1,64 @@
 import 'server-only';
-import { type Prisma, withTenant } from '@wizeworks/db';
+
+import { platformRequest, PlatformRequestError } from '@wizeworks/auth-client-server';
 import type { PigglesGroup } from '@piggles/brand';
 import { railAppIds } from '@piggles/config';
-import { claimBusinessSlug } from './business-slug';
+import { AddressTakenError } from './business-slug';
+import { RESERVED_ADDRESSES } from './address-rules';
 
-// The one transaction onboarding runs: the business is named, the rail
-// preference is recorded, and the web address is claimed.
+// The one save onboarding runs: the business is named, the rail preference is
+// recorded, and the web address is claimed, together or not at all.
 //
-// `withTenant`, NOT `prisma.$transaction`. `properties` is under FORCE row-level
-// security, so an UPDATE issued without `app.tenant_id` set matches NOTHING —
-// and `updateMany` reports that by returning `{ count: 0 }`, which is not an
-// error. The first version used the raw client: the tenant rename worked (the
-// `tenants` dispatch row is deliberately non-RLS), the site rename silently did
-// not, and the business went on sending receipts under "Marta's workspace".
+// api-rest runs it as one transaction on the business of the person signed in
+// (docs/154). What the answers MEAN stays here: which rail apps a "what do you
+// do" answer turns on, and which addresses Piggles keeps for itself. api-rest
+// stores them under the `piggles` key and reads nothing in them.
 
 export interface OnboardingAnswers {
-  tenantId: string;
   businessName: string;
+  /** What the business said it does, as rail groups. */
   does: PigglesGroup[];
-  /** The address she chose, already tidied. Null means nothing usable was typed
-   *  or derived, which keeps the generated placeholder. */
+  /** The web address as a slug, or null to keep the one it has. */
   address: string | null;
 }
 
+/** Throws `AddressTakenError` when the address belongs to somebody else. */
 export async function saveOnboarding(answers: OnboardingAnswers): Promise<void> {
-  await withTenant({ tenantId: answers.tenantId }, async (tx) => {
-    const current = await tx.tenant.findUniqueOrThrow({
-      where: { id: answers.tenantId },
-      select: { settings: true, slug: true },
-    });
-
-    await tx.tenant.update({
-      where: { id: answers.tenantId },
-      data: {
+  try {
+    await platformRequest('business/setup', {
+      body: {
         name: answers.businessName,
-        settings: mergeSettings(current.settings, answers.does),
+        slug: answers.address,
+        railApps: railAppIds(answers.does),
+        brandSettings: { railGroups: answers.does },
+        reserved: [...RESERVED_ADDRESSES],
       },
     });
-
-    // The PRIMARY site's name is customer-facing — it is what appears on the
-    // site, in emails, and on invoices. It was seeded with the generated
-    // placeholder ("Brandon's workspace") at provisioning, so leaving it alone
-    // would mean a real business sending real receipts under a name nobody chose.
-    const renamed = await tx.property.updateMany({
-      where: { tenantId: answers.tenantId, isPrimary: true },
-      data: { name: answers.businessName },
-    });
-
-    // Assert the write LANDED. `updateMany` matching nothing is not an error,
-    // and every plausible cause here is a bug rather than a user mistake.
-    // Throwing rolls the whole transaction back, so the person is told to try
-    // again instead of being shown a success screen over a half-applied change.
-    if (renamed.count === 0) {
-      throw new Error(`onboarding: no primary site renamed for tenant ${answers.tenantId}`);
+  } catch (err) {
+    if (err instanceof PlatformRequestError && err.status === 409) {
+      throw new AddressTakenError(answers.address ?? '');
     }
-
-    if (answers.address) {
-      await claimBusinessSlug(tx, answers.tenantId, answers.address, current.slug);
-    }
-  });
-}
-
-/**
- * Read-modify-write, MERGED — never assigned. `settings` is a shared per-tenant
- * JSON blob other parts of the platform already write to, so replacing it would
- * silently drop whatever else is in there.
- *
- * NEITHER `modules` NOR `industry` is written, and both omissions are
- * deliberate. `settings.modules` is not ours: a flag write is only half an
- * activation, and the other half is announcing it on the in-process bus that
- * seeds each module's baseline, which only api-rest can do (lib/furnish.ts).
- * `settings.industry` is written by the industry-starter installer as the last
- * step of stamping the trade's config — setting it here would mark the trade as
- * chosen before its setup existed, and the workbench reads exactly that key to
- * decide the question is answered.
- */
-function mergeSettings(raw: unknown, does: PigglesGroup[]): Prisma.InputJsonObject {
-  const settings =
-    raw && typeof raw === 'object' && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
-
-  return {
-    ...settings,
-    // What the rail shows on day one, RESOLVED to app ids here because this is
-    // the only side that holds the app registry. A WORKSPACE PREFERENCE and
-    // nothing more: every app stays included, working, and one tap away.
-    rail: {
-      ...((settings.rail as Record<string, unknown> | undefined) ?? {}),
-      apps: railAppIds(does),
-    },
-    piggles: {
-      ...((settings.piggles as Record<string, unknown> | undefined) ?? {}),
-      // The RAW answer, kept because the WizeWorks board segments on it.
-      railGroups: does,
-    },
-  };
+    throw err;
+  }
 }
 
 /**
  * Mark the setup finished. Called by the action AFTER furnishing has returned,
- * never in the transaction above, and the distinction is the whole point.
+ * never with the save above, and the distinction is the whole point.
  *
- * `onboardedAt` used to be written here, beside the rail groups — so it recorded
- * that somebody PRESSED THE BUTTON, not that their business was ready. Naming a
- * completion that early is how a marker ends up meaning the wrong thing to
- * whoever reads it next: furnishing is a separate process, it is the half that
- * switches the modules on, and when it fails the action says so and the person
- * is still mid-setup. A marker set before that is a claim the code cannot back.
+ * `onboardedAt` used to be written beside the rail groups, so it recorded that
+ * somebody PRESSED THE BUTTON, not that their business was ready. Furnishing is
+ * the half that switches the modules on, and when it fails the person is still
+ * mid-setup. It is also LOAD-BEARING: `/onboarding` refuses a business that has
+ * it, so a business that finished a month ago cannot reopen the setup form over
+ * a button that offers to set it all up again. See app/onboarding/page.tsx.
  *
- * It is also now LOAD-BEARING, which is the other half of the fix. Nothing read
- * it. `/onboarding` had no completion check of any kind, so a business that
- * finished a month ago could open the setup form again, prefilled with its own
- * live name and web address, over a button that offers to set it all up. See
- * app/onboarding/page.tsx. [[feedback_fetched_but_never_rendered]]
- *
- * Best-effort on purpose: the business is already built and usable by the time
- * this runs, and failing the signup over a bookkeeping field would throw away
- * the thing that just succeeded. A miss costs the guard, not the account.
+ * Best-effort on purpose: the business is built and usable by the time this
+ * runs, and failing the signup over a bookkeeping field would throw away the
+ * thing that just succeeded. A miss costs the guard, not the account.
  */
-export async function markOnboardingFinished(tenantId: string): Promise<void> {
-  await withTenant({ tenantId }, async (tx) => {
-    const current = await tx.tenant.findUniqueOrThrow({
-      where: { id: tenantId },
-      select: { settings: true },
-    });
-    const settings =
-      current.settings && typeof current.settings === 'object' && !Array.isArray(current.settings)
-        ? (current.settings as Record<string, unknown>)
-        : {};
-
-    await tx.tenant.update({
-      where: { id: tenantId },
-      data: {
-        settings: {
-          ...settings,
-          piggles: {
-            ...((settings.piggles as Record<string, unknown> | undefined) ?? {}),
-            onboardedAt: new Date().toISOString(),
-          },
-        },
-      },
-    });
+export async function markOnboardingFinished(): Promise<void> {
+  await platformRequest('business/brand-settings', {
+    body: { onboardedAt: new Date().toISOString() },
   });
 }

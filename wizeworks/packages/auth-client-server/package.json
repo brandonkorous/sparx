@@ -1,0 +1,37 @@
+{
+  "name": "@wizeworks/auth-client-server",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Server-side sign-in for a Next.js app that holds no database and no auth instance: reads the session, fetches the API token, and proxies the app's /api/auth/* to api-rest, all over HTTP.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --maxWorkers=1 --passWithNoTests",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@wizeworks/brand-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.0.0",
+    "next": "^16.4.1",
+    "react": "^19.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.12"
+  }
+}

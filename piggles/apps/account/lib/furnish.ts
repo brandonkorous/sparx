@@ -5,7 +5,7 @@ import 'server-only';
 // Onboarding owns the questions and the naming. It does not own switching the
 // apps on, stamping the trade's setup, or filling the account with something to
 // look at — that is one platform operation with a load-bearing internal order,
-// and it lives in api-rest (POST /internal/tenant/furnish).
+// and it lives in api-rest (POST /auth/piggles/platform/business/furnish).
 //
 // ── WHY NOT DO IT HERE, WHICH IS WHAT THIS APP USED TO DO ───────────────────
 //
@@ -28,20 +28,17 @@ import 'server-only';
 // buses, so the announcing belongs there and this app asks for it. That file is
 // gone; do not bring back a local publish in its place.
 //
-// The blast radius of the secret is why it is its own: this call writes module
-// flags, config presets, a site template and hundreds of rows into ONE named
-// tenant.
+// api-rest acts on the business of the person signed in, never one this app
+// names, and only for an owner or admin: this call writes module flags, config
+// presets, a site template and hundreds of rows (docs/154).
 //
 // Both calls here run for one person mid-signup (the onboarding page and its
 // action), uncached, so each carries that person's client chain: api-rest then
 // rate-limits and audits the person, not this pod's one shared address.
 
-import { headers } from 'next/headers';
-import { forwardedFor } from '@wizeworks/app-kit/forwarded-for';
-
-const FURNISH_PATH = '/internal/tenant/furnish';
-const BLUEPRINTS_PATH = '/internal/tenant/blueprints';
-const FURNISH_TOKEN_HEADER = 'X-sparx-Internal-Furnish-Token';
+import { platformRequest } from '@wizeworks/auth-client-server';
+import type { TradeOption } from './trade-options';
+import { tradeOptions } from './trades';
 
 /** How long to wait. Furnishing is a real body of work — module baselines, the
  *  trade's presets, a site template, hundreds of sample rows — and the person is
@@ -73,97 +70,45 @@ export interface BlueprintChoice {
   preview?: string;
 }
 
-/**
- * The templates this business may choose from.
- *
- * Fetched rather than queried, even though this app has the database, because
- * brand visibility is declared in the bundle MANIFESTS — which ship in api-rest's
- * image, not this one. A direct query here would return every published row and
- * cheerfully offer a Piggles business the other brand's showcase.
- *
- * Returns an empty list rather than throwing: a picker that cannot load is a
- * reason to fall back to the default template, not a reason nobody can finish
- * signing up.
- */
-export async function listBlueprints(tenantId: string): Promise<BlueprintChoice[]> {
-  const base = process.env.PIGGLES_API_REST_URL;
-  const token = process.env.SPARX_INTERNAL_FURNISH_TOKEN;
-  if (!base || !token) return [];
+export interface SetupOptions {
+  blueprints: BlueprintChoice[];
+  trades: TradeOption[];
+}
 
+/**
+ * The templates this business's brand may see, and the trades the platform
+ * can furnish. Never throws: when api-rest cannot be asked, the template
+ * picker is left off and the trades fall back to the ones Piggles names, so the
+ * setup form still works. Furnishing ignores a trade it cannot furnish.
+ */
+export async function readSetupOptions(): Promise<SetupOptions> {
   try {
-    const url = `${base.replace(/\/$/, '')}${BLUEPRINTS_PATH}?tenantId=${encodeURIComponent(tenantId)}`;
-    const response = await fetch(url, {
-      headers: { [FURNISH_TOKEN_HEADER]: token, ...forwardedFor(await headers()) },
-      signal: AbortSignal.timeout(15_000),
-      cache: 'no-store',
-    });
-    if (!response.ok) return [];
-    const body = (await response.json()) as { data?: { blueprints?: BlueprintChoice[] } };
-    return body.data?.blueprints ?? [];
+    const options = await platformRequest<{
+      blueprints: BlueprintChoice[];
+      industries: { key: string; label: string }[];
+    }>('business/setup-options', { timeoutMs: 15_000 });
+    return { blueprints: options.blueprints, trades: tradeOptions(options.industries) };
   } catch {
-    return [];
+    return { blueprints: [], trades: tradeOptions(null) };
   }
 }
 
 export interface FurnishRequest {
-  tenantId: string;
-  /** The template the person picked. Omitted → the brand's own showcase. */
   blueprintKey?: string;
-  /** The trade — both the starter slug and the sample-pack key. Null when the
-   *  person did not pick one, which the platform reads as "use the generic set"
-   *  rather than guessing a vertical for them. */
+  /** A trade from `readSetupOptions`, or null for none. */
   industry: string | null;
 }
 
-/**
- * Ask api-rest to furnish the tenant. Resolves when it is genuinely done.
- *
- * Throws on anything other than success, and the caller is expected to SHOW that
- * rather than swallow it. A business that lands in an empty workspace is the
- * failure this whole path exists to prevent, so failing visibly — with a retry
- * that is safe, because every step of furnishing is idempotent — beats redirecting
- * somebody into the exact state we were trying to avoid.
- */
-export async function furnishTenant({
-  tenantId,
-  industry,
-  blueprintKey,
-}: FurnishRequest): Promise<void> {
-  const base = process.env.PIGGLES_API_REST_URL;
-  const token = process.env.SPARX_INTERNAL_FURNISH_TOKEN;
-
-  if (!base || !token) {
-    throw new Error(
-      'Cannot furnish: PIGGLES_API_REST_URL and SPARX_INTERNAL_FURNISH_TOKEN must both be set.'
-    );
-  }
-
-  const response = await fetch(`${base.replace(/\/$/, '')}${FURNISH_PATH}`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      [FURNISH_TOKEN_HEADER]: token,
-      ...forwardedFor(await headers()),
-    },
-    body: JSON.stringify({
-      tenantId,
+/** Furnish the business of the person signed in. Throws when it fails, so the
+ *  action can say so and leave them mid-setup rather than half-built. */
+export async function furnishTenant({ industry, blueprintKey }: FurnishRequest): Promise<void> {
+  await platformRequest('business/furnish', {
+    body: {
       industry,
-      // `modules` is deliberately omitted, which the platform reads as EVERY
-      // module. Piggles is one flat price with every app included (RULE #2), so
-      // there is no subset to send — and sending the ticked rail groups here is
-      // precisely how an unticked app becomes a 404 on a screen that promised
-      // otherwise.
-      //
       blueprintKey: blueprintKey ?? DEFAULT_BLUEPRINT_KEY,
+      // One flat price: no per-module billing items.
       billPerModule: false,
-    }),
-    signal: AbortSignal.timeout(FURNISH_TIMEOUT_MS),
+    },
+    timeoutMs: FURNISH_TIMEOUT_MS,
   });
-
-  if (!response.ok) {
-    const detail = await response.text().catch(() => '');
-    throw new Error(
-      `Furnish failed: ${response.status} ${response.statusText}${detail ? `, ${detail.slice(0, 500)}` : ''}`
-    );
-  }
 }

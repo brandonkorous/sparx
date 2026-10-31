@@ -1,5 +1,5 @@
 import type { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@wizeworks/auth';
+import { signOutSession } from '@wizeworks/auth-client-server';
 import { sameOriginRedirect } from '@/lib/same-origin-redirect';
 
 // Signing out, from the account side.
@@ -26,12 +26,10 @@ import { sameOriginRedirect } from '@/lib/same-origin-redirect';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  // Best-effort: if revocation fails, the cookie must STILL be cleared. Somebody
-  // who asked to be signed out and was left signed in because a database call
-  // hiccuped is the worst outcome available here.
-  const signedOut = await auth.api
-    .signOut({ headers: request.headers, asResponse: true })
-    .catch(() => null);
+  // Never throws: if revocation fails, the cookies are STILL cleared. Somebody
+  // who asked to be signed out and was left signed in because a call failed is
+  // the worst outcome available here.
+  const cleared = await signOutSession(request.headers);
 
   // NOT `NextResponse.redirect(new URL('/sign-in', request.url))`. A pod binds
   // to 0.0.0.0:3000, so `request.url` names an address that exists nowhere and
@@ -40,8 +38,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // moved across (issue 882). A relative Location resolves against whatever
   // address the browser actually asked for, behind any proxy, on any hostname.
   const response = sameOriginRedirect('/sign-in', 303);
-  for (const cookie of signedOut?.headers.getSetCookie() ?? []) {
-    response.headers.append('set-cookie', cookie);
+  for (const cookie of cleared) {
+    response.cookies.set({ name: cookie.name, value: cookie.value, ...cookie.options });
   }
   response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
   return response;

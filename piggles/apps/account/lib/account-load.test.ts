@@ -1,74 +1,104 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Every read the account home makes, held open so the test decides when each one answers.
-const reads = vi.hoisted(() => ({
-  tenant: vi.fn(),
-  domain: vi.fn(),
-  billing: vi.fn(),
-  consent: vi.fn(),
-  capacity: vi.fn(),
-}));
+// Every read the account home makes is a call to api-rest, held open here so
+// the test decides when each one answers.
+const calls = vi.hoisted(() => ({ request: vi.fn() }));
 
-vi.mock('@wizeworks/db', () => ({
-  prisma: { tenant: { findUnique: reads.tenant }, domain: { findFirst: reads.domain } },
-}));
-vi.mock('@wizeworks/usage', () => ({ capacityReport: reads.capacity }));
-vi.mock('./billing', () => ({ readBilling: reads.billing }));
-vi.mock('./consent', () => ({ readConsent: reads.consent }));
+vi.mock('server-only', () => ({}));
+vi.mock('@wizeworks/auth-client-server', () => {
+  class PlatformRequestError extends Error {
+    constructor(
+      readonly path: string,
+      readonly status: number | null
+    ) {
+      super(path);
+    }
+  }
+  return { platformRequest: calls.request, PlatformRequestError };
+});
 
-import { loadAccountHome } from './account-load';
-
-function deferred<T>() {
-  let resolve!: (value: T) => void;
-  const promise = new Promise<T>((r) => (resolve = r));
-  return { promise, resolve };
-}
+import { PlatformRequestError } from '@wizeworks/auth-client-server';
+import { capacityFromWire, loadAccountHome, readBusiness } from './account-load';
 
 const flush = () => new Promise((r) => setTimeout(r, 0));
-const user = { id: 'u1', tenantId: 't1', homeTenantId: 'home1' };
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
 describe('loadAccountHome', () => {
-  it('starts the consent read before the tenant and billing reads answer', async () => {
-    const tenant = deferred<{ platformBrand: string }>();
-    reads.tenant.mockReturnValue(tenant.promise);
-    reads.domain.mockResolvedValue({ host: 'dana.piggles.site' });
-    reads.billing.mockReturnValue(new Promise(() => undefined));
-    reads.consent.mockResolvedValue(null);
-
-    void loadAccountHome(user);
+  it('asks for all four at once, without waiting on any of them', async () => {
+    calls.request.mockReturnValue(new Promise(() => undefined));
+    void loadAccountHome();
     await flush();
-    expect(reads.consent).toHaveBeenCalledWith('u1', 'home1');
+    expect(calls.request.mock.calls.map(([path]) => path as string).sort()).toEqual([
+      'business',
+      'business/billing',
+      'business/capacity',
+      'consent',
+    ]);
   });
 
-  it('starts capacity as soon as the tenant answers, without waiting on billing', async () => {
-    const tenant = deferred<{ platformBrand: string }>();
-    reads.tenant.mockReturnValue(tenant.promise);
-    reads.domain.mockResolvedValue(null);
-    reads.billing.mockReturnValue(new Promise(() => undefined));
-    reads.consent.mockResolvedValue(null);
+  it('returns every read, with the trial end as a date', async () => {
+    calls.request.mockImplementation((path: string) => {
+      switch (path) {
+        case 'business':
+          return Promise.resolve({
+            business: {
+              name: 'Dana',
+              slug: 'dana',
+              subscriptionStatus: 'trialing',
+              trialEndsAt: '2026-11-12T00:00:00.000Z',
+              siteHost: 'dana.piggles.site',
+              modulesEnabled: [],
+              brandSettings: {},
+            },
+          });
+        case 'business/billing':
+          return Promise.resolve({ billing: { subscribed: true } });
+        case 'consent':
+          return Promise.resolve({ consent: { analytics: true, at: '' } });
+        default:
+          return Promise.resolve({
+            capacity: { meters: [], measuredAt: null, allowanceSource: 'none' },
+          });
+      }
+    });
 
-    void loadAccountHome(user);
-    tenant.resolve({ platformBrand: 'piggles' });
-    await flush();
-    expect(reads.capacity).toHaveBeenCalledWith('t1', 'piggles');
-    expect(reads.tenant).toHaveBeenCalledTimes(1);
-  });
-
-  it('returns every read', async () => {
-    reads.tenant.mockResolvedValue({ name: 'Dana', platformBrand: 'piggles' });
-    reads.domain.mockResolvedValue({ host: 'dana.piggles.site' });
-    reads.billing.mockResolvedValue({ subscribed: true });
-    reads.consent.mockResolvedValue({ analytics: true, at: '' });
-    reads.capacity.mockResolvedValue({ meters: [], measuredAt: null });
-
-    const home = await loadAccountHome(user);
-    expect(home.tenant?.name).toBe('Dana');
-    expect(home.siteAddress?.host).toBe('dana.piggles.site');
+    const home = await loadAccountHome();
+    expect(home.business?.name).toBe('Dana');
+    expect(home.business?.trialEndsAt?.toISOString()).toBe('2026-11-12T00:00:00.000Z');
+    expect(home.business?.siteHost).toBe('dana.piggles.site');
+    expect(home.billing).toEqual({ subscribed: true });
     expect(home.consent).toEqual({ analytics: true, at: '' });
-    expect(home.capacity).toEqual({ meters: [], measuredAt: null });
+    expect(home.capacity.measuredAt).toBeNull();
+  });
+});
+
+describe('readBusiness', () => {
+  it('reads a business that no longer exists as none', async () => {
+    calls.request.mockRejectedValue(new PlatformRequestError('/platform/business', 404));
+    await expect(readBusiness()).resolves.toBeNull();
+  });
+
+  it('does not read a failed call as "no business"', async () => {
+    calls.request.mockRejectedValue(new PlatformRequestError('/platform/business', 503));
+    await expect(readBusiness()).rejects.toThrow();
+  });
+});
+
+describe('capacityFromWire', () => {
+  it('turns byte counts back into bigints and keeps "not measured" as null', () => {
+    const report = capacityFromWire({
+      meters: [
+        { meter: 'storage', used: '9007199254740993', limit: '10', fraction: 0.5, state: 'ok' },
+        { meter: 'customers', used: null, limit: null, fraction: null, state: 'unmetered' },
+      ] as never,
+      measuredAt: '2026-10-29T00:00:00.000Z',
+      allowanceSource: 'configured',
+    });
+    expect(report.meters[0]?.used).toBe(9007199254740993n);
+    expect(report.meters[1]?.used).toBeNull();
+    expect(report.measuredAt).toEqual(new Date('2026-10-29T00:00:00.000Z'));
   });
 });

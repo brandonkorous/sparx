@@ -17,13 +17,14 @@ import 'server-only';
 //
 // This file used to RE-STATE the env test that `@wizeworks/auth`'s server config
 // makes, which is two copies of one condition and therefore a drift waiting to
-// happen. It now asks that package, which asks the same function when it decides
-// whether to register the provider at all — so the button and the provider can
-// never disagree. Adding a second provider is one entry in
-// `@wizeworks/auth`'s `social-providers`, and this becomes a list.
+// happen. It now asks api-rest, which answers with the same function it uses to
+// decide whether to register the provider at all, so the button and the
+// provider can never disagree. The credentials live only there (docs/154).
 
-import { socialProviderConfigured } from '@wizeworks/auth';
+import { readSignInOptions } from '@wizeworks/auth-client-server';
 
-export function googleSignInAvailable(): boolean {
-  return socialProviderConfigured('google');
+/** True only when api-rest, which holds the Google credentials, says this brand
+ *  can sign somebody in with Google. */
+export async function googleSignInAvailable(): Promise<boolean> {
+  return (await readSignInOptions()).social.includes('google');
 }

@@ -342,6 +342,11 @@ jobs:
       - name: Check the product boundaries hold
         run: node scripts/check-boundaries.mjs
 
+      # An app that reaches data only through api-rest (docs/154) must not
+      # import the database or the auth server again: its pod has neither.
+      - name: Check apps off the database stay off it
+        run: node scripts/check-app-data-access.mjs
+
       # The boundary check reads source text, so it catches the import somebody
       # WROTE. This walks the dependency closure and catches the one four
       # packages down — which is the one that actually put sparx's mascot in the

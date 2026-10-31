@@ -1,11 +1,10 @@
 'use server';
 
-import { requireSession } from '@wizeworks/auth';
+import { requireSession } from '@wizeworks/auth-client-server';
 import { PIGGLES_GROUPS, type PigglesGroup } from '@piggles/brand';
 import { furnishTenant } from '@/lib/furnish';
 import { heardAboutAnswer, type HeardAbout } from '@/lib/heard-about';
 import { saveHeardAbout } from '@/lib/heard-about-save';
-import { isKnownTrade } from '@/lib/trades';
 import { AddressTakenError, slugifyAddress, slugifyBusinessName } from '@/lib/business-slug';
 import { markOnboardingFinished, saveOnboarding } from '@/lib/onboarding-save';
 import { text, textAll } from '@/lib/form';
@@ -60,7 +59,8 @@ function readAnswers(formData: FormData): Answers | OnboardingState {
     does: textAll(formData, 'does').filter((g): g is PigglesGroup =>
       (PIGGLES_GROUPS as readonly string[]).includes(g)
     ),
-    industry: chosen && isKnownTrade(chosen) ? chosen : null,
+    // api-rest furnishes a trade it holds no sample pack for as no trade.
+    industry: chosen || null,
     blueprintKey: text(formData, 'blueprintKey') || undefined,
     address,
     heard: heardAboutAnswer(text(formData, 'heardAbout')),
@@ -69,10 +69,9 @@ function readAnswers(formData: FormData): Answers | OnboardingState {
 
 /** Name the business and claim its address. A taken address is the one failure
  *  somebody can fix, so it points at its field. */
-async function save(tenantId: string, a: Answers): Promise<OnboardingState | null> {
+async function save(a: Answers): Promise<OnboardingState | null> {
   try {
     await saveOnboarding({
-      tenantId,
       businessName: a.businessName,
       does: a.does,
       address: a.address,
@@ -98,13 +97,13 @@ export async function completeOnboarding(
   const answers = readAnswers(formData);
   if ('error' in answers) return answers;
 
-  const saveFailed = await save(tenantId, answers);
+  const saveFailed = await save(answers);
   if (saveFailed) return saveFailed;
 
   // Before furnishing, so the `module.activated` it causes carries the answer to
   // the signups board. Best-effort: an optional answer never fails a signup.
   if (answers.heard) {
-    await saveHeardAbout(tenantId, answers.heard).catch((err: unknown) =>
+    await saveHeardAbout(answers.heard).catch((err: unknown) =>
       logError(tenantId, 'piggles onboarding: could not save where they heard', err)
     );
   }
@@ -113,7 +112,6 @@ export async function completeOnboarding(
   // idempotent, so pressing the button again finishes the job.
   try {
     await furnishTenant({
-      tenantId,
       industry: answers.industry,
       blueprintKey: answers.blueprintKey,
     });
@@ -127,7 +125,7 @@ export async function completeOnboarding(
   }
 
   // Only now is the business set up. Best-effort: losing it costs the guard, not the account.
-  await markOnboardingFinished(tenantId).catch((err: unknown) =>
+  await markOnboardingFinished().catch((err: unknown) =>
     logError(tenantId, 'piggles onboarding: could not mark the setup finished', err)
   );
   return { error: null, done: '/handoff' };

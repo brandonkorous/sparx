@@ -17,7 +17,7 @@
 // open cookie-writer for anonymous callers.
 
 import { NextResponse } from 'next/server';
-import { getSession } from '@wizeworks/auth';
+import { getSession } from '@wizeworks/auth-client-server';
 import { ACTIVE_PROPERTY_COOKIE, encodeActiveSite } from '../../../lib/active-site-cookie';
 
 export const dynamic = 'force-dynamic';

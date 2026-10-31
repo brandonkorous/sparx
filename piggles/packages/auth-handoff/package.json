@@ -2,16 +2,14 @@
   "name": "@piggles/auth-handoff",
   "version": "0.0.0",
   "private": true,
-  "description": "The getpiggles.com → mypiggles.com session handoff. Both halves in one place.",
+  "description": "The getpiggles.com \u2192 mypiggles.com session handoff: where the apps are, and the two calls that carry a session between them.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
   "dependencies": {
     "@piggles/config": "workspace:*",
-    "@wizeworks/auth": "workspace:*",
-    "@wizeworks/db": "workspace:*",
-    "better-auth": "~1.7.14"
+    "@wizeworks/auth-client-server": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

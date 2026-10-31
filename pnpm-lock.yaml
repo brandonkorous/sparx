@@ -98,15 +98,9 @@ importers:
       '@wizeworks/auth':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/auth
-      '@wizeworks/client-ip':
+      '@wizeworks/auth-client-server':
         specifier: workspace:*
-        version: link:../../../wizeworks/packages/client-ip
-      '@wizeworks/db':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/db
-      '@wizeworks/events':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/events
+        version: link:../../../wizeworks/packages/auth-client-server
       '@wizeworks/lens-node':
         specifier: 0.3.0-alpha.11
         version: 0.3.0-alpha.11
@@ -283,6 +277,9 @@ importers:
       '@wizeworks/auth':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/auth
+      '@wizeworks/auth-client-server':
+        specifier: workspace:*
+        version: link:../../../wizeworks/packages/auth-client-server
       '@wizeworks/automation-schemas':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/automation-schemas
@@ -298,9 +295,6 @@ importers:
       '@wizeworks/crm-schemas':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/crm-schemas
-      '@wizeworks/db':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/db
       '@wizeworks/email-sequences':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/email-sequences
@@ -419,15 +413,9 @@ importers:
       '@piggles/config':
         specifier: workspace:*
         version: link:../config
-      '@wizeworks/auth':
+      '@wizeworks/auth-client-server':
         specifier: workspace:*
-        version: link:../../../wizeworks/packages/auth
-      '@wizeworks/db':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/db
-      better-auth:
-        specifier: ~1.7.14
-        version: 1.7.14(@opentelemetry/api@1.9.1)(@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(next@16.4.3(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(@types/node@25.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.21.0)(prisma@6.19.3(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.12(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0)))
+        version: link:../../../wizeworks/packages/auth-client-server
     devDependencies:
       '@types/node':
         specifier: ^25.9.1
@@ -723,15 +711,15 @@ importers:
       '@wizeworks/auth':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/auth
+      '@wizeworks/auth-client-server':
+        specifier: workspace:*
+        version: link:../../../wizeworks/packages/auth-client-server
       '@wizeworks/automation-schemas':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/automation-schemas
       '@wizeworks/builder-schemas':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/builder-schemas
-      '@wizeworks/client-ip':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/client-ip
       '@wizeworks/cms-editor':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/cms-editor
@@ -741,9 +729,6 @@ importers:
       '@wizeworks/crm-schemas':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/crm-schemas
-      '@wizeworks/db':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/db
       '@wizeworks/email-sequences':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/email-sequences
@@ -1148,6 +1133,31 @@ importers:
       vitest:
         specifier: ^4.1.12
         version: 4.1.12(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
+  wizeworks/packages/auth-client-server:
+    dependencies:
+      '@wizeworks/brand-core':
+        specifier: workspace:*
+        version: link:../brand-core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.5
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.15
+      next:
+        specifier: ^16.4.1
+        version: 16.4.3(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(@types/node@25.9.5)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.6
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.12
+        version: 4.1.12(@opentelemetry/api@1.9.1)(@types/node@25.9.5)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
   wizeworks/packages/automation:
     dependencies:
@@ -13268,7 +13278,7 @@ snapshots:
 
   '@types/pg@8.20.0':
     dependencies:
-      '@types/node': 25.9.1
+      '@types/node': 25.9.5
       pg-protocol: 1.14.0
       pg-types: 2.2.0
 
@@ -13302,7 +13312,7 @@ snapshots:
 
   '@types/web-push@3.6.4':
     dependencies:
-      '@types/node': 25.9.1
+      '@types/node': 25.9.5
 
   '@types/ws@8.18.1':
     dependencies:
@@ -14052,7 +14062,7 @@ snapshots:
   css-tree@3.2.1:
     dependencies:
       mdn-data: 2.27.1
-      source-map-js: 1.2.1
+      source-map-js: 1.2.2
 
   css.escape@1.5.1: {}
 
@@ -15631,7 +15641,7 @@ snapshots:
     dependencies:
       '@babel/parser': 7.29.7
       '@babel/types': 7.29.7
-      source-map-js: 1.2.1
+      source-map-js: 1.2.2
 
   make-dir@4.0.0:
     dependencies:
@@ -16988,7 +16998,7 @@ snapshots:
 
   stripe@17.7.0:
     dependencies:
-      '@types/node': 25.9.1
+      '@types/node': 25.9.5
       qs: 6.15.2
 
   strnum@2.3.0: {}

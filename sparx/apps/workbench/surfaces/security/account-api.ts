@@ -1,11 +1,10 @@
 // Talking to the console's own account routes (app/api/account/*).
 //
 // These replace the shared Better Auth CLIENT for everything on the Security
-// surface. Unlike the Piggles console, this origin DOES mount a Better Auth
-// handler, so the client would work -- the reasons for going through our own
-// routes anyway are set out in app/api/account/shared.ts, and the short version
-// is that one of them (which device you are on) cannot be answered in the
-// browser without shipping the session token to JS, and that a Security surface
+// surface. They forward to api-rest (`/auth/sparx/platform/account/<op>`,
+// wizeworks/packages/auth/src/account-operations.ts), which holds the only auth
+// instance. One of them (which device you are on) cannot be answered in the
+// browser without shipping the session token to JS, and a Security surface
 // which speaks a different transport in each console is the drift
 // check:console-parity exists to catch.
 //

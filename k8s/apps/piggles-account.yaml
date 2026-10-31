@@ -58,11 +58,14 @@ spec:
           # `piggles-app-env` replaces the handful that must differ for this
           # brand. Read k8s/azure/infra/piggles-app-env.env before changing this
           # list — the ordering is what keeps one origin in one place.
+          #
+          # No `sparx-app-secrets` in envFrom (docs/154): this app holds no
+          # database connection and no auth instance, so it reads only config.
+          # The two keyed values below (the server-actions key and the WizeLens
+          # key) are the only secrets it takes, by name.
           envFrom:
             - configMapRef:
                 name: sparx-app-env
-            - secretRef:
-                name: sparx-app-secrets
             - configMapRef:
                 name: piggles-app-env
           env:
@@ -100,57 +103,12 @@ spec:
               value: 0.0.0.0
             - name: NEXT_TELEMETRY_DISABLED
               value: '1'
-            # ── THE ONE THAT CANNOT BE SHARED ──────────────────────────────
-            #
-            # Per-POD, not in piggles-app-env, because the two Piggles apps run
-            # on two different origins and Better Auth derives its trusted origin
-            # from this exact string — protocol included, no trailing slash,
-            # because the callback path is built from it.
-            #
-            # Get it wrong and the failure is invisible in every cheap check:
-            # sign-UP keeps working (a server action, so no Origin header),
-            # curl keeps working (no Origin header), and the browser gets
-            # `Invalid origin` on sign-IN which the UI reports as a wrong
-            # password. That is piggles/STATUS.md "THE LOCKOUT", and it cost
-            # hours the first time.
-            - name: BETTER_AUTH_URL
-              value: https://getpiggles.com
-            # ── Piggles' OWN Better Auth secret ────────────────────────────
-            #
-            # Distinct from sparx's: different brand, different cookie domain,
-            # and sessions signed by one must not be readable by the other.
-            # It must be the SAME value the console carries, though — both read
-            # and write the same Better Auth session rows, and a differing secret
-            # makes every session unverifiable at the far side of the handoff.
-            #
-            # Mapped from a KEY in the shared secret rather than a second Secret
-            # object: there is one credential store on this platform, synced by
-            # one path, and a second one is a second thing to keep populated.
-            # Deliberately NOT `optional` — a missing auth secret must stop the
-            # pod, not produce an app that half-works.
-            - name: BETTER_AUTH_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: sparx-app-secrets
-                  key: PIGGLES_BETTER_AUTH_SECRET
-            # ── Piggles' OWN Google OAuth client ───────────────────────────
-            #
-            # A SEPARATE Google Cloud project, not just another client in
-            # sparx's: the consent screen (app name, logo, support email) is
-            # configured per PROJECT and shared by every client in it, so a
-            # Piggles customer would otherwise be asked to grant access to
-            # "sparx". getpiggles.com is the only Piggles domain with an OAuth
-            # client at all — see piggles/STATUS.md.
-            - name: GOOGLE_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: sparx-app-secrets
-                  key: PIGGLES_GOOGLE_CLIENT_ID
-            - name: GOOGLE_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: sparx-app-secrets
-                  key: PIGGLES_GOOGLE_CLIENT_SECRET
+            # No BETTER_AUTH_URL, auth secret or Google client here any more:
+            # Piggles' Better Auth instance runs in api-rest (docs/154), which
+            # carries PIGGLES_BETTER_AUTH_URL=https://getpiggles.com and the
+            # brand's secret and Google client (k8s/apps/api-rest.yaml). The
+            # trusted-origin trap described in piggles/STATUS.md "THE LOCKOUT"
+            # now lives on that value.
           securityContext:
             runAsNonRoot: true
             runAsUser: 1001

@@ -2,7 +2,7 @@
 
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { requireSession } from '@wizeworks/auth';
+import { requireSession } from '@wizeworks/auth-client-server';
 import { openCheckout, openPortal } from '@/lib/billing';
 import { canPay } from '@/lib/pay-roles';
 
@@ -18,9 +18,7 @@ async function accountReturnUrl(): Promise<string> {
 export async function startCheckoutAction(): Promise<void> {
   const session = await requireSession();
   if (!canPay(session.user.role)) redirect('/account?billing=not-allowed');
-  const result = await openCheckout(session.user.tenantId, await accountReturnUrl()).catch(
-    () => null
-  );
+  const result = await openCheckout(await accountReturnUrl()).catch(() => null);
   if (result?.url) redirect(result.url);
   redirect(`/account?billing=${result && 'reason' in result ? result.reason : 'failed'}`);
 }
@@ -29,6 +27,6 @@ export async function startCheckoutAction(): Promise<void> {
 export async function openPortalAction(): Promise<void> {
   const session = await requireSession();
   if (!canPay(session.user.role)) redirect('/account?billing=not-allowed');
-  const url = await openPortal(session.user.tenantId, await accountReturnUrl()).catch(() => null);
+  const url = await openPortal(await accountReturnUrl()).catch(() => null);
   redirect(url ?? '/account?billing=failed');
 }

@@ -3,10 +3,13 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
 import { emailOTP, jwt, magicLink, oneTap, organization, twoFactor } from 'better-auth/plugins';
 import { mcp } from '@better-auth/mcp';
-import { socialProviderConfigured } from './social-providers';
 import { passkey } from '@better-auth/passkey';
 import { accountOrigin, mcpResourceUrl as brandMcpResourceUrl } from '@wizeworks/links/server';
-import { currentPlatformBrand, platformBrandIdentity } from '@wizeworks/brand-core';
+import {
+  currentPlatformBrand,
+  normalizeBrandKey,
+  platformBrandIdentity,
+} from '@wizeworks/brand-core';
 import { authPrisma } from './prisma';
 import { brandScopedAuthPrisma } from './brand-scoped-prisma';
 import { publishAuthEmail } from './email-events';
@@ -19,6 +22,9 @@ import { ac, roles } from './org-roles';
 import { redactingLogger } from './redacting-logger';
 import { isPasswordStep } from './sign-in-step';
 import { startingBusinessFor } from './starting-business';
+import { authBrandConfigFromEnv, type AuthBrandConfig } from './brand-config';
+import { configuredSocialProviders, type SocialProvider } from './social-providers';
+import { scopedPlatformBrand } from '@wizeworks/brand-core/request-scope';
 
 /**
  * Which brand an organization belongs to.
@@ -57,29 +63,26 @@ declare global {
   var __sparxAuth: ReturnType<typeof createAuth> | undefined;
 }
 
-function createAuth() {
-  // Google OAuth is opt-in via env — the provider is only registered when both
-  // creds are present, so the social button stays inert until the OAuth app +
-  // Secret Manager values exist. Redirect URI in Google Console:
-  // `${BETTER_AUTH_URL}/api/auth/callback/google`.
-  // Asked through the shared capability query, not re-tested here — the screens
-  // that draw a "Continue with Google" button ask the SAME function, so a
-  // deployment can never register the provider and hide the button, or hide the
-  // provider and offer one that cannot work (./social-providers).
-  const googleReady = socialProviderConfigured('google');
-  const googleId = process.env.GOOGLE_CLIENT_ID;
-  const googleSecret = process.env.GOOGLE_CLIENT_SECRET;
+function createAuth(config: AuthBrandConfig) {
+  // Google OAuth is opt-in: the provider is only registered when both creds are
+  // present, so the social button stays inert until the OAuth app + vault
+  // values exist. Redirect URI in Google Console: `<baseURL>/callback/google`
+  // under the brand's auth base URL. A frontend's sign-in screen asks the same
+  // question through ./social-providers, from the same two variables, so a
+  // deployment can never register the provider and hide the button.
+  const googleId = config.googleClientId;
+  const googleSecret = config.googleClientSecret;
+  const googleReady = Boolean(googleId && googleSecret);
 
   // The product name this auth instance presents as. It is NOT decoration:
   // `appName` feeds the passkey prompt ("Save a passkey for …"), which a Piggles
   // customer must not see saying "sparx".
   //
-  // A PARAMETER, never a brand conditional — the deployment declares who it is
-  // (piggles/CLAUDE.md RULE #0). Defaults to sparx, which is what every existing
-  // deployment means.
-  const appName = process.env.BETTER_AUTH_APP_NAME ?? 'sparx';
+  // A PARAMETER, never a brand conditional: the deployment (or, in api-rest, the
+  // brand's own configuration) declares who it is (piggles/CLAUDE.md RULE #0).
+  const appName = config.appName;
 
-  const baseURL = process.env.BETTER_AUTH_URL ?? 'http://localhost:3001';
+  const baseURL = config.baseURL;
 
   return betterAuth({
     appName,
@@ -90,7 +93,7 @@ function createAuth() {
     // An OAuth provider must not offer that side door (the provider's
     // `/oauth2/token` is the only token endpoint), so it is switched off.
     disabledPaths: ['/token'],
-    secret: process.env.BETTER_AUTH_SECRET,
+    secret: config.secret,
     // The BRAND-SCOPED client, never the bare one. Both products mount this
     // instance against one `users` table, and every user lookup in the system —
     // core sign-in, magic link, email OTP, Google account-linking, the
@@ -317,10 +320,7 @@ function createAuth() {
                 tenantId?: string;
               };
               if (!u.email) return;
-              const base = (process.env.BETTER_AUTH_URL ?? 'http://localhost:3001').replace(
-                /\/$/,
-                ''
-              );
+              const base = baseURL.replace(/\/$/, '');
               await publishAuthEmail({
                 tenantId: u.tenantId ?? '',
                 actorId: u.id,
@@ -483,7 +483,7 @@ function createAuth() {
       // name is the session's address, so changing it signs everybody out, and
       // that is a thing to do deliberately to one brand rather than by accident
       // to both.
-      cookiePrefix: process.env.BETTER_AUTH_COOKIE_PREFIX ?? 'better-auth',
+      cookiePrefix: config.cookiePrefix,
       // Where the client address comes from — for the per-IP rate limit (the
       // brute-force guard on sign-in, and the MCP OAuth rules below) and for the
       // address each session records. Better Auth takes the FIRST value of the
@@ -544,10 +544,10 @@ function createAuth() {
       mcp({
         loginPage: '/oauth/consent',
         consentPage: '/oauth/consent',
-        resource: mcpResourceUrl(),
+        resource: mcpResourceUrl(config.brand),
         resources: [
           {
-            identifier: mcpResourceUrl(),
+            identifier: mcpResourceUrl(config.brand),
             name: `${appName} MCP server`,
             allowedScopes: [...MCP_ALL_OAUTH_SCOPES],
           },
@@ -684,7 +684,7 @@ function createAuth() {
         // Shown verbatim in the OS/browser passkey dialog, so it follows the
         // deployment's brand rather than being hardcoded.
         rpName: appName,
-        ...(process.env.PASSKEY_RP_ID ? { rpID: process.env.PASSKEY_RP_ID } : {}),
+        ...(config.passkeyRpId ? { rpID: config.passkeyRpId } : {}),
       }),
       // Authenticator-app two-step verification (docs/16 §2.4). The second
       // factor a person can set up on any phone with any authenticator app —
@@ -714,13 +714,13 @@ function createAuth() {
         // Authenticator forever, since the issuer is baked into the QR at
         // enrollment and cannot be corrected afterwards.
         //
-        // The brand this PROCESS serves — each brand's account app is its own
-        // deployment mounting its own handler, so that is already the right
-        // answer wherever an enrollment actually starts.
+        // The brand THIS INSTANCE serves. A frontend builds one instance for its
+        // own brand; api-rest builds one per brand. Either way the instance
+        // knows its brand, so the issuer never depends on which process runs it.
         // `/two-factor/enable` also accepts a per-enrollment `issuer` in its
         // body, which is what a console on a different origin sends; neither
         // path needs shared code to branch on brand.
-        issuer: platformBrandIdentity(currentPlatformBrand()).name,
+        issuer: platformBrandIdentity(config.brand).name,
         allowPasswordless: true,
         skipVerificationOnEnable: false,
         totpOptions: { digits: 6, period: 30 },
@@ -730,45 +730,167 @@ function createAuth() {
       // them Better Auth's schema check refuses every request (./auth-owned-columns).
       authOwnedColumns(),
       // nextCookies() must stay LAST so it can flush Set-Cookie for the
-      // plugins registered before it.
+      // plugins registered before it. Registered in api-rest too, where it does
+      // nothing: a handler request skips it, and a direct `auth.api.*` call
+      // finds no Next request scope and returns.
       nextCookies(),
     ],
   });
 }
 
 /**
- * Canonical resource identifier for the MCP server this process authorizes for
+ * Canonical resource identifier for the MCP server one brand authorizes for
  * (the audience its OAuth tokens are for).
  *
- * Per BRAND, and `currentPlatformBrand()` is the right way to ask for the same
- * reason the 2FA issuer above uses it: each brand's authorization server is its
- * own deployment mounting its own Better Auth handler, so the brand is a
- * property of the process, not of the request. Read as one platform-wide value
+ * Per BRAND, from the instance's own brand. Read as one platform-wide value
  * this named mcp.sparx.works for both brands — the address a Piggles token
  * would have claimed to be for.
  */
-function mcpResourceUrl(): string {
-  return brandMcpResourceUrl(currentPlatformBrand());
+function mcpResourceUrl(brand: string): string {
+  return brandMcpResourceUrl(brand);
 }
 
-// Construct the Better Auth server lazily, on first property access — NOT at
-// module-evaluation time. Importing `@wizeworks/auth` for a utility (e.g.
-// `isModuleEnabled` from ./module-gate) pulls this module in via the barrel;
-// eager construction would call betterAuth() — which throws in production when
-// BETTER_AUTH_SECRET is unset — and crash workers that never touch auth at all
-// (e.g. commerce-indexer reaches here through @wizeworks/commerce → @wizeworks/crm).
-// The Proxy is transparent: every `auth.api.*` / `auth.handler` / `auth.$context`
-// access resolves against the same cached instance, so consumers are unchanged.
+// ── Which instance `auth` is ────────────────────────────────────────────────
+//
+// A frontend serves one brand: `auth` is that brand's instance, configured from
+// the frontend's own environment, as it always was.
+//
+// api-rest serves every brand from one process. It calls `registerAuthBrands()`
+// at startup with each brand's configuration, and from then on `auth` resolves
+// to the instance for the brand of the CURRENT REQUEST (`runAsBrand` in
+// @wizeworks/brand-core/request-scope). That is what makes every helper that
+// reaches for `auth` (sign-up, session reads, MCP consent, invited-owner
+// provisioning) brand-correct without passing an instance through each call.
+// Outside a scope, request mode makes `currentPlatformBrand()` throw, so a
+// forgotten scope fails closed instead of answering as the default brand.
+//
+// Construction is lazy, on first property access — NOT at module evaluation.
+// Importing `@wizeworks/auth` for a utility (e.g. `isModuleEnabled` from
+// ./module-gate) pulls this module in via the barrel; eager construction would
+// call betterAuth() — which throws in production when the secret is unset — and
+// crash workers that never touch auth at all (e.g. commerce-indexer reaches
+// here through @wizeworks/commerce → @wizeworks/crm).
+
 let cachedAuth: ReturnType<typeof createAuth> | undefined = globalThis.__sparxAuth;
 
+const brandConfigs = new Map<string, AuthBrandConfig>();
+const brandInstances = new Map<string, ReturnType<typeof createAuth>>();
+
+/**
+ * Serve every brand in `configs` from this process. Call once at startup,
+ * before any request. A process that registers brands must also set
+ * `PLATFORM_BRAND_SOURCE=request`, so a call outside a brand scope throws.
+ */
+export function registerAuthBrands(configs: readonly AuthBrandConfig[]): void {
+  if (configs.length === 0) throw new Error('registerAuthBrands(): no brands given.');
+  for (const config of configs) {
+    const key = normalizeBrandKey(config.brand);
+    if (key !== config.brand) {
+      throw new Error(`registerAuthBrands(): brand "${config.brand}" is not a normalized key.`);
+    }
+    brandConfigs.set(key, config);
+    brandInstances.delete(key);
+  }
+}
+
+/** The brands this process serves, when it serves more than one. */
+export function registeredAuthBrands(): string[] {
+  return [...brandConfigs.keys()];
+}
+
+/** One brand's instance. Throws for a brand this process was not given. */
+export function authForBrand(brand: string): ReturnType<typeof createAuth> {
+  const key = normalizeBrandKey(brand);
+  // Inside a request scope, only that brand's instance may be used: a piggles
+  // instance driven inside a sparx scope would sign with one brand's secret and
+  // look users up as the other.
+  const scoped = scopedPlatformBrand();
+  if (scoped && scoped !== key) {
+    throw new Error(`auth: brand "${key}" requested inside a "${scoped}" request scope.`);
+  }
+  const existing = brandInstances.get(key);
+  if (existing) return existing;
+  const config = brandConfigs.get(key);
+  if (!config) throw new Error(`auth: this process does not serve brand "${key}".`);
+  const instance = createAuth(config);
+  brandInstances.set(key, instance);
+  return instance;
+}
+
+/**
+ * What a process serving several brands needs to put one brand's handler on
+ * the wire, and nothing more. Typed by hand so the consumer (api-rest) depends
+ * on two plain members, not on Better Auth's inferred instance type.
+ */
+export interface BrandAuthHandler {
+  /** The brand's public base URL, as configured. */
+  baseURL: string;
+  handler: (request: Request) => Promise<Response>;
+}
+
+/** One brand's Better Auth handler. Same scope rules as `authForBrand`. */
+export function brandAuthHandler(brand: string): BrandAuthHandler {
+  const instance = authForBrand(brand);
+  const config = brandConfigs.get(normalizeBrandKey(brand))!;
+  return { baseURL: config.baseURL, handler: (request) => instance.handler(request) };
+}
+
+/**
+ * What signing one brand's session cookie takes: the brand's secret, and the
+ * instance options Better Auth derives cookie names and attributes from
+ * (`getCookies(options)`). For a process that writes a session cookie itself,
+ * which is the cross-domain handoff (./session-handoff). Same scope rules as
+ * `authForBrand`.
+ */
+export function brandCookieContext(brand: string): {
+  secret: string;
+  options: ReturnType<typeof createAuth>['options'];
+} {
+  const instance = authForBrand(brand);
+  const secret = brandConfigs.get(normalizeBrandKey(brand))?.secret;
+  if (!secret) throw new Error(`auth: brand "${normalizeBrandKey(brand)}" has no secret.`);
+  return { secret, options: instance.options };
+}
+
+/**
+ * The social sign-ins one brand can offer, and the Google client id One Tap
+ * needs in the browser. Read off the BRAND's configuration, never this
+ * process's environment: a process serving several brands holds several Google
+ * clients, and the environment's is only the default brand's. Same condition
+ * as everywhere else (./social-providers), so the button and the registered
+ * provider cannot disagree.
+ *
+ * The client id is public by design (Google puts it in every sign-in link);
+ * the secret never leaves this process.
+ */
+export function brandSignInOptions(brand: string): {
+  social: SocialProvider[];
+  googleClientId: string | null;
+} {
+  const key = normalizeBrandKey(brand);
+  const config = brandConfigs.get(key);
+  if (!config) throw new Error(`auth: this process does not serve brand "${key}".`);
+  const social = configuredSocialProviders({
+    GOOGLE_CLIENT_ID: config.googleClientId,
+    GOOGLE_CLIENT_SECRET: config.googleClientSecret,
+  });
+  return {
+    social,
+    googleClientId: social.includes('google') ? (config.googleClientId ?? null) : null,
+  };
+}
+
 function getAuth(): ReturnType<typeof createAuth> {
+  if (brandConfigs.size > 0) return authForBrand(currentPlatformBrand());
   if (cachedAuth) return cachedAuth;
-  cachedAuth = createAuth();
+  cachedAuth = createAuth(authBrandConfigFromEnv());
   // Survive dev HMR without leaking adapters (mirrors @wizeworks/db's prisma client).
   if (process.env.NODE_ENV !== 'production') globalThis.__sparxAuth = cachedAuth;
   return cachedAuth;
 }
 
+// The Proxy is transparent: every `auth.api.*` / `auth.handler` / `auth.$context`
+// access resolves against the right instance, so consumers are unchanged.
 export const auth = new Proxy({} as ReturnType<typeof createAuth>, {
   get: (_target, prop) => (getAuth() as Record<string | symbol, unknown>)[prop],
   has: (_target, prop) => prop in (getAuth() as object),

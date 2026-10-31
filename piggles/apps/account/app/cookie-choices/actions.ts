@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { requireSession } from '@wizeworks/auth';
+import { requireSession } from '@wizeworks/auth-client-server';
 import { safeInternalPath } from '@piggles/config';
 import { writeConsent } from '@/lib/consent';
 import { text } from '@/lib/form';
@@ -29,7 +29,8 @@ export async function recordConsent(
   _prev: ConsentState,
   formData: FormData
 ): Promise<ConsentState> {
-  const session = await requireSession();
+  // Signed out goes to sign-in first, before a word of the form is read.
+  await requireSession();
   const answer = text(formData, 'analytics');
 
   // Neither value present means the form was posted by something other than the
@@ -40,7 +41,7 @@ export async function recordConsent(
   }
 
   try {
-    await writeConsent(session.user.id, session.user.homeTenantId, answer === 'yes');
+    await writeConsent(answer === 'yes');
   } catch {
     return { error: 'We could not save that just now. Please try again.' };
   }

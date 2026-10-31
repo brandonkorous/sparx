@@ -2,7 +2,21 @@
 // '@wizeworks/auth/client' explicitly to keep the React/browser-only surface out
 // of server bundles.
 
-export { auth, type Auth } from './server';
+export {
+  auth,
+  authForBrand,
+  brandAuthHandler,
+  brandSignInOptions,
+  registerAuthBrands,
+  registeredAuthBrands,
+  type Auth,
+  type BrandAuthHandler,
+} from './server';
+export {
+  authBrandConfigForBrand,
+  authBrandConfigFromEnv,
+  type AuthBrandConfig,
+} from './brand-config';
 // The auth-layer Prisma client (connects as `sparx_owner`, so it is NOT subject
 // to the ENABLE-but-not-FORCE RLS on the auth tables). Exported ONLY so callers
 // outside this package can read `members` / `invitations` and their joined
@@ -44,6 +58,22 @@ export {
 } from './provision-invited-owner';
 export { isFriendlySlug, randomFriendlySlug } from './friendly-slug';
 export { getSession, requireSession, type SparxSession } from './session';
+export { resolveSession } from './session-core';
+export {
+  isAccountOperation,
+  runAccountOperation,
+  type AccountBusiness,
+  type AccountOperationResult,
+  type SignInMethods,
+} from './account-operations';
+export {
+  consumeSessionHandoff,
+  mintSessionHandoff,
+  sessionCookiesFromSetCookie,
+  signOutSession,
+  type ConsumeHandoffResult,
+  type SessionCookie,
+} from './session-handoff';
 export { ORG_ROLES, ASSIGNABLE_ORG_ROLES, type OrgRole, type AssignableOrgRole } from './org-roles';
 export {
   MODULE_ACCESS_MODES,

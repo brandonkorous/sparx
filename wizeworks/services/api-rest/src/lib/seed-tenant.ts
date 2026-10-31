@@ -35,6 +35,7 @@ import {
   type ModuleSlug,
 } from '@wizeworks/auth';
 
+import { DEFAULT_PLATFORM_BRAND } from '@wizeworks/brand-core';
 import { publishPlatformEvent } from '@wizeworks/crm';
 import {
   loadSampleData,
@@ -187,7 +188,9 @@ async function findOrProvisionTenant(spec: SeedTenantSpec): Promise<ProvisionedT
       email: spec.ownerEmail,
       // Both undefined for every sparx spec, so provisioning falls back to the
       // brand this process serves exactly as before.
-      platformBrand: spec.platformBrand,
+      // Explicit, never the process's brand: api-rest serves every brand, and
+      // asking it which one it is throws there (PLATFORM_BRAND_SOURCE=request).
+      platformBrand: spec.platformBrand ?? DEFAULT_PLATFORM_BRAND,
       zoneDomain: spec.zoneDomain,
     });
     // provisionTenant set app.tenant_id (tx-local) for the FORCE-RLS property insert;

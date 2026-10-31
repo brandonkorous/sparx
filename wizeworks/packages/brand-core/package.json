@@ -8,6 +8,10 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./request-scope": {
+      "types": "./src/request-scope.ts",
+      "default": "./src/request-scope.ts"
     }
   },
   "files": [

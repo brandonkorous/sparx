@@ -31,7 +31,6 @@ const config = {
     '@piggles/mascot',
     '@wizeworks/app-kit',
     '@wizeworks/auth',
-    '@wizeworks/client-ip',
     '@wizeworks/silicaui-react',
   ],
   typedRoutes: true,

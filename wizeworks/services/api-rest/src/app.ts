@@ -92,8 +92,6 @@ import staffCronRoutes from './routes/internal/staff-cron.js';
 import channelsCronRoutes from './routes/internal/channels-cron.js';
 import marketCronRoutes from './routes/internal/market-cron.js';
 import acquisitionReportRoutes from './routes/internal/acquisition-report.js';
-import furnishTenantRoutes from './routes/internal/furnish-tenant.js';
-import tenantBillingRoutes from './routes/internal/tenant-billing.js';
 import internalPartnerRoutes from './routes/internal/partners.js';
 import operatorInternalRoutes from './routes/internal/operator.js';
 import operatorBillingRoutes from './routes/internal/operator-billing.js';
@@ -105,6 +103,7 @@ import operatorPartnerRoutes from './routes/internal/operator-partners.js';
 import operatorUserRoutes from './routes/internal/operator-users.js';
 import operatorSiteRoutes from './routes/internal/operator-sites.js';
 import operatorAnnouncementRoutes from './routes/internal/operator-announcements.js';
+import brandAuthRoutes from './routes/auth/brand-auth.js';
 import contentTypeRoutes from './routes/v1/content/types.js';
 import entryRoutes from './routes/v1/content/entries.js';
 import publishRoutes from './routes/v1/content/publish.js';
@@ -971,6 +970,9 @@ export async function createApp(): Promise<FastifyInstance> {
         // self-authorising via the in-URL object key. Skipping the Bearer
         // check here mirrors the GCS signed-URL contract.
         '/v1/media/_local/',
+        // Staff sign-in, per brand: cookie-authenticated and internal only
+        // (routes/auth/brand-auth.ts). A Bearer header has no meaning there.
+        '/auth/',
       ],
     })
   );
@@ -979,6 +981,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(responseHeadersPlugin);
 
   await app.register(healthRoutes);
+  await app.register(brandAuthRoutes);
   await app.register(domainCheckRoutes);
   await app.register(crmCronRoutes);
   await app.register(commerceCronRoutes);
@@ -995,8 +998,6 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(channelsCronRoutes);
   await app.register(marketCronRoutes);
   await app.register(acquisitionReportRoutes);
-  await app.register(furnishTenantRoutes);
-  await app.register(tenantBillingRoutes);
   await app.register(internalPartnerRoutes);
   await app.register(operatorInternalRoutes);
   await app.register(operatorBillingRoutes);

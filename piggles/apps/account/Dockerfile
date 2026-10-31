@@ -45,6 +45,7 @@ COPY piggles/packages/ui/package.json piggles/packages/ui/
 COPY wizeworks/packages/app-kit/package.json wizeworks/packages/app-kit/
 COPY wizeworks/packages/attribution/package.json wizeworks/packages/attribution/
 COPY wizeworks/packages/auth/package.json wizeworks/packages/auth/
+COPY wizeworks/packages/auth-client-server/package.json wizeworks/packages/auth-client-server/
 COPY wizeworks/packages/brand-core/package.json wizeworks/packages/brand-core/
 COPY wizeworks/packages/client-ip/package.json wizeworks/packages/client-ip/
 # The address table. The invite + consent pages build absolute links
@@ -98,6 +99,7 @@ COPY piggles/packages/ui piggles/packages/ui
 COPY wizeworks/packages/app-kit wizeworks/packages/app-kit
 COPY wizeworks/packages/attribution wizeworks/packages/attribution
 COPY wizeworks/packages/auth wizeworks/packages/auth
+COPY wizeworks/packages/auth-client-server wizeworks/packages/auth-client-server
 COPY wizeworks/packages/brand-core wizeworks/packages/brand-core
 COPY wizeworks/packages/client-ip wizeworks/packages/client-ip
 COPY wizeworks/packages/links wizeworks/packages/links

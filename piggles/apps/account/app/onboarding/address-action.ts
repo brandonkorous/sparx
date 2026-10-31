@@ -1,6 +1,6 @@
 'use server';
 
-import { requireSession } from '@wizeworks/auth';
+import { requireSession } from '@wizeworks/auth-client-server';
 import { checkAddress, slugifyAddress, type AddressVerdict } from '@/lib/business-slug';
 
 // Is this web address free? Asked while she types, so she finds out before she
@@ -20,9 +20,10 @@ export interface AddressAnswer {
 export async function lookUpAddress(typed: string): Promise<AddressAnswer> {
   // Session-gated: this reads the tenant table by slug, and an open endpoint
   // that answers "does this business exist" is a customer list with a keyboard.
-  const session = await requireSession();
+  // api-rest refuses a signed-out caller too; this sends them to sign in.
+  await requireSession();
   return {
     slug: slugifyAddress(typed) ?? '',
-    verdict: await checkAddress(typed, session.user.tenantId),
+    verdict: await checkAddress(typed),
   };
 }

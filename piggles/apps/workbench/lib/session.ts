@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getSession, type SparxSession } from '@wizeworks/auth';
+import { getSession, type SparxSession } from '@wizeworks/auth-client-server';
 import { handoffEntryUrl } from '@piggles/auth-handoff';
 
 // Who is signed in — and where an unsigned visitor goes.
@@ -24,6 +24,9 @@ import { handoffEntryUrl } from '@piggles/auth-handoff';
 // back through the handoff, so a deep link into a pane survives the round trip.
 // That is the difference between "sign in, then find your way back" and simply
 // arriving.
+//
+// The session itself is read from api-rest (`getSession` forwards this request's
+// cookie), so the console holds no auth instance, no secret and no database.
 
 export type ConsoleSession = SparxSession;
 

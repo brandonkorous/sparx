@@ -1,12 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { accountOrigin, consumeHandoffToken, handoffCookies } from '@piggles/auth-handoff';
+import { accountOrigin, consumeHandoffToken } from '@piggles/auth-handoff';
 import { safeInternalPath } from '@piggles/config';
 
 // The console's only door.
 //
 // getpiggles.com mints a one-time, 60-second, audience-bound token and sends the
-// browser here. This route trades it for a session cookie on THIS domain and
-// then gets out of the way. It is the whole of authentication in the console:
+// browser here. This route trades it, through api-rest, for the session cookies
+// to set on THIS domain and then gets out of the way. It is the whole of authentication in the console:
 // there is no sign-in form, no password field, no OAuth callback, and there must
 // never be one — a second thing that can mint a session is exactly what the
 // three-domain split exists to prevent.
@@ -40,11 +40,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return noStore(NextResponse.redirect(back, 303));
   }
 
-  // `remember` came across with the token. It has to: this domain has no
-  // sign-in form and therefore never saw the checkbox, so anything it decided
-  // for itself would be a guess — and the guess it used to make was thirty days
-  // for everybody, including the people who unticked the box.
-  const cookies = handoffCookies(result.sessionToken, result.remember);
+  // The cookies arrive signed and shaped. "Keep me signed in" came across with
+  // the token, so they last exactly as long as the person asked on getpiggles:
+  // this domain has no sign-in form and never saw the checkbox, and the guess it
+  // used to make was thirty days for everybody.
 
   // A RELATIVE Location, not `new URL(path, request.nextUrl.origin)`.
   //
@@ -70,7 +69,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     status: 303,
     headers: { location: safeInternalPath(result.next) },
   });
-  for (const cookie of cookies) {
+  for (const cookie of result.cookies) {
     response.cookies.set({ name: cookie.name, value: cookie.value, ...cookie.options });
   }
   return noStore(response);

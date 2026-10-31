@@ -1,4 +1,4 @@
-import { getInvitationDetail } from '@wizeworks/auth';
+import { readInvitation } from '@wizeworks/auth-client-server';
 
 // Whether a sign-in or sign-up is on its way to accept an invitation, and to
 // which business.
@@ -30,7 +30,7 @@ export function invitationIdFrom(callbackURL: string): string | null {
 export async function joiningFrom(callbackURL: string): Promise<Joining | null> {
   const id = invitationIdFrom(callbackURL);
   if (!id) return null;
-  const invite = await getInvitationDetail(id).catch(() => null);
+  const invite = await readInvitation(id).catch(() => null);
   if (invite?.status !== 'pending' || invite.expiresAt.getTime() <= Date.now()) {
     return null;
   }

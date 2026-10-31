@@ -23,6 +23,12 @@ const EnvSchema = z
     // to sign + verify short-lived internal-trust JWTs that carry the staff
     // session's {tenantId, userId, role} from the dashboard to api-rest.
     SPARX_INTERNAL_JWT_SECRET: z.string().min(32),
+    // The brands whose staff sign-in this process serves, comma-separated
+    // (`sparx,piggles`). Each needs `<BRAND>_BETTER_AUTH_SECRET` and
+    // `<BRAND>_BETTER_AUTH_URL` (the default brand may use the unprefixed
+    // names), and the process must run with PLATFORM_BRAND_SOURCE=request.
+    // Unset → no `/auth/*` routes (routes/auth/brand-auth.ts).
+    PLATFORM_AUTH_BRANDS: z.string().optional(),
     // Shared secret for the CRM scheduled-job CronJobs. k8s CronJobs POST
     // to /internal/crm/* with this in the X-sparx-Internal-Cron-Token
     // header. Optional in dev so a fresh checkout boots; missing-in-prod
@@ -40,15 +46,6 @@ const EnvSchema = z
     // A SEPARATE secret (writes cross-org referral/commission rows) — its own
     // blast radius, rotates independently. Optional in dev; unset → endpoints 401.
     SPARX_INTERNAL_PARTNERS_TOKEN: z.string().min(16).optional(),
-    // Shared secret for the tenant-furnishing hook (POST /internal/tenant/furnish).
-    // The app that runs signup calls this once, after it has a tenant + owner, to
-    // switch the modules on, stamp the trade's config, optionally install a site
-    // template and load sample records. A SEPARATE secret because it WRITES
-    // heavily into a named tenant — a different blast radius from triggering a
-    // scheduler or reading a report — so it rotates independently. Optional in
-    // dev; unset → the endpoint returns 401 (fail-closed, and loudly: a signup
-    // that arrives unfurnished should carry an error rather than look normal).
-    SPARX_INTERNAL_FURNISH_TOKEN: z.string().min(16).optional(),
     // Shared secret for the WizeWorks operator console's internal endpoints
     // (GET/POST /internal/operator/*, docs/apps/admin/build-plan.md §2 D6). The
     // admin app authenticates the operator (Better Auth + capabilities) then
@@ -383,16 +380,6 @@ const EnvSchema = z
     MARKET_ENABLED: z.string().optional(),
     MARKET_COMMISSION_BPS: z.string().optional(),
     MARKET_PAYOUTS_PROVIDER: z.string().optional(),
-    // In-cluster origin of the dashboard Next.js service, used ONLY for the
-    // service-to-service partner account-provisioning call (POST
-    // /api/internal/partner-provision, docs/114 §B.2). Distinct from
-    // SPARX_DASHBOARD_URL (which is a browser-facing base for email links): this
-    // is the private ClusterIP address (e.g. http://dashboard:3000). Account
-    // creation runs only where Better Auth lives — the dashboard — so approving an
-    // accountless partner delegates here. The call authenticates with
-    // SPARX_INTERNAL_JWT_SECRET (already shared both ways). Defaults to the dev
-    // dashboard origin so a local checkout works without extra wiring.
-    SPARX_DASHBOARD_INTERNAL_URL: z.string().default('http://localhost:3001'),
   })
   .superRefine((data, ctx) => {
     // GCS mode requires both buckets — the public one holds variants,

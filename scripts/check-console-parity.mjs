@@ -340,12 +340,6 @@ const EXCEPTIONS = [
   },
   {
     axis: 'routes',
-    only: 'sparx',
-    path: 'app/api/internal/user-password-reset',
-    why: 'staff-initiated reset, issued by whichever app mounts Better Auth.',
-  },
-  {
-    axis: 'routes',
     only: 'piggles',
     path: 'app/auth/callback',
     why: 'where the account app lands a handed-off session; sparx has no handoff because it never leaves.',
@@ -395,12 +389,6 @@ const EXCEPTIONS = [
     only: 'sparx',
     path: 'app/oauth/consent',
     why: 'the consent screen belongs beside the authorization server — account app for Piggles.',
-  },
-  {
-    axis: 'routes',
-    only: 'sparx',
-    path: 'app/api/internal/partner-provision',
-    why: 'partner-provisioned tenants are a sparx go-to-market motion, not a console capability.',
   },
   {
     axis: 'components',
@@ -454,12 +442,6 @@ const EXCEPTIONS = [
     why: 'Piggles-specific compositions over silicaui.',
   },
   { axis: 'deps', only: 'piggles', path: '@piggles/config', why: 'Piggles runtime configuration.' },
-  {
-    axis: 'deps',
-    only: 'sparx',
-    path: '@wizeworks/client-ip',
-    why: 'the password sign-up action (components/auth/sign-up-action.ts) resolves the address on the legal-acceptance record with it. sparx creates accounts inside the workbench; Piggles creates them on its account app, which depends on @wizeworks/client-ip for the same record (piggles/apps/account/app/signup/actions.ts).',
-  },
   { axis: 'deps', only: 'piggles', path: '@piggles/auth-handoff', why: 'see lib/session.' },
   {
     axis: 'deps',

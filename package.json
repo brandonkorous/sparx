@@ -86,6 +86,7 @@
     "db:studio": "pnpm --filter @wizeworks/db db:studio",
     "clean": "turbo run clean && rm -rf node_modules",
     "check:boundaries": "node scripts/check-boundaries.mjs",
+    "check:app-data-access": "node scripts/check-app-data-access.mjs",
     "check:console-parity": "node scripts/check-console-parity.mjs",
     "check:column-floor": "node scripts/check-column-floor.mjs",
     "check:pane-load": "node scripts/check-pane-load.mjs",

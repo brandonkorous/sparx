@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getSession } from '@wizeworks/auth';
+import { getSession } from '@wizeworks/auth-client-server';
 import { VerifyEmailResult } from './verify-email-result';
 
 export const metadata: Metadata = { title: 'Confirm your email' };

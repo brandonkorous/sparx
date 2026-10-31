@@ -36,15 +36,14 @@ worth knowing before editing one:
 ```yaml
 envFrom:
   - configMapRef: { name: sparx-app-env } # the platform
-  - secretRef: { name: sparx-app-secrets } # the platform's credentials
   - configMapRef: { name: piggles-app-env } # ← the brand, and it wins
 ```
 
 **Later entries override earlier ones.** That ordering is what keeps one origin
 in one place — see `k8s/azure/infra/piggles-app-env.env`, whose header records
-what each value is and which of them has already caused an outage. The two
-`BETTER_AUTH_URL`s are the exception and are set per-pod, because the two Piggles
-apps run on two different origins.
+what each value is and which of them has already caused an outage. Piggles'
+sign-in origin (`PIGGLES_BETTER_AUTH_URL`) is set on api-rest, which runs both
+brands' Better Auth instances (docs/154).
 
 ## Adding a new app
 
@@ -72,7 +71,10 @@ apps run on two different origins.
 - **`piggles-app-env`** — the Piggles brand's overrides, same generators.
 - **`sparx-app-secrets`** — every credential, including the `PIGGLES_*` keys.
   Applied by the release from `SPARX_APP_SECRETS_ENV` (or Key Vault);
-  `k8s/local/secrets.example.env` is the documented key list.
+  `k8s/local/secrets.example.env` is the documented key list. Only the backend
+  services load it whole (`envFrom`). The Next.js apps hold no database and no
+  auth instance (docs/154), so each takes just its own two keys by name: its
+  `NEXT_ACTIONS_KEY_*` and its `WIZELENS_KEY_*`.
 
 ## Workload Identity
 

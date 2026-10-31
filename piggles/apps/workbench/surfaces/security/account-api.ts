@@ -5,7 +5,8 @@
 // this origin mounts no Better Auth handler by design -- getpiggles.com is the
 // auth authority. Every call fell through to the catch-all page route and came
 // back as an HTML document with a 200, which the client could only report as a
-// problem reaching the sign-in service. See app/api/account/shared.ts.
+// problem reaching the sign-in service. They forward to api-rest
+// (wizeworks/packages/auth/src/account-operations.ts).
 //
 // The server's own message is preferred over the caller's fallback wherever it
 // sent one: it separates a wrong current password from a new one that is too

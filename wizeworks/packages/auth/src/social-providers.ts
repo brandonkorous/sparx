@@ -30,7 +30,10 @@ const CREDENTIALS: Record<SocialProvider, readonly [string, string]> = {
  * asks per request, and a module-level snapshot would freeze whatever the
  * environment looked like when the bundle was first imported.
  */
-export function configuredSocialProviders(env: NodeJS.ProcessEnv = process.env): SocialProvider[] {
+/** Any set of named values: the process environment, or one brand's config. */
+type Credentials = Readonly<Record<string, string | undefined>>;
+
+export function configuredSocialProviders(env: Credentials = process.env): SocialProvider[] {
   return (Object.keys(CREDENTIALS) as SocialProvider[]).filter((provider) =>
     CREDENTIALS[provider].every((key) => Boolean(env[key]))
   );
@@ -39,7 +42,7 @@ export function configuredSocialProviders(env: NodeJS.ProcessEnv = process.env):
 /** Whether ONE provider is available — the shape a sign-in screen wants. */
 export function socialProviderConfigured(
   provider: SocialProvider,
-  env: NodeJS.ProcessEnv = process.env
+  env: Credentials = process.env
 ): boolean {
   return configuredSocialProviders(env).includes(provider);
 }

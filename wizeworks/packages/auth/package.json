@@ -32,6 +32,10 @@
     "./friendly-slug": {
       "types": "./src/friendly-slug.ts",
       "default": "./src/friendly-slug.ts"
+    },
+    "./mcp-scopes": {
+      "types": "./src/mcp-scopes.ts",
+      "default": "./src/mcp-scopes.ts"
     }
   },
   "files": [
