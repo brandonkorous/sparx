@@ -14,6 +14,8 @@ export interface ApiToken {
   /** Absolute epoch-ms expiry. */
   expiresAt: number;
   userId: string;
+  /** The business the token acts for (its `tid`). */
+  tenantId: string;
   role: string;
   /** Empty when the account has no name set. Display only. */
   userName: string;

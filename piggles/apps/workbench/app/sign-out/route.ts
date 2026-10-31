@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { auth } from '@wizeworks/auth';
-import { accountOrigin, signedOutCookies } from '@piggles/auth-handoff';
+import { signOutSession } from '@wizeworks/auth-client-server';
+import { accountOrigin } from '@piggles/auth-handoff';
 
 // Signing out, from the console side.
 //
@@ -8,16 +8,17 @@ import { accountOrigin, signedOutCookies } from '@piggles/auth-handoff';
 // handoff was built to preserve — so signing out has exactly two jobs, and doing
 // only one of them is the bug worth naming:
 //
-//   1. REVOKE THE SESSION. `auth.api.signOut` deletes the row. Skipping this and
+//   1. REVOKE THE SESSION. api-rest deletes the row. Skipping this and
 //      only dropping the cookie would leave a live session that getpiggles still
 //      honours: the person "signs out" of the console, goes to their account
 //      page, and is still signed in. Worse on a shared machine, where signing out
 //      is the whole point.
 //
-//   2. DROP THIS DOMAIN'S COOKIE. Revoking alone is not enough either — the
-//      cookie would survive, address a session that no longer exists, and the
-//      next visit would read as signed-out only after a database round trip that
-//      returns nothing. Clearing it makes the state honest immediately.
+//   2. DROP THIS DOMAIN'S COOKIES. Revoking alone is not enough either — the
+//      cookie would survive and address a session that no longer exists, and
+//      the cached copy of the session beside it would be trusted for minutes
+//      without asking anyone. api-rest names every cookie to clear; clearing
+//      them makes the state honest immediately.
 //
 // Then out to the account app. The console has nowhere to land a signed-out
 // visitor: it has no signed-out state, by design.
@@ -28,13 +29,13 @@ import { accountOrigin, signedOutCookies } from '@piggles/auth-handoff';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  // Best-effort: if revocation fails, the cookie must STILL be dropped. A person
-  // who asked to be signed out and was left signed in because a database call
-  // hiccuped is the worst possible outcome here.
-  await auth.api.signOut({ headers: request.headers }).catch(() => undefined);
+  // Never throws: if revocation fails, the cookies are STILL dropped. A person
+  // who asked to be signed out and was left signed in because a call failed is
+  // the worst possible outcome here.
+  const cleared = await signOutSession(request.headers);
 
   const response = NextResponse.redirect(`${accountOrigin()}/sign-in?signedOut=1`, 303);
-  for (const cookie of signedOutCookies()) {
+  for (const cookie of cleared) {
     response.cookies.set({ name: cookie.name, value: cookie.value, ...cookie.options });
   }
   response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');

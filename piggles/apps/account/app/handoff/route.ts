@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { auth, getSession } from '@wizeworks/auth';
-import { getCookies } from 'better-auth/cookies';
-import { mintHandoffUrl, readsAsRemembered } from '@piggles/auth-handoff';
+import { getSession } from '@wizeworks/auth';
+import { mintHandoffUrl } from '@piggles/auth-handoff';
 import { safeInternalPath } from '@piggles/config';
 import { readConsent } from '@/lib/consent';
 import { sameOriginRedirectWithNext } from '@/lib/same-origin-redirect';
@@ -14,23 +13,14 @@ import { sameOriginRedirectWithNext } from '@/lib/same-origin-redirect';
 // bounced straight back. One route means one place that knows how a session
 // crosses the boundary.
 //
-// ── WHY THE SESSION TOKEN IS READ FROM THE COOKIE ───────────────────────────
+// ── WHY THIS ROUTE NO LONGER READS THE SESSION COOKIE ───────────────────────
 //
-// `getSession()` proves there IS a valid session and tells us whose it is, but
-// it returns the session's data — not the opaque token the cookie carries, which
-// is the thing the console's cookie has to hold if both are to address ONE
-// session row. So we verify with `getSession()` and carry the raw cookie value.
-//
-// The cookie's NAME is asked for rather than written down. It is
-// `<prefix>.session_token`, prefixed `__Secure-` over HTTPS — and the prefix is
-// a deployment parameter now (Piggles ships `piggles-account`, so a customer
-// never sees a library's name in their own browser). Both the plain and
-// `__Secure-` forms are checked because dev is HTTP and production is not.
-//
-// `getCookies(auth.options)` is the library's own answer read from the library's
-// own config, so a change to the prefix arrives here for free. The list used to
-// be two hardcoded strings, which would have kept looking correct and silently
-// stopped finding the session the moment the prefix moved.
+// The console's cookie has to hold the same opaque token as this domain's, so
+// both address ONE session row. This route used to read that token out of the
+// cookie, which meant knowing the cookie's name, and knowing the name meant
+// building Better Auth here. api-rest mints the token now (docs/154): it gets
+// the forwarded cookie, reads the token and the "Keep me signed in" answer
+// itself, and hands back only the one-time token. Nothing here touches either.
 //
 // ── WHY THE CONSENT GATE IS HERE AND NOT IN THE CONSOLE ─────────────────────
 //
@@ -50,34 +40,6 @@ import { sameOriginRedirectWithNext } from '@/lib/same-origin-redirect';
 // nobody has put yet, so the door sends them to put it, carrying where they were
 // headed so the trip costs them nothing but the answer.
 //
-// ── AND WHY IT IS ASKED ON FIRST REQUEST, NOT AT IMPORT ─────────────────────
-//
-// `auth` is a Proxy that constructs Better Auth on FIRST PROPERTY ACCESS, on
-// purpose: `betterAuth()` reads deployment configuration and throws when it is
-// absent, so building it at module-evaluation time crashes anything that merely
-// imports this package. Reading `auth.options` into a module-level `const`
-// defeats that — it moves construction back to import time, and `next build`
-// imports every route module while collecting page data.
-//
-// It is not hypothetical. This line failed the 2026-08-24 release: the MCP
-// resource identifier became per-brand and throws rather than guess an address a
-// customer is told to paste into their assistant, and the build machine has no
-// deployment to read one from. `next build` evaluated this module, the Proxy
-// built Better Auth on a build agent, and piggles-account was the one image of
-// seventeen that did not ship.
-//
-// So the name is resolved on first REQUEST and cached for the process. Same one
-// lookup, on a machine that actually has the configuration.
-let cookieNames: readonly string[] | undefined;
-
-function sessionCookieNames(): readonly string[] {
-  if (!cookieNames) {
-    const name = getCookies(auth.options).sessionToken.name;
-    cookieNames = [`__Secure-${name}`, name];
-  }
-  return cookieNames;
-}
-
 export const dynamic = 'force-dynamic';
 
 // ── THE DOOR REFUSES TO OPEN FOR A PREFETCH ─────────────────────────────────
@@ -141,35 +103,20 @@ export async function GET(request: NextRequest) {
     return sameOriginRedirectWithNext('/cookie-choices', `/handoff${request.nextUrl.search}`);
   }
 
-  const raw = sessionCookieNames()
-    .map((n) => request.cookies.get(n)?.value)
-    .find(Boolean);
-  if (!raw) {
-    // A valid session with no readable cookie means the cookie name has moved
-    // under us — a Better Auth upgrade, or a config change. Fail loudly rather
-    // than redirecting to a console that will bounce them back here forever.
-    return NextResponse.json(
-      { error: 'Could not read the session cookie. The handoff cannot be minted.' },
-      { status: 500 }
-    );
-  }
-
-  // Better Auth signs the cookie as `<token>.<signature>`. The token is the part
-  // before the dot — the signature is this domain's proof and means nothing on
-  // the other one, which mints its own.
-  const sessionToken = raw.split('.')[0] ?? raw;
-
-  const url = await mintHandoffUrl({
-    sessionToken,
-    userId: session.user.id,
+  const url = await mintHandoffUrl(request.headers, {
     audience: 'console',
     next: safeInternalPath(request.nextUrl.searchParams.get('next')),
-    // "Keep me signed in", carried across the boundary. The console has no
-    // sign-in form and so never saw the box; it used to invent an answer, and
-    // the answer it invented was thirty days for everybody. THIS domain is the
-    // only one that holds the person's real one.
-    remember: readsAsRemembered((name) => request.cookies.get(name)?.value),
   });
+  if (!url) {
+    // getSession() above saw a session and api-rest did not, so the two disagree
+    // about the cookie. Fail loudly: a redirect to sign-in would see the session
+    // and send them back here, and a redirect to the console would bounce them
+    // back here too, forever.
+    return NextResponse.json(
+      { error: 'The session could not be carried to the console. Sign out and sign in again.' },
+      { status: 500, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' } }
+    );
+  }
 
   // 303, not 307: this is "go and look over there", and the browser must not
   // repeat any method or body against the new URL. A cached 301/302 here would

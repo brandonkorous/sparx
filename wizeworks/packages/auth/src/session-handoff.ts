@@ -117,13 +117,45 @@ export function sessionCookiesFor(
   return cookies;
 }
 
-/** The same cookies, emptied, for signing out on a domain. Both of them: a
- *  marker left behind would carry one person's choice into the next person's
- *  sign-in on a shared computer. */
-export function clearedSessionCookies(brand: string): SessionCookie[] {
+/** The names of the cookies present in a `Cookie` header that has a value. */
+function cookieNamesIn(cookieHeader: string | null | undefined): Set<string> {
+  return new Set(
+    (cookieHeader ?? '')
+      .split(';')
+      .map((part) => part.trim())
+      .filter((part) => part.includes('=') && part.slice(part.indexOf('=') + 1) !== '')
+      .map((part) => part.slice(0, part.indexOf('=')))
+  );
+}
+
+/**
+ * Every session cookie a domain may hold, emptied, for signing out there. The
+ * same set Better Auth's own sign-out expires:
+ *
+ *   - the session token;
+ *   - the cached session (`session_data`), and any numbered parts it was split
+ *     into when too large for one cookie. Left behind, Better Auth trusts the
+ *     cache for its five minutes without asking the database, so the person
+ *     would read as signed in after signing out;
+ *   - the "Keep me signed in" marker, which would otherwise carry one person's
+ *     choice into the next person's sign-in on a shared computer.
+ *
+ * `cookieHeader` is the request's, read only to find the numbered parts.
+ */
+export function clearedSessionCookies(
+  brand: string,
+  cookieHeader?: string | null
+): SessionCookie[] {
   const { options } = brandCookieContext(brand);
-  const { sessionToken: session, dontRememberToken: marker } = getCookies(options);
-  return [session, marker].map((cookie) => build(cookie, '', { expire: true }));
+  const cookies = getCookies(options);
+  const cleared = [cookies.sessionToken, cookies.sessionData, cookies.dontRememberToken];
+  const chunkPrefix = `${cookies.sessionData.name}.`;
+  for (const name of cookieNamesIn(cookieHeader)) {
+    if (name.startsWith(chunkPrefix)) {
+      cleared.push({ name, attributes: cookies.sessionData.attributes });
+    }
+  }
+  return cleared.map((cookie) => build(cookie, '', { expire: true }));
 }
 
 /** Did this browser ask to be remembered? Better Auth records "no" as its own
@@ -132,13 +164,7 @@ export function clearedSessionCookies(brand: string): SessionCookie[] {
 export function readsAsRemembered(brand: string, cookieHeader: string | null): boolean {
   const { options } = brandCookieContext(brand);
   const { name } = getCookies(options).dontRememberToken;
-  const present = new Set(
-    (cookieHeader ?? '')
-      .split(';')
-      .map((part) => part.trim())
-      .filter((part) => part.includes('=') && part.slice(part.indexOf('=') + 1) !== '')
-      .map((part) => part.slice(0, part.indexOf('=')))
-  );
+  const present = cookieNamesIn(cookieHeader);
   return !present.has(name) && !present.has(`__Secure-${name}`);
 }
 
@@ -247,5 +273,5 @@ export async function consumeSessionHandoff(
  *  it on the caller's domain. Signing out an already-dead session is fine. */
 export async function signOutSession(brand: string, headers: Headers): Promise<SessionCookie[]> {
   await auth.api.signOut({ headers }).catch(() => undefined);
-  return clearedSessionCookies(brand);
+  return clearedSessionCookies(brand, headers.get('cookie'));
 }

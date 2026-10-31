@@ -70,6 +70,7 @@ COPY wizeworks/packages/api-core/package.json wizeworks/packages/api-core/
 COPY wizeworks/packages/app-kit/package.json wizeworks/packages/app-kit/
 COPY wizeworks/packages/attribution/package.json wizeworks/packages/attribution/
 COPY wizeworks/packages/auth/package.json wizeworks/packages/auth/
+COPY wizeworks/packages/auth-client-server/package.json wizeworks/packages/auth-client-server/
 COPY wizeworks/packages/brand-core/package.json wizeworks/packages/brand-core/
 COPY wizeworks/packages/automation-schemas/package.json wizeworks/packages/automation-schemas/
 COPY wizeworks/packages/blueprints/package.json wizeworks/packages/blueprints/
@@ -125,6 +126,7 @@ COPY wizeworks/packages/api-core wizeworks/packages/api-core
 COPY wizeworks/packages/app-kit wizeworks/packages/app-kit
 COPY wizeworks/packages/attribution wizeworks/packages/attribution
 COPY wizeworks/packages/auth wizeworks/packages/auth
+COPY wizeworks/packages/auth-client-server wizeworks/packages/auth-client-server
 COPY wizeworks/packages/brand-core wizeworks/packages/brand-core
 COPY wizeworks/packages/automation-schemas wizeworks/packages/automation-schemas
 COPY wizeworks/packages/blueprints wizeworks/packages/blueprints

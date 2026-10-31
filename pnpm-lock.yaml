@@ -283,6 +283,9 @@ importers:
       '@wizeworks/auth':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/auth
+      '@wizeworks/auth-client-server':
+        specifier: workspace:*
+        version: link:../../../wizeworks/packages/auth-client-server
       '@wizeworks/automation-schemas':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/automation-schemas
@@ -298,9 +301,6 @@ importers:
       '@wizeworks/crm-schemas':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/crm-schemas
-      '@wizeworks/db':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/db
       '@wizeworks/email-sequences':
         specifier: workspace:*
         version: link:../../../wizeworks/packages/email-sequences
@@ -419,15 +419,9 @@ importers:
       '@piggles/config':
         specifier: workspace:*
         version: link:../config
-      '@wizeworks/auth':
+      '@wizeworks/auth-client-server':
         specifier: workspace:*
-        version: link:../../../wizeworks/packages/auth
-      '@wizeworks/db':
-        specifier: workspace:*
-        version: link:../../../wizeworks/packages/db
-      better-auth:
-        specifier: ~1.7.14
-        version: 1.7.14(@opentelemetry/api@1.9.1)(@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3))(next@16.4.3(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(@types/node@25.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.21.0)(prisma@6.19.3(typescript@6.0.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.12(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0)))
+        version: link:../../../wizeworks/packages/auth-client-server
     devDependencies:
       '@types/node':
         specifier: ^25.9.1

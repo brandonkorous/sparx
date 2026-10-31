@@ -176,6 +176,10 @@ export interface ApiTokenResponse {
   /** Absolute epoch-ms expiry, so the client schedules refresh without clock-skew maths. */
   expiresAt: number;
   userId: string;
+  /** The business the token acts for (the token's `tid`). A console binds its
+   *  active-site cookie to it, so a site left by another business's operator
+   *  on a shared computer is never forwarded. */
+  tenantId: string;
   role: string;
   /** Empty when the account has no name set. Display only, never a control. */
   userName: string;
@@ -207,6 +211,7 @@ export async function mintApiToken(
     token,
     expiresAt: (nowSeconds + API_TOKEN_TTL_SECONDS) * 1000,
     userId: session.user.id,
+    tenantId: session.user.tenantId,
     role: session.user.role,
     userName: session.user.name ?? '',
     email: session.user.email,
@@ -271,6 +276,8 @@ const brandAuthRoutes: FastifyPluginAsync = async (app) => {
         runAccountOperation(request.method, op, requestHeaders(request), jsonBody(request))
       );
       reply.header('cache-control', 'no-store, private');
+      // A rotated session's new cookie, for the app to pass to the browser.
+      if (result.setCookies.length > 0) reply.header('set-cookie', result.setCookies);
       return reply.code(result.status).send(result.body);
     },
   });

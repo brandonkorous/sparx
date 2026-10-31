@@ -15,14 +15,41 @@
 import { auth } from './server';
 import { listMyMemberships } from './organizations';
 
-/** What an operation answers: an HTTP status and a JSON body. */
+/** What an operation answers: an HTTP status, a JSON body, and the cookies
+ *  Better Auth set while answering, as raw `Set-Cookie` lines. */
 export interface AccountOperationResult {
   status: number;
   body: unknown;
+  setCookies: string[];
 }
 
 type Body = Record<string, unknown>;
-type Run = (headers: Headers, body: Body) => Promise<unknown>;
+
+/** A value, and any cookies set while producing it. */
+interface Outcome {
+  value: unknown;
+  setCookies?: string[];
+}
+type Run = (headers: Headers, body: Body) => Promise<Outcome>;
+
+/**
+ * For a call that ROTATES the session. Changing the password (with other
+ * devices signed out), and enabling, confirming or disabling two-step, each
+ * delete the session row and write a new one; switching business rewrites the
+ * cached session. Better Auth answers each with a new cookie. In a Next.js app
+ * the `nextCookies` plugin set it; here nothing would, and the person's next
+ * click would carry a cookie for a row that no longer exists. So the cookie
+ * lines come back with the value, for the caller to relay.
+ */
+async function rotating(call: Promise<{ headers: Headers; response: unknown }>): Promise<Outcome> {
+  const { headers, response } = await call;
+  return { value: response, setCookies: headers.getSetCookie() };
+}
+
+/** For a call that sets no cookie. */
+async function plain(call: Promise<unknown>): Promise<Outcome> {
+  return { value: await call };
+}
 
 const SIGNED_OUT = 'You have been signed out. Sign in again to change your security settings.';
 
@@ -69,74 +96,86 @@ export interface SignInMethods {
 
 const OPERATIONS: Record<string, Run> = {
   'POST password': (headers, body) =>
-    auth.api.changePassword({
-      body: {
-        currentPassword: text(body, 'currentPassword'),
-        newPassword: text(body, 'newPassword'),
-        revokeOtherSessions: body.revokeOtherSessions !== false,
-      },
-      headers,
-    }),
+    rotating(
+      auth.api.changePassword({
+        body: {
+          currentPassword: text(body, 'currentPassword'),
+          newPassword: text(body, 'newPassword'),
+          revokeOtherSessions: body.revokeOtherSessions !== false,
+        },
+        headers,
+        returnHeaders: true,
+      })
+    ),
 
   'GET sessions': async (headers) => {
     const [rows, token] = await Promise.all([
       auth.api.listSessions({ headers }),
       sessionToken(headers),
     ]);
-    return (rows ?? []).map((row) => ({ ...row, current: row.token === token }));
+    return { value: (rows ?? []).map((row) => ({ ...row, current: row.token === token })) };
   },
 
   'POST sessions': (headers, body) => {
-    if (body.all === true) return auth.api.revokeOtherSessions({ headers });
+    if (body.all === true) return plain(auth.api.revokeOtherSessions({ headers }));
     const token = body.token;
     if (typeof token !== 'string' || token === '') {
       return Promise.reject(new OperationRefused(400, { message: 'A device token is required.' }));
     }
-    return auth.api.revokeSession({ body: { token }, headers });
+    return plain(auth.api.revokeSession({ body: { token }, headers }));
   },
 
-  'GET sign-in-methods': async (headers): Promise<SignInMethods> => {
+  'GET sign-in-methods': async (headers) => {
     const [rows, session] = await Promise.all([
       auth.api.listUserAccounts({ headers }),
       auth.api.getSession({ headers }),
     ]);
     const user = (session as { user?: { twoFactorEnabled?: boolean } } | null)?.user;
-    return {
+    const methods: SignInMethods = {
       hasPassword: (rows ?? []).some((row) => row.providerId === 'credential'),
       twoFactorEnabled: user?.twoFactorEnabled === true,
     };
+    return { value: methods };
   },
 
   'POST two-factor': (headers, body) => {
     // The issuer the authenticator app shows. A console on another origin sends
     // its brand's name, since it is baked into the QR code at enrollment.
     const issuer = text(body, 'issuer');
-    return auth.api.enableTwoFactor({
-      body: { method: 'totp' as const, ...optionalPassword(body), ...(issuer ? { issuer } : {}) },
-      headers,
-    });
+    return rotating(
+      auth.api.enableTwoFactor({
+        body: { method: 'totp' as const, ...optionalPassword(body), ...(issuer ? { issuer } : {}) },
+        headers,
+        returnHeaders: true,
+      })
+    );
   },
 
   'POST two-factor/verify': (headers, body) =>
-    auth.api.verifyTOTP({ body: { code: text(body, 'code') }, headers }),
+    rotating(
+      auth.api.verifyTOTP({ body: { code: text(body, 'code') }, headers, returnHeaders: true })
+    ),
 
   'POST two-factor/disable': (headers, body) =>
-    auth.api.disableTwoFactor({ body: optionalPassword(body), headers }),
+    rotating(
+      auth.api.disableTwoFactor({ body: optionalPassword(body), headers, returnHeaders: true })
+    ),
 
   'POST two-factor/backup-codes': (headers, body) =>
-    auth.api.generateBackupCodes({ body: optionalPassword(body), headers }),
+    plain(auth.api.generateBackupCodes({ body: optionalPassword(body), headers })),
 
-  'GET businesses': async (headers): Promise<AccountBusiness[]> => {
+  'GET businesses': async (headers) => {
     const session = await auth.api.getSession({ headers });
     const userId = session?.user.id;
-    if (!userId) return [];
+    if (!userId) return { value: [] };
     const memberships = await listMyMemberships(userId);
-    return memberships.map((m) => ({
+    const businesses: AccountBusiness[] = memberships.map((m) => ({
       id: m.organizationId,
       name: m.name,
       slug: m.slug,
       role: m.role,
     }));
+    return { value: businesses };
   },
 
   'POST businesses': async (headers, body) => {
@@ -144,13 +183,16 @@ const OPERATIONS: Record<string, Run> = {
     if (!organizationId) {
       throw new OperationRefused(400, { message: 'organizationId is required' });
     }
+    let switched: Outcome;
     try {
-      await auth.api.setActiveOrganization({ body: { organizationId }, headers });
+      switched = await rotating(
+        auth.api.setActiveOrganization({ body: { organizationId }, headers, returnHeaders: true })
+      );
     } catch {
       // Not a member, or the membership was removed: the same answer either way.
       throw new OperationRefused(403, { message: 'not a member of that business' });
     }
-    return { ok: true };
+    return { value: { ok: true }, setCookies: switched.setCookies };
   },
 };
 
@@ -166,7 +208,7 @@ function describe(error: unknown): AccountOperationResult {
   const candidate = error as { statusCode?: unknown; body?: { message?: unknown } } | null;
   const status = typeof candidate?.statusCode === 'number' ? candidate.statusCode : 500;
   const message = typeof candidate?.body?.message === 'string' ? candidate.body.message : '';
-  return { status, body: { error: message || null } };
+  return { status, body: { error: message || null }, setCookies: [] };
 }
 
 /**
@@ -182,13 +224,13 @@ export async function runAccountOperation(
   body: Body
 ): Promise<AccountOperationResult> {
   const run = OPERATIONS[`${method.toUpperCase()} ${path}`];
-  if (!run) return { status: 404, body: { error: 'not_found' } };
+  if (!run) return { status: 404, body: { error: 'not_found' }, setCookies: [] };
   if (!(await auth.api.getSession({ headers }))) {
-    return { status: 401, body: { error: SIGNED_OUT } };
+    return { status: 401, body: { error: SIGNED_OUT }, setCookies: [] };
   }
   try {
-    const value = await run(headers, body);
-    return { status: 200, body: value ?? { ok: true } };
+    const { value, setCookies = [] } = await run(headers, body);
+    return { status: 200, body: value ?? { ok: true }, setCookies };
   } catch (error) {
     return describe(error);
   }

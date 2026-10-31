@@ -13,6 +13,7 @@ const {
   proxiedPath,
   forwardAccountOperation,
   accountOperationPath,
+  signOutSession,
   PlatformAuthUnavailableError,
 } = await import('./index');
 
@@ -103,6 +104,7 @@ describe('fetchApiToken', () => {
       token: 'jwt',
       expiresAt: 1,
       userId: 'u1',
+      tenantId: 't1',
       role: 'owner',
       userName: '',
       email: 'e',
@@ -219,6 +221,26 @@ describe('account operations', () => {
     expect(res.headers.get('cache-control')).toBe('no-store, private');
   });
 
+  it("passes a rotated session's new cookie to the browser", async () => {
+    const upstream = new Headers({ 'content-type': 'application/json' });
+    upstream.append('set-cookie', 'piggles-account.session_token=new.sig; Path=/; HttpOnly');
+    upstream.append('set-cookie', 'piggles-account.session_data=x; Path=/; HttpOnly');
+    const fetchImpl = fakeFetch(
+      new Response('{"status":true}', { status: 200, headers: upstream })
+    );
+    const res = await forwardAccountOperation(
+      new Request('https://mypiggles.com/api/account/two-factor/verify', {
+        method: 'POST',
+        body: JSON.stringify({ code: '123456' }),
+      }),
+      fetchImpl
+    );
+    expect(res.headers.getSetCookie()).toEqual([
+      'piggles-account.session_token=new.sig; Path=/; HttpOnly',
+      'piggles-account.session_data=x; Path=/; HttpOnly',
+    ]);
+  });
+
   it('answers in a sentence when api-rest cannot be reached', async () => {
     const down = vi.fn<typeof fetch>(() => Promise.reject(new TypeError('fetch failed')));
     const res = await forwardAccountOperation(
@@ -227,5 +249,35 @@ describe('account operations', () => {
     );
     expect(res.status).toBe(503);
     expect(((await res.json()) as { error: string }).error).toMatch(/did not answer/);
+  });
+});
+
+describe('signOutSession', () => {
+  const carried =
+    '__Secure-piggles-account.session_token=a; __Secure-piggles-account.session_data.0=b; theme=dark; piggles-account.dont_remember=true.s';
+
+  it("returns api-rest's cookies when it answers", async () => {
+    const cleared = [
+      {
+        name: 'x.session_token',
+        value: '',
+        options: { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 0 },
+      },
+    ];
+    const fetchImpl = fakeFetch(Response.json({ cookies: cleared }));
+    expect(await signOutSession(new Headers({ cookie: carried }), fetchImpl)).toEqual(cleared);
+  });
+
+  it('still clears every session cookie the request carries when api-rest is down', async () => {
+    const down = vi.fn<typeof fetch>(() => Promise.reject(new TypeError('fetch failed')));
+    const cookies = await signOutSession(new Headers({ cookie: carried }), down);
+    expect(cookies.map((c) => c.name)).toEqual([
+      '__Secure-piggles-account.session_token',
+      '__Secure-piggles-account.session_data.0',
+      'piggles-account.dont_remember',
+    ]);
+    expect(cookies.every((c) => c.value === '' && c.options.maxAge === 0)).toBe(true);
+    expect(cookies[0]!.options.secure).toBe(true);
+    expect(cookies[2]!.options.secure).toBe(false);
   });
 });

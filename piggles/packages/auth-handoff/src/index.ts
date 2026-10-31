@@ -1,5 +1,8 @@
-import { randomBytes, timingSafeEqual } from 'node:crypto';
-import { prisma } from '@wizeworks/db';
+import {
+  consumeHandoff,
+  mintHandoff,
+  type ConsumeHandoffResult,
+} from '@wizeworks/auth-client-server';
 import { audienceOrigin, internalPath, type HandoffAudience } from './origins';
 
 // The getpiggles.com → mypiggles.com session handoff.
@@ -22,171 +25,62 @@ import { audienceOrigin, internalPath, type HandoffAudience } from './origins';
 // session. Minting a SECOND session for the console would double every one of
 // those concerns and guarantee the two drift.
 //
-// ── WHY THE `verification` TABLE ────────────────────────────────────────────
+// ── WHERE THE WORK HAPPENS ──────────────────────────────────────────────────
 //
-// A one-time token needs somewhere to be exactly once. Better Auth's own
-// `verification` table is already a short-lived, single-use, opaque key/value
-// store with an `expiresAt`, and the MCP OAuth provider already reuses it to
-// stash authorization-code payloads (docs/07 §5, and the widen_verification_value
-// migration exists because of it). Reusing it here needs no new model, no
-// migration, and no second expiry sweep.
+// In api-rest (docs/154). Minting writes a row, redeeming deletes it, and the
+// cookie it hands back is signed with the brand's auth secret: none of the
+// three may happen in an app that holds no database and no secret. So both
+// halves are calls, and the three properties that make the token safe are kept
+// there, beside the row:
 //
-// The alternative — a stateless signed token — cannot be single-use without
-// state, which would leave a replay window for the whole of its TTL. A row that
-// is DELETED as it is read cannot be replayed at all.
-//
-// ── THE THREE PROPERTIES THAT MAKE IT SAFE ──────────────────────────────────
-//
-//   1. **Single-use.** Consumption is a `deleteMany` whose count decides the
-//      outcome. Two racing requests cannot both see a count of 1, so the loser
-//      is rejected even under concurrency — this is why it is not a SELECT
-//      followed by a DELETE.
+//   1. **Single-use.** Redeeming is one `DELETE … RETURNING`, so two racing
+//      requests cannot both hold the session.
 //   2. **Short-lived.** 60 seconds: it exists only to survive one redirect.
 //   3. **Audience-bound.** The token records who it was minted for and is
 //      refused if presented anywhere else, so one leaked to a third party is
 //      not a session anywhere.
-
-/** How long a minted token stays valid. It has to outlive one HTTP redirect and
- *  nothing else — a slow phone on a bad connection, not a coffee break. */
-const TTL_MS = 60_000;
-
-/** Namespace inside the shared `verification` table. Anything else using that
- *  table (email verification, password reset, MCP authorization codes) uses its
- *  own prefix; overlapping would let one flow consume another's row. */
-const PREFIX = 'piggles-handoff:';
-
-interface HandoffPayload {
-  /** The Better Auth session token — the SAME value the getpiggles cookie
-   *  holds, so the console's cookie points at the identical session row. */
-  sessionToken: string;
-  audience: HandoffAudience;
-  /** Recorded for the audit trail and so a consumer can sanity-check that the
-   *  session it just adopted belongs to who it expected. */
-  userId: string;
-  /** Where the console should land the user once the cookie is set. Carried
-   *  through the handoff because a deep link that survives sign-in is the
-   *  difference between "log in and find your way back" and arriving. */
-  next?: string;
-  /** Whether "Keep me signed in" was ticked. Carried because the console mints
-   *  its OWN cookie and would otherwise have no way of knowing — which is
-   *  exactly what went wrong; see ./session-cookie.ts. */
-  remember?: boolean;
-}
+//
+// What stays HERE is everything that is Piggles' own: which domains exist, the
+// name of each audience, and where a person lands. api-rest takes the audience
+// as an opaque string and never reads it.
 
 /**
- * Mint a one-time token for `audience` and return the absolute URL to send the
- * browser to.
+ * Mint a one-time token for the session this request carries and return the
+ * absolute URL to send the browser to. Null when the request carries no session.
  *
- * Call this from a server action or route handler on getpiggles that has
- * already established the user IS signed in — this function trusts the session
- * token it is given and does not re-authenticate it.
+ * api-rest reads the session token and the person's "Keep me signed in" answer
+ * from the forwarded cookies itself. Nothing here handles either.
  */
-export async function mintHandoffUrl(input: {
-  sessionToken: string;
-  userId: string;
-  audience: HandoffAudience;
-  /** A path inside the destination app. Rejected unless it is a bare internal
-   *  path, so a handoff link can never be turned into an open redirect. */
-  next?: string;
-  /** The person's own answer to "Keep me signed in". Read it with
-   *  `readsAsRemembered` rather than guessing — the caller is a route, not the
-   *  sign-in form, and may be running days after the choice was made. */
-  remember?: boolean;
-}): Promise<string> {
-  const jti = randomBytes(32).toString('base64url');
+export async function mintHandoffUrl(
+  requestHeaders: Headers,
+  input: {
+    audience: HandoffAudience;
+    /** A path inside the destination app. Dropped unless it is a bare internal
+     *  path, so a handoff link can never be turned into an open redirect. */
+    next?: string | null;
+  }
+): Promise<string | null> {
   const next = internalPath(input.next);
-  const payload: HandoffPayload = {
-    sessionToken: input.sessionToken,
+  const minted = await mintHandoff(requestHeaders, {
     audience: input.audience,
-    userId: input.userId,
     ...(next ? { next } : {}),
-    ...(input.remember === undefined ? {} : { remember: input.remember }),
-  };
-
-  await prisma.verification.create({
-    data: {
-      identifier: PREFIX + jti,
-      value: JSON.stringify(payload),
-      expiresAt: new Date(Date.now() + TTL_MS),
-    },
   });
-
-  return `${audienceOrigin(input.audience)}/auth/callback?t=${encodeURIComponent(jti)}`;
+  if (!minted) return null;
+  return `${audienceOrigin(input.audience)}/auth/callback?t=${encodeURIComponent(minted.token)}`;
 }
-
-export type ConsumeResult =
-  | { ok: true; sessionToken: string; userId: string; next: string; remember: boolean }
-  | { ok: false; reason: 'missing' | 'expired' | 'wrong-audience' | 'malformed' };
 
 /**
  * Redeem a token. Call from the DESTINATION app's `/auth/callback`, server-side
- * only, then set your own session cookie to the returned `sessionToken`.
- *
- * Deleting is the read: the row is removed by the same statement that decides
- * whether the token was valid, so a replay finds nothing. Never split this into
- * a lookup followed by a delete — two requests arriving together would both
- * pass the lookup.
+ * only, then set every returned cookie exactly as given.
  */
-export async function consumeHandoffToken(
+export function consumeHandoffToken(
   token: string | null | undefined,
   expected: HandoffAudience
-): Promise<ConsumeResult> {
-  if (!token) return { ok: false, reason: 'missing' };
-
-  const identifier = PREFIX + token;
-
-  // ONE STATEMENT: delete and return what was deleted.
-  //
-  // Single-use has to be atomic, and neither Prisma path gets there on this
-  // table. `findUnique` cannot even be written — `verifications.identifier` is
-  // INDEXED but not UNIQUE (only `id` is), so it is not a valid unique input.
-  // And `findFirst` followed by `deleteMany` is two statements: both racers read
-  // the payload, and only the delete count separates them. That works, but it
-  // means a losing request has already held a valid session token in memory.
-  //
-  // `DELETE … RETURNING` closes it properly — the row is gone by the time
-  // anybody has seen it, so exactly one caller ever holds the token at all.
-  const rows = await prisma.$queryRaw<{ value: string; expires_at: Date }[]>`
-    DELETE FROM verifications WHERE identifier = ${identifier} RETURNING value, expires_at
-  `;
-
-  const row = rows[0];
-  if (!row) return { ok: false, reason: 'missing' };
-  if (row.expires_at.getTime() < Date.now()) return { ok: false, reason: 'expired' };
-
-  let payload: HandoffPayload;
-  try {
-    payload = JSON.parse(row.value) as HandoffPayload;
-  } catch {
-    return { ok: false, reason: 'malformed' };
-  }
-
-  if (!payload.sessionToken || !payload.userId) return { ok: false, reason: 'malformed' };
-
-  // Constant-time so the audience check cannot be probed by timing. Cheap, and
-  // the habit is worth more than the microseconds.
-  if (!constantTimeEquals(payload.audience, expected)) {
-    return { ok: false, reason: 'wrong-audience' };
-  }
-
-  return {
-    ok: true,
-    sessionToken: payload.sessionToken,
-    userId: payload.userId,
-    next: internalPath(payload.next) ?? '/',
-    // Absent only on a token minted by a build that predates the field, which
-    // can outlive a deploy by at most 60 seconds. Default to the behaviour that
-    // build had, and to what the checkbox itself defaults to.
-    remember: payload.remember ?? true,
-  };
+): Promise<ConsumeHandoffResult> {
+  return consumeHandoff(token ?? null, expected);
 }
 
-function constantTimeEquals(a: string, b: string): boolean {
-  const ab = Buffer.from(a);
-  const bb = Buffer.from(b);
-  if (ab.length !== bb.length) return false;
-  return timingSafeEqual(ab, bb);
-}
+export type { ConsumeHandoffResult };
 
 // Where the three apps actually are. Re-exported so a caller imports one
 // package rather than picking files out of it.
@@ -198,14 +92,3 @@ export {
   returnPath,
   type HandoffAudience,
 } from './origins';
-
-// The receiving side's other half: turning the redeemed token back into cookies
-// Better Auth will accept. Kept in this package so BOTH halves of the handoff
-// stay in one place — a minting side and a consuming side that live in
-// different repositories' worth of code is how the two drift.
-export {
-  handoffCookies,
-  signedOutCookies,
-  readsAsRemembered,
-  type SessionCookie,
-} from './session-cookie';

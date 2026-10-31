@@ -111,6 +111,7 @@ describe('mintApiToken', () => {
     expect(body).toMatchObject({
       expiresAt: (now + 600) * 1000,
       userId: 'user-1',
+      tenantId: 'tenant-active',
       role: 'admin',
       userName: 'Marta',
       email: 'owner@example.test',
@@ -239,7 +240,7 @@ describe('the routes', () => {
     expect(res.json()).toEqual({ ok: false, reason: 'missing' });
   });
 
-  it("signs out with the brand's own cookie names, emptied", async () => {
+  it("signs out with the brand's own cookie names, the cached session included", async () => {
     const res = await app.inject({
       method: 'POST',
       url: '/auth/piggles/platform/sign-out',
@@ -250,6 +251,7 @@ describe('the routes', () => {
     // `__Secure-` because the brand's address is https, as in production.
     expect(names.sort()).toEqual([
       '__Secure-piggles-account.dont_remember',
+      '__Secure-piggles-account.session_data',
       '__Secure-piggles-account.session_token',
     ]);
   });

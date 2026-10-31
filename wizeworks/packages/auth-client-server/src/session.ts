@@ -39,6 +39,17 @@ type WireSession = Omit<SparxSession, 'session'> & {
   session: Omit<SparxSession['session'], 'expiresAt'> & { expiresAt: string };
 };
 
+/** Set by an app's WizeLens setup (instrumentation.ts): the signed-in user, for
+ *  its traces. A no-op when WizeLens is off. Same hook the in-app session read
+ *  called, so an app's traces keep naming the person after the move. */
+interface TracedUser {
+  id: string;
+  name: string | null;
+  tenantId: string | null;
+}
+const noteUser = (user: TracedUser): void =>
+  (globalThis as { __wizelensUser?: (u: TracedUser) => void }).__wizelensUser?.(user);
+
 /**
  * The session for these request headers, or null when there is none.
  *
@@ -64,6 +75,11 @@ export async function readSession(
   if (res.status === 401) return null;
   if (!res.ok) throw new PlatformAuthUnavailableError(path, res.status);
   const { session } = (await res.json()) as { session: WireSession };
+  noteUser({
+    id: session.user.id,
+    name: session.user.name ?? null,
+    tenantId: session.user.tenantId,
+  });
   return {
     user: session.user,
     session: { ...session.session, expiresAt: new Date(session.session.expiresAt) },

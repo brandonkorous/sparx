@@ -6,7 +6,9 @@ export { authProxyHandlers, proxyAuthRequest, proxiedPath } from './proxy';
 export {
   accountOperationHandlers,
   accountOperationPath,
+  callAccountOperation,
   consumeHandoff,
+  expiredSessionCookiesIn,
   forwardAccountOperation,
   mintHandoff,
   signOutSession,

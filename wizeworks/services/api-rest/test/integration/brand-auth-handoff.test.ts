@@ -16,7 +16,9 @@ process.env.PIGGLES_BETTER_AUTH_SECRET = 'piggles-test-secret-that-is-at-least-3
 process.env.PIGGLES_BETTER_AUTH_URL = 'https://getpiggles.test';
 process.env.PIGGLES_BETTER_AUTH_COOKIE_PREFIX = 'piggles-account';
 
-const { authPrisma } = await import('@wizeworks/auth');
+const { auth, authPrisma } = await import('@wizeworks/auth');
+const { runAsBrand } = await import('@wizeworks/brand-core/request-scope');
+const { createTestTenant, dropTestTenant } = await import('../helpers.js');
 const { default: brandAuthRoutes } = await import('../../src/routes/auth/brand-auth.js');
 
 const INTERNAL = 'api-rest.sparx-prod.svc.cluster.local:3000';
@@ -120,5 +122,67 @@ describe('redeeming a session handoff', () => {
       next: '//evil.example/x',
     });
     expect((await redeem(token)).json<{ next: string }>().next).toBe('/');
+  });
+});
+
+// A password change that signs out other devices deletes EVERY session row,
+// the caller's included, and writes a new one. The new cookie has to reach the
+// browser, or the person's next click carries a cookie for a deleted row.
+describe('an account operation that rotates the session', () => {
+  let app: FastifyInstance;
+  let tenantId: string;
+  let email: string;
+
+  beforeAll(async () => {
+    let userId: string;
+    ({ tenantId, userId, email } = await createTestTenant());
+    // A Piggles business and person: each brand's sign-in finds only its own.
+    await authPrisma.tenant.update({ where: { id: tenantId }, data: { platformBrand: 'piggles' } });
+    await authPrisma.user.update({ where: { id: userId }, data: { platformBrand: 'piggles' } });
+    await authPrisma.account.create({
+      data: {
+        userId,
+        providerId: 'credential',
+        accountId: userId,
+        // The brand's own hasher, the one its sign-in verifies against.
+        password: await runAsBrand('piggles', async () =>
+          (await auth.$context).password.hash('first-password-123')
+        ),
+      },
+    });
+    app = Fastify();
+    await app.register(brandAuthRoutes);
+    await app.ready();
+  });
+  afterAll(async () => {
+    await dropTestTenant(tenantId);
+    await app.close();
+  });
+
+  it('hands back the new session cookie', async () => {
+    const signIn = await app.inject({
+      method: 'POST',
+      url: '/auth/piggles/sign-in/email',
+      headers: { host: INTERNAL, 'content-type': 'application/json' },
+      payload: JSON.stringify({ email, password: 'first-password-123' }),
+    });
+    expect(signIn.statusCode).toBe(200);
+    const sessionCookie = signIn.cookies.find((c) => c.name.endsWith('.session_token'));
+    expect(sessionCookie).toBeDefined();
+    const cookie = `${sessionCookie!.name}=${sessionCookie!.value}`;
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/auth/piggles/platform/account/password',
+      headers: { host: INTERNAL, 'content-type': 'application/json', cookie },
+      payload: JSON.stringify({
+        currentPassword: 'first-password-123',
+        newPassword: 'second-password-456',
+      }),
+    });
+    expect(res.statusCode).toBe(200);
+    const rotated = res.cookies.find((c) => c.name === sessionCookie!.name);
+    expect(rotated?.value).toBeTruthy();
+    expect(rotated?.value).not.toBe(sessionCookie!.value);
   });
 });

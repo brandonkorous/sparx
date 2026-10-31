@@ -82,10 +82,18 @@ describe('sessionCookiesFor', () => {
 });
 
 describe('clearedSessionCookies', () => {
-  it('empties both the session and the marker', () => {
-    const cookies = inPiggles(() => clearedSessionCookies('piggles'));
+  it('empties the session, the cached session and its parts, and the marker', () => {
+    const cookies = inPiggles(() =>
+      clearedSessionCookies(
+        'piggles',
+        'piggles-account.session_data.0=a; piggles-account.session_data.1=b; other=c'
+      )
+    );
     expect(cookies.map((c) => c.name).sort()).toEqual([
       'piggles-account.dont_remember',
+      'piggles-account.session_data',
+      'piggles-account.session_data.0',
+      'piggles-account.session_data.1',
       'piggles-account.session_token',
     ]);
     for (const c of cookies) {

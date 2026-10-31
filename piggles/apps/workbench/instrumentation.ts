@@ -7,9 +7,6 @@
 // go to WIZELENS_HUB with WIZELENS_HUB_TOKEN, and `/_wizelens` serves nothing
 // but the browser span intake.
 //
-// Prisma: the extension goes on `globalThis` here, before any route module loads
-// @wizeworks/db, which reads it once when it builds its client.
-//
 // Node.js runtime only: the add-on needs node:http. The NEXT_RUNTIME check must
 // wrap the import, so the edge build leaves the package out. A failure to start
 // is logged and never stops the app: tracing is not worth an outage.
@@ -32,10 +29,6 @@ export async function register() {
       wizelens.setUser(user.id, user.name ? { name: user.name } : {});
       if (user.tenantId) wizelens.tag('tenant', user.tenantId);
     };
-    const { prismaExtension } = await import('@wizeworks/lens-node');
-    (globalThis as { __wizelensPrisma?: unknown }).__wizelensPrisma = prismaExtension(wizelens, {
-      system: 'postgresql',
-    });
   } catch (err) {
     console.warn('[wizelens] tracing did not start', err);
   }
